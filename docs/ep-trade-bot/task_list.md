@@ -1,22 +1,22 @@
 # EP Trade bot: Task List
 
-Status: awaiting approval of [`implementation_plan.md`](implementation_plan.md),
-including decisions D1 to D8.
+Status: plan approved 2026-11-02 with the default for every decision (D1 to D8).
+Task Group 1 done; Gate 1 evidence in [`ep-trade-bot/verification/tg1.md`](../../ep-trade-bot/verification/tg1.md).
 
 ## Pre-flight
-- [ ] Decisions D1 to D8 answered (or defaults accepted)
+- [x] Decisions D1 to D8 answered (defaults accepted)
 - [ ] Logo committed to `ep-trade-bot/branding/logo-source.png` (needed by TG5 only)
 
 ## TG1: Scaffolding and data layer
-- [ ] Install .NET 10 SDK and PostgreSQL 17 in the session
-- [ ] Solution, 5 projects, 4 test projects, central package management
-- [ ] Entities and `IEntityTypeConfiguration` for 74 legacy tables + new risk/kill-switch/account entities
-- [ ] Six schemas: core, sandbox, audit, latency, telemetry, market_data
-- [ ] BRIN index on `market_data.candles.ts` via Fluent API
-- [ ] Data Annotations on all request DTOs and options; validation endpoint filter
-- [ ] `InitialCreate` migration; `MigrateAsync()` at startup
-- [ ] Raw-SQL ban: banned-API analyzer + architecture test
-- [ ] Gate 1 artifact
+- [x] Install .NET 10 SDK and PostgreSQL 17 in the session (no Docker daemon: integration tests use a real server via EPTRADE_TEST_PG)
+- [x] Solution, 3 of 5 projects (Core, Infrastructure, Api; Mcp.Stdio in TG4, Importer in TG6), 3 of 4 test projects (Contract.Tests in TG3), central package management
+- [x] Entities and `IEntityTypeConfiguration` for 74 legacy tables + new risk/kill-switch/account entities
+- [x] Six schemas: core, sandbox, audit, latency, telemetry, market_data
+- [x] BRIN index on `market_data.candles.ts` via Fluent API
+- [x] Data Annotations on all request DTOs and options; validation endpoint filter
+- [x] `InitialCreate` migration; `MigrateAsync()` at startup
+- [x] Raw-SQL ban: banned-API analyzer + architecture test
+- [x] Gate 1 artifact
 
 ## TG2: Guardrails, risk, sandbox, kill switches
 - [ ] `ITradingGuardService` (middleware + dispatcher)

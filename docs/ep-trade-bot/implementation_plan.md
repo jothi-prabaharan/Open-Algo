@@ -1,6 +1,7 @@
 # EP Trade bot: Implementation Plan (OpenAlgo to .NET 10 / PostgreSQL / Angular)
 
-Status: **awaiting approval**. No code has been written. Each Task Group below
+Status: **approved 2026-11-02, defaults accepted for D1 to D8.** Task Group 1 complete
+([verification](../../ep-trade-bot/verification/tg1.md)); Task Group 2 next. Each Task Group below
 ends at a verification gate and a review stop; nothing in the next group starts
 until the previous group's verification artifact is approved.
 
