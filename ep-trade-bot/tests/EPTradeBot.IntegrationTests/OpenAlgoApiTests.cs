@@ -70,6 +70,10 @@ public sealed class OpenAlgoApiTests
             ("/api/v1/cancelorder", new { apikey = key, strategy = "tv", orderid = "9002" }),
             ("/api/v1/cancelallorder", new { apikey = key, strategy = "tv" }),
             ("/api/v1/closeposition", new { apikey = key, strategy = "tv" }),
+            ("/api/v1/basketorder", new { apikey = key, strategy = "tv", orders = new[] { new { symbol = "SBIN", exchange = "NSE", action = "BUY", quantity = 1 } } }),
+            ("/api/v1/splitorder", new { apikey = key, strategy = "tv", symbol = "SBIN", exchange = "NSE", action = "BUY", quantity = 20, splitsize = 10 }),
+            ("/api/v1/optionsorder", new { apikey = key, strategy = "tv", underlying = "NIFTY", exchange = "NSE_INDEX", expiry_date = "30DEC30", offset = "ATM", option_type = "CE", action = "BUY", quantity = 75 }),
+            ("/api/v1/optionsmultiorder", new { apikey = key, strategy = "tv", underlying = "NIFTY", exchange = "NSE_INDEX", expiry_date = "30DEC30", legs = new[] { new { offset = "ATM", option_type = "CE", action = "BUY", quantity = 75 } } }),
         };
 
         foreach (var (path, body) in writes)
@@ -233,6 +237,102 @@ public sealed class OpenAlgoApiTests
         Assert.StartsWith("Fractional quantities (0.5)", answer["message"]!.GetValue<string>());
         await using var db = host.NewDb();
         Assert.Equal(0, await db.Set<EPTradeBot.Core.Entities.Legacy.Sandbox.SandboxOrder>().CountAsync());
+    }
+
+    [PostgresFact]
+    public async Task Each_order_of_a_basket_and_each_part_of_a_split_passes_the_risk_check_on_its_own()
+    {
+        var (host, broker, _, key) = await LiveHostAsync("Production", maxQty: 10);
+        await using var _ = host;
+
+        var (status, basket) = await PostAsync(host, "/api/v1/basketorder", new
+        {
+            apikey = key, strategy = "tv",
+            orders = new object[] { new { symbol = "SBIN", exchange = "NSE", action = "SELL", quantity = 50 }, new { symbol = "SBIN", exchange = "NSE", action = "BUY", quantity = 5 } },
+        });
+        Assert.Equal(200, status);
+        var results = basket["results"]!.AsArray();
+        Assert.Equal("success", results[0]!["status"]!.GetValue<string>());
+        Assert.Equal("BUY", broker.Sent.Single(s => s.Method == "POST").Form!.Single(kv => kv.Key == "transaction_type").Value);
+        Assert.Equal("error", results[1]!["status"]!.GetValue<string>());
+        Assert.Contains("10", results[1]!["message"]!.GetValue<string>());
+
+        broker.ClearSent();
+        (status, var split) = await PostAsync(host, "/api/v1/splitorder", new { apikey = key, strategy = "tv", symbol = "SBIN", exchange = "NSE", action = "BUY", quantity = 25, splitsize = 10 });
+        Assert.Equal(200, status);
+        Assert.Equal([10, 10, 5], split["results"]!.AsArray().Select(r => r!["quantity"]!.GetValue<int>()));
+        Assert.All(split["results"]!.AsArray(), r => Assert.Equal("success", r!["status"]!.GetValue<string>()));
+        Assert.Equal(3, broker.Sent.Count(s => s.Method == "POST"));
+
+        broker.ClearSent();
+        (status, split) = await PostAsync(host, "/api/v1/splitorder", new { apikey = key, strategy = "tv", symbol = "SBIN", exchange = "NSE", action = "BUY", quantity = 40, splitsize = 20 });
+        Assert.Equal(200, status);
+        Assert.All(split["results"]!.AsArray(), r => Assert.Equal("error", r!["status"]!.GetValue<string>()));
+        Assert.DoesNotContain(broker.Sent, s => s.Method == "POST");
+    }
+
+    [PostgresFact]
+    public async Task A_sandbox_basket_fills_in_the_sandbox_and_is_marked_analyze()
+    {
+        await using var host = new TestHost("Development");
+        var account = await host.CreateAccountAsync(AccountType.PAPER, "paper", 1_000_000, 1000, 10_000_000);
+        var key = (await host.Get<ApiKeyService>().IssueAsync(account, "tv")).Key;
+        host.SetQuote("NSE", "SBIN", 805);
+        host.SetQuote("NSE", "INFY", 1500);
+
+        var (status, body) = await PostAsync(host, "/api/v1/basketorder", new
+        {
+            apikey = key, strategy = "tv",
+            orders = new object[] { new { symbol = "INFY", exchange = "NSE", action = "SELL", quantity = 1 }, new { symbol = "SBIN", exchange = "NSE", action = "BUY", quantity = 2 } },
+        });
+        Assert.Equal(200, status);
+        Assert.Equal("analyze", body["mode"]!.GetValue<string>());
+        var results = body["results"]!.AsArray();
+        Assert.Equal(["SBIN", "INFY"], results.Select(r => r!["symbol"]!.GetValue<string>()));
+        Assert.All(results, r => Assert.Equal("success", r!["status"]!.GetValue<string>()));
+        Assert.Equal([false, true], results.Select(r => r!["is_last_order"]!.GetValue<bool>()));
+        Assert.Equal(2, (await host.Get<EPTradeBot.Infrastructure.Sandbox.SandboxEngine>().GetOrdersAsync(account)).Count);
+    }
+
+    [PostgresFact]
+    public async Task Instruments_download_as_csv_in_openalgo_format()
+    {
+        var (host, _, _, key) = await LiveHostAsync("Production");
+        await using var _ = host;
+        await using (var db = host.NewDb())
+        {
+            db.Set<SymToken>().Add(new SymToken { Broker = "zerodha", Symbol = "NIFTY30DEC3024000CE", Brsymbol = "NIFTY30DEC24000CE", Name = "NIFTY, INDEX", Exchange = "NFO", Brexchange = "NFO",
+                Token = "1::::2", Expiry = "30-DEC-30", Strike = 24000, Lotsize = 75, Instrumenttype = "CE", TickSize = 0.05 });
+            await db.SaveChangesAsync();
+        }
+
+        using var client = host.Anonymous();
+        var response = await client.GetAsync($"/api/v1/instruments?apikey={key}&exchange=NFO&format=CSV");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("text/csv", response.Content.Headers.ContentType?.MediaType);
+        Assert.Equal("attachment; filename=instruments_NFO.csv", response.Content.Headers.ContentDisposition?.ToString());
+        Assert.Equal(
+            "symbol,brsymbol,name,exchange,brexchange,token,expiry,strike,lotsize,instrumenttype,tick_size\r\n"
+            + "NIFTY30DEC3024000CE,NIFTY30DEC24000CE,\"NIFTY, INDEX\",NFO,NFO,1::::2,30-DEC-30,24000.0,75,CE,0.05\r\n",
+            await response.Content.ReadAsStringAsync());
+    }
+
+    [PostgresFact]
+    public async Task Freeze_limits_are_seeded_once_and_an_edited_limit_is_kept()
+    {
+        await using var host = new TestHost("Development");
+        await using (var db = host.NewDb())
+        {
+            var nifty = await db.Set<QtyFreeze>().SingleAsync(q => q.Exchange == "NFO" && q.Symbol == "NIFTY");
+            Assert.Equal(1800, nifty.FreezeQty);
+            Assert.Equal(214, await db.Set<QtyFreeze>().CountAsync(q => q.Exchange == "NFO"));
+            nifty.FreezeQty = 1234;
+            await db.SaveChangesAsync();
+        }
+
+        await EPTradeBot.Infrastructure.Persistence.DatabaseMigrator.MigrateAsync(host.Services);
+        await using (var db = host.NewDb())
+            Assert.Equal(1234, (await db.Set<QtyFreeze>().SingleAsync(q => q.Exchange == "NFO" && q.Symbol == "NIFTY")).FreezeQty);
     }
 }
 

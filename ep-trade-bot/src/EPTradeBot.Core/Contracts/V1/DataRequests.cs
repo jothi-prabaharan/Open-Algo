@@ -71,7 +71,8 @@ public sealed class TickerRequest : ApiKeyRequest
 /// <summary>POST /api/v1/search</summary>
 public sealed class SearchRequest : ApiKeyRequest
 {
-    [Required, StringLength(100, MinimumLength = 1)] [JsonPropertyName("query")] public string Query { get; set; } = "";
+    /// <summary>Blank text passes the schema, as in OpenAlgo, and the service answers it with its own message.</summary>
+    [Required(AllowEmptyStrings = true), StringLength(100, MinimumLength = 1)] [JsonPropertyName("query")] public string Query { get; set; } = "";
     [RegularExpression(ApiPatterns.Exchange)] [JsonPropertyName("exchange")] public string? Exchange { get; set; }
 }
 

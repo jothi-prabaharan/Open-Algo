@@ -46,9 +46,11 @@ os.environ["API_RATE_LIMIT"] = "10000 per second"
 os.environ["SMART_ORDER_RATE_LIMIT"] = "10000 per second"
 os.environ["SMART_ORDER_DELAY"] = "0"
 
-BROKER = sys.argv[1] if len(sys.argv) > 1 else "zerodha"
+FIXTURE = sys.argv[1] if len(sys.argv) > 1 else "zerodha"
 sys.path.insert(0, str(HERE))
-SCENARIOS = importlib.import_module(f"scenarios_{BROKER}")
+SCENARIOS = importlib.import_module(f"scenarios_{FIXTURE}")
+# A fixture set may name the broker it runs on (composite endpoints recorded on Zerodha).
+BROKER = getattr(SCENARIOS, "BROKER", FIXTURE)
 for _k, _v in getattr(SCENARIOS, "ENV", {}).items():
     os.environ[_k] = _v
 
@@ -136,6 +138,15 @@ for row in SCENARIOS.SYMBOLS:
     db_session.add(SymToken(**row))
 db_session.commit()
 
+if getattr(SCENARIOS, "FREEZE", None):
+    import database.qty_freeze_db as qfd
+
+    qfd.init_db()
+    for row in SCENARIOS.FREEZE:
+        qfd.db_session.add(qfd.QtyFreeze(**row))
+    qfd.db_session.commit()
+    qfd.load_freeze_qty_cache()
+
 import database.token_db_enhanced as tde  # noqa: E402
 
 tde.load_cache_for_broker(BROKER)
@@ -181,6 +192,6 @@ for sc in SCENARIOS.SCENARIOS:
     )
     print(f"{resp.status_code} {sc['name']}")
 
-dest = HERE / f"{BROKER}.fixtures.json"
-dest.write_text(json.dumps({"broker": BROKER, "api_key": API_KEY, "auth_token": AUTH_TOKEN, "client_id": getattr(SCENARIOS, "CLIENT_ID", None), "recorded_at": getattr(SCENARIOS, "RECORDED_AT", None), "read_posts": getattr(SCENARIOS, "READ_POSTS", []), "symbols": SCENARIOS.SYMBOLS, "fixtures": out}, indent=2) + "\n", encoding="utf-8")
+dest = HERE / f"{FIXTURE}.fixtures.json"
+dest.write_text(json.dumps({"broker": BROKER, "api_key": API_KEY, "auth_token": AUTH_TOKEN, "client_id": getattr(SCENARIOS, "CLIENT_ID", None), "recorded_at": getattr(SCENARIOS, "RECORDED_AT", None), "read_posts": getattr(SCENARIOS, "READ_POSTS", []), "symbols": SCENARIOS.SYMBOLS, "freeze": getattr(SCENARIOS, "FREEZE", []), "fixtures": out}, indent=2) + "\n", encoding="utf-8")
 print(f"wrote {len(out)} fixtures to {dest}")

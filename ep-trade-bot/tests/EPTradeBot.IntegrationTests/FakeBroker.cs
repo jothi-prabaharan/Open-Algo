@@ -41,6 +41,12 @@ public sealed class FakeBroker : HttpMessageHandler
         }
     }
 
+    /// <summary>Forgets what was sent, keeping the replies.</summary>
+    public void ClearSent()
+    {
+        lock (gate) sent.Clear();
+    }
+
     public IReadOnlyList<SentRequest> Sent
     {
         get

@@ -582,3 +582,166 @@ it then failed as it should. All 67 TG3 mutations are now red.
 | X8 unknown symbol reaches the risk check | 1 failed |
 | X9 fractional quantity truncated | 1 failed |
 
+
+## 12. Pass 5: symbol master, option symbols and multi-order endpoints
+
+**What was built.** Nine /api/v1 endpoints, in three partial files of
+`Infrastructure/OpenAlgoApi/OpenAlgoApiService`:
+
+- **Symbol master** (`.Symbols.cs`): /symbol, /search, /expiry and GET /instruments (JSON or CSV). Each account reads its own broker's master contract; OpenAlgo held one broker's at a time.
+- **Option symbols** (`.Options.cs`): /optionsymbol. Without `strike_int`, ATM is the listed strike nearest the underlying's last price and offsets walk the listed strikes. With it, ATM is the price rounded to the interval, half to even as Python's `round`. On MCX, CDS and the other exchanges with no spot, the price is taken from the nearest unexpired future of exactly that product (CRUDEOIL, never CRUDEOILM).
+- **Several orders per request** (`.Composite.cs`): /basketorder, /splitorder, /optionsorder and /optionsmultiorder. BUY orders and legs go before SELL, as in OpenAlgo.
+
+**Every part is its own order through the dispatcher.** The environment guard, the kill
+switch and the account's risk limits apply to each order of a basket, each part of a split
+and each leg, and each is audited. OpenAlgo's live basket and split called the broker
+directly, past its own order service.
+`OpenAlgoApiTests.Each_order_of_a_basket_and_each_part_of_a_split_passes_the_risk_check_on_its_own`:
+with a 10-share limit, a basket of 50 and 5 sends only the 5. A split of 25 in tens sends
+three orders. A split of 40 in twenties sends nothing. The Development test now also
+sends all four new write endpoints and requires each to be refused with nothing sent.
+
+**Supporting changes.**
+
+- **Freeze limits are seeded.** EP Trade bot had never loaded NSE's F&O freeze limits, so every lookup answered 0 ("no limit known"). That affected more than these endpoints: the kill switch slices exits by these limits, and with none it would have sent a single exit above the exchange's limit, which the exchange refuses. The NFO rows of OpenAlgo's `data/qtyfreeze.csv` (214) are now loaded at startup into an empty table only, as OpenAlgo does, so a limit an admin edited is kept (`OpenAlgoApiTests.Freeze_limits_are_seeded_once_and_an_edited_limit_is_kept`).
+- **/quotes and /depth name an unknown symbol before calling the broker**, with OpenAlgo's message (`quotes_unknown_symbol`, `depth_unknown_symbol`). The option endpoints rely on this check.
+- **The option endpoints answer a validation failure in OpenAlgo's shape for them**: `"message": "Validation error"`, with the fields in `errors`. The harness now also checks that a validation error names the same fields as OpenAlgo's, on every broker's fixtures, not only that it is an error.
+- **Pacing:** consecutive parts of one request are 100 ms apart (`OpenAlgoApi:OrderSpacingMs`), the rate OpenAlgo derives from its default ORDER_RATE_LIMIT of 10 per second. OpenAlgo sent a live basket ten at a time with a second between batches; EP Trade bot sends one at a time at the same rate.
+- **The recorder** takes a fixture set that names its broker, and seeds freeze limits.
+
+**Contract tests: 59 of 59**, recorded on Zerodha
+(`tools/contract-fixtures/composite.fixtures.json`, `CompositeContractTests`). These
+endpoints are the same for every broker apart from the quote and place-order calls, which
+each broker's own fixtures already cover. Expiries are in 2030 or 2024, so the
+unexpired-only filters give the same answer on any day the tests run. 277 of 277 across
+all contract tests.
+
+| Fixture | Path | Python status | Writes | Compared | Result |
+| --- | --- | --- | --- | --- | --- |
+| symbol_option | /api/v1/symbol | 200 | 0 | full | Passed |
+| symbol_equity_no_freeze | /api/v1/symbol | 200 | 0 | full | Passed |
+| symbol_not_found | /api/v1/symbol | 404 | 0 | full | Passed |
+| symbol_missing_exchange | /api/v1/symbol | 400 | 0 | status and error shape | Passed |
+| symbol_invalid_key | /api/v1/symbol | 403 | 0 | full | Passed |
+| search_ranked | /api/v1/search | 200 | 0 | full | Passed |
+| search_terms_and_strike | /api/v1/search | 200 | 0 | full | Passed |
+| search_exchange_filter | /api/v1/search | 200 | 0 | full | Passed |
+| search_by_name | /api/v1/search | 200 | 0 | full | Passed |
+| search_no_match | /api/v1/search | 200 | 0 | full | Passed |
+| search_blank_query | /api/v1/search | 400 | 0 | full | Passed |
+| search_bad_exchange | /api/v1/search | 400 | 0 | status and error shape | Passed |
+| expiry_options | /api/v1/expiry | 200 | 0 | full | Passed |
+| expiry_futures | /api/v1/expiry | 200 | 0 | full | Passed |
+| expiry_mcx_futures_exact_base | /api/v1/expiry | 200 | 0 | full | Passed |
+| expiry_none | /api/v1/expiry | 200 | 0 | full | Passed |
+| expiry_bad_type | /api/v1/expiry | 400 | 0 | status and error shape | Passed |
+| expiry_equity_exchange | /api/v1/expiry | 400 | 0 | status and error shape | Passed |
+| instruments_mcx_json | /api/v1/instruments (GET) | 200 | 0 | full | Passed |
+| instruments_none | /api/v1/instruments (GET) | 200 | 0 | full | Passed |
+| instruments_no_key | /api/v1/instruments (GET) | 400 | 0 | status and error shape | Passed |
+| instruments_bad_exchange | /api/v1/instruments (GET) | 400 | 0 | status and error shape | Passed |
+| optionsymbol_atm_ce | /api/v1/optionsymbol | 200 | 0 | full | Passed |
+| optionsymbol_itm1_ce | /api/v1/optionsymbol | 200 | 0 | full | Passed |
+| optionsymbol_otm2_pe | /api/v1/optionsymbol | 200 | 0 | full | Passed |
+| optionsymbol_out_of_range | /api/v1/optionsymbol | 400 | 0 | full | Passed |
+| optionsymbol_strike_int_half_even | /api/v1/optionsymbol | 200 | 0 | full | Passed |
+| optionsymbol_strike_int_itm2_pe | /api/v1/optionsymbol | 200 | 0 | full | Passed |
+| optionsymbol_strike_int_not_listed | /api/v1/optionsymbol | 404 | 0 | full | Passed |
+| optionsymbol_embedded_expiry | /api/v1/optionsymbol | 200 | 0 | full | Passed |
+| optionsymbol_no_expiry | /api/v1/optionsymbol | 400 | 0 | full | Passed |
+| optionsymbol_no_strikes | /api/v1/optionsymbol | 404 | 0 | full | Passed |
+| optionsymbol_mcx_near_future | /api/v1/optionsymbol | 200 | 0 | full | Passed |
+| optionsymbol_mcx_no_future | /api/v1/optionsymbol | 404 | 0 | full | Passed |
+| optionsymbol_quote_refused | /api/v1/optionsymbol | 500 | 0 | deliberate difference | Passed |
+| optionsymbol_unknown_underlying | /api/v1/optionsymbol | 400 | 0 | full | Passed |
+| quotes_unknown_symbol | /api/v1/quotes | 400 | 0 | full | Passed |
+| depth_unknown_symbol | /api/v1/depth | 400 | 0 | full | Passed |
+| optionsymbol_bad_offset | /api/v1/optionsymbol | 400 | 0 | status and error shape | Passed |
+| basketorder_two | /api/v1/basketorder | 200 | 2 | full | Passed |
+| basketorder_refused | /api/v1/basketorder | 200 | 1 | full | Passed |
+| basketorder_empty | /api/v1/basketorder | 400 | 0 | status and error shape | Passed |
+| basketorder_bad_item | /api/v1/basketorder | 400 | 0 | status and error shape | Passed |
+| splitorder_remainder | /api/v1/splitorder | 200 | 3 | full | Passed |
+| splitorder_exact | /api/v1/splitorder | 200 | 2 | full | Passed |
+| splitorder_too_many | /api/v1/splitorder | 400 | 0 | full | Passed |
+| splitorder_zero_size | /api/v1/splitorder | 400 | 0 | status and error shape | Passed |
+| optionsorder_atm | /api/v1/optionsorder | 200 | 1 | full | Passed |
+| optionsorder_split | /api/v1/optionsorder | 200 | 3 | full | Passed |
+| optionsorder_refused | /api/v1/optionsorder | 400 | 1 | full | Passed |
+| optionsorder_unresolved | /api/v1/optionsorder | 400 | 0 | full | Passed |
+| optionsorder_bad_offset | /api/v1/optionsorder | 400 | 0 | deliberate difference | Passed |
+| optionsorder_cnc_refused | /api/v1/optionsorder | 400 | 0 | status and error shape | Passed |
+| optionsorder_split_too_many | /api/v1/optionsorder | 400 | 0 | full | Passed |
+| optionsmultiorder_iron_condor | /api/v1/optionsmultiorder | 200 | 3 | full | Passed |
+| optionsmultiorder_leg_fails | /api/v1/optionsmultiorder | 200 | 1 | full | Passed |
+| optionsmultiorder_split_leg | /api/v1/optionsmultiorder | 200 | 2 | full | Passed |
+| optionsmultiorder_leg_expiry | /api/v1/optionsmultiorder | 200 | 1 | full | Passed |
+| optionsmultiorder_no_legs | /api/v1/optionsmultiorder | 400 | 0 | status and error shape | Passed |
+
+**Deliberate differences, each recorded from the Python implementation.**
+
+| Fixture | OpenAlgo | EP Trade bot |
+| --- | --- | --- |
+| optionsorder_bad_offset | Takes any offset in the /optionsorder schema, quotes the underlying, then answers that offset MIDDLE is out of range. | Refuses the offset in validation, as OpenAlgo's /optionsymbol already does, before asking the broker for anything. |
+| optionsymbol_quote_refused | "Failed to fetch LTP for NIFTY. Error fetching quotes: API Error: Incorrect `api_key` or `access_token`." | Same status, worded as the Zerodha plugin words every refusal: "... Zerodha refused the request: ...". |
+
+Two further differences have no fixture, because the recorder runs live mode only:
+
+- **Unknown symbols in a live basket or split** are refused by name. OpenAlgo sent them to the broker as "None", as recorded in the Zerodha pass.
+- **An account set to need approval** (Action Center) has each part queued on its own. OpenAlgo queued the whole request as one item. Approval of a whole request arrives with the Action Center in Task Group 4.
+
+**Recorded in the fixtures, not a difference.**
+
+- **Expired contracts appear in search results** (`search_ranked`, `search_terms_and_strike`). OpenAlgo's search does not filter them out, and neither does EP Trade bot.
+- **The recording showed a token collision.** The first recording reused a token for two NIFTY options on NFO. OpenAlgo's cache keeps one row per token and exchange, so one row vanished from unfiltered search. This was an artifact of the fixture, since no broker reuses a token on one exchange. The fixture now gives every row its own token.
+
+**Other tests.** 31 integration tests (27 before), including the four above, plus
+`A_sandbox_basket_fills_in_the_sandbox_and_is_marked_analyze` and
+`Instruments_download_as_csv_in_openalgo_format`. The CSV test checks OpenAlgo's exact
+format: CRLF line endings, `24000.0` for a float, and a quoted field when it holds a
+comma. Totals: Core 129, Architecture 35, Integration 31, Contract 277, 472 in all; no
+test database left behind.
+
+**Mutation check: 22 of 22 red** (`tools/mutation/tg3-composite.json`).
+
+| Mutation | Result |
+| --- | --- |
+| P1 strike-interval ATM rounds half away from zero | 1 failed |
+| P2 listed-strike offsets walk the wrong way | 5 failed |
+| P3 strike-interval offsets walk the wrong way | 1 failed |
+| P4 ATM is not the listed strike nearest the price | 13 failed |
+| P5 an offset past the last strike is clamped instead of refused | 4 failed |
+| P6 near-month future matched by prefix (CRUDEOILM prices CRUDEOIL) | 1 failed |
+| P7 an expired future prices the chain | 1 failed |
+| P8 expired expiries listed | 3 failed |
+| P9 expiry ignores the futures and options instrument types | 1 failed |
+| P10 search ranking without the shorter-symbol rule | 1 failed |
+| P11 search matches only the first term | 1 failed |
+| P12 search ignores the exchange filter | 1 failed |
+| P13 basket sends SELL orders before BUY | 1 failed |
+| P14 split drops the remainder | 3 failed |
+| P15 split has no order limit | 1 failed |
+| P16 multi-order sends SELL legs first | 1 failed |
+| P17 a leg's own expiry ignored | 1 failed |
+| P18 unknown symbol sent to the broker for a quote | 3 failed |
+| P19 freeze limits never seeded | 1 failed |
+| P20 the seed rewrites a limit already set | 1 failed |
+| P21 a CSV field with a comma not quoted | 1 failed |
+| P22 a split sent as one order for the whole quantity | 1 failed |
+
+Three needed changes before they went red:
+
+- **P6 and P7 had no data to fail on.** No fixture held a smaller contract that expires first, or an expired future. Both rows were added (CRUDEOILM17NOV30FUT, CRUDEOIL18OCT24FUT).
+- **P12 survived.** The only search fixture with an exchange used terms that matched nothing outside that exchange. `search_exchange_filter` was added.
+- **P18 did not compile at first.** `if (false)` is refused as unreachable code, so it was rewritten as a condition that is never true.
+
+Every earlier pattern (C1 to C17, D1 to D16, A1 to A9, U1 to U8, F1 to F7, X1 to X9) still
+matches exactly once. C1 to C17, whose guards share `OpenAlgoApiService.cs` with this
+pass, were run again and are all red. The other three sets patch plugin files this pass
+did not change and were not re-run.
+
+**Not done in this pass.**
+
+- **Next pass:** /multiquotes, /syntheticfuture and /optionchain. Each of the six Indian brokers has its own batched multi-quote call, so these need a plugin capability per broker rather than one shared port.
+- **Option symbols for a crypto underlying** (the perpetual future that prices it) are ported but have no fixture yet.
+- **Per-broker endpoints still to come:** history, intervals, ticker, margin, the four GTT endpoints, market holidays and timings, chart and pnl/symbols. Feeds and login remain as well.

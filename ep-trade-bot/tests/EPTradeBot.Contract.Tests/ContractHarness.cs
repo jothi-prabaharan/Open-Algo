@@ -93,6 +93,15 @@ public abstract class BrokerContractHost : IAsyncLifetime
             });
         }
 
+        // The recorded install's freeze limits, over the ones seeded at startup.
+        foreach (var row in (Fixtures["freeze"] as JsonArray ?? []).OfType<JsonObject>())
+        {
+            var (exchange, symbol, quantity) = (Text(row, "exchange")!, Text(row, "symbol")!, row["freeze_qty"]!.GetValue<int>());
+            var existing = db.Set<QtyFreeze>().SingleOrDefault(q => q.Exchange == exchange && q.Symbol == symbol);
+            if (existing is null) db.Set<QtyFreeze>().Add(new QtyFreeze { Exchange = exchange, Symbol = symbol, FreezeQty = quantity });
+            else existing.FreezeQty = quantity;
+        }
+
         await db.SaveChangesAsync();
         foreach (var ((exchange, symbol), price) in Prices) Host.SetQuote(exchange, symbol, price);
     }
@@ -142,10 +151,14 @@ public static class ContractRunner
         var request = (JsonObject)f["request"]!.DeepClone();
         if (request["apikey"] is JsonValue k && k.GetValue<string>() == recordedKey) request["apikey"] = host.ApiKey;
         using var client = host.Host!.Anonymous();
-        using var message = new HttpRequestMessage(HttpMethod.Post, f["path"]!.GetValue<string>())
-        {
-            Content = new StringContent(request.ToJsonString(), Encoding.UTF8, "application/json"),
-        };
+        var isGet = f["method"]?.GetValue<string>() == "GET";
+        if (f["auth"]!.GetValue<string>() == "none") request.Remove("apikey");
+        using var message = isGet
+            ? new HttpRequestMessage(HttpMethod.Get, f["path"]!.GetValue<string>() + "?" + string.Join("&", request.Select(kv => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value!.ToString())}")))
+            : new HttpRequestMessage(HttpMethod.Post, f["path"]!.GetValue<string>())
+            {
+                Content = new StringContent(request.ToJsonString(), Encoding.UTF8, "application/json"),
+            };
         if (f["auth"]!.GetValue<string>() == "header") message.Headers.Add("X-API-KEY", host.ApiKey);
         using var response = await client.SendAsync(message);
         var actual = JsonNode.Parse(await response.Content.ReadAsStringAsync());
@@ -173,6 +186,17 @@ public static class ContractRunner
         {
             // Validation wording comes from marshmallow; the contract is the status and the error shape.
             Assert.Equal("error", actual?["status"]?.GetValue<string>());
+            if (expected["body"]?["errors"] is JsonObject fields)
+            {
+                // The option endpoints' shape: "Validation error" with the failing fields in "errors".
+                Assert.Equal("Validation error", actual?["message"]?.GetValue<string>());
+                Assert.Equal(fields.Select(kv => kv.Key).Order(), (actual?["errors"] as JsonObject ?? []).Select(kv => kv.Key).Order());
+            }
+            else if (expected["body"]?["message"] is JsonObject named)
+            {
+                Assert.Equal(named.Select(kv => kv.Key).Order(), (actual?["message"] as JsonObject ?? []).Select(kv => kv.Key).Order());
+            }
+
             Assert.Empty(sent);
             return;
         }
@@ -184,7 +208,7 @@ public static class ContractRunner
 
     private static bool IsSchemaMessage(JsonNode expected) =>
         expected["status"]!.GetValue<int>() == 400 && expected["body"]?["message"] is { } m
-        && (m is JsonObject || (m is JsonValue v && v.TryGetValue<string>(out var s) && s.StartsWith('{')));
+        && (m is JsonObject || (m is JsonValue v && v.TryGetValue<string>(out var s) && s.StartsWith('{')) || expected["body"]?["errors"] is JsonObject);
 
     private static void CompareTraffic(BrokerContractHost host, JsonObject f, IReadOnlyList<SentRequest> actualSent, Func<SentRequest, bool> isRead,
         HashSet<string> readPosts, IEnumerable<string> answered)

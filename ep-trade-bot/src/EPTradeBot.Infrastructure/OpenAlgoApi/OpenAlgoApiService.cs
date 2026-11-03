@@ -5,8 +5,11 @@ using EPTradeBot.Core.Entities.Audit;
 using EPTradeBot.Core.Entities.Core;
 using EPTradeBot.Core.Trading;
 using EPTradeBot.Infrastructure.Brokers;
+using EPTradeBot.Infrastructure.Persistence;
 using EPTradeBot.Infrastructure.Sandbox;
 using EPTradeBot.Infrastructure.Trading;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace EPTradeBot.Infrastructure.OpenAlgoApi;
@@ -25,7 +28,7 @@ public sealed record V1Result(int Status, JsonObject Body)
 /// guard and the account's risk limits apply to API orders exactly as to any other.
 /// Every other write to a broker (modify, cancel) is checked by the guard first.
 /// </summary>
-public sealed class OpenAlgoApiService(
+public sealed partial class OpenAlgoApiService(
     IOrderDispatcher dispatcher,
     ITradingGuardService guard,
     IBrokerRegistry registry,
@@ -33,6 +36,10 @@ public sealed class OpenAlgoApiService(
     SandboxEngine sandbox,
     KeyedAsyncLock<string> instrumentLocks,
     ISymbolMaster symbols,
+    IDbContextFactory<EpTradeDbContext> contexts,
+    IFreezeQuantityLookup freeze,
+    TimeProvider clock,
+    IConfiguration configuration,
     ILogger<OpenAlgoApiService> logger)
 {
     // ---- orders ----------------------------------------------------------------------------------------------
@@ -373,16 +380,22 @@ public sealed class OpenAlgoApiService(
 
     // ---- market data -----------------------------------------------------------------------------------------
 
-    public Task<V1Result> QuotesAsync(BrokerAccount account, QuotesRequest r, CancellationToken ct) =>
-        MarketDataAsync(account, (q, s) => q.GetQuoteAsync(s, r.Symbol, r.Exchange, ct));
+    public Task<V1Result> QuotesAsync(BrokerAccount account, QuotesRequest r, CancellationToken ct) => QuoteAsync(account, r.Symbol, r.Exchange, ct);
+
+    /// <summary>One quote, as /quotes answers it. Shared by the option endpoints, which price the underlying with it.</summary>
+    internal Task<V1Result> QuoteAsync(BrokerAccount account, string symbol, string exchange, CancellationToken ct) =>
+        MarketDataAsync(account, symbol, exchange, (q, s) => q.GetQuoteAsync(s, symbol, exchange, ct), ct);
 
     public Task<V1Result> DepthAsync(BrokerAccount account, DepthRequest r, CancellationToken ct) =>
-        MarketDataAsync(account, (q, s) => q.GetDepthAsync(s, r.Symbol, r.Exchange, ct));
+        MarketDataAsync(account, r.Symbol, r.Exchange, (q, s) => q.GetDepthAsync(s, r.Symbol, r.Exchange, ct), ct);
 
-    private async Task<V1Result> MarketDataAsync(BrokerAccount account, Func<IBrokerQuotes, BrokerSession, Task<JsonObject>> read)
+    private async Task<V1Result> MarketDataAsync(BrokerAccount account, string symbol, string exchange, Func<IBrokerQuotes, BrokerSession, Task<JsonObject>> read, CancellationToken ct)
     {
         // Market data comes from the broker for PAPER accounts too, as OpenAlgo's analyze mode does.
         if (!Broker<IBrokerQuotes>(account, out var quotes, out var session, out var missing)) return missing!;
+        // A symbol the master contract lacks is named before anything is asked of the broker (services/quotes_service.py).
+        if (await symbols.FindAsync(quotes!.Name, symbol, exchange.ToUpperInvariant(), ct) is null)
+            return V1Result.Error(400, $"Symbol '{symbol}' not found for exchange '{exchange}'. Please verify the symbol name and ensure master contracts are downloaded.");
         return await Guarded(async () => Success(await read(quotes!, session!)));
     }
 

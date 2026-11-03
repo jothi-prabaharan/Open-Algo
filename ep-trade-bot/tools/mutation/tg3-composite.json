@@ -1,0 +1,178 @@
+[
+ {
+  "name": "P1 strike-interval ATM rounds half away from zero, not to even (Python round)",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Options.cs",
+  "old": "MidpointRounding.ToEven",
+  "new": "MidpointRounding.AwayFromZero",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P2 listed-strike offsets walk the wrong way",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Options.cs",
+  "old": "var target = up ? index + n : index - n;",
+  "new": "var target = up ? index - n : index + n;",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P3 strike-interval offsets walk the wrong way",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Options.cs",
+  "old": "return up ? atm + n * interval : atm - n * interval;",
+  "new": "return up ? atm - n * interval : atm + n * interval;",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P4 ATM is not the listed strike nearest the price",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Options.cs",
+  "old": "var atm = strikes.MinBy(s => Math.Abs(s - ltp));",
+  "new": "var atm = strikes.Max();",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P5 an offset past the last listed strike is clamped instead of refused",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Options.cs",
+  "old": "return target < 0 || target >= strikes.Count ? null : strikes[target];",
+  "new": "return strikes[Math.Clamp(target, 0, strikes.Count - 1)];",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P6 near-month future matched by prefix (CRUDEOILM prices CRUDEOIL)",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Options.cs",
+  "old": ".Where(r => exact.IsMatch(r.Symbol))",
+  "new": ".Where(r => true)",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P7 an expired future prices the chain",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Options.cs",
+  "old": ".Where(r => r.Date is { } d && d >= today)",
+  "new": ".Where(r => r.Date is not null)",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P8 expired expiries listed",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Symbols.cs",
+  "old": "Where(d => d.Date is null || d.Date >= today)",
+  "new": "Where(d => true)",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P9 expiry ignores the futures/options instrument types",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Symbols.cs",
+  "old": "if (ExpiryTypes.TryGetValue((kind, exchange), out var types)) rows = rows.Where(s => types.Contains(s.Instrumenttype!));",
+  "new": "",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P10 search ranking without the shorter-symbol rule",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Symbols.cs",
+  "old": ".ThenBy(x => x.Row.Symbol.Length)",
+  "new": "",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P11 search matches only the first term",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Symbols.cs",
+  "old": "foreach (var term in terms)\n        {\n            // Each term",
+  "new": "foreach (var term in terms.Take(1))\n        {\n            // Each term",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P12 search ignores the exchange filter",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Symbols.cs",
+  "old": "if (!string.IsNullOrEmpty(r.Exchange)) rows = rows.Where(s => s.Exchange == r.Exchange);\n        foreach",
+  "new": "foreach",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P13 basket sends SELL orders before BUY",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Composite.cs",
+  "old": "var sorted = r.Orders.Where(o => o.Action.Equals(\"BUY\", StringComparison.OrdinalIgnoreCase))\n            .Concat(r.Orders.Where(o => o.Action.Equals(\"SELL\", StringComparison.OrdinalIgnoreCase))).ToList();",
+  "new": "var sorted = r.Orders.Where(o => o.Action.Equals(\"SELL\", StringComparison.OrdinalIgnoreCase))\n            .Concat(r.Orders.Where(o => o.Action.Equals(\"BUY\", StringComparison.OrdinalIgnoreCase))).ToList();",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P14 split drops the remainder",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Composite.cs",
+  "old": "if (total % size > 0) parts.Add(total % size);",
+  "new": "",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P15 split has no order limit",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Composite.cs",
+  "old": "if (parts.Count > MaxSplitOrders) return Mark(account, V1Result.Error(400, $\"Total number of orders would exceed maximum limit of {MaxSplitOrders}\"));\n        if (await UnknownSymbolAsync",
+  "new": "if (await UnknownSymbolAsync",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P16 multi-order sends SELL legs first",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Composite.cs",
+  "old": ".OrderBy(x => x.leg.Action.Equals(\"BUY\", StringComparison.OrdinalIgnoreCase) ? 0",
+  "new": ".OrderBy(x => x.leg.Action.Equals(\"BUY\", StringComparison.OrdinalIgnoreCase) ? 2",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P17 a leg's own expiry ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Composite.cs",
+  "old": "leg.ExpiryDate ?? r.ExpiryDate",
+  "new": "r.ExpiryDate",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P18 unknown symbol sent to the broker for a quote",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "if (await symbols.FindAsync(quotes!.Name, symbol, exchange.ToUpperInvariant(), ct) is null)",
+  "new": "if (await symbols.FindAsync(quotes!.Name, symbol, exchange.ToUpperInvariant(), ct) is null && symbol.Length < 0)",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P19 freeze limits never seeded",
+  "file": "src/EPTradeBot.Infrastructure/Persistence/DatabaseMigrator.cs",
+  "old": "await Seed.FreezeQuantitySeed.SeedAsync(db, logger, cancellationToken);",
+  "new": "",
+  "filter": "FullyQualifiedName~OpenAlgoApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "P20 seed rewrites a limit already set",
+  "file": "src/EPTradeBot.Infrastructure/Persistence/Seed/FreezeQuantitySeed.cs",
+  "old": "if (await db.Set<QtyFreeze>().AnyAsync(cancellationToken)) return;",
+  "new": "await db.Set<QtyFreeze>().ExecuteDeleteAsync(cancellationToken);",
+  "filter": "FullyQualifiedName~OpenAlgoApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "P21 CSV field with a comma not quoted",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Symbols.cs",
+  "old": "text.IndexOfAny([',', '\"', '\\r', '\\n']) >= 0 ?",
+  "new": "false ?",
+  "filter": "FullyQualifiedName~OpenAlgoApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "P22 split parts placed past the dispatcher's risk check (one order for the whole quantity)",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Composite.cs",
+  "old": "var results = await PlacePartsAsync(account, parts, q => PlacePartAsync(account, r.Strategy, r.Symbol, r.Exchange, r.Action, q, r.PriceType, r.Product,",
+  "new": "var results = await PlacePartsAsync(account, [total], q => PlacePartAsync(account, r.Strategy, r.Symbol, r.Exchange, r.Action, q, r.PriceType, r.Product,",
+  "filter": "FullyQualifiedName~OpenAlgoApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

@@ -35,6 +35,7 @@ public static class DatabaseMigrator
                 await db.Database.MigrateAsync(cancellationToken);
                 var applied = (await db.Database.GetAppliedMigrationsAsync(cancellationToken)).ToList();
                 logger.LogInformation("Database schema is up to date at migration {Latest} ({Count} applied).", applied.LastOrDefault(), applied.Count);
+                await Seed.FreezeQuantitySeed.SeedAsync(db, logger, cancellationToken);
                 return;
             }
             catch (Exception ex) when (attempt < options.MigrationRetryCount && ex is not OperationCanceledException)
