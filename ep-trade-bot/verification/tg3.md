@@ -866,3 +866,10 @@ tear-down with "permission denied to terminate process".
 - **The fix:** `TestHost` now stops the host first, then retries that one refusal for up to 10 seconds while the worker finishes.
 - **How it was proven:** a temporary test held a superuser session on a test database during tear-down. It passed with the fix and failed with the retry removed, with the same error as the full run. It was then deleted, because it needs the machine's `postgres` account.
 - **Not proven:** one earlier failure, of `Audit_records_cannot_be_updated_or_deleted_by_any_ef_path`, has no saved message. Its timing fits this cause, but that is not proven.
+
+**Leftover test databases: open, not reproduced.**
+
+- **What happened:** after the tear-down fix, two of six full-solution runs left a test database behind although every test passed. One came from `A_fractional_crypto_quantity_is_refused_not_truncated`. The other held migrations and seeded freeze limits but no account, which most likely means a host that failed at startup. Run project by project, three runs each, nothing was left.
+- **The check added:** tear-down now verifies that the database is gone and fails the test with its name when it is not.
+- **Since then:** six further full-solution runs passed with no database left and the check never fired.
+- **Status:** the cause is not known. If it recurs, the failing test will name the database.
