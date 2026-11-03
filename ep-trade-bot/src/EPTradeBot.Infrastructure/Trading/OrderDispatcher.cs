@@ -2,6 +2,7 @@ using EPTradeBot.Core.Entities.Core;
 using EPTradeBot.Core.Trading;
 using EPTradeBot.Infrastructure.Persistence;
 using EPTradeBot.Infrastructure.Sandbox;
+using EPTradeBot.Infrastructure.Streaming;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -20,6 +21,7 @@ public sealed class OrderDispatcher(
     SandboxEngine sandbox,
     ILiveOrderRouter live,
     AuditTrail audit,
+    OrderEvents events,
     KeyedAsyncLock<Guid> accountLocks,
     ILogger<OrderDispatcher> logger) : IOrderDispatcher
 {
@@ -65,6 +67,7 @@ public sealed class OrderDispatcher(
         }
 
         await audit.RecordOrderAsync(intent, account, result, CancellationToken.None);
+        await events.PublishAsync(intent, account, result);
         return result;
     }
 }

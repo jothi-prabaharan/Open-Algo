@@ -5,6 +5,10 @@ namespace EPTradeBot.Core.Entities.Legacy.Core;
 public sealed class SymToken
 {
     public int Id { get; set; }
+
+    /// <summary>EP Trade bot addition: the broker whose master contract this row belongs to. OpenAlgo held one broker's master at a time; accounts here may be on different brokers.</summary>
+    public string Broker { get; set; } = "";
+
     public string Symbol { get; set; } = "";
     public string Brsymbol { get; set; } = "";
     public string? Name { get; set; }

@@ -1,0 +1,150 @@
+[
+ {
+  "name": "C1 Kite order loses market protection",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "new(\"market_protection\", \"-1\"),",
+  "new": "new(\"market_protection\", \"0\"),",
+  "project": "EPTradeBot.Contract.Tests",
+  "filter": "FullyQualifiedName~ZerodhaContractTests"
+ },
+ {
+  "name": "C2 trigger-pending shown as its own status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "[\"order_status\"] = status == \"trigger pending\" ? \"open\" : status,",
+  "new": "[\"order_status\"] = status,",
+  "project": "EPTradeBot.Contract.Tests",
+  "filter": "FullyQualifiedName~ZerodhaContractTests"
+ },
+ {
+  "name": "C3 MARKET price not zeroed in the order book",
+  "file": "src/EPTradeBot.Core/Brokers/BookFormatting.cs",
+  "old": "if (string.Equals(priceType, \"MARKET\", StringComparison.OrdinalIgnoreCase)) row[\"price\"] = 0.0;",
+  "new": "",
+  "project": "EPTradeBot.Contract.Tests",
+  "filter": "FullyQualifiedName~ZerodhaContractTests"
+ },
+ {
+  "name": "C4 Python rounding replaced by decimal rounding",
+  "file": "src/EPTradeBot.Core/Brokers/BookFormatting.cs",
+  "old": "var exact = decimal.Parse(value.ToString(\"G17\", CultureInfo.InvariantCulture), NumberStyles.Float, CultureInfo.InvariantCulture);",
+  "new": "var exact = (decimal)value;",
+  "project": "EPTradeBot.Core.Tests",
+  "filter": "FullyQualifiedName~BookFormatting"
+ },
+ {
+  "name": "C5 funds derive cash from Kite's available.cash",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "var available = Float(commodity[\"net\"]) + Float(equity[\"net\"]) + used - collateral;",
+  "new": "var available = Float(commodity[\"available\"]?[\"cash\"]) + Float(equity[\"available\"]?[\"cash\"]);",
+  "project": "EPTradeBot.Contract.Tests",
+  "filter": "FullyQualifiedName~ZerodhaContractTests"
+ },
+ {
+  "name": "C6 cancel-all skips orders it should cancel",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "if (Text(row[\"order_status\"]) is not (\"open\" or \"trigger pending\") || Text(row[\"orderid\"]) is not { Length: > 0 } id) continue;\n                    var result = await orders.CancelAsync(session!, id, ct);",
+  "new": "if (Text(row[\"order_status\"]) is not \"trigger pending\" || Text(row[\"orderid\"]) is not { Length: > 0 } id) continue;\n                    var result = await orders.CancelAsync(session!, id, ct);",
+  "project": "EPTradeBot.Contract.Tests",
+  "filter": "FullyQualifiedName~ZerodhaContractTests"
+ },
+ {
+  "name": "C7 modify skips the environment guard",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "    public async Task<V1Result> ModifyOrderAsync(BrokerAccount account, ModifyOrderRequest r, CancellationToken ct)\n    {\n        if (guard.Check(account) is { } refused) return Refusal(account, refused);",
+  "new": "    public async Task<V1Result> ModifyOrderAsync(BrokerAccount account, ModifyOrderRequest r, CancellationToken ct)\n    {",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~Every_write_to_a_live_broker"
+ },
+ {
+  "name": "C8 cancel skips the environment guard",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "    public async Task<V1Result> CancelOrderAsync(BrokerAccount account, CancelOrderRequest r, CancellationToken ct)\n    {\n        if (guard.Check(account) is { } refused) return Refusal(account, refused);",
+  "new": "    public async Task<V1Result> CancelOrderAsync(BrokerAccount account, CancelOrderRequest r, CancellationToken ct)\n    {",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~Every_write_to_a_live_broker"
+ },
+ {
+  "name": "C9 API orders bypass the dispatcher",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "        var result = await dispatcher.DispatchAsync(Intent(account, r.Strategy, r.Symbol, r.Exchange, r.Action, r.Quantity, r.PriceType, r.Product, r.Price, r.TriggerPrice, r.DisclosedQuantity), ct);\n        return OrderAnswer(account, result);\n    }\n\n    public async Task<V1Result> PlaceSmartOrderAsync",
+  "new": "        var intent = Intent(account, r.Strategy, r.Symbol, r.Exchange, r.Action, r.Quantity, r.PriceType, r.Product, r.Price, r.TriggerPrice, r.DisclosedQuantity);\n        var result = account.AccountType == AccountType.PAPER ? await sandbox.PlaceAsync(intent, ct) : await live.PlaceAsync(account, intent, ct);\n        return OrderAnswer(account, result);\n    }\n\n    public async Task<V1Result> PlaceSmartOrderAsync",
+  "also": [
+   {
+    "old": "    KeyedAsyncLock<string> instrumentLocks,",
+    "new": "    KeyedAsyncLock<string> instrumentLocks,\n    ILiveOrderRouter live,"
+   }
+  ],
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~OpenAlgoApiTests"
+ },
+ {
+  "name": "C10 revoked API keys still work",
+  "file": "src/EPTradeBot.Infrastructure/Security/Secrets.cs",
+  "old": ".Where(k => k.KeyHash == hash && k.RevokedAtUtc == null)",
+  "new": ".Where(k => k.KeyHash == hash)",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~Header_key_is_accepted"
+ },
+ {
+  "name": "C11 token ciphertext not bound to its account",
+  "file": "src/EPTradeBot.Infrastructure/Security/Secrets.cs",
+  "old": "Encoding.UTF8.GetBytes($\"{accountId:N}/{field}\");",
+  "new": "Encoding.UTF8.GetBytes(\"broker-token\");",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~Stored_keys_and_tokens"
+ },
+ {
+  "name": "C12 X-API-KEY header ignored",
+  "file": "src/EPTradeBot.Api/Endpoints/OpenAlgoV1Endpoints.cs",
+  "old": "            body[\"apikey\"] = headerKey.ToString();",
+  "new": "            _ = headerKey;",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~Header_key_is_accepted"
+ },
+ {
+  "name": "C13 WebSocket subscribe allowed before authentication",
+  "file": "src/EPTradeBot.Api/Streaming/WebSocketProxy.cs",
+  "old": "        if (client.Account is not { } acc)\n        {\n            client.Send(Error(\"NOT_AUTHENTICATED\", \"You must authenticate first\", requestId));\n            return;\n        }",
+  "new": "        var acc = client.Account ?? new BrokerAccount { Broker = \"none\" };",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~Client_authenticates"
+ },
+ {
+  "name": "C14 bus ticks no longer price the quote book",
+  "file": "src/EPTradeBot.Infrastructure/Streaming/MarketDataBus.cs",
+  "old": "            quotes.Set(parsed.Exchange, parsed.Symbol, new Quote(ltp ?? previous?.Ltp, bid ?? previous?.Bid, ask ?? previous?.Ask));",
+  "new": "            _ = previous;",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~StreamingTests"
+ },
+ {
+  "name": "C15 depth tick not delivered to an LTP subscriber",
+  "file": "src/EPTradeBot.Api/Streaming/WebSocketProxy.cs",
+  "old": "            for (var m = (int)tick.Topic.Mode; m >= 1; m--)",
+  "new": "            for (var m = (int)tick.Topic.Mode; m >= (int)tick.Topic.Mode; m--)",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~Client_authenticates"
+ },
+ {
+  "name": "C16 bus falls back to another port",
+  "file": "src/EPTradeBot.Infrastructure/Streaming/MarketDataBus.cs",
+  "old": "        catch (NetMQ.NetMQException ex)\n        {\n            s.Dispose();",
+  "new": "        catch (NetMQ.NetMQException ex) when (FallbackBind(s) is false)\n        {\n            s.Dispose();",
+  "also": [
+   {
+    "old": "    protected override Task ExecuteAsync(CancellationToken stoppingToken) =>",
+    "new": "    private bool FallbackBind(SubscriberSocket s) { s.Bind($\"tcp://{options.Value.BusHost}:{options.Value.BusPort + 1}\"); return true; }\n\n    protected override Task ExecuteAsync(CancellationToken stoppingToken) =>"
+   }
+  ],
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~The_bus_never_moves"
+ },
+ {
+  "name": "C17 sandbox fills ignore bus ticks",
+  "file": "src/EPTradeBot.Infrastructure/Streaming/MarketDataBus.cs",
+  "old": "        if (pending.TryAdd(key, 0)) queue.Writer.TryWrite(key);",
+  "new": "        _ = key;",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~A_tick_fills"
+ }
+]

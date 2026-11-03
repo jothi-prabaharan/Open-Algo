@@ -16,6 +16,7 @@ public sealed class EpTradeDbContext(DbContextOptions<EpTradeDbContext> options)
 {
     public DbSet<BrokerAccount> BrokerAccounts => Set<BrokerAccount>();
     public DbSet<AccountRiskSetting> AccountRiskSettings => Set<AccountRiskSetting>();
+    public DbSet<AccountApiKey> AccountApiKeys => Set<AccountApiKey>();
     public DbSet<HostedStrategy> HostedStrategies => Set<HostedStrategy>();
     public DbSet<OrderAuditLog> OrderAuditLogs => Set<OrderAuditLog>();
     public DbSet<KillSwitchEvent> KillSwitchEvents => Set<KillSwitchEvent>();

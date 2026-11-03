@@ -13,6 +13,7 @@ internal sealed class SymTokenConfiguration : IEntityTypeConfiguration<SymToken>
         b.HasKey(x => x.Id);
         b.Property(x => x.Id).ValueGeneratedOnAdd();
         b.Property(x => x.Id).HasColumnName("id").IsRequired();
+        b.Property(x => x.Broker).HasColumnName("broker").HasMaxLength(32).IsRequired();
         b.Property(x => x.Symbol).HasColumnName("symbol").IsRequired();
         b.Property(x => x.Brsymbol).HasColumnName("brsymbol").IsRequired();
         b.Property(x => x.Name).HasColumnName("name");
@@ -33,5 +34,7 @@ internal sealed class SymTokenConfiguration : IEntityTypeConfiguration<SymToken>
         b.HasIndex(x => new { x.Symbol, x.Name }).HasDatabaseName("ix_symtoken_symbol_name");
         b.HasIndex(x => x.Brexchange).HasDatabaseName("ix_symtoken_brexchange");
         b.HasIndex(x => new { x.Symbol, x.Exchange }).HasDatabaseName("ix_symtoken_symbol_exchange");
+        b.HasIndex(x => new { x.Broker, x.Symbol, x.Exchange }).HasDatabaseName("ix_symtoken_broker_symbol_exchange");
+        b.HasIndex(x => new { x.Broker, x.Brsymbol, x.Exchange }).HasDatabaseName("ix_symtoken_broker_brsymbol_exchange");
     }
 }

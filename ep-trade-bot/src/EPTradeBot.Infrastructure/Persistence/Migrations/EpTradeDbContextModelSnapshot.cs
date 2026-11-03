@@ -269,6 +269,56 @@ namespace EPTradeBot.Infrastructure.Persistence.Migrations
                     b.ToTable("order_audit_log", "audit");
                 });
 
+            modelBuilder.Entity("EPTradeBot.Core.Entities.Core.AccountApiKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("account_id");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<string>("KeyHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character(64)")
+                        .HasColumnName("key_hash")
+                        .IsFixedLength();
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("label");
+
+                    b.Property<DateTime?>("RevokedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("revoked_at_utc");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id")
+                        .HasName("pk_account_api_keys");
+
+                    b.HasIndex("AccountId")
+                        .HasDatabaseName("ix_account_api_keys_account_id");
+
+                    b.HasIndex("KeyHash")
+                        .IsUnique()
+                        .HasDatabaseName("ux_account_api_keys_key_hash");
+
+                    b.ToTable("account_api_keys", "core");
+                });
+
             modelBuilder.Entity("EPTradeBot.Core.Entities.Core.AccountRiskSetting", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3561,6 +3611,12 @@ namespace EPTradeBot.Infrastructure.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("brexchange");
 
+                    b.Property<string>("Broker")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("broker");
+
                     b.Property<string>("Brsymbol")
                         .IsRequired()
                         .HasColumnType("text")
@@ -3633,6 +3689,12 @@ namespace EPTradeBot.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("Symbol", "Name")
                         .HasDatabaseName("ix_symtoken_symbol_name");
+
+                    b.HasIndex("Broker", "Brsymbol", "Exchange")
+                        .HasDatabaseName("ix_symtoken_broker_brsymbol_exchange");
+
+                    b.HasIndex("Broker", "Symbol", "Exchange")
+                        .HasDatabaseName("ix_symtoken_broker_symbol_exchange");
 
                     b.ToTable("symtoken", "core");
                 });
@@ -6046,6 +6108,16 @@ namespace EPTradeBot.Infrastructure.Persistence.Migrations
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_order_audit_log_broker_accounts_account_id");
+                });
+
+            modelBuilder.Entity("EPTradeBot.Core.Entities.Core.AccountApiKey", b =>
+                {
+                    b.HasOne("EPTradeBot.Core.Entities.Core.BrokerAccount", null)
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_account_api_keys_broker_accounts_account_id");
                 });
 
             modelBuilder.Entity("EPTradeBot.Core.Entities.Core.AccountRiskSetting", b =>

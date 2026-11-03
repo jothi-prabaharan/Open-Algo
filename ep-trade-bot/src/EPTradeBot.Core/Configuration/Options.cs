@@ -58,6 +58,17 @@ public sealed class StreamingOptions
     /// <summary>The bus port. Fixed by configuration; it never drifts to another port at runtime.</summary>
     [Range(1024, 65535)]
     public int BusPort { get; set; } = 5555;
+
+    /// <summary>Address the WebSocket proxy listens on. Loopback by default: put it behind the reverse proxy to expose it.</summary>
+    [Required(AllowEmptyStrings = false)]
+    public string WebSocketHost { get; set; } = "127.0.0.1";
+
+    /// <summary>Address of the market-data bus. The proxy's SUB socket is the only one that binds it; every publisher connects.</summary>
+    [Required(AllowEmptyStrings = false)]
+    public string BusHost { get; set; } = "127.0.0.1";
+
+    /// <summary>Starts the bus and the proxy. Off only in tests that do not need them.</summary>
+    public bool Enabled { get; set; } = true;
 }
 
 /// <summary>
@@ -71,4 +82,22 @@ public sealed class ManagementOptions
 
     [Required(AllowEmptyStrings = false), StringLength(256, MinimumLength = 32, ErrorMessage = "Management:AdminToken must be at least 32 characters.")]
     public string AdminToken { get; set; } = "";
+}
+
+/// <summary>Which broker plugins load, and the keys each one reads when it is called.</summary>
+public sealed class BrokerOptions
+{
+    public const string Section = "Brokers";
+
+    /// <summary>Plugin names to enable (OpenAlgo's VALID_BROKERS). A plugin not listed is not offered.</summary>
+    public List<string> Enabled { get; set; } = [];
+
+    /// <summary>Per broker, the application keys it needs (for example ApiKey, ApiSecret). Read on every call.</summary>
+    public Dictionary<string, Dictionary<string, string>> Keys { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Optional per-broker base address override, for a broker's own test environment.</summary>
+    public Dictionary<string, string> BaseUrls { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    [System.ComponentModel.DataAnnotations.Range(1, 120)]
+    public int TimeoutSeconds { get; set; } = 15;
 }

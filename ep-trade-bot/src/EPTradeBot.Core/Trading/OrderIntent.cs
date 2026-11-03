@@ -27,6 +27,7 @@ public sealed record OrderIntent
 
     public decimal Price { get; init; }
     public decimal TriggerPrice { get; init; }
+    public int DisclosedQuantity { get; init; }
     public string Strategy { get; init; } = "";
     public string Actor { get; init; } = "";
     public string? CorrelationId { get; init; }
@@ -58,7 +59,8 @@ public enum DispatchStatus
     Failed,
 }
 
-public sealed record DispatchResult(DispatchStatus Status, string Message, string? OrderId = null, string? Code = null)
+/// <param name="HttpStatus">For a failure at a broker, the status OpenAlgo would answer /api/v1 with.</param>
+public sealed record DispatchResult(DispatchStatus Status, string Message, string? OrderId = null, string? Code = null, int? HttpStatus = null)
 {
     public static DispatchResult Refuse(Refusal r) => new(DispatchStatus.Refused, r.Message, Code: r.Code);
 }

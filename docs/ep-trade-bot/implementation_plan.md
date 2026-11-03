@@ -1,7 +1,8 @@
 # EP Trade bot: Implementation Plan (OpenAlgo to .NET 10 / PostgreSQL / Angular)
 
 Status: **approved 2026-11-02, defaults accepted for D1 to D8.** Task Groups 1 and 2 complete
-([TG1](../../ep-trade-bot/verification/tg1.md), [TG2](../../ep-trade-bot/verification/tg2.md)); Task Group 3 next. Each Task Group below
+([TG1](../../ep-trade-bot/verification/tg1.md), [TG2](../../ep-trade-bot/verification/tg2.md)); Task Group 3 in progress, first pass verified
+([TG3](../../ep-trade-bot/verification/tg3.md)). Each Task Group below
 ends at a verification gate and a review stop; nothing in the next group starts
 until the previous group's verification artifact is approved.
 
@@ -234,7 +235,8 @@ run on PostgreSQL 17 proving:
    and response shapes. The API key is accepted in the body or in `X-API-KEY`,
    because external platforms cannot set headers. The final pair count is
    enumerated from the Flask app's URL map, and the brief's figure of 57 is
-   reconciled in the artifact.
+   reconciled in the artifact. *Result (TG3):* 76 pairs, 74 of them
+   application endpoints; 31 of those belong with TG4 features.
 3. Contract fixtures: recorded request/response pairs from the Python
    implementation, replayed against the .NET endpoints.
 4. Six reference broker adapters (D4), then the remaining ones in batches.
@@ -242,6 +244,9 @@ run on PostgreSQL 17 proving:
    connects. There is no port fallback. A WebSocket proxy on 8765 keeps the same
    client protocol (auth, subscribe and unsubscribe, LTP/Quote/Depth modes,
    throttling). Order updates go out over SignalR to the Angular app.
+   *Correction (TG3):* OpenAlgo has since removed server-side tick throttling
+   because it dropped ticks in bursts; the port forwards every tick and bounds
+   each client's queue instead.
    `/websocket/test` equivalents are kept for checking a feed.
 
 **Verification Gate 3:** a contract-test report (each endpoint, pass or fail

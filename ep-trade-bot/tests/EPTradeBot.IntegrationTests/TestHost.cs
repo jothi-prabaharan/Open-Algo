@@ -16,22 +16,56 @@ public sealed class TestHost : IAsyncDisposable
     public const string AdminToken = "integration-test-admin-token-0000000000";
 
     private readonly WebApplicationFactory<Program> _factory;
+    private readonly string _connectionString;
 
-    public TestHost(string environment)
+    public const string AppKey = "integration-test-app-key-000000000000000000";
+    public const string ApiKeyPepper = "integration-test-api-key-pepper-0000000000";
+
+    public TestHost(string environment, Action<IWebHostBuilder>? configure = null)
     {
         var root = Environment.GetEnvironmentVariable(PostgresFactAttribute.Variable)!;
         var cs = new NpgsqlConnectionStringBuilder(root) { Database = $"ep_trade_test_{Guid.NewGuid():N}" }.ConnectionString;
+        _connectionString = cs;
         _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(b =>
         {
             b.UseEnvironment(environment);
             b.UseSetting("Database:ConnectionString", cs);
             b.UseSetting("Management:AdminToken", AdminToken);
+            b.UseSetting("Security:AppKey", AppKey);
+            b.UseSetting("Security:ApiKeyPepper", ApiKeyPepper);
+            // Hosts run side by side in tests; each gets its own bus port.
+            BusPort = FreePort();
+            b.UseSetting("Streaming:BusPort", BusPort.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            configure?.Invoke(b);
         });
-        Admin = _factory.CreateClient();
+        try
+        {
+            Admin = _factory.CreateClient();
+        }
+        catch
+        {
+            // Startup failed (the case some tests are about): still drop the database it created.
+            DropDatabase().AsTask().GetAwaiter().GetResult();
+            throw;
+        }
+
         Admin.DefaultRequestHeaders.Add("X-Admin-Token", AdminToken);
     }
 
     public HttpClient Admin { get; }
+
+    public int BusPort { get; private set; }
+
+    public Microsoft.AspNetCore.TestHost.TestServer Server => _factory.Server;
+
+    public static int FreePort()
+    {
+        var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0);
+        listener.Start();
+        var port = ((System.Net.IPEndPoint)listener.LocalEndpoint).Port;
+        listener.Stop();
+        return port;
+    }
 
     public IServiceProvider Services => _factory.Services;
 
@@ -58,12 +92,17 @@ public sealed class TestHost : IAsyncDisposable
     public void SetQuote(string exchange, string symbol, decimal ltp) =>
         Get<QuoteBook>().Set(exchange, symbol, new EPTradeBot.Core.Trading.Quote(ltp));
 
+    /// <summary>Built from the connection string alone, so a host that failed to start still drops its database.</summary>
+    private async ValueTask DropDatabase()
+    {
+        var options = new DbContextOptionsBuilder<EpTradeDbContext>().UseNpgsql(_connectionString).Options;
+        await using var db = new EpTradeDbContext(options);
+        await db.Database.EnsureDeletedAsync();
+    }
+
     public async ValueTask DisposeAsync()
     {
-        await using (var db = NewDb())
-        {
-            await db.Database.EnsureDeletedAsync();
-        }
+        await DropDatabase();
 
         Admin.Dispose();
         await _factory.DisposeAsync();

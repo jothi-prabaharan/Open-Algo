@@ -232,6 +232,13 @@ public sealed class SandboxEngine(
         return await db.Set<SandboxOrder>().AsNoTracking().Where(o => o.UserId == userId).OrderByDescending(o => o.Id).ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<SandboxTrade>> GetTradesAsync(Guid accountId, CancellationToken cancellationToken = default)
+    {
+        await using var db = await contexts.CreateDbContextAsync(cancellationToken);
+        var userId = UserId(accountId);
+        return await db.Set<SandboxTrade>().AsNoTracking().Where(t => t.UserId == userId).OrderByDescending(t => t.Id).ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<SandboxPosition>> GetPositionsAsync(Guid accountId, CancellationToken cancellationToken = default)
     {
         await using var db = await contexts.CreateDbContextAsync(cancellationToken);

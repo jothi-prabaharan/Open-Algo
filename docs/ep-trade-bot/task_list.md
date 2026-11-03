@@ -1,7 +1,7 @@
 # EP Trade bot: Task List
 
 Status: plan approved 2026-11-02 with the default for every decision (D1 to D8).
-Task Groups 1 and 2 done; evidence in [`tg1.md`](../../ep-trade-bot/verification/tg1.md) and [`tg2.md`](../../ep-trade-bot/verification/tg2.md).
+Task Groups 1 and 2 done; Task Group 3 in progress (first pass verified). Evidence in [`tg1.md`](../../ep-trade-bot/verification/tg1.md), [`tg2.md`](../../ep-trade-bot/verification/tg2.md) and [`tg3.md`](../../ep-trade-bot/verification/tg3.md).
 
 ## Pre-flight
 - [x] Decisions D1 to D8 answered (defaults accepted)
@@ -28,16 +28,22 @@ Task Groups 1 and 2 done; evidence in [`tg1.md`](../../ep-trade-bot/verification
 - [ ] Deferred to later groups: sandbox GTT, CNC holdings and T+1, catch-up after restart, auto square-off timers (TG4); admin token replaced by login (TG5)
 
 ## TG3: Brokers, /api/v1, streaming
-- [ ] Enumerate Flask `/api/v1` URL map; reconcile count
-- [ ] `IBrokerPlugin` contract and test harness
-- [ ] All `/api/v1` endpoints with recorded-fixture contract tests
-- [ ] Reference adapters: Zerodha, Dhan, Dhan Sandbox, Angel One, Upstox, Fyers, Delta Exchange
+- [x] Enumerate Flask `/api/v1` URL map; reconcile count (76 pairs, 74 application endpoints; the brief's 57 is out of date)
+- [x] `IBrokerPlugin` contract, discovery gated by `Brokers:Enabled`, keys read when called, recorded-fixture harness
+- [x] Per-account API keys (hashed), encrypted broker tokens bound to their account
+- [x] 18 of 74 `/api/v1` pairs with contract tests against the Python implementation (32 Zerodha fixtures)
+- [ ] Remaining 25 broker and market-data pairs (basket, split, multiquotes, history, symbol, search, expiry, options, GTT, margin, market calendar, chart, pnl)
+- [x] Zerodha (contract-verified; MCX, history, GTT, margin, login and ticker feed not yet)
+- [ ] Dhan, Dhan Sandbox, Angel One, Upstox, Fyers, Delta Exchange
 - [ ] Remaining adapters in batches (tracked per broker: contract-verified / live-verified)
-- [ ] NetMQ bus (SUB binds, PUBs connect) and 8765 WebSocket proxy
-- [ ] SignalR order-update stream
-- [ ] Gate 3 artifact
+- [x] NetMQ bus (SUB binds, PUBs connect, startup fails on a taken port) and 8765 WebSocket proxy (OpenAlgo protocol)
+- [ ] Broker market-data feed adapters onto the bus
+- [x] SignalR order-update stream (and WebSocket `subscribe_orders`)
+- [x] Gate 3 artifact, first pass (17 mutation checks)
+- [ ] Gate 3 artifact, final
 
 ## TG4: Strategy host, Flow, Action Center, agent, MCP, tools
+- [ ] The 31 /api/v1 pairs that sit on TG4 features (option greeks, portfolio, SIP, sector rotation, strategy, Telegram, WhatsApp)
 - [ ] Quartz.NET with IST schedules and weekday controls
 - [ ] Hosted strategy process supervisor
 - [ ] Flow engine and node types

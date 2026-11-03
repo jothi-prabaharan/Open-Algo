@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EPTradeBot.Core\EPTradeBot.Core.csproj" />
+    <ProjectReference Include="..\..\src\EPTradeBot.Infrastructure\EPTradeBot.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\EPTradeBot.Api\EPTradeBot.Api.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\EPTradeBot.IntegrationTests\TestHost.cs" Link="Shared\TestHost.cs" />
+    <Compile Include="..\EPTradeBot.IntegrationTests\PostgresFactAttribute.cs" Link="Shared\PostgresFactAttribute.cs" />
+    <Compile Include="..\EPTradeBot.IntegrationTests\FakeBroker.cs" Link="Shared\FakeBroker.cs" />
+    <None Include="..\..\tools\contract-fixtures\*.fixtures.json" Link="Fixtures\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+</Project>

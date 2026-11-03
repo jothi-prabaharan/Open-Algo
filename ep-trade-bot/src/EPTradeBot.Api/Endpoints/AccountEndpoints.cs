@@ -140,6 +140,6 @@ internal static class AccountEndpoints
             extensions: new Dictionary<string, object?> { ["code"] = result.Code }),
     };
 
-    private static IResult NotFound(string detail = "This account does not exist.") =>
+    internal static IResult NotFound(string detail = "This account does not exist.") =>
         Results.Problem(title: "Not found.", detail: detail, statusCode: StatusCodes.Status404NotFound);
 }

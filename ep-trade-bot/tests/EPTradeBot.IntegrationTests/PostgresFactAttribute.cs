@@ -17,3 +17,15 @@ public sealed class PostgresFactAttribute : FactAttribute
         }
     }
 }
+
+/// <summary>A data-driven test that needs a PostgreSQL server; skipped, never passed, without one.</summary>
+public sealed class PostgresTheoryAttribute : TheoryAttribute
+{
+    public PostgresTheoryAttribute()
+    {
+        if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(PostgresFactAttribute.Variable)))
+        {
+            Skip = $"Set {PostgresFactAttribute.Variable} to a PostgreSQL connection string to run database tests.";
+        }
+    }
+}

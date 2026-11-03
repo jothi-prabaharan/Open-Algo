@@ -1,0 +1,2834 @@
+{
+  "broker": "zerodha",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "779521::::3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "408065::::1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY26NOVFUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "13238786::::51714",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "NIFTY 50",
+      "name": "NIFTY 50",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE",
+      "token": "256265::::1001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    }
+  ],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "auth_missing_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "none",
+      "request": {},
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": {
+            "apikey": [
+              "Missing data for required field."
+            ]
+          },
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "auth_header_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "header",
+      "request": {},
+      "broker": {
+        "GET /user/margins": {
+          "body": {
+            "status": "success",
+            "data": {
+              "equity": {
+                "net": 99725.05,
+                "available": {
+                  "cash": 100000.0,
+                  "collateral": 1500.0,
+                  "intraday_payin": 0,
+                  "opening_balance": 100000.0,
+                  "live_balance": 99725.05
+                },
+                "utilised": {
+                  "debits": 274.95,
+                  "m2m_realised": -10.5,
+                  "m2m_unrealised": 43.3333,
+                  "option_premium": 0,
+                  "span": 0,
+                  "exposure": 0
+                }
+              },
+              "commodity": {
+                "net": 0,
+                "available": {
+                  "cash": 0,
+                  "collateral": 0,
+                  "intraday_payin": 0,
+                  "opening_balance": 0,
+                  "live_balance": 0
+                },
+                "utilised": {
+                  "debits": 0,
+                  "m2m_realised": 0,
+                  "m2m_unrealised": 0,
+                  "option_premium": 0,
+                  "span": 0,
+                  "exposure": 0
+                }
+              }
+            }
+          }
+        },
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "SBIN",
+                  "exchange": "NSE",
+                  "product": "MIS",
+                  "quantity": 10,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 10,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 10,
+                  "day_sell_quantity": 0,
+                  "average_price": 801.1234,
+                  "last_price": 805.456,
+                  "pnl": 43.3333,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "NIFTY26NOVFUT",
+                  "exchange": "NFO",
+                  "product": "NRML",
+                  "quantity": -75,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 0,
+                  "sell_quantity": 75,
+                  "day_buy_quantity": 0,
+                  "day_sell_quantity": 75,
+                  "average_price": 24005.5,
+                  "last_price": 23990,
+                  "pnl": 1162.5,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "INFY",
+                  "exchange": "NSE",
+                  "product": "CNC",
+                  "quantity": 0,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 5,
+                  "sell_quantity": 5,
+                  "day_buy_quantity": 5,
+                  "day_sell_quantity": 5,
+                  "average_price": 0,
+                  "last_price": 1499,
+                  "pnl": -2.5,
+                  "buy_value": 7500.0,
+                  "sell_value": 7497.5,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        },
+        "GET /quote/ltp": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "instrument_token": 779521,
+                "last_price": 806.0
+              },
+              "NFO:NIFTY26NOVFUT": {
+                "instrument_token": 13238786,
+                "last_price": 23980.25
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": {
+            "apikey": [
+              "Missing data for required field."
+            ]
+          },
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_missing_fields",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'strategy': ['Missing data for required field.'], 'exchange': ['Missing data for required field.'], 'action': ['Missing data for required field.'], 'quantity': ['Missing data for required field.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_bad_action",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "HOLD",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'action': ['Must be one of: BUY, SELL, buy, sell.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_zero_quantity",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'quantity': ['Quantity must be a positive number.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_bad_exchange",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "LSE",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'exchange': ['Must be one of: NSE, NFO, CDS, BSE, BFO, BCD, MCX, NCDEX, NCO, NSE_INDEX, BSE_INDEX, MCX_INDEX, GLOBAL_INDEX, CRYPTO.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000000"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000000",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "SBIN",
+            "exchange": "NSE",
+            "transaction_type": "BUY",
+            "order_type": "MARKET",
+            "quantity": "10",
+            "product": "MIS",
+            "price": "0.0",
+            "trigger_price": "0.0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgo73b4ea9e80cf"
+          }
+        }
+      ],
+      "ignore": [
+        "sent[*].form.tag"
+      ]
+    },
+    {
+      "name": "placeorder_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "INFY",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": 5,
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": 1500.5,
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000000"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000000",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "INFY",
+            "exchange": "NSE",
+            "transaction_type": "SELL",
+            "order_type": "LIMIT",
+            "quantity": "5",
+            "product": "CNC",
+            "price": "1500.5",
+            "trigger_price": "0.0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgo144f1a956fde"
+          }
+        }
+      ],
+      "ignore": [
+        "sent[*].form.tag"
+      ]
+    },
+    {
+      "name": "placeorder_sl_futures",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "SL",
+        "product": "NRML",
+        "price": "24010",
+        "trigger_price": "24000",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000000"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000000",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "NIFTY26NOVFUT",
+            "exchange": "NFO",
+            "transaction_type": "BUY",
+            "order_type": "SL",
+            "quantity": "75",
+            "product": "NRML",
+            "price": "24010.0",
+            "trigger_price": "24000.0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgoeb493067738b"
+          }
+        }
+      ],
+      "ignore": [
+        "sent[*].form.tag"
+      ]
+    },
+    {
+      "name": "placeorder_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/regular": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "message": "Insufficient funds. Required margin is 8054.50 but available margin is 100.00.",
+            "error_type": "InputException"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Insufficient funds. Required margin is 8054.50 but available margin is 100.00.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "SBIN",
+            "exchange": "NSE",
+            "transaction_type": "BUY",
+            "order_type": "MARKET",
+            "quantity": "10",
+            "product": "MIS",
+            "price": "0.0",
+            "trigger_price": "0.0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgo7ff19324137f"
+          }
+        }
+      ],
+      "ignore": [
+        "sent[*].form.tag"
+      ]
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000000"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000000",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "None",
+            "exchange": "NSE",
+            "transaction_type": "BUY",
+            "order_type": "MARKET",
+            "quantity": "1",
+            "product": "MIS",
+            "price": "0.0",
+            "trigger_price": "0.0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgo0c0d8430468d"
+          }
+        }
+      ],
+      "ignore": [
+        "sent[*].form.tag"
+      ]
+    },
+    {
+      "name": "modifyorder",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "151220000000000",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /orders/regular/151220000000000": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000000"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000000",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.kite.trade",
+          "path": "/orders/regular/151220000000000",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "order_type": "LIMIT",
+            "quantity": "12",
+            "price": "801.0",
+            "disclosed_quantity": "0",
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "151220000000000",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /orders/regular/151220000000000": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000000"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000000",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.kite.trade",
+          "path": "/orders/regular/151220000000000",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_missing_id",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'orderid': ['Missing data for required field.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_id": "151220000000000",
+                "exchange": "NSE",
+                "tradingsymbol": "SBIN",
+                "transaction_type": "BUY",
+                "order_type": "LIMIT",
+                "product": "MIS",
+                "quantity": 10,
+                "filled_quantity": 0,
+                "pending_quantity": 10,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 800.5,
+                "trigger_price": 0,
+                "average_price": 0,
+                "status": "OPEN",
+                "order_timestamp": "2026-11-03 09:20:01",
+                "tag": "openalgo"
+              },
+              {
+                "order_id": "151220000000001",
+                "exchange": "NSE",
+                "tradingsymbol": "INFY",
+                "transaction_type": "SELL",
+                "order_type": "MARKET",
+                "product": "CNC",
+                "quantity": 5,
+                "filled_quantity": 5,
+                "pending_quantity": 0,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 0,
+                "trigger_price": 0,
+                "average_price": 1500.25,
+                "status": "COMPLETE",
+                "order_timestamp": "2026-11-03 09:21:11",
+                "tag": null
+              },
+              {
+                "order_id": "151220000000002",
+                "exchange": "NFO",
+                "tradingsymbol": "NIFTY26NOVFUT",
+                "transaction_type": "BUY",
+                "order_type": "SL",
+                "product": "NRML",
+                "quantity": 75,
+                "filled_quantity": 0,
+                "pending_quantity": 75,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 24010,
+                "trigger_price": 24000,
+                "average_price": 0,
+                "status": "TRIGGER PENDING",
+                "order_timestamp": "2026-11-03 09:22:00",
+                "tag": null
+              },
+              {
+                "order_id": "151220000000005",
+                "exchange": "NSE",
+                "tradingsymbol": "INFY",
+                "transaction_type": "BUY",
+                "order_type": "MARKET",
+                "product": "MIS",
+                "quantity": 2,
+                "filled_quantity": 2,
+                "pending_quantity": 0,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 1499.95,
+                "trigger_price": 0,
+                "average_price": 1499.95,
+                "status": "COMPLETE",
+                "order_timestamp": "2026-11-03 09:24:00",
+                "tag": null
+              },
+              {
+                "order_id": "151220000000003",
+                "exchange": "NSE",
+                "tradingsymbol": "SBIN",
+                "transaction_type": "SELL",
+                "order_type": "LIMIT",
+                "product": "MIS",
+                "quantity": 1,
+                "filled_quantity": 0,
+                "pending_quantity": 0,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 1,
+                "price": 900.123,
+                "trigger_price": 0,
+                "average_price": 0,
+                "status": "REJECTED",
+                "order_timestamp": "2026-11-03 09:23:00",
+                "tag": null
+              }
+            ]
+          }
+        },
+        "DELETE /orders/regular/151220000000000": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000000"
+            }
+          }
+        },
+        "DELETE /orders/regular/151220000000002": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000002"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "151220000000000",
+            "151220000000002"
+          ],
+          "failed_cancellations": [],
+          "message": "Canceled 2 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/orders",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "api.kite.trade",
+          "path": "/orders/regular/151220000000000",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "api.kite.trade",
+          "path": "/orders/regular/151220000000002",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "SBIN",
+                  "exchange": "NSE",
+                  "product": "MIS",
+                  "quantity": 10,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 10,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 10,
+                  "day_sell_quantity": 0,
+                  "average_price": 801.1234,
+                  "last_price": 805.456,
+                  "pnl": 43.3333,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "NIFTY26NOVFUT",
+                  "exchange": "NFO",
+                  "product": "NRML",
+                  "quantity": -75,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 0,
+                  "sell_quantity": 75,
+                  "day_buy_quantity": 0,
+                  "day_sell_quantity": 75,
+                  "average_price": 24005.5,
+                  "last_price": 23990,
+                  "pnl": 1162.5,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "INFY",
+                  "exchange": "NSE",
+                  "product": "CNC",
+                  "quantity": 0,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 5,
+                  "sell_quantity": 5,
+                  "day_buy_quantity": 5,
+                  "day_sell_quantity": 5,
+                  "average_price": 0,
+                  "last_price": 1499,
+                  "pnl": -2.5,
+                  "buy_value": 7500.0,
+                  "sell_value": 7497.5,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        },
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000000"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/portfolio/positions",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "SBIN",
+            "exchange": "NSE",
+            "transaction_type": "SELL",
+            "order_type": "MARKET",
+            "quantity": "10",
+            "product": "MIS",
+            "price": "0",
+            "trigger_price": "0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgof3f3a709016b"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "NIFTY26NOVFUT",
+            "exchange": "NFO",
+            "transaction_type": "BUY",
+            "order_type": "MARKET",
+            "quantity": "75",
+            "product": "NRML",
+            "price": "0",
+            "trigger_price": "0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgo89d2f3ca87dd"
+          }
+        }
+      ],
+      "ignore": [
+        "sent[*].form.tag"
+      ]
+    },
+    {
+      "name": "placesmartorder_reduce",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "position_size": "4",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "SBIN",
+                  "exchange": "NSE",
+                  "product": "MIS",
+                  "quantity": 10,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 10,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 10,
+                  "day_sell_quantity": 0,
+                  "average_price": 801.1234,
+                  "last_price": 805.456,
+                  "pnl": 43.3333,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "NIFTY26NOVFUT",
+                  "exchange": "NFO",
+                  "product": "NRML",
+                  "quantity": -75,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 0,
+                  "sell_quantity": 75,
+                  "day_buy_quantity": 0,
+                  "day_sell_quantity": 75,
+                  "average_price": 24005.5,
+                  "last_price": 23990,
+                  "pnl": 1162.5,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "INFY",
+                  "exchange": "NSE",
+                  "product": "CNC",
+                  "quantity": 0,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 5,
+                  "sell_quantity": 5,
+                  "day_buy_quantity": 5,
+                  "day_sell_quantity": 5,
+                  "average_price": 0,
+                  "last_price": 1499,
+                  "pnl": -2.5,
+                  "buy_value": 7500.0,
+                  "sell_value": 7497.5,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        },
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000000"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000000",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/portfolio/positions",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "SBIN",
+            "exchange": "NSE",
+            "transaction_type": "SELL",
+            "order_type": "MARKET",
+            "quantity": "6",
+            "product": "MIS",
+            "price": "0.0",
+            "trigger_price": "0.0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgo49ad8ee453c8"
+          }
+        }
+      ],
+      "ignore": [
+        "sent[*].form.tag"
+      ]
+    },
+    {
+      "name": "placesmartorder_matched",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "position_size": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "SBIN",
+                  "exchange": "NSE",
+                  "product": "MIS",
+                  "quantity": 10,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 10,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 10,
+                  "day_sell_quantity": 0,
+                  "average_price": 801.1234,
+                  "last_price": 805.456,
+                  "pnl": 43.3333,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "NIFTY26NOVFUT",
+                  "exchange": "NFO",
+                  "product": "NRML",
+                  "quantity": -75,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 0,
+                  "sell_quantity": 75,
+                  "day_buy_quantity": 0,
+                  "day_sell_quantity": 75,
+                  "average_price": 24005.5,
+                  "last_price": 23990,
+                  "pnl": 1162.5,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "INFY",
+                  "exchange": "NSE",
+                  "product": "CNC",
+                  "quantity": 0,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 5,
+                  "sell_quantity": 5,
+                  "day_buy_quantity": 5,
+                  "day_sell_quantity": 5,
+                  "average_price": 0,
+                  "last_price": 1499,
+                  "pnl": -2.5,
+                  "buy_value": 7500.0,
+                  "sell_value": 7497.5,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "Positions Already Matched. No Action needed.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/portfolio/positions",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_id": "151220000000000",
+                "exchange": "NSE",
+                "tradingsymbol": "SBIN",
+                "transaction_type": "BUY",
+                "order_type": "LIMIT",
+                "product": "MIS",
+                "quantity": 10,
+                "filled_quantity": 0,
+                "pending_quantity": 10,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 800.5,
+                "trigger_price": 0,
+                "average_price": 0,
+                "status": "OPEN",
+                "order_timestamp": "2026-11-03 09:20:01",
+                "tag": "openalgo"
+              },
+              {
+                "order_id": "151220000000001",
+                "exchange": "NSE",
+                "tradingsymbol": "INFY",
+                "transaction_type": "SELL",
+                "order_type": "MARKET",
+                "product": "CNC",
+                "quantity": 5,
+                "filled_quantity": 5,
+                "pending_quantity": 0,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 0,
+                "trigger_price": 0,
+                "average_price": 1500.25,
+                "status": "COMPLETE",
+                "order_timestamp": "2026-11-03 09:21:11",
+                "tag": null
+              },
+              {
+                "order_id": "151220000000002",
+                "exchange": "NFO",
+                "tradingsymbol": "NIFTY26NOVFUT",
+                "transaction_type": "BUY",
+                "order_type": "SL",
+                "product": "NRML",
+                "quantity": 75,
+                "filled_quantity": 0,
+                "pending_quantity": 75,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 24010,
+                "trigger_price": 24000,
+                "average_price": 0,
+                "status": "TRIGGER PENDING",
+                "order_timestamp": "2026-11-03 09:22:00",
+                "tag": null
+              },
+              {
+                "order_id": "151220000000005",
+                "exchange": "NSE",
+                "tradingsymbol": "INFY",
+                "transaction_type": "BUY",
+                "order_type": "MARKET",
+                "product": "MIS",
+                "quantity": 2,
+                "filled_quantity": 2,
+                "pending_quantity": 0,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 1499.95,
+                "trigger_price": 0,
+                "average_price": 1499.95,
+                "status": "COMPLETE",
+                "order_timestamp": "2026-11-03 09:24:00",
+                "tag": null
+              },
+              {
+                "order_id": "151220000000003",
+                "exchange": "NSE",
+                "tradingsymbol": "SBIN",
+                "transaction_type": "SELL",
+                "order_type": "LIMIT",
+                "product": "MIS",
+                "quantity": 1,
+                "filled_quantity": 0,
+                "pending_quantity": 0,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 1,
+                "price": 900.123,
+                "trigger_price": 0,
+                "average_price": 0,
+                "status": "REJECTED",
+                "order_timestamp": "2026-11-03 09:23:00",
+                "tag": null
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "151220000000000",
+                "price": 800.5,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 10,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 09:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "151220000000001",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": 5,
+                "symbol": "INFY",
+                "timestamp": "2026-11-03 09:21:11",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NFO",
+                "order_status": "open",
+                "orderid": "151220000000002",
+                "price": 24010.0,
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": 75,
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "2026-11-03 09:22:00",
+                "trigger_price": 24000.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "151220000000005",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "MIS",
+                "quantity": 2,
+                "symbol": "INFY",
+                "timestamp": "2026-11-03 09:24:00",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "rejected",
+                "orderid": "151220000000003",
+                "price": 900.12,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 1,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 09:23:00",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 3,
+              "total_completed_orders": 2,
+              "total_open_orders": 2,
+              "total_rejected_orders": 1,
+              "total_sell_orders": 2
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/orders",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /trades": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "trade_id": "10000001",
+                "order_id": "151220000000001",
+                "exchange": "NSE",
+                "tradingsymbol": "INFY",
+                "product": "CNC",
+                "transaction_type": "SELL",
+                "quantity": 5,
+                "average_price": 1500.25,
+                "fill_timestamp": "2026-11-03 09:21:12",
+                "order_timestamp": "09:21:11"
+              },
+              {
+                "trade_id": "10000002",
+                "order_id": "151220000000004",
+                "exchange": "NFO",
+                "tradingsymbol": "NIFTY26NOVFUT",
+                "product": "NRML",
+                "transaction_type": "BUY",
+                "quantity": 75,
+                "average_price": 24005.5,
+                "fill_timestamp": null,
+                "order_timestamp": "2026-11-03 09:25:00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "SELL",
+              "average_price": 1500.25,
+              "exchange": "NSE",
+              "orderid": "151220000000001",
+              "product": "CNC",
+              "quantity": 5,
+              "symbol": "INFY",
+              "timestamp": "2026-11-03 09:21:12",
+              "trade_value": 7501.25,
+              "tradeid": "10000001"
+            },
+            {
+              "action": "BUY",
+              "average_price": 24005.5,
+              "exchange": "NFO",
+              "orderid": "151220000000004",
+              "product": "NRML",
+              "quantity": 75,
+              "symbol": "NIFTY25NOV26FUT",
+              "timestamp": "2026-11-03 09:25:00",
+              "trade_value": 1800412.5,
+              "tradeid": "10000002"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/trades",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "SBIN",
+                  "exchange": "NSE",
+                  "product": "MIS",
+                  "quantity": 10,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 10,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 10,
+                  "day_sell_quantity": 0,
+                  "average_price": 801.1234,
+                  "last_price": 805.456,
+                  "pnl": 43.3333,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "NIFTY26NOVFUT",
+                  "exchange": "NFO",
+                  "product": "NRML",
+                  "quantity": -75,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 0,
+                  "sell_quantity": 75,
+                  "day_buy_quantity": 0,
+                  "day_sell_quantity": 75,
+                  "average_price": 24005.5,
+                  "last_price": 23990,
+                  "pnl": 1162.5,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "INFY",
+                  "exchange": "NSE",
+                  "product": "CNC",
+                  "quantity": 0,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 5,
+                  "sell_quantity": 5,
+                  "day_buy_quantity": 5,
+                  "day_sell_quantity": 5,
+                  "average_price": 0,
+                  "last_price": 1499,
+                  "pnl": -2.5,
+                  "buy_value": 7500.0,
+                  "sell_value": 7497.5,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "801.12",
+              "exchange": "NSE",
+              "ltp": 805.46,
+              "pnl": 43.33,
+              "product": "MIS",
+              "quantity": 10,
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": "24005.50",
+              "exchange": "NFO",
+              "ltp": 23990.0,
+              "pnl": 1162.5,
+              "product": "NRML",
+              "quantity": -75,
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": "0.00",
+              "exchange": "NSE",
+              "ltp": 1499.0,
+              "pnl": -2.5,
+              "product": "CNC",
+              "quantity": 0,
+              "symbol": "INFY"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/portfolio/positions",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /portfolio/holdings": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "tradingsymbol": "INFY",
+                "exchange": "NSE",
+                "quantity": 20,
+                "product": "CNC",
+                "average_price": 1400.0,
+                "last_price": 1499.0,
+                "pnl": 1980.0
+              },
+              {
+                "tradingsymbol": "SBIN",
+                "exchange": "NSE",
+                "quantity": 3,
+                "product": "CNC",
+                "average_price": 0,
+                "last_price": null,
+                "pnl": null
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "average_price": 1400.0,
+                "exchange": "NSE",
+                "ltp": 1499.0,
+                "pnl": 1980.0,
+                "pnlpercent": 7.07,
+                "product": "CNC",
+                "quantity": 20,
+                "symbol": "INFY"
+              },
+              {
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "ltp": 0.0,
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 3,
+                "symbol": "SBIN"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 29980.0,
+              "totalinvvalue": 28000.0,
+              "totalpnlpercentage": 7.07,
+              "totalprofitandloss": 1980.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/portfolio/holdings",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/margins": {
+          "body": {
+            "status": "success",
+            "data": {
+              "equity": {
+                "net": 99725.05,
+                "available": {
+                  "cash": 100000.0,
+                  "collateral": 1500.0,
+                  "intraday_payin": 0,
+                  "opening_balance": 100000.0,
+                  "live_balance": 99725.05
+                },
+                "utilised": {
+                  "debits": 274.95,
+                  "m2m_realised": -10.5,
+                  "m2m_unrealised": 43.3333,
+                  "option_premium": 0,
+                  "span": 0,
+                  "exposure": 0
+                }
+              },
+              "commodity": {
+                "net": 0,
+                "available": {
+                  "cash": 0,
+                  "collateral": 0,
+                  "intraday_payin": 0,
+                  "opening_balance": 0,
+                  "live_balance": 0
+                },
+                "utilised": {
+                  "debits": 0,
+                  "m2m_realised": 0,
+                  "m2m_unrealised": 0,
+                  "option_premium": 0,
+                  "span": 0,
+                  "exposure": 0
+                }
+              }
+            }
+          }
+        },
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "SBIN",
+                  "exchange": "NSE",
+                  "product": "MIS",
+                  "quantity": 10,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 10,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 10,
+                  "day_sell_quantity": 0,
+                  "average_price": 801.1234,
+                  "last_price": 805.456,
+                  "pnl": 43.3333,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "NIFTY26NOVFUT",
+                  "exchange": "NFO",
+                  "product": "NRML",
+                  "quantity": -75,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 0,
+                  "sell_quantity": 75,
+                  "day_buy_quantity": 0,
+                  "day_sell_quantity": 75,
+                  "average_price": 24005.5,
+                  "last_price": 23990,
+                  "pnl": 1162.5,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "INFY",
+                  "exchange": "NSE",
+                  "product": "CNC",
+                  "quantity": 0,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 5,
+                  "sell_quantity": 5,
+                  "day_buy_quantity": 5,
+                  "day_sell_quantity": 5,
+                  "average_price": 0,
+                  "last_price": 1499,
+                  "pnl": -2.5,
+                  "buy_value": 7500.0,
+                  "sell_value": 7497.5,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        },
+        "GET /quote/ltp": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "instrument_token": 779521,
+                "last_price": 806.0
+              },
+              "NFO:NIFTY26NOVFUT": {
+                "instrument_token": 13238786,
+                "last_price": 23980.25
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "98500.00",
+            "collateral": "1500.00",
+            "m2mrealized": "-2.50",
+            "m2munrealized": "1942.52",
+            "utiliseddebits": "274.95"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/user/margins",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/portfolio/positions",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote/ltp",
+          "query": [
+            [
+              "i",
+              "NSE:SBIN"
+            ],
+            [
+              "i",
+              "NFO:NIFTY26NOVFUT"
+            ]
+          ],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderstatus_found",
+      "method": "POST",
+      "path": "/api/v1/orderstatus",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "151220000000001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_id": "151220000000000",
+                "exchange": "NSE",
+                "tradingsymbol": "SBIN",
+                "transaction_type": "BUY",
+                "order_type": "LIMIT",
+                "product": "MIS",
+                "quantity": 10,
+                "filled_quantity": 0,
+                "pending_quantity": 10,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 800.5,
+                "trigger_price": 0,
+                "average_price": 0,
+                "status": "OPEN",
+                "order_timestamp": "2026-11-03 09:20:01",
+                "tag": "openalgo"
+              },
+              {
+                "order_id": "151220000000001",
+                "exchange": "NSE",
+                "tradingsymbol": "INFY",
+                "transaction_type": "SELL",
+                "order_type": "MARKET",
+                "product": "CNC",
+                "quantity": 5,
+                "filled_quantity": 5,
+                "pending_quantity": 0,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 0,
+                "trigger_price": 0,
+                "average_price": 1500.25,
+                "status": "COMPLETE",
+                "order_timestamp": "2026-11-03 09:21:11",
+                "tag": null
+              },
+              {
+                "order_id": "151220000000002",
+                "exchange": "NFO",
+                "tradingsymbol": "NIFTY26NOVFUT",
+                "transaction_type": "BUY",
+                "order_type": "SL",
+                "product": "NRML",
+                "quantity": 75,
+                "filled_quantity": 0,
+                "pending_quantity": 75,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 24010,
+                "trigger_price": 24000,
+                "average_price": 0,
+                "status": "TRIGGER PENDING",
+                "order_timestamp": "2026-11-03 09:22:00",
+                "tag": null
+              },
+              {
+                "order_id": "151220000000005",
+                "exchange": "NSE",
+                "tradingsymbol": "INFY",
+                "transaction_type": "BUY",
+                "order_type": "MARKET",
+                "product": "MIS",
+                "quantity": 2,
+                "filled_quantity": 2,
+                "pending_quantity": 0,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 1499.95,
+                "trigger_price": 0,
+                "average_price": 1499.95,
+                "status": "COMPLETE",
+                "order_timestamp": "2026-11-03 09:24:00",
+                "tag": null
+              },
+              {
+                "order_id": "151220000000003",
+                "exchange": "NSE",
+                "tradingsymbol": "SBIN",
+                "transaction_type": "SELL",
+                "order_type": "LIMIT",
+                "product": "MIS",
+                "quantity": 1,
+                "filled_quantity": 0,
+                "pending_quantity": 0,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 1,
+                "price": 900.123,
+                "trigger_price": 0,
+                "average_price": 0,
+                "status": "REJECTED",
+                "order_timestamp": "2026-11-03 09:23:00",
+                "tag": null
+              }
+            ]
+          }
+        },
+        "GET /trades": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "trade_id": "10000001",
+                "order_id": "151220000000001",
+                "exchange": "NSE",
+                "tradingsymbol": "INFY",
+                "product": "CNC",
+                "transaction_type": "SELL",
+                "quantity": 5,
+                "average_price": 1500.25,
+                "fill_timestamp": "2026-11-03 09:21:12",
+                "order_timestamp": "09:21:11"
+              },
+              {
+                "trade_id": "10000002",
+                "order_id": "151220000000004",
+                "exchange": "NFO",
+                "tradingsymbol": "NIFTY26NOVFUT",
+                "product": "NRML",
+                "transaction_type": "BUY",
+                "quantity": 75,
+                "average_price": 24005.5,
+                "fill_timestamp": null,
+                "order_timestamp": "2026-11-03 09:25:00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "action": "SELL",
+            "average_price": 1500.25,
+            "exchange": "NSE",
+            "order_status": "complete",
+            "orderid": "151220000000001",
+            "price": 0.0,
+            "pricetype": "MARKET",
+            "product": "CNC",
+            "quantity": 5,
+            "symbol": "INFY",
+            "timestamp": "2026-11-03 09:21:11",
+            "trigger_price": 0.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/orders",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/trades",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderstatus_missing",
+      "method": "POST",
+      "path": "/api/v1/orderstatus",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "999",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_id": "151220000000000",
+                "exchange": "NSE",
+                "tradingsymbol": "SBIN",
+                "transaction_type": "BUY",
+                "order_type": "LIMIT",
+                "product": "MIS",
+                "quantity": 10,
+                "filled_quantity": 0,
+                "pending_quantity": 10,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 800.5,
+                "trigger_price": 0,
+                "average_price": 0,
+                "status": "OPEN",
+                "order_timestamp": "2026-11-03 09:20:01",
+                "tag": "openalgo"
+              },
+              {
+                "order_id": "151220000000001",
+                "exchange": "NSE",
+                "tradingsymbol": "INFY",
+                "transaction_type": "SELL",
+                "order_type": "MARKET",
+                "product": "CNC",
+                "quantity": 5,
+                "filled_quantity": 5,
+                "pending_quantity": 0,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 0,
+                "trigger_price": 0,
+                "average_price": 1500.25,
+                "status": "COMPLETE",
+                "order_timestamp": "2026-11-03 09:21:11",
+                "tag": null
+              },
+              {
+                "order_id": "151220000000002",
+                "exchange": "NFO",
+                "tradingsymbol": "NIFTY26NOVFUT",
+                "transaction_type": "BUY",
+                "order_type": "SL",
+                "product": "NRML",
+                "quantity": 75,
+                "filled_quantity": 0,
+                "pending_quantity": 75,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 24010,
+                "trigger_price": 24000,
+                "average_price": 0,
+                "status": "TRIGGER PENDING",
+                "order_timestamp": "2026-11-03 09:22:00",
+                "tag": null
+              },
+              {
+                "order_id": "151220000000005",
+                "exchange": "NSE",
+                "tradingsymbol": "INFY",
+                "transaction_type": "BUY",
+                "order_type": "MARKET",
+                "product": "MIS",
+                "quantity": 2,
+                "filled_quantity": 2,
+                "pending_quantity": 0,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 1499.95,
+                "trigger_price": 0,
+                "average_price": 1499.95,
+                "status": "COMPLETE",
+                "order_timestamp": "2026-11-03 09:24:00",
+                "tag": null
+              },
+              {
+                "order_id": "151220000000003",
+                "exchange": "NSE",
+                "tradingsymbol": "SBIN",
+                "transaction_type": "SELL",
+                "order_type": "LIMIT",
+                "product": "MIS",
+                "quantity": 1,
+                "filled_quantity": 0,
+                "pending_quantity": 0,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 1,
+                "price": 900.123,
+                "trigger_price": 0,
+                "average_price": 0,
+                "status": "REJECTED",
+                "order_timestamp": "2026-11-03 09:23:00",
+                "tag": null
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "message": "Order 999 not found",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/orders",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_short",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "SBIN",
+                  "exchange": "NSE",
+                  "product": "MIS",
+                  "quantity": 10,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 10,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 10,
+                  "day_sell_quantity": 0,
+                  "average_price": 801.1234,
+                  "last_price": 805.456,
+                  "pnl": 43.3333,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "NIFTY26NOVFUT",
+                  "exchange": "NFO",
+                  "product": "NRML",
+                  "quantity": -75,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 0,
+                  "sell_quantity": 75,
+                  "day_buy_quantity": 0,
+                  "day_sell_quantity": 75,
+                  "average_price": 24005.5,
+                  "last_price": 23990,
+                  "pnl": 1162.5,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "INFY",
+                  "exchange": "NSE",
+                  "product": "CNC",
+                  "quantity": 0,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 5,
+                  "sell_quantity": 5,
+                  "day_buy_quantity": 5,
+                  "day_sell_quantity": 5,
+                  "average_price": 0,
+                  "last_price": 1499,
+                  "pnl": -2.5,
+                  "buy_value": 7500.0,
+                  "sell_value": 7497.5,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": -75,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/portfolio/positions",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_none",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "INFY",
+        "exchange": "NSE",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "SBIN",
+                  "exchange": "NSE",
+                  "product": "MIS",
+                  "quantity": 10,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 10,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 10,
+                  "day_sell_quantity": 0,
+                  "average_price": 801.1234,
+                  "last_price": 805.456,
+                  "pnl": 43.3333,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "NIFTY26NOVFUT",
+                  "exchange": "NFO",
+                  "product": "NRML",
+                  "quantity": -75,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 0,
+                  "sell_quantity": 75,
+                  "day_buy_quantity": 0,
+                  "day_sell_quantity": 75,
+                  "average_price": 24005.5,
+                  "last_price": 23990,
+                  "pnl": 1162.5,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "INFY",
+                  "exchange": "NSE",
+                  "product": "CNC",
+                  "quantity": 0,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 5,
+                  "sell_quantity": 5,
+                  "day_buy_quantity": 5,
+                  "day_sell_quantity": 5,
+                  "average_price": 0,
+                  "last_price": 1499,
+                  "pnl": -2.5,
+                  "buy_value": 7500.0,
+                  "sell_value": 7497.5,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": 0,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/portfolio/positions",
+          "query": [],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "instrument_token": 779521,
+                "last_price": 805.45,
+                "last_quantity": 5,
+                "volume": 1234567,
+                "oi": 0,
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 799.95
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 120,
+                      "orders": 3
+                    },
+                    {
+                      "price": 805.35,
+                      "quantity": 50,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 80,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.55,
+                      "quantity": 10,
+                      "orders": 1
+                    },
+                    {
+                      "price": 805.6,
+                      "quantity": 7,
+                      "orders": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 805.5,
+            "ask_qty": 80,
+            "bid": 805.4,
+            "bid_qty": 120,
+            "high": 810.0,
+            "low": 795.5,
+            "ltp": 805.45,
+            "oi": 0,
+            "open": 800.0,
+            "prev_close": 799.95,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NSE:SBIN"
+            ]
+          ],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "depth",
+      "method": "POST",
+      "path": "/api/v1/depth",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "instrument_token": 779521,
+                "last_price": 805.45,
+                "last_quantity": 5,
+                "volume": 1234567,
+                "oi": 0,
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 799.95
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 120,
+                      "orders": 3
+                    },
+                    {
+                      "price": 805.35,
+                      "quantity": 50,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 80,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.55,
+                      "quantity": 10,
+                      "orders": 1
+                    },
+                    {
+                      "price": 805.6,
+                      "quantity": 7,
+                      "orders": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "asks": [
+              {
+                "price": 805.5,
+                "quantity": 80
+              },
+              {
+                "price": 805.55,
+                "quantity": 10
+              },
+              {
+                "price": 805.6,
+                "quantity": 7
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              }
+            ],
+            "bids": [
+              {
+                "price": 805.4,
+                "quantity": 120
+              },
+              {
+                "price": 805.35,
+                "quantity": 50
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              }
+            ],
+            "high": 810.0,
+            "low": 795.5,
+            "ltp": 805.45,
+            "ltq": 5,
+            "oi": 0,
+            "open": 800.0,
+            "prev_close": 799.95,
+            "totalbuyqty": 170,
+            "totalsellqty": 97,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NSE:SBIN"
+            ]
+          ],
+          "headers": {
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_missing_symbol",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": {
+            "symbol": [
+              "Missing data for required field."
+            ]
+          },
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "ping",
+      "method": "POST",
+      "path": "/api/v1/ping",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "broker": "zerodha",
+            "message": "pong"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}

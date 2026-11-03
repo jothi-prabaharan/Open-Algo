@@ -1,4 +1,9 @@
+using EPTradeBot.Core.Brokers;
 using EPTradeBot.Core.Configuration;
+using EPTradeBot.Infrastructure.Brokers;
+using EPTradeBot.Infrastructure.OpenAlgoApi;
+using EPTradeBot.Infrastructure.Security;
+using EPTradeBot.Infrastructure.Streaming;
 using EPTradeBot.Core.Trading;
 using EPTradeBot.Infrastructure.Persistence;
 using EPTradeBot.Infrastructure.Persistence.Interceptors;
@@ -19,6 +24,8 @@ public static class DependencyInjection
         services.AddOptions<SandboxOptions>().Bind(configuration.GetSection(SandboxOptions.Section)).ValidateDataAnnotations().ValidateOnStart();
         services.AddOptions<StreamingOptions>().Bind(configuration.GetSection(StreamingOptions.Section)).ValidateDataAnnotations().ValidateOnStart();
 
+        services.AddOptions<SecurityOptions>().Bind(configuration.GetSection(SecurityOptions.Section)).ValidateDataAnnotations().ValidateOnStart();
+        services.AddOptions<BrokerOptions>().Bind(configuration.GetSection(BrokerOptions.Section)).ValidateDataAnnotations().ValidateOnStart();
         services.AddOptions<ManagementOptions>().Bind(configuration.GetSection(ManagementOptions.Section)).ValidateDataAnnotations().ValidateOnStart();
 
         // One factory for short-lived contexts (the sandbox opens one per transaction attempt),
@@ -39,7 +46,29 @@ public static class DependencyInjection
         services.AddSingleton<IQuoteSource>(sp => sp.GetRequiredService<QuoteBook>());
         services.AddSingleton<IFreezeQuantityLookup, FreezeQuantityLookup>();
         services.AddSingleton<ITradingGuardService, TradingGuardService>();
-        services.AddSingleton<ILiveOrderRouter, UnavailableLiveOrderRouter>();
+        services.AddSingleton<TokenProtector>();
+        services.AddSingleton<ApiKeyService>();
+        services.AddSingleton<BrokerSessionFactory>();
+        services.AddSingleton<ISymbolMaster, EfSymbolMaster>();
+        BrokerRegistry.RegisterPlugins(services);
+        services.AddSingleton<IBrokerRegistry, BrokerRegistry>();
+        services.AddHttpClient();
+        services.ConfigureHttpClientDefaults(http => http.ConfigureHttpClient((sp, client) =>
+            client.Timeout = TimeSpan.FromSeconds(sp.GetRequiredService<IOptions<BrokerOptions>>().Value.TimeoutSeconds)));
+        services.AddSingleton<ILiveOrderRouter, BrokerLiveOrderRouter>();
+        services.AddSingleton<KeyedAsyncLock<string>>();
+        services.AddSingleton<OpenAlgoApiService>();
+
+        services.AddSingleton<OrderEvents>();
+        services.AddSingleton<MarketDataPublisher>();
+        services.AddSingleton<SandboxTickMatcher>();
+        services.AddSingleton<IMarketTickSink>(sp => sp.GetRequiredService<SandboxTickMatcher>());
+        services.AddSingleton<MarketDataBus>();
+        if (configuration.GetValue(StreamingOptions.Section + ":Enabled", true))
+        {
+            services.AddHostedService(sp => sp.GetRequiredService<SandboxTickMatcher>());
+            services.AddHostedService(sp => sp.GetRequiredService<MarketDataBus>());
+        }
         services.AddSingleton<KeyedAsyncLock<Guid>>();
         services.AddSingleton<SandboxEngine>();
         services.AddSingleton<AuditTrail>();

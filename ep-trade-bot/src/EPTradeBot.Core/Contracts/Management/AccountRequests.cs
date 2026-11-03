@@ -45,3 +45,23 @@ public sealed class GlobalKillSwitchRequest
     [JsonPropertyName("confirmation")] public string? Confirmation { get; set; }
     [StringLength(500)] [JsonPropertyName("reason")] public string? Reason { get; set; }
 }
+
+/// <summary>POST /api/v1/accounts/{id}/apikeys: issue an /api/v1 key for this account.</summary>
+public sealed class CreateApiKeyRequest
+{
+    [Required(AllowEmptyStrings = false), StringLength(64, MinimumLength = 1)]
+    public string Label { get; set; } = "";
+}
+
+/// <summary>
+/// PUT /api/v1/accounts/{id}/broker-session: store the broker token for a LIVE account.
+/// A stopgap until the broker login flows arrive with the web app (TG5).
+/// </summary>
+public sealed class SetBrokerSessionRequest
+{
+    [Required(AllowEmptyStrings = false), StringLength(4096, MinimumLength = 1)]
+    public string AuthToken { get; set; } = "";
+
+    [StringLength(4096)]
+    public string? FeedToken { get; set; }
+}
