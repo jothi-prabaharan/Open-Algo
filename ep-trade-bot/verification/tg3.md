@@ -1,10 +1,10 @@
-# Verification Gate 3, passes 1 to 3: broker contract, /api/v1 core, streaming, Zerodha, Dhan, Dhan Sandbox, Angel One, Upstox
+# Verification Gate 3, passes 1 to 4: broker contract, /api/v1 core, streaming, and the seven reference brokers
 
 Date: 2026-11-03. Same toolchain as Gates 1 and 2, plus NetMQ 4.0.4.5 and the
-SignalR client 10.0.14 (tests only). Result: **all three passes verified; Task Group 3
+SignalR client 10.0.14 (tests only). Result: **all four passes verified; Task Group 3
 is not finished.** Pass 1 built the broker contract, the /api/v1 core, streaming
 and Zerodha; pass 2 added Dhan and Dhan Sandbox (section 9); pass 3 added Angel One
-and Upstox (section 10). What is not done is
+and Upstox (section 10); pass 4 added Fyers and Delta Exchange (section 11). What is not done is
 listed in section 7. Everything below was run in this session.
 
 ## 1. What was built
@@ -109,11 +109,11 @@ wording comes from marshmallow. Two fixtures are deliberate differences
 ```
 Passed!  - Failed: 0, Passed: 129, Skipped: 0, Total: 129 - EPTradeBot.Core.Tests.dll
 Passed!  - Failed: 0, Passed:  35, Skipped: 0, Total:  35 - EPTradeBot.Architecture.Tests.dll
-Passed!  - Failed: 0, Passed:  26, Skipped: 0, Total:  26 - EPTradeBot.IntegrationTests.dll
-Passed!  - Failed: 0, Passed: 161, Skipped: 0, Total: 161 - EPTradeBot.Contract.Tests.dll
+Passed!  - Failed: 0, Passed:  27, Skipped: 0, Total:  27 - EPTradeBot.IntegrationTests.dll
+Passed!  - Failed: 0, Passed: 218, Skipped: 0, Total: 218 - EPTradeBot.Contract.Tests.dll
 ```
 
-351 tests in all after pass 3 (290 after pass 2, 221 after pass 1, 164 at Gate 2). After the run, 0 test databases remain. New claims and the tests that prove them:
+409 tests in all after pass 4 (351 after pass 3, 290 after pass 2, 221 after pass 1, 164 at Gate 2). After the run, 0 test databases remain. New claims and the tests that prove them:
 
 | Claim | Test |
 | --- | --- |
@@ -170,8 +170,9 @@ closed: C3 passed because no recorded order was a MARKET order carrying a price
 
 ## 7. Not done yet in Task Group 3
 
-- **Reference adapters: 5 of the 7 named (Zerodha, Dhan, Dhan Sandbox, Angel One, Upstox).** All five are contract-verified, none live-verified. Fyers and Delta Exchange are not started. The other 31 plugins follow in batches.
+- **Reference adapters: all 7 named are ported (Zerodha, Dhan, Dhan Sandbox, Angel One, Upstox, Fyers, Delta Exchange).** All are contract-verified; none is live-verified. The other 31 plugins follow in batches.
 - **25 of the remaining /api/v1 pairs** listed in section 2.
+- **Fyers and Delta Exchange gaps, refused rather than guessed:** history, GTT, margin, login and the feeds; Delta's leverage setting and bracket orders; fractional (spot) quantities, which /api/v1 refuses by name and close-all names as still open.
 - **Angel One and Upstox gaps, refused rather than guessed:** history, GTT, margin, login and the feeds; Upstox's global indicators. Neither plugin queues requests against the broker's rate limit yet (OpenAlgo paces and retries both).
 - **Dhan gaps, refused rather than guessed:** history, GTT, margin, login and the Dhan feed. Dhan allows one quote call a second and EP Trade bot does not queue them yet (OpenAlgo waits and retries); a refused quote leaves a position unpriced, which the risk check then values at its average price.
 - **Zerodha gaps, refused rather than guessed:** MCX (Kite counts contracts, OpenAlgo units; an MCX order or an MCX row in a book is refused), history, GTT, margin, login and the Kite ticker feed. With no broker feed adapter yet, the bus carries only what something publishes to it; in this pass that is the tests.
@@ -458,4 +459,126 @@ and was rewritten so the branch stays reachable; it then failed as it should.
 | U6 pledge margin used left out of debits | 1 failed |
 | U7 unpriced holding shown as a total loss | 1 failed |
 | U8 orders sent to the books host | 8 failed |
+
+## 11. Pass 4: Fyers and Delta Exchange
+
+**What was built.** `Infrastructure/Brokers/Fyers/FyersPlugin.cs` (API v3; numeric
+exchange, side, type and status codes translated as OpenAlgo does) and
+`Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs` (Delta Exchange India, exchange
+CRYPTO; every private request signed with HMAC-SHA256 over method, timestamp, path,
+query and body; order ids "product_id:order_id"; books limited to today's IST
+entries; spot balances shown as positions).
+
+**Supporting changes.**
+
+- **One clock** (`TimeProvider`) for code that asks what day it is; the tests stop it at the instant the Delta fixtures were recorded, so "today's orders" means the same day in the recording and the replay.
+- **Contract size** is now carried on the symbol master (Delta's lot size per contract).
+- **Fractional quantities are refused by name** on /api/v1 (a crypto spot order of 0.5 used to be truncated to 0 and refused for a confusing reason), and **close-all names a fractional position as still open** instead of skipping it (`OpenAlgoApiTests.A_fractional_crypto_quantity_is_refused_not_truncated`, fixture `closeposition_with_spot`).
+- **An unknown symbol is refused by name** for a LIVE account before the risk check, which otherwise reported a missing price for it. This was caught by the Delta fixture; the other brokers' unknown-symbol fixtures checked only the status.
+- **The harness** checks each request with a per-broker hook; for Delta it recomputes every signature from the raw body and query actually sent and checks the timestamp.
+
+**Contract tests: 28 of 28 Fyers, 29 of 29 Delta Exchange** (218 of 218 across the
+seven brokers).
+
+Fyers:
+
+| Fixture | Path | Python status | Writes | Compared | Result |
+| --- | --- | --- | --- | --- | --- |
+| auth_invalid_key | /api/v1/funds | 403 | 0 | full | Passed |
+| placeorder_missing_fields | /api/v1/placeorder | 400 | 0 | status and error shape | Passed |
+| placeorder_market | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_limit_cnc | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_sl_futures | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_slm | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_broker_refuses | /api/v1/placeorder | 400 | 1 | full | Passed |
+| placeorder_refused_with_200 | /api/v1/placeorder | 200 | 1 | deliberate difference | Passed |
+| placeorder_unknown_symbol | /api/v1/placeorder | 200 | 1 | deliberate difference | Passed |
+| modifyorder | /api/v1/modifyorder | 200 | 1 | full | Passed |
+| modifyorder_refused | /api/v1/modifyorder | 400 | 1 | full | Passed |
+| cancelorder | /api/v1/cancelorder | 200 | 1 | full | Passed |
+| cancelorder_refused | /api/v1/cancelorder | 400 | 1 | full | Passed |
+| cancelallorder | /api/v1/cancelallorder | 200 | 2 | full | Passed |
+| closeposition | /api/v1/closeposition | 200 | 1 | deliberate difference | Passed |
+| placesmartorder_reduce | /api/v1/placesmartorder | 200 | 1 | full | Passed |
+| orderbook | /api/v1/orderbook | 200 | 0 | full | Passed |
+| tradebook | /api/v1/tradebook | 200 | 0 | full | Passed |
+| positionbook | /api/v1/positionbook | 200 | 0 | full | Passed |
+| holdings | /api/v1/holdings | 200 | 0 | full | Passed |
+| funds_token_expired | /api/v1/funds | 200 | 0 | deliberate difference | Passed |
+| funds | /api/v1/funds | 200 | 0 | full | Passed |
+| orderstatus_complete | /api/v1/orderstatus | 200 | 0 | full | Passed |
+| openposition_short | /api/v1/openposition | 200 | 0 | full | Passed |
+| quotes | /api/v1/quotes | 200 | 0 | full | Passed |
+| depth | /api/v1/depth | 200 | 0 | full | Passed |
+| quotes_refused | /api/v1/quotes | 500 | 0 | deliberate difference | Passed |
+| ping | /api/v1/ping | 200 | 0 | full | Passed |
+
+Delta Exchange:
+
+| Fixture | Path | Python status | Writes | Compared | Result |
+| --- | --- | --- | --- | --- | --- |
+| auth_invalid_key | /api/v1/funds | 403 | 0 | full | Passed |
+| placeorder_missing_fields | /api/v1/placeorder | 400 | 0 | status and error shape | Passed |
+| placeorder_market | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_limit | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_sl | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_slm | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_broker_refuses | /api/v1/placeorder | 400 | 1 | full | Passed |
+| placeorder_unknown_symbol | /api/v1/placeorder | 400 | 0 | deliberate difference | Passed |
+| modifyorder | /api/v1/modifyorder | 200 | 1 | full | Passed |
+| modifyorder_refused | /api/v1/modifyorder | 400 | 1 | full | Passed |
+| cancelorder | /api/v1/cancelorder | 200 | 1 | full | Passed |
+| cancelorder_refused | /api/v1/cancelorder | 400 | 1 | full | Passed |
+| cancelallorder | /api/v1/cancelallorder | 200 | 1 | deliberate difference | Passed |
+| closeposition | /api/v1/closeposition | 200 | 2 | full | Passed |
+| closeposition_with_spot | /api/v1/closeposition | 200 | 3 | deliberate difference | Passed |
+| placesmartorder_reduce | /api/v1/placesmartorder | 200 | 1 | full | Passed |
+| orderbook | /api/v1/orderbook | 200 | 0 | full | Passed |
+| tradebook | /api/v1/tradebook | 200 | 0 | full | Passed |
+| positionbook | /api/v1/positionbook | 200 | 0 | full | Passed |
+| holdings | /api/v1/holdings | 200 | 0 | full | Passed |
+| funds | /api/v1/funds | 200 | 0 | full | Passed |
+| funds_key_refused | /api/v1/funds | 200 | 0 | deliberate difference | Passed |
+| orderstatus_complete | /api/v1/orderstatus | 200 | 0 | full | Passed |
+| openposition_short | /api/v1/openposition | 200 | 0 | full | Passed |
+| quotes | /api/v1/quotes | 200 | 0 | full | Passed |
+| depth | /api/v1/depth | 200 | 0 | full | Passed |
+| depth_book_unavailable | /api/v1/depth | 200 | 0 | deliberate difference | Passed |
+| quotes_refused | /api/v1/quotes | 500 | 0 | deliberate difference | Passed |
+| ping | /api/v1/ping | 200 | 0 | full | Passed |
+
+**Deliberate differences**, each recorded
+(`tests/EPTradeBot.Contract.Tests/FyersDeltaContractTests.cs`):
+
+- **A Fyers refusal sent with HTTP 200 is reported as a placed order** with order id null. EP Trade bot reports the refusal.
+- **Close all on Fyers** is one broker call (`DELETE /positions`, `exit_all`) in OpenAlgo. EP Trade bot squares off each position with its own order through the dispatcher, so every exit passes the environment lock and is audited.
+- **Cancel all on Delta** is one bulk call reported as a single order, "all". EP Trade bot cancels each open order and names each.
+- **Funds:** both answer success with no funds or zeros when the broker refuses the session or key. EP Trade bot says so.
+- **Delta's order book unavailable** is shown as an empty book. EP Trade bot says it is unavailable.
+- **Unknown symbol:** Fyers' plugin sends symbol null; Delta's refuses with internal text. EP Trade bot refuses by name.
+- **Wording only:** refused quotes (OpenAlgo's Fyers message carries the request URL).
+
+**Mutation check** (`tools/mutation/tg3-fyers-delta.json`): all 16 turned red. The
+three earlier sets were run again after these changes: one (C7) was **skipped**,
+because the fractional check changed the text it edits; its pattern was updated and
+it then failed as it should. All 67 TG3 mutations are now red.
+
+| Mutation | Result |
+| --- | --- |
+| F1 refusal sent with HTTP 200 reported as success (OpenAlgo's behaviour) | 1 failed |
+| F2 NFO exchange code read as NSE | 5 failed |
+| F3 token sent without the app id | 24 failed |
+| F4 trigger-pending counted as open in statistics | 1 failed |
+| F5 T1 holdings not shown as CNC | 1 failed |
+| F6 funds read the total balance, not the clear balance | 1 failed |
+| F7 depth asks read from the bid side | 1 failed |
+| X1 signature leaves out the body | 13 failed |
+| X2 books not limited to today | 2 failed |
+| X3 order id without its product id | 5 failed |
+| X4 spot balances left out of positions | 2 failed |
+| X5 SL-M sent with a limit price | 1 failed |
+| X6 unreadable order book shown as empty (OpenAlgo's behaviour) | 1 failed |
+| X7 fractional positions silently left out of close-all | 1 failed |
+| X8 unknown symbol reaches the risk check | 1 failed |
+| X9 fractional quantity truncated | 1 failed |
 

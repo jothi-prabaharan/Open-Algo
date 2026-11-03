@@ -47,6 +47,14 @@ public abstract class BrokerContractHost : IAsyncLifetime
     /// <summary>The broker's application keys (Brokers:Keys:&lt;broker&gt;), as the recorded install had them in its environment.</summary>
     public virtual IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string>();
 
+    /// <summary>A check of every request the broker would see (a signature, say), beyond the comparison with the recording.</summary>
+    public virtual void Verify(SentRequest request)
+    {
+    }
+
+    /// <summary>The instant the fixtures were recorded, for a broker whose answers depend on today's date.</summary>
+    public DateTimeOffset? RecordedAt => Fixtures["recorded_at"] is JsonValue v && v.TryGetValue<string>(out var s) ? DateTimeOffset.Parse(s, System.Globalization.CultureInfo.InvariantCulture) : null;
+
     /// <summary>The broker takes a number and its text form alike, and OpenAlgo itself sends both, so request bodies compare by value.</summary>
     public virtual bool NumbersMayBeText => false;
 
@@ -60,7 +68,11 @@ public abstract class BrokerContractHost : IAsyncLifetime
         {
             b.UseSetting("Brokers:Enabled:0", BrokerName);
             foreach (var (key, value) in Keys) b.UseSetting($"Brokers:Keys:{BrokerName}:{key}", value);
-            b.ConfigureServices(s => s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => Broker)));
+            b.ConfigureServices(s =>
+            {
+                s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => Broker));
+                if (RecordedAt is { } at) s.AddSingleton<TimeProvider>(new FixedClock(at));
+            });
         });
 
         var clientId = Fixtures["client_id"]?.GetValue<string>() ?? "contract";
@@ -77,7 +89,7 @@ public abstract class BrokerContractHost : IAsyncLifetime
                 Broker = BrokerName, Symbol = Text(row, "symbol")!, Brsymbol = Text(row, "brsymbol")!, Name = Text(row, "name"),
                 Exchange = Text(row, "exchange"), Brexchange = Text(row, "brexchange"), Token = Text(row, "token"), Expiry = Text(row, "expiry"),
                 Strike = row["strike"]?.GetValue<double>(), Lotsize = row["lotsize"]?.GetValue<int>(), Instrumenttype = Text(row, "instrumenttype"),
-                TickSize = row["tick_size"]?.GetValue<double>(),
+                TickSize = row["tick_size"]?.GetValue<double>(), ContractValue = row["contract_value"]?.GetValue<double>(),
             });
         }
 
@@ -91,6 +103,12 @@ public abstract class BrokerContractHost : IAsyncLifetime
     }
 
     private static string? Text(JsonObject o, string key) => o[key] is JsonValue v && v.TryGetValue<string>(out var s) ? s : null;
+}
+
+/// <summary>A clock stopped at one instant.</summary>
+public sealed class FixedClock(DateTimeOffset at) : TimeProvider
+{
+    public override DateTimeOffset GetUtcNow() => at;
 }
 
 /// <summary>
@@ -133,6 +151,7 @@ public static class ContractRunner
         var actual = JsonNode.Parse(await response.Content.ReadAsStringAsync());
         output.WriteLine($"EP Trade bot answered {(int)response.StatusCode}: {actual?.ToJsonString()}");
         var sent = host.Broker.Sent;
+        foreach (var request1 in sent) host.Verify(request1);
         bool IsRead(SentRequest s) => s.Method == "GET" || readPosts.Contains(s.Path);
 
         if (deviations.TryGetValue(name, out var deviation))

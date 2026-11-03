@@ -98,5 +98,5 @@ public sealed class EfSymbolMaster(IDbContextFactory<EpTradeDbContext> contexts)
     }
 
     private static SymbolRecord? Map(Core.Entities.Legacy.Core.SymToken? r) => r is null ? null : new SymbolRecord(
-        r.Symbol, r.Brsymbol, r.Exchange ?? "", r.Brexchange ?? "", r.Token ?? "", r.Name, r.Expiry, r.Strike, r.Lotsize ?? 1, r.Instrumenttype, r.TickSize);
+        r.Symbol, r.Brsymbol, r.Exchange ?? "", r.Brexchange ?? "", r.Token ?? "", r.Name, r.Expiry, r.Strike, r.Lotsize ?? 1, r.Instrumenttype, r.TickSize, r.ContractValue);
 }

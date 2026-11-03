@@ -1,0 +1,2519 @@
+{
+  "broker": "deltaexchange",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "delta-api-key",
+  "client_id": null,
+  "recorded_at": "2026-11-03T07:46:27+00:00",
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "BTCUSD",
+      "brsymbol": "BTCUSD",
+      "name": "Bitcoin perpetual",
+      "exchange": "CRYPTO",
+      "brexchange": "CRYPTO",
+      "token": "27",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "PERPFUT",
+      "tick_size": 0.5,
+      "contract_value": 0.001
+    },
+    {
+      "symbol": "ETHUSD",
+      "brsymbol": "ETHUSD",
+      "name": "Ether perpetual",
+      "exchange": "CRYPTO",
+      "brexchange": "CRYPTO",
+      "token": "3136",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "PERPFUT",
+      "tick_size": 0.05,
+      "contract_value": 0.01
+    },
+    {
+      "symbol": "SOL_INR",
+      "brsymbol": "SOL_INR",
+      "name": "Solana spot",
+      "exchange": "CRYPTO",
+      "brexchange": "CRYPTO",
+      "token": "1001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "SPOT",
+      "tick_size": 0.01,
+      "contract_value": 1.0
+    }
+  ],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_missing_fields",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "symbol": "BTCUSD",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'strategy': ['Missing data for required field.'], 'exchange': ['Missing data for required field.'], 'action': ['Missing data for required field.'], 'quantity': ['Missing data for required field.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 1,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "ETHUSD",
+        "exchange": "CRYPTO",
+        "action": "SELL",
+        "quantity": 3,
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": 3450.5,
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9010,
+              "product_id": 3136
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "3136:9010",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 3136,
+            "product_symbol": "ETHUSD",
+            "size": 3,
+            "side": "sell",
+            "order_type": "limit_order",
+            "time_in_force": "gtc",
+            "limit_price": "3450.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_sl",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "SL",
+        "product": "NRML",
+        "price": "68010",
+        "trigger_price": "68000",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 1,
+            "side": "buy",
+            "order_type": "limit_order",
+            "time_in_force": "gtc",
+            "limit_price": "68010.0",
+            "stop_order_type": "stop_loss_order",
+            "stop_price": "68000.0",
+            "stop_trigger_method": "last_traded_price"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_slm",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "SELL",
+        "quantity": "1",
+        "pricetype": "SL-M",
+        "product": "NRML",
+        "trigger_price": "65000.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 1,
+            "side": "sell",
+            "order_type": "market_order",
+            "time_in_force": "gtc",
+            "stop_order_type": "stop_loss_order",
+            "stop_price": "65000.5",
+            "stop_trigger_method": "last_traded_price"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": {
+              "code": "insufficient_margin",
+              "context": {
+                "available_balance": "10.0",
+                "required_additional_balance": "57.0"
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "insufficient_margin",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 1,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPEUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "[DeltaExchange] Symbol 'NOPEUSD' not found in master contract DB for exchange 'CRYPTO'. Run master contract sync first.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "orderid": "27:9001",
+        "action": "BUY",
+        "quantity": "3",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "66100",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "id": 9001,
+            "product_id": 27,
+            "size": 3,
+            "limit_price": "66100.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "orderid": "27:9002",
+        "action": "BUY",
+        "quantity": "3",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "66100",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/orders": {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": {
+              "code": "open_order_not_found"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "open_order_not_found",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "id": 9002,
+            "product_id": 27,
+            "size": 3,
+            "limit_price": "66100.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "27:9001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "state": "cancelled"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "id": 9001,
+            "product_id": 27
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "27:9002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/orders": {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": {
+              "code": "open_order_not_found"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "open_order_not_found",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "id": 9002,
+            "product_id": 27
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/orders/all": {
+          "body": {
+            "success": true,
+            "result": {}
+          }
+        },
+        "GET /v2/orders": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "id": 9001,
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "side": "buy",
+                "order_type": "limit_order",
+                "state": "open",
+                "size": 2,
+                "unfilled_size": 2,
+                "limit_price": "66000.0",
+                "stop_price": null,
+                "reduce_only": false,
+                "created_at": "2026-11-03T07:16:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null
+              },
+              {
+                "id": 9003,
+                "product_id": 3136,
+                "product_symbol": "ETHUSD",
+                "side": "sell",
+                "order_type": "limit_order",
+                "state": "pending",
+                "size": 5,
+                "unfilled_size": 0,
+                "limit_price": "3400.0",
+                "stop_price": "3410.0",
+                "reduce_only": false,
+                "created_at": "2026-11-03T07:26:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null,
+                "stop_order_type": "stop_loss_order"
+              }
+            ]
+          }
+        },
+        "GET /v2/orders/history": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "id": 9002,
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "side": "sell",
+                "order_type": "market_order",
+                "state": "closed",
+                "size": 1,
+                "unfilled_size": 0,
+                "limit_price": null,
+                "stop_price": null,
+                "reduce_only": false,
+                "created_at": "2026-11-03T07:21:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null
+              },
+              {
+                "id": 9004,
+                "product_id": 3136,
+                "product_symbol": "ETHUSD",
+                "side": "buy",
+                "order_type": "market_order",
+                "state": "cancelled",
+                "size": 1,
+                "unfilled_size": 0,
+                "limit_price": null,
+                "stop_price": "3300.0",
+                "reduce_only": false,
+                "created_at": "2026-11-03T07:31:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null,
+                "stop_order_type": "stop_loss_order"
+              },
+              {
+                "id": 8999,
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "side": "buy",
+                "order_type": "limit_order",
+                "state": "closed",
+                "size": 1,
+                "unfilled_size": 0,
+                "limit_price": "60000.0",
+                "stop_price": null,
+                "reduce_only": false,
+                "created_at": "2026-11-01T07:46:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null
+              }
+            ]
+          }
+        },
+        "DELETE /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "all"
+          ],
+          "failed_cancellations": [],
+          "message": "Canceled 1 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders/all",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "cancel_limit_orders": true,
+            "cancel_stop_orders": true,
+            "cancel_reduce_only_orders": true
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/positions/margined": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "size": 2,
+                "entry_price": "66500.5",
+                "realized_pnl": "12.5",
+                "unrealized_pnl": "-3.25",
+                "margin": "13.3"
+              },
+              {
+                "product_id": 3136,
+                "product_symbol": "ETHUSD",
+                "size": -3,
+                "entry_price": "3450.0",
+                "realized_pnl": "0",
+                "unrealized_pnl": "4.5",
+                "margin": "10.35"
+              }
+            ]
+          }
+        },
+        "GET /v2/wallet/balances": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "asset_id": 14,
+                "asset_symbol": "INR",
+                "balance": "100000.0",
+                "blocked_margin": "274.95",
+                "balance_inr": "101500.5",
+                "cross_locked_collateral": "1500.0"
+              }
+            ]
+          }
+        },
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/positions/margined",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/wallet/balances",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 2,
+            "side": "sell",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 3136,
+            "product_symbol": "ETHUSD",
+            "size": 3,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_with_spot",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/positions/margined": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "size": 2,
+                "entry_price": "66500.5",
+                "realized_pnl": "12.5",
+                "unrealized_pnl": "-3.25",
+                "margin": "13.3"
+              },
+              {
+                "product_id": 3136,
+                "product_symbol": "ETHUSD",
+                "size": -3,
+                "entry_price": "3450.0",
+                "realized_pnl": "0",
+                "unrealized_pnl": "4.5",
+                "margin": "10.35"
+              }
+            ]
+          }
+        },
+        "GET /v2/wallet/balances": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "asset_id": 14,
+                "asset_symbol": "INR",
+                "balance": "100000.0",
+                "blocked_margin": "274.95",
+                "balance_inr": "101500.5",
+                "cross_locked_collateral": "1500.0"
+              },
+              {
+                "asset_id": 1001,
+                "asset_symbol": "SOL",
+                "balance": "0.75",
+                "blocked_margin": "0.25",
+                "balance_inr": "7500.0",
+                "cross_locked_collateral": "0"
+              }
+            ]
+          }
+        },
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/positions/margined",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/wallet/balances",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 2,
+            "side": "sell",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 3136,
+            "product_symbol": "ETHUSD",
+            "size": 3,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 1001,
+            "product_symbol": "SOL_INR",
+            "size": 0.5,
+            "side": "sell",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_reduce",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "position_size": "1",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/positions/margined": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "size": 2,
+                "entry_price": "66500.5",
+                "realized_pnl": "12.5",
+                "unrealized_pnl": "-3.25",
+                "margin": "13.3"
+              },
+              {
+                "product_id": 3136,
+                "product_symbol": "ETHUSD",
+                "size": -3,
+                "entry_price": "3450.0",
+                "realized_pnl": "0",
+                "unrealized_pnl": "4.5",
+                "margin": "10.35"
+              }
+            ]
+          }
+        },
+        "GET /v2/wallet/balances": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "asset_id": 14,
+                "asset_symbol": "INR",
+                "balance": "100000.0",
+                "blocked_margin": "274.95",
+                "balance_inr": "101500.5",
+                "cross_locked_collateral": "1500.0"
+              }
+            ]
+          }
+        },
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/positions/margined",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/wallet/balances",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 1,
+            "side": "sell",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/orders": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "id": 9001,
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "side": "buy",
+                "order_type": "limit_order",
+                "state": "open",
+                "size": 2,
+                "unfilled_size": 2,
+                "limit_price": "66000.0",
+                "stop_price": null,
+                "reduce_only": false,
+                "created_at": "2026-11-03T07:16:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null
+              },
+              {
+                "id": 9003,
+                "product_id": 3136,
+                "product_symbol": "ETHUSD",
+                "side": "sell",
+                "order_type": "limit_order",
+                "state": "pending",
+                "size": 5,
+                "unfilled_size": 0,
+                "limit_price": "3400.0",
+                "stop_price": "3410.0",
+                "reduce_only": false,
+                "created_at": "2026-11-03T07:26:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null,
+                "stop_order_type": "stop_loss_order"
+              }
+            ]
+          }
+        },
+        "GET /v2/orders/history": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "id": 9002,
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "side": "sell",
+                "order_type": "market_order",
+                "state": "closed",
+                "size": 1,
+                "unfilled_size": 0,
+                "limit_price": null,
+                "stop_price": null,
+                "reduce_only": false,
+                "created_at": "2026-11-03T07:21:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null
+              },
+              {
+                "id": 9004,
+                "product_id": 3136,
+                "product_symbol": "ETHUSD",
+                "side": "buy",
+                "order_type": "market_order",
+                "state": "cancelled",
+                "size": 1,
+                "unfilled_size": 0,
+                "limit_price": null,
+                "stop_price": "3300.0",
+                "reduce_only": false,
+                "created_at": "2026-11-03T07:31:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null,
+                "stop_order_type": "stop_loss_order"
+              },
+              {
+                "id": 8999,
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "side": "buy",
+                "order_type": "limit_order",
+                "state": "closed",
+                "size": 1,
+                "unfilled_size": 0,
+                "limit_price": "60000.0",
+                "stop_price": null,
+                "reduce_only": false,
+                "created_at": "2026-11-01T07:46:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "CRYPTO",
+                "order_status": "open",
+                "orderid": "27:9001",
+                "price": 66000.0,
+                "pricetype": "LIMIT",
+                "product": "NRML",
+                "quantity": 2,
+                "symbol": "BTCUSD",
+                "timestamp": "2026-11-03T07:16:27.000000Z",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "CRYPTO",
+                "order_status": "open",
+                "orderid": "3136:9003",
+                "price": 3400.0,
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": 5,
+                "symbol": "ETHUSD",
+                "timestamp": "2026-11-03T07:26:27.000000Z",
+                "trigger_price": 3410.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "CRYPTO",
+                "order_status": "complete",
+                "orderid": "27:9002",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "NRML",
+                "quantity": 1,
+                "symbol": "BTCUSD",
+                "timestamp": "2026-11-03T07:21:27.000000Z",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "CRYPTO",
+                "order_status": "cancelled",
+                "orderid": "3136:9004",
+                "price": 0.0,
+                "pricetype": "SL-M",
+                "product": "NRML",
+                "quantity": 1,
+                "symbol": "ETHUSD",
+                "timestamp": "2026-11-03T07:31:27.000000Z",
+                "trigger_price": 3300.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 2,
+              "total_completed_orders": 1,
+              "total_open_orders": 2,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 2
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [
+            [
+              "state",
+              "open"
+            ]
+          ],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders/history",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/fills": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "id": 1,
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "side": "sell",
+                "size": 1,
+                "price": "67012.5",
+                "order_id": 9002,
+                "created_at": "2026-11-03T07:21:27.000000Z"
+              },
+              {
+                "id": 2,
+                "product_id": 1001,
+                "product_symbol": "SOL_INR",
+                "side": "buy",
+                "size": "0.5",
+                "price": "15000.25",
+                "order_id": 9100,
+                "created_at": "2026-11-03T07:36:27.000000Z"
+              },
+              {
+                "id": 0,
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "side": "buy",
+                "size": 1,
+                "price": "60000.0",
+                "order_id": 8999,
+                "created_at": "2026-11-01T07:46:27.000000Z"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "SELL",
+              "average_price": 67012.5,
+              "exchange": "CRYPTO",
+              "orderid": "27:9002",
+              "product": "NRML",
+              "quantity": 1,
+              "symbol": "BTCUSD",
+              "timestamp": "2026-11-03T07:21:27.000000Z",
+              "trade_value": 67012.5
+            },
+            {
+              "action": "BUY",
+              "average_price": 15000.25,
+              "exchange": "CRYPTO",
+              "orderid": "1001:9100",
+              "product": "NRML",
+              "quantity": 0.5,
+              "symbol": "SOL_INR",
+              "timestamp": "2026-11-03T07:36:27.000000Z",
+              "trade_value": 7500.12
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/fills",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/positions/margined": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "size": 2,
+                "entry_price": "66500.5",
+                "realized_pnl": "12.5",
+                "unrealized_pnl": "-3.25",
+                "margin": "13.3"
+              },
+              {
+                "product_id": 3136,
+                "product_symbol": "ETHUSD",
+                "size": -3,
+                "entry_price": "3450.0",
+                "realized_pnl": "0",
+                "unrealized_pnl": "4.5",
+                "margin": "10.35"
+              }
+            ]
+          }
+        },
+        "GET /v2/wallet/balances": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "asset_id": 14,
+                "asset_symbol": "INR",
+                "balance": "100000.0",
+                "blocked_margin": "274.95",
+                "balance_inr": "101500.5",
+                "cross_locked_collateral": "1500.0"
+              },
+              {
+                "asset_id": 1001,
+                "asset_symbol": "SOL",
+                "balance": "0.75",
+                "blocked_margin": "0.25",
+                "balance_inr": "7500.0",
+                "cross_locked_collateral": "0"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": 66500.5,
+              "exchange": "CRYPTO",
+              "lot_size": 0.001,
+              "ltp": 0.0,
+              "pnl": 9.25,
+              "product": "NRML",
+              "quantity": 2,
+              "symbol": "BTCUSD"
+            },
+            {
+              "average_price": 3450.0,
+              "exchange": "CRYPTO",
+              "lot_size": 0.01,
+              "ltp": 0.0,
+              "pnl": 4.5,
+              "product": "NRML",
+              "quantity": -3,
+              "symbol": "ETHUSD"
+            },
+            {
+              "average_price": 0.0,
+              "exchange": "CRYPTO",
+              "lot_size": 1.0,
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "CNC",
+              "quantity": 0.5,
+              "symbol": "SOL_INR"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/positions/margined",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/wallet/balances",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/wallet/balances": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "asset_id": 14,
+                "asset_symbol": "INR",
+                "balance": "100000.0",
+                "blocked_margin": "274.95",
+                "balance_inr": "101500.5",
+                "cross_locked_collateral": "1500.0"
+              },
+              {
+                "asset_id": 1001,
+                "asset_symbol": "SOL",
+                "balance": "0.75",
+                "blocked_margin": "0.25",
+                "balance_inr": "7500.0",
+                "cross_locked_collateral": "0"
+              }
+            ]
+          }
+        },
+        "GET /v2/positions/margined": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "size": 2,
+                "entry_price": "66500.5",
+                "realized_pnl": "12.5",
+                "unrealized_pnl": "-3.25",
+                "margin": "13.3"
+              },
+              {
+                "product_id": 3136,
+                "product_symbol": "ETHUSD",
+                "size": -3,
+                "entry_price": "3450.0",
+                "realized_pnl": "0",
+                "unrealized_pnl": "4.5",
+                "margin": "10.35"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "109000.50",
+            "collateral": "1500.00",
+            "m2mrealized": "12.50",
+            "m2munrealized": "1.25",
+            "utiliseddebits": "275.20"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/wallet/balances",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/positions/margined",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_key_refused",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/wallet/balances": {
+          "status": 401,
+          "body": {
+            "success": false,
+            "error": {
+              "code": "invalid_api_key"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "0.00",
+            "collateral": "0.00",
+            "m2mrealized": "0.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "0.00"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/wallet/balances",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderstatus_complete",
+      "method": "POST",
+      "path": "/api/v1/orderstatus",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "27:9002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/orders": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "id": 9001,
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "side": "buy",
+                "order_type": "limit_order",
+                "state": "open",
+                "size": 2,
+                "unfilled_size": 2,
+                "limit_price": "66000.0",
+                "stop_price": null,
+                "reduce_only": false,
+                "created_at": "2026-11-03T07:16:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null
+              },
+              {
+                "id": 9003,
+                "product_id": 3136,
+                "product_symbol": "ETHUSD",
+                "side": "sell",
+                "order_type": "limit_order",
+                "state": "pending",
+                "size": 5,
+                "unfilled_size": 0,
+                "limit_price": "3400.0",
+                "stop_price": "3410.0",
+                "reduce_only": false,
+                "created_at": "2026-11-03T07:26:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null,
+                "stop_order_type": "stop_loss_order"
+              }
+            ]
+          }
+        },
+        "GET /v2/orders/history": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "id": 9002,
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "side": "sell",
+                "order_type": "market_order",
+                "state": "closed",
+                "size": 1,
+                "unfilled_size": 0,
+                "limit_price": null,
+                "stop_price": null,
+                "reduce_only": false,
+                "created_at": "2026-11-03T07:21:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null
+              },
+              {
+                "id": 9004,
+                "product_id": 3136,
+                "product_symbol": "ETHUSD",
+                "side": "buy",
+                "order_type": "market_order",
+                "state": "cancelled",
+                "size": 1,
+                "unfilled_size": 0,
+                "limit_price": null,
+                "stop_price": "3300.0",
+                "reduce_only": false,
+                "created_at": "2026-11-03T07:31:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null,
+                "stop_order_type": "stop_loss_order"
+              },
+              {
+                "id": 8999,
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "side": "buy",
+                "order_type": "limit_order",
+                "state": "closed",
+                "size": 1,
+                "unfilled_size": 0,
+                "limit_price": "60000.0",
+                "stop_price": null,
+                "reduce_only": false,
+                "created_at": "2026-11-01T07:46:27.000000Z",
+                "user_id": 1,
+                "time_in_force": "gtc",
+                "average_fill_price": null
+              }
+            ]
+          }
+        },
+        "GET /v2/fills": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "id": 1,
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "side": "sell",
+                "size": 1,
+                "price": "67012.5",
+                "order_id": 9002,
+                "created_at": "2026-11-03T07:21:27.000000Z"
+              },
+              {
+                "id": 2,
+                "product_id": 1001,
+                "product_symbol": "SOL_INR",
+                "side": "buy",
+                "size": "0.5",
+                "price": "15000.25",
+                "order_id": 9100,
+                "created_at": "2026-11-03T07:36:27.000000Z"
+              },
+              {
+                "id": 0,
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "side": "buy",
+                "size": 1,
+                "price": "60000.0",
+                "order_id": 8999,
+                "created_at": "2026-11-01T07:46:27.000000Z"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "action": "SELL",
+            "average_price": 67012.5,
+            "exchange": "CRYPTO",
+            "order_status": "complete",
+            "orderid": "27:9002",
+            "price": 0.0,
+            "pricetype": "MARKET",
+            "product": "NRML",
+            "quantity": 1,
+            "symbol": "BTCUSD",
+            "timestamp": "2026-11-03T07:21:27.000000Z",
+            "trigger_price": 0.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [
+            [
+              "state",
+              "open"
+            ]
+          ],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders/history",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/fills",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_short",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "ETHUSD",
+        "exchange": "CRYPTO",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/positions/margined": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "product_id": 27,
+                "product_symbol": "BTCUSD",
+                "size": 2,
+                "entry_price": "66500.5",
+                "realized_pnl": "12.5",
+                "unrealized_pnl": "-3.25",
+                "margin": "13.3"
+              },
+              {
+                "product_id": 3136,
+                "product_symbol": "ETHUSD",
+                "size": -3,
+                "entry_price": "3450.0",
+                "realized_pnl": "0",
+                "unrealized_pnl": "4.5",
+                "margin": "10.35"
+              }
+            ]
+          }
+        },
+        "GET /v2/wallet/balances": {
+          "body": {
+            "success": true,
+            "result": [
+              {
+                "asset_id": 14,
+                "asset_symbol": "INR",
+                "balance": "100000.0",
+                "blocked_margin": "274.95",
+                "balance_inr": "101500.5",
+                "cross_locked_collateral": "1500.0"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": -3,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/positions/margined",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/wallet/balances",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/tickers/BTCUSD": {
+          "body": {
+            "success": true,
+            "result": {
+              "symbol": "BTCUSD",
+              "product_id": 27,
+              "mark_price": "67000.5",
+              "open": 66000,
+              "high": 68000,
+              "low": 65000,
+              "close": 66500,
+              "volume": 1234.7,
+              "oi": "1500.5",
+              "quotes": {
+                "best_bid": "67000.0",
+                "best_ask": "67001.0",
+                "bid_size": "120",
+                "ask_size": "80"
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 67001.0,
+            "bid": 67000.0,
+            "high": 68000.0,
+            "low": 65000.0,
+            "ltp": 67000.5,
+            "oi": 1500.5,
+            "open": 66000.0,
+            "prev_close": 66500.0,
+            "volume": 1234
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/tickers/BTCUSD",
+          "query": [],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "depth",
+      "method": "POST",
+      "path": "/api/v1/depth",
+      "auth": "body",
+      "request": {
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/tickers/BTCUSD": {
+          "body": {
+            "success": true,
+            "result": {
+              "symbol": "BTCUSD",
+              "product_id": 27,
+              "mark_price": "67000.5",
+              "open": 66000,
+              "high": 68000,
+              "low": 65000,
+              "close": 66500,
+              "volume": 1234.7,
+              "oi": "1500.5",
+              "quotes": {
+                "best_bid": "67000.0",
+                "best_ask": "67001.0",
+                "bid_size": "120",
+                "ask_size": "80"
+              }
+            }
+          }
+        },
+        "GET /v2/l2orderbook/27": {
+          "body": {
+            "success": true,
+            "result": {
+              "buy": [
+                {
+                  "price": "67000.0",
+                  "size": 1500,
+                  "depth": 1500
+                },
+                {
+                  "price": "66999.5",
+                  "size": 200,
+                  "depth": 1700
+                }
+              ],
+              "sell": [
+                {
+                  "price": "67001.0",
+                  "size": 800,
+                  "depth": 800
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "asks": [
+              {
+                "price": 67001.0,
+                "quantity": 800
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              }
+            ],
+            "bids": [
+              {
+                "price": 67000.0,
+                "quantity": 1500
+              },
+              {
+                "price": 66999.5,
+                "quantity": 200
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              }
+            ],
+            "high": 68000.0,
+            "low": 65000.0,
+            "ltp": 67000.5,
+            "ltq": 0,
+            "oi": 1500.5,
+            "open": 66000.0,
+            "prev_close": 66500.0,
+            "totalbuyqty": 1700,
+            "totalsellqty": 800,
+            "volume": 1234
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/tickers/BTCUSD",
+          "query": [],
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/l2orderbook/27",
+          "query": [],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "depth_book_unavailable",
+      "method": "POST",
+      "path": "/api/v1/depth",
+      "auth": "body",
+      "request": {
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/tickers/BTCUSD": {
+          "body": {
+            "success": true,
+            "result": {
+              "symbol": "BTCUSD",
+              "product_id": 27,
+              "mark_price": "67000.5",
+              "open": 66000,
+              "high": 68000,
+              "low": 65000,
+              "close": 66500,
+              "volume": 1234.7,
+              "oi": "1500.5",
+              "quotes": {
+                "best_bid": "67000.0",
+                "best_ask": "67001.0",
+                "bid_size": "120",
+                "ask_size": "80"
+              }
+            }
+          }
+        },
+        "GET /v2/l2orderbook/27": {
+          "status": 503,
+          "body": {
+            "success": false,
+            "error": {
+              "code": "service_unavailable"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "asks": [
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              }
+            ],
+            "bids": [
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              }
+            ],
+            "high": 68000.0,
+            "low": 65000.0,
+            "ltp": 67000.5,
+            "ltq": 0,
+            "oi": 1500.5,
+            "open": 66000.0,
+            "prev_close": 66500.0,
+            "totalbuyqty": 0,
+            "totalsellqty": 0,
+            "volume": 1234
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/tickers/BTCUSD",
+          "query": [],
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/l2orderbook/27",
+          "query": [],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_refused",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/tickers/BTCUSD": {
+          "status": 404,
+          "body": {
+            "success": false,
+            "error": {
+              "code": "not_found"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching quotes for BTCUSD: Ticker HTTP 404 for BTCUSD: {\"success\":false,\"error\":{\"code\":\"not_found\"}}",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/tickers/BTCUSD",
+          "query": [],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ping",
+      "method": "POST",
+      "path": "/api/v1/ping",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "broker": "deltaexchange",
+            "message": "pong"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}

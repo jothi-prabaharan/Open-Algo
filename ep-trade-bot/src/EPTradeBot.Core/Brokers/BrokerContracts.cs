@@ -154,7 +154,8 @@ public sealed record SymbolRecord(
     double? Strike,
     int LotSize,
     string? InstrumentType,
-    double? TickSize);
+    double? TickSize,
+    double? ContractValue = null);
 
 /// <summary>Finds the plugins that are enabled and offer a capability.</summary>
 public interface IBrokerRegistry

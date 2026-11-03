@@ -32,18 +32,42 @@ public sealed class OpenAlgoApiService(
     BrokerSessionFactory sessions,
     SandboxEngine sandbox,
     KeyedAsyncLock<string> instrumentLocks,
+    ISymbolMaster symbols,
     ILogger<OpenAlgoApiService> logger)
 {
     // ---- orders ----------------------------------------------------------------------------------------------
 
+    /// <summary>
+    /// Orders carry whole quantities in this build. A fractional crypto quantity is refused
+    /// plainly rather than truncated, which would send a different order from the one asked for.
+    /// </summary>
+    private static V1Result? Fractional(BrokerAccount account, decimal quantity) =>
+        quantity == decimal.Truncate(quantity) ? null
+        : Mark(account, V1Result.Error(400, $"Fractional quantities ({quantity}) are not supported in EP Trade bot yet. Use a whole quantity, or place this order on {account.Broker} directly."));
+
+    /// <summary>
+    /// For a LIVE account, a symbol the broker's master contract does not have is refused by
+    /// name, before the risk check (which would otherwise report a missing price).
+    /// </summary>
+    private async Task<V1Result?> UnknownSymbolAsync(BrokerAccount account, string symbol, string exchange, CancellationToken ct)
+    {
+        if (account.AccountType != AccountType.LIVE || registry.Find(account.Broker) is not { } plugin) return null;
+        if (await symbols.FindAsync(plugin.Name, symbol, exchange, ct) is not null) return null;
+        return Mark(account, V1Result.Error(400, $"{symbol} on {exchange} is not in the {plugin.DisplayName} master contract. Check the symbol, or download the master contract again."));
+    }
+
     public async Task<V1Result> PlaceOrderAsync(BrokerAccount account, PlaceOrderRequest r, CancellationToken ct)
     {
+        if (Fractional(account, r.Quantity) is { } fractional) return fractional;
+        if (await UnknownSymbolAsync(account, r.Symbol, r.Exchange, ct) is { } unknown) return unknown;
         var result = await dispatcher.DispatchAsync(Intent(account, r.Strategy, r.Symbol, r.Exchange, r.Action, r.Quantity, r.PriceType, r.Product, r.Price, r.TriggerPrice, r.DisclosedQuantity), ct);
         return OrderAnswer(account, result);
     }
 
     public async Task<V1Result> PlaceSmartOrderAsync(BrokerAccount account, PlaceSmartOrderRequest r, CancellationToken ct)
     {
+        if ((Fractional(account, r.Quantity) ?? Fractional(account, r.PositionSize ?? 0)) is { } fractional) return fractional;
+        if (await UnknownSymbolAsync(account, r.Symbol, r.Exchange, ct) is { } unknown) return unknown;
         // One smart order per instrument at a time, so each one reads the position the previous one left.
         using var _ = await instrumentLocks.AcquireAsync($"{account.Id:N}|{r.Exchange}|{r.Symbol}|{r.Product}", ct);
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
@@ -79,6 +103,7 @@ public sealed class OpenAlgoApiService(
 
     public async Task<V1Result> ModifyOrderAsync(BrokerAccount account, ModifyOrderRequest r, CancellationToken ct)
     {
+        if (Fractional(account, r.Quantity ?? 0) is { } fractional) return fractional;
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
         if (account.KillSwitchEngaged) return Refusal(account, new Refusal("kill_switch_engaged", $"The kill switch is on for {account.DisplayName}, so orders cannot be changed. Release it first."));
         if (account.AccountType == AccountType.PAPER)
@@ -157,11 +182,20 @@ public sealed class OpenAlgoApiService(
     {
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
         IReadOnlyList<OpenPosition> open;
+        var failures = new List<string>();
         try
         {
-            open = account.AccountType == AccountType.PAPER
-                ? await sandbox.GetOpenPositionsAsync(account.Id, ct)
-                : await LivePositionsAsync(account, ct);
+            if (account.AccountType == AccountType.PAPER)
+            {
+                open = await sandbox.GetOpenPositionsAsync(account.Id, ct);
+            }
+            else
+            {
+                var (whole, fractional) = await LivePositionsWithFractionsAsync(account, ct);
+                open = whole;
+                // A fractional holding (crypto spot) cannot be sent as a whole-quantity order; truncating would leave it open unreported.
+                failures.AddRange(fractional.Select(f => $"{f.Symbol} ({f.Exchange}): its quantity {f.Quantity} is fractional, which EP Trade bot cannot place yet. Close it on {account.Broker} directly"));
+            }
         }
         catch (Exception ex) when (ex is BrokerException or InvalidOperationException or HttpRequestException)
         {
@@ -169,7 +203,6 @@ public sealed class OpenAlgoApiService(
             return Mark(account, V1Result.Error(500, $"Your positions could not be read from {account.Broker}, so nothing was closed. Try again in a moment."));
         }
 
-        var failures = new List<string>();
         foreach (var p in open)
         {
             // Squared off through the dispatcher like every other order: audited, and an exit is never refused by a loss limit.
@@ -377,6 +410,23 @@ public sealed class OpenAlgoApiService(
             ? (await sandbox.GetPositionsAsync(account.Id, ct)).Select(p => new OpenPosition(p.Symbol, p.Exchange, p.Product, p.Quantity)).ToList()
             : (IReadOnlyList<OpenPosition>)await LivePositionsAsync(account, ct, includeFlat: true);
         return positions.FirstOrDefault(p => p.Symbol == symbol && p.Exchange == exchange && p.Product == product)?.NetQuantity ?? 0;
+    }
+
+    private async Task<(List<OpenPosition> Whole, List<(string Symbol, string Exchange, double Quantity)> Fractional)> LivePositionsWithFractionsAsync(BrokerAccount account, CancellationToken ct)
+    {
+        if (registry.Get<IBrokerPortfolio>(account.Broker) is not { } portfolio) throw new InvalidOperationException($"{account.Broker} is not enabled on this server.");
+        var session = sessions.Create(account) ?? throw new InvalidOperationException($"{account.DisplayName} is not logged in to {account.Broker}.");
+        var whole = new List<OpenPosition>();
+        var fractional = new List<(string, string, double)>();
+        foreach (var p in (await portfolio.GetPositionsAsync(session, ct)).OfType<JsonObject>())
+        {
+            var quantity = BookFormatting.Number(p["quantity"]) ?? (double.TryParse(Text(p["quantity"]), System.Globalization.CultureInfo.InvariantCulture, out var q) ? q : 0);
+            if (quantity == 0) continue;
+            if (quantity != Math.Truncate(quantity)) fractional.Add((Text(p["symbol"]) ?? "", Text(p["exchange"]) ?? "", quantity));
+            else whole.Add(new OpenPosition(Text(p["symbol"]) ?? "", Text(p["exchange"]) ?? "", Text(p["product"]) ?? "", (int)quantity));
+        }
+
+        return (whole, fractional);
     }
 
     private async Task<List<OpenPosition>> LivePositionsAsync(BrokerAccount account, CancellationToken ct, bool includeFlat = false)

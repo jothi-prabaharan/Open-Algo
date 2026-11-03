@@ -218,5 +218,21 @@ public sealed class OpenAlgoApiTests
         Assert.Equal(200, status);
         Assert.Single(broker.Sent, s => s.Path == "/v2/orders");
     }
+
+    [PostgresFact]
+    public async Task A_fractional_crypto_quantity_is_refused_not_truncated()
+    {
+        await using var host = new TestHost("Development");
+        var account = await host.CreateAccountAsync(AccountType.PAPER, "crypto-paper", 100_000, 1000, 10_000_000);
+        var key = (await host.Get<ApiKeyService>().IssueAsync(account, "tv")).Key;
+        host.SetQuote("CRYPTO", "BTCUSD", 67000);
+
+        var (status, answer) = await PostAsync(host, "/api/v1/placeorder", new { apikey = key, strategy = "s", symbol = "BTCUSD", exchange = "CRYPTO", action = "BUY", quantity = "0.5", pricetype = "MARKET", product = "NRML" });
+
+        Assert.Equal(400, status);
+        Assert.StartsWith("Fractional quantities (0.5)", answer["message"]!.GetValue<string>());
+        await using var db = host.NewDb();
+        Assert.Equal(0, await db.Set<EPTradeBot.Core.Entities.Legacy.Sandbox.SandboxOrder>().CountAsync());
+    }
 }
 

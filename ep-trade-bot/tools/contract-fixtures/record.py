@@ -182,5 +182,5 @@ for sc in SCENARIOS.SCENARIOS:
     print(f"{resp.status_code} {sc['name']}")
 
 dest = HERE / f"{BROKER}.fixtures.json"
-dest.write_text(json.dumps({"broker": BROKER, "api_key": API_KEY, "auth_token": AUTH_TOKEN, "client_id": getattr(SCENARIOS, "CLIENT_ID", None), "read_posts": getattr(SCENARIOS, "READ_POSTS", []), "symbols": SCENARIOS.SYMBOLS, "fixtures": out}, indent=2) + "\n", encoding="utf-8")
+dest.write_text(json.dumps({"broker": BROKER, "api_key": API_KEY, "auth_token": AUTH_TOKEN, "client_id": getattr(SCENARIOS, "CLIENT_ID", None), "recorded_at": getattr(SCENARIOS, "RECORDED_AT", None), "read_posts": getattr(SCENARIOS, "READ_POSTS", []), "symbols": SCENARIOS.SYMBOLS, "fixtures": out}, indent=2) + "\n", encoding="utf-8")
 print(f"wrote {len(out)} fixtures to {dest}")

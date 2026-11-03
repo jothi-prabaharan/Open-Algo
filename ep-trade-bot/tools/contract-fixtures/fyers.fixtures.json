@@ -1,0 +1,2853 @@
+{
+  "broker": "fyers",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "fyers-access-token",
+  "client_id": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "NSE:SBIN-EQ",
+      "name": "SBIN",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "10100000003045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "NSE:INFY-EQ",
+      "name": "INFY",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "10100000001594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NSE:NIFTY26NOVFUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "101126112535001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "NSE:NIFTY50-INDEX",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE",
+      "token": "101000000026000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    }
+  ],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_missing_fields",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'strategy': ['Missing data for required field.'], 'exchange': ['Missing data for required field.'], 'action': ['Missing data for required field.'], 'quantity': ['Missing data for required field.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/orders/sync": {
+          "body": {
+            "s": "ok",
+            "code": 1101,
+            "message": "Order submitted successfully. Your Order Ref. No.26110300000001",
+            "id": "26110300000001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "symbol": "NSE:SBIN-EQ",
+            "qty": 10,
+            "type": 2,
+            "side": 1,
+            "productType": "INTRADAY",
+            "limitPrice": 0.0,
+            "stopPrice": 0.0,
+            "validity": "DAY",
+            "disclosedQty": 0,
+            "offlineOrder": false,
+            "stopLoss": 0,
+            "takeProfit": 0,
+            "orderTag": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit_cnc",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "INFY",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": 5,
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": 1500.5,
+        "disclosed_quantity": "2",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/orders/sync": {
+          "body": {
+            "s": "ok",
+            "code": 1101,
+            "message": "Order submitted successfully. Your Order Ref. No.26110300000001",
+            "id": "26110300000001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "symbol": "NSE:INFY-EQ",
+            "qty": 5,
+            "type": 1,
+            "side": -1,
+            "productType": "CNC",
+            "limitPrice": 1500.5,
+            "stopPrice": 0.0,
+            "validity": "DAY",
+            "disclosedQty": 2,
+            "offlineOrder": false,
+            "stopLoss": 0,
+            "takeProfit": 0,
+            "orderTag": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_sl_futures",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "SL",
+        "product": "NRML",
+        "price": "24010",
+        "trigger_price": "24000",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/orders/sync": {
+          "body": {
+            "s": "ok",
+            "code": 1101,
+            "message": "Order submitted successfully. Your Order Ref. No.26110300000001",
+            "id": "26110300000001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "symbol": "NSE:NIFTY26NOVFUT",
+            "qty": 75,
+            "type": 4,
+            "side": 1,
+            "productType": "MARGIN",
+            "limitPrice": 24010.0,
+            "stopPrice": 24000.0,
+            "validity": "DAY",
+            "disclosedQty": 0,
+            "offlineOrder": false,
+            "stopLoss": 0,
+            "takeProfit": 0,
+            "orderTag": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_slm",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "trigger_price": "801.05",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/orders/sync": {
+          "body": {
+            "s": "ok",
+            "code": 1101,
+            "message": "Order submitted successfully. Your Order Ref. No.26110300000001",
+            "id": "26110300000001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "symbol": "NSE:SBIN-EQ",
+            "qty": 10,
+            "type": 3,
+            "side": 1,
+            "productType": "INTRADAY",
+            "limitPrice": 0.0,
+            "stopPrice": 801.05,
+            "validity": "DAY",
+            "disclosedQty": 0,
+            "offlineOrder": false,
+            "stopLoss": 0,
+            "takeProfit": 0,
+            "orderTag": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/orders/sync": {
+          "status": 400,
+          "body": {
+            "s": "error",
+            "code": -50,
+            "message": "Insufficient funds to place the order"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Insufficient funds to place the order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "symbol": "NSE:SBIN-EQ",
+            "qty": 10,
+            "type": 2,
+            "side": 1,
+            "productType": "INTRADAY",
+            "limitPrice": 0.0,
+            "stopPrice": 0.0,
+            "validity": "DAY",
+            "disclosedQty": 0,
+            "offlineOrder": false,
+            "stopLoss": 0,
+            "takeProfit": 0,
+            "orderTag": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_with_200",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/orders/sync": {
+          "body": {
+            "s": "error",
+            "code": -99,
+            "message": "Order rejected by RMS"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "symbol": "NSE:SBIN-EQ",
+            "qty": 10,
+            "type": 2,
+            "side": 1,
+            "productType": "INTRADAY",
+            "limitPrice": 0.0,
+            "stopPrice": 0.0,
+            "validity": "DAY",
+            "disclosedQty": 0,
+            "offlineOrder": false,
+            "stopLoss": 0,
+            "takeProfit": 0,
+            "orderTag": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/orders/sync": {
+          "body": {
+            "s": "ok",
+            "code": 1101,
+            "message": "Order submitted successfully. Your Order Ref. No.26110300000001",
+            "id": "26110300000001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "symbol": null,
+            "qty": 10,
+            "type": 2,
+            "side": 1,
+            "productType": "INTRADAY",
+            "limitPrice": 0.0,
+            "stopPrice": 0.0,
+            "validity": "DAY",
+            "disclosedQty": 0,
+            "offlineOrder": false,
+            "stopLoss": 0,
+            "takeProfit": 0,
+            "orderTag": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "4001",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PATCH /api/v3/orders/sync": {
+          "body": {
+            "s": "ok",
+            "code": 1102,
+            "message": "Successfully modified order",
+            "id": "4001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "4001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PATCH",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "id": "4001",
+            "qty": 12,
+            "type": 1,
+            "limitPrice": 801.0,
+            "stopPrice": 0.0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "4002",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PATCH /api/v3/orders/sync": {
+          "status": 400,
+          "body": {
+            "s": "error",
+            "code": -52,
+            "message": "Order is already traded"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Order is already traded",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PATCH",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "id": "4002",
+            "qty": 12,
+            "type": 1,
+            "limitPrice": 801.0,
+            "stopPrice": 0.0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "4001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /api/v3/orders/sync": {
+          "body": {
+            "s": "ok",
+            "code": 1103,
+            "message": "Successfully cancelled order",
+            "id": "4001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "4001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "id": "4001"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "4002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /api/v3/orders/sync": {
+          "status": 400,
+          "body": {
+            "s": "error",
+            "code": -52,
+            "message": "Order is already traded"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Order is already traded",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "id": "4002"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /api/v3/orders": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "orderBook": [
+              {
+                "clientId": "XA00001",
+                "id": "4001",
+                "exchOrdId": "x4001",
+                "qty": 10,
+                "remainingQuantity": 10,
+                "filledQty": 0,
+                "discloseQty": 0,
+                "limitPrice": 800.5,
+                "stopPrice": 0,
+                "tradedPrice": 0,
+                "type": 1,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 10,
+                "symbol": "NSE:SBIN-EQ",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:20:01",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "INTRADAY",
+                "side": 1,
+                "status": 6,
+                "source": "API",
+                "ex_sym": "NSE:SBIN-EQ",
+                "description": ""
+              },
+              {
+                "clientId": "XA00001",
+                "id": "4002",
+                "exchOrdId": "x4002",
+                "qty": 5,
+                "remainingQuantity": 0,
+                "filledQty": 5,
+                "discloseQty": 0,
+                "limitPrice": 1499.95,
+                "stopPrice": 0,
+                "tradedPrice": 1499.95,
+                "type": 2,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 10,
+                "symbol": "NSE:INFY-EQ",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:21:11",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "CNC",
+                "side": -1,
+                "status": 2,
+                "source": "API",
+                "ex_sym": "NSE:INFY-EQ",
+                "description": ""
+              },
+              {
+                "clientId": "XA00001",
+                "id": "4003",
+                "exchOrdId": "x4003",
+                "qty": 75,
+                "remainingQuantity": 75,
+                "filledQty": 0,
+                "discloseQty": 0,
+                "limitPrice": 24010,
+                "stopPrice": 24000,
+                "tradedPrice": 0,
+                "type": 4,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 11,
+                "symbol": "NSE:NIFTY26NOVFUT",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:22:00",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "MARGIN",
+                "side": 1,
+                "status": 4,
+                "source": "API",
+                "ex_sym": "NSE:NIFTY26NOVFUT",
+                "description": ""
+              },
+              {
+                "clientId": "XA00001",
+                "id": "4004",
+                "exchOrdId": "x4004",
+                "qty": 1,
+                "remainingQuantity": 1,
+                "filledQty": 0,
+                "discloseQty": 0,
+                "limitPrice": 0,
+                "stopPrice": 790.123,
+                "tradedPrice": 0,
+                "type": 3,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 10,
+                "symbol": "NSE:SBIN-EQ",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:23:00",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "INTRADAY",
+                "side": -1,
+                "status": 5,
+                "source": "API",
+                "ex_sym": "NSE:SBIN-EQ",
+                "description": ""
+              },
+              {
+                "clientId": "XA00001",
+                "id": "4005",
+                "exchOrdId": "x4005",
+                "qty": 2,
+                "remainingQuantity": 2,
+                "filledQty": 0,
+                "discloseQty": 0,
+                "limitPrice": 10,
+                "stopPrice": 0,
+                "tradedPrice": 0,
+                "type": 1,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 10,
+                "symbol": "NSE:UNKNOWN-EQ",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:24:00",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "CNC",
+                "side": 1,
+                "status": 1,
+                "source": "API",
+                "ex_sym": "NSE:UNKNOWN-EQ",
+                "description": ""
+              }
+            ]
+          }
+        },
+        "DELETE /api/v3/orders/sync": {
+          "body": {
+            "s": "ok",
+            "code": 1103,
+            "message": "Successfully cancelled order",
+            "id": "x"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "4001",
+            "4003"
+          ],
+          "failed_cancellations": [],
+          "message": "Canceled 2 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "id": "4001"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "id": "4003"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /api/v3/positions": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "All positions are closed"
+          }
+        },
+        "GET /api/v3/positions": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "netPositions": [
+              {
+                "netQty": 10,
+                "qty": 10,
+                "avgPrice": 801.1234,
+                "netAvg": 801.1234,
+                "side": 1,
+                "productType": "INTRADAY",
+                "realized_profit": 0,
+                "unrealized_profit": 43.3333,
+                "pl": 43.3333,
+                "ltp": 805.456,
+                "buyQty": 10,
+                "buyAvg": 801.1234,
+                "buyVal": 0,
+                "sellQty": 0,
+                "sellAvg": 801.1234,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 10,
+                "symbol": "NSE:SBIN-EQ",
+                "id": "NSE:SBIN-EQ-INTRADAY",
+                "exchange": 10
+              },
+              {
+                "netQty": -75,
+                "qty": 75,
+                "avgPrice": 24005.5,
+                "netAvg": 24005.5,
+                "side": -1,
+                "productType": "MARGIN",
+                "realized_profit": 0,
+                "unrealized_profit": 1162.5,
+                "pl": 1162.5,
+                "ltp": 23990,
+                "buyQty": 0,
+                "buyAvg": 24005.5,
+                "buyVal": 0,
+                "sellQty": 75,
+                "sellAvg": 24005.5,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 11,
+                "symbol": "NSE:NIFTY26NOVFUT",
+                "id": "NSE:NIFTY26NOVFUT-MARGIN",
+                "exchange": 10
+              },
+              {
+                "netQty": 0,
+                "qty": 0,
+                "avgPrice": 0,
+                "netAvg": 0,
+                "side": 0,
+                "productType": "CNC",
+                "realized_profit": -2.5,
+                "unrealized_profit": 0,
+                "pl": -2.5,
+                "ltp": 1499,
+                "buyQty": 0,
+                "buyAvg": 0,
+                "buyVal": 0,
+                "sellQty": 0,
+                "sellAvg": 0,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 10,
+                "symbol": "NSE:INFY-EQ",
+                "id": "NSE:INFY-EQ-CNC",
+                "exchange": 10
+              }
+            ],
+            "overall": {}
+          }
+        },
+        "POST /api/v3/orders/sync": {
+          "body": {
+            "s": "ok",
+            "code": 1101,
+            "message": "Order submitted successfully. Your Order Ref. No.26110300000001",
+            "id": "26110300000001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exit_all": 1
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_reduce",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "position_size": "4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /api/v3/positions": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "netPositions": [
+              {
+                "netQty": 10,
+                "qty": 10,
+                "avgPrice": 801.1234,
+                "netAvg": 801.1234,
+                "side": 1,
+                "productType": "INTRADAY",
+                "realized_profit": 0,
+                "unrealized_profit": 43.3333,
+                "pl": 43.3333,
+                "ltp": 805.456,
+                "buyQty": 10,
+                "buyAvg": 801.1234,
+                "buyVal": 0,
+                "sellQty": 0,
+                "sellAvg": 801.1234,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 10,
+                "symbol": "NSE:SBIN-EQ",
+                "id": "NSE:SBIN-EQ-INTRADAY",
+                "exchange": 10
+              },
+              {
+                "netQty": -75,
+                "qty": 75,
+                "avgPrice": 24005.5,
+                "netAvg": 24005.5,
+                "side": -1,
+                "productType": "MARGIN",
+                "realized_profit": 0,
+                "unrealized_profit": 1162.5,
+                "pl": 1162.5,
+                "ltp": 23990,
+                "buyQty": 0,
+                "buyAvg": 24005.5,
+                "buyVal": 0,
+                "sellQty": 75,
+                "sellAvg": 24005.5,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 11,
+                "symbol": "NSE:NIFTY26NOVFUT",
+                "id": "NSE:NIFTY26NOVFUT-MARGIN",
+                "exchange": 10
+              },
+              {
+                "netQty": 0,
+                "qty": 0,
+                "avgPrice": 0,
+                "netAvg": 0,
+                "side": 0,
+                "productType": "CNC",
+                "realized_profit": -2.5,
+                "unrealized_profit": 0,
+                "pl": -2.5,
+                "ltp": 1499,
+                "buyQty": 0,
+                "buyAvg": 0,
+                "buyVal": 0,
+                "sellQty": 0,
+                "sellAvg": 0,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 10,
+                "symbol": "NSE:INFY-EQ",
+                "id": "NSE:INFY-EQ-CNC",
+                "exchange": 10
+              }
+            ],
+            "overall": {}
+          }
+        },
+        "POST /api/v3/orders/sync": {
+          "body": {
+            "s": "ok",
+            "code": 1101,
+            "message": "Order submitted successfully. Your Order Ref. No.26110300000001",
+            "id": "26110300000001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "symbol": "NSE:SBIN-EQ",
+            "qty": 6,
+            "type": 2,
+            "side": -1,
+            "productType": "INTRADAY",
+            "limitPrice": 0.0,
+            "stopPrice": 0.0,
+            "validity": "DAY",
+            "disclosedQty": 0,
+            "offlineOrder": false,
+            "stopLoss": 0,
+            "takeProfit": 0,
+            "orderTag": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /api/v3/orders": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "orderBook": [
+              {
+                "clientId": "XA00001",
+                "id": "4001",
+                "exchOrdId": "x4001",
+                "qty": 10,
+                "remainingQuantity": 10,
+                "filledQty": 0,
+                "discloseQty": 0,
+                "limitPrice": 800.5,
+                "stopPrice": 0,
+                "tradedPrice": 0,
+                "type": 1,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 10,
+                "symbol": "NSE:SBIN-EQ",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:20:01",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "INTRADAY",
+                "side": 1,
+                "status": 6,
+                "source": "API",
+                "ex_sym": "NSE:SBIN-EQ",
+                "description": ""
+              },
+              {
+                "clientId": "XA00001",
+                "id": "4002",
+                "exchOrdId": "x4002",
+                "qty": 5,
+                "remainingQuantity": 0,
+                "filledQty": 5,
+                "discloseQty": 0,
+                "limitPrice": 1499.95,
+                "stopPrice": 0,
+                "tradedPrice": 1499.95,
+                "type": 2,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 10,
+                "symbol": "NSE:INFY-EQ",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:21:11",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "CNC",
+                "side": -1,
+                "status": 2,
+                "source": "API",
+                "ex_sym": "NSE:INFY-EQ",
+                "description": ""
+              },
+              {
+                "clientId": "XA00001",
+                "id": "4003",
+                "exchOrdId": "x4003",
+                "qty": 75,
+                "remainingQuantity": 75,
+                "filledQty": 0,
+                "discloseQty": 0,
+                "limitPrice": 24010,
+                "stopPrice": 24000,
+                "tradedPrice": 0,
+                "type": 4,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 11,
+                "symbol": "NSE:NIFTY26NOVFUT",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:22:00",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "MARGIN",
+                "side": 1,
+                "status": 4,
+                "source": "API",
+                "ex_sym": "NSE:NIFTY26NOVFUT",
+                "description": ""
+              },
+              {
+                "clientId": "XA00001",
+                "id": "4004",
+                "exchOrdId": "x4004",
+                "qty": 1,
+                "remainingQuantity": 1,
+                "filledQty": 0,
+                "discloseQty": 0,
+                "limitPrice": 0,
+                "stopPrice": 790.123,
+                "tradedPrice": 0,
+                "type": 3,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 10,
+                "symbol": "NSE:SBIN-EQ",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:23:00",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "INTRADAY",
+                "side": -1,
+                "status": 5,
+                "source": "API",
+                "ex_sym": "NSE:SBIN-EQ",
+                "description": ""
+              },
+              {
+                "clientId": "XA00001",
+                "id": "4005",
+                "exchOrdId": "x4005",
+                "qty": 2,
+                "remainingQuantity": 2,
+                "filledQty": 0,
+                "discloseQty": 0,
+                "limitPrice": 10,
+                "stopPrice": 0,
+                "tradedPrice": 0,
+                "type": 1,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 10,
+                "symbol": "NSE:UNKNOWN-EQ",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:24:00",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "CNC",
+                "side": 1,
+                "status": 1,
+                "source": "API",
+                "ex_sym": "NSE:UNKNOWN-EQ",
+                "description": ""
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "4001",
+                "price": 800.5,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 10,
+                "symbol": "SBIN",
+                "timestamp": "03-Nov-2026 09:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "4002",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": 5,
+                "symbol": "INFY",
+                "timestamp": "03-Nov-2026 09:21:11",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NFO",
+                "order_status": "trigger pending",
+                "orderid": "4003",
+                "price": 24010.0,
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": 75,
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "03-Nov-2026 09:22:00",
+                "trigger_price": 24000.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "rejected",
+                "orderid": "4004",
+                "price": 0.0,
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": 1,
+                "symbol": "SBIN",
+                "timestamp": "03-Nov-2026 09:23:00",
+                "trigger_price": 790.12
+              },
+              {
+                "action": "BUY",
+                "exchange": 10.0,
+                "order_status": "cancelled",
+                "orderid": "4005",
+                "price": 10.0,
+                "pricetype": "LIMIT",
+                "product": "CNC",
+                "quantity": 2,
+                "symbol": "NSE:UNKNOWN-EQ",
+                "timestamp": "03-Nov-2026 09:24:00",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 3,
+              "total_completed_orders": 1,
+              "total_open_orders": 1,
+              "total_rejected_orders": 1,
+              "total_sell_orders": 2
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /api/v3/tradebook": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "tradeBook": [
+              {
+                "clientId": "XA00001",
+                "orderDateTime": "03-Nov-2026 09:21:12",
+                "orderNumber": "4002",
+                "exchangeOrderNo": "x4002",
+                "exchange": 10,
+                "side": -1,
+                "segment": 10,
+                "orderType": 2,
+                "fyToken": "1",
+                "productType": "CNC",
+                "tradedQty": 5,
+                "tradePrice": 1499.95,
+                "tradeValue": 7499.75,
+                "tradeNumber": "t1",
+                "row": 1,
+                "symbol": "NSE:INFY-EQ"
+              },
+              {
+                "clientId": "XA00001",
+                "orderDateTime": "03-Nov-2026 09:25:01",
+                "orderNumber": "4006",
+                "exchangeOrderNo": "x4006",
+                "exchange": 10,
+                "side": 1,
+                "segment": 11,
+                "orderType": 1,
+                "fyToken": "2",
+                "productType": "MARGIN",
+                "tradedQty": 75,
+                "tradePrice": 24005.555,
+                "tradeValue": 1800416.625,
+                "tradeNumber": "t2",
+                "row": 2,
+                "symbol": "NSE:NIFTY26NOVFUT"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "SELL",
+              "average_price": 1499.95,
+              "exchange": "NSE",
+              "orderid": "4002",
+              "product": "CNC",
+              "quantity": 5,
+              "symbol": "INFY",
+              "timestamp": "03-Nov-2026 09:21:12",
+              "trade_value": 7499.75
+            },
+            {
+              "action": "BUY",
+              "average_price": 24005.56,
+              "exchange": "NFO",
+              "orderid": "4006",
+              "product": "NRML",
+              "quantity": 75,
+              "symbol": "NIFTY25NOV26FUT",
+              "timestamp": "03-Nov-2026 09:25:01",
+              "trade_value": 1800416.62
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/tradebook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /api/v3/positions": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "netPositions": [
+              {
+                "netQty": 10,
+                "qty": 10,
+                "avgPrice": 801.1234,
+                "netAvg": 801.1234,
+                "side": 1,
+                "productType": "INTRADAY",
+                "realized_profit": 0,
+                "unrealized_profit": 43.3333,
+                "pl": 43.3333,
+                "ltp": 805.456,
+                "buyQty": 10,
+                "buyAvg": 801.1234,
+                "buyVal": 0,
+                "sellQty": 0,
+                "sellAvg": 801.1234,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 10,
+                "symbol": "NSE:SBIN-EQ",
+                "id": "NSE:SBIN-EQ-INTRADAY",
+                "exchange": 10
+              },
+              {
+                "netQty": -75,
+                "qty": 75,
+                "avgPrice": 24005.5,
+                "netAvg": 24005.5,
+                "side": -1,
+                "productType": "MARGIN",
+                "realized_profit": 0,
+                "unrealized_profit": 1162.5,
+                "pl": 1162.5,
+                "ltp": 23990,
+                "buyQty": 0,
+                "buyAvg": 24005.5,
+                "buyVal": 0,
+                "sellQty": 75,
+                "sellAvg": 24005.5,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 11,
+                "symbol": "NSE:NIFTY26NOVFUT",
+                "id": "NSE:NIFTY26NOVFUT-MARGIN",
+                "exchange": 10
+              },
+              {
+                "netQty": 0,
+                "qty": 0,
+                "avgPrice": 0,
+                "netAvg": 0,
+                "side": 0,
+                "productType": "CNC",
+                "realized_profit": -2.5,
+                "unrealized_profit": 0,
+                "pl": -2.5,
+                "ltp": 1499,
+                "buyQty": 0,
+                "buyAvg": 0,
+                "buyVal": 0,
+                "sellQty": 0,
+                "sellAvg": 0,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 10,
+                "symbol": "NSE:INFY-EQ",
+                "id": "NSE:INFY-EQ-CNC",
+                "exchange": 10
+              }
+            ],
+            "overall": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": 801.12,
+              "exchange": "NSE",
+              "ltp": 805.46,
+              "pnl": 43.33,
+              "product": "MIS",
+              "quantity": 10,
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": 24005.5,
+              "exchange": "NFO",
+              "ltp": 23990.0,
+              "pnl": 1162.5,
+              "product": "NRML",
+              "quantity": -75,
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": 0.0,
+              "exchange": "NSE",
+              "ltp": 1499.0,
+              "pnl": -2.5,
+              "product": "CNC",
+              "quantity": 0,
+              "symbol": "INFY"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /api/v3/holdings": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "holdings": [
+              {
+                "holdingType": "HLD",
+                "quantity": 20,
+                "costPrice": 1400.0,
+                "marketVal": 29980.0,
+                "remainingQuantity": 20,
+                "pl": 1980.0,
+                "ltp": 1499.0,
+                "id": 1,
+                "fyToken": "1",
+                "exchange": 10,
+                "symbol": "NSE:INFY-EQ",
+                "segment": 10,
+                "isin": "INE009A01021",
+                "qty_t1": 0,
+                "remainingPledgeQuantity": 0,
+                "collateralQuantity": 0
+              },
+              {
+                "holdingType": "T1",
+                "quantity": 3,
+                "costPrice": 12.5,
+                "marketVal": 33.75,
+                "remainingQuantity": 3,
+                "pl": -3.75,
+                "ltp": 11.25,
+                "id": 2,
+                "fyToken": "2",
+                "exchange": 10,
+                "symbol": "NSE:OLDCO-EQ",
+                "segment": 10,
+                "isin": "INE000000000",
+                "qty_t1": 3,
+                "remainingPledgeQuantity": 0,
+                "collateralQuantity": 0
+              }
+            ],
+            "overall": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "average_price": 1400.0,
+                "exchange": "NSE",
+                "ltp": 1499.0,
+                "pnl": 1980.0,
+                "pnlpercent": 7.07,
+                "product": "CNC",
+                "quantity": 20,
+                "symbol": "INFY"
+              },
+              {
+                "average_price": 12.5,
+                "exchange": 10,
+                "ltp": 11.25,
+                "pnl": -3.75,
+                "pnlpercent": -10.0,
+                "product": "CNC",
+                "quantity": 3,
+                "symbol": "NSE:OLDCO-EQ"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 30013.75,
+              "totalinvvalue": 28037.5,
+              "totalpnlpercentage": 7.05,
+              "totalprofitandloss": 1976.25
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_token_expired",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /api/v3/funds": {
+          "status": 401,
+          "body": {
+            "s": "error",
+            "code": -16,
+            "message": "Could not authenticate the user"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/funds",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /api/v3/funds": {
+          "body": {
+            "code": 200,
+            "message": "",
+            "s": "ok",
+            "fund_limit": [
+              {
+                "id": 1,
+                "title": "Total Balance",
+                "equityAmount": 101500.0,
+                "commodityAmount": 0.0
+              },
+              {
+                "id": 2,
+                "title": "Utilized Amount",
+                "equityAmount": 274.95,
+                "commodityAmount": 100.0
+              },
+              {
+                "id": 3,
+                "title": "Clear Balance",
+                "equityAmount": 98500.0,
+                "commodityAmount": 2000.0
+              },
+              {
+                "id": 4,
+                "title": "Realized Profit and Loss",
+                "equityAmount": -2.5,
+                "commodityAmount": 0.0
+              },
+              {
+                "id": 5,
+                "title": "Collaterals",
+                "equityAmount": 1500.0,
+                "commodityAmount": 0.0
+              },
+              {
+                "id": 10,
+                "title": "Available Balance",
+                "equityAmount": 99725.05,
+                "commodityAmount": 1900.0
+              }
+            ]
+          }
+        },
+        "GET /api/v3/positions": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "netPositions": [
+              {
+                "netQty": 10,
+                "qty": 10,
+                "avgPrice": 801.1234,
+                "netAvg": 801.1234,
+                "side": 1,
+                "productType": "INTRADAY",
+                "realized_profit": 0,
+                "unrealized_profit": 43.3333,
+                "pl": 43.3333,
+                "ltp": 805.456,
+                "buyQty": 10,
+                "buyAvg": 801.1234,
+                "buyVal": 0,
+                "sellQty": 0,
+                "sellAvg": 801.1234,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 10,
+                "symbol": "NSE:SBIN-EQ",
+                "id": "NSE:SBIN-EQ-INTRADAY",
+                "exchange": 10
+              },
+              {
+                "netQty": -75,
+                "qty": 75,
+                "avgPrice": 24005.5,
+                "netAvg": 24005.5,
+                "side": -1,
+                "productType": "MARGIN",
+                "realized_profit": 0,
+                "unrealized_profit": 1162.5,
+                "pl": 1162.5,
+                "ltp": 23990,
+                "buyQty": 0,
+                "buyAvg": 24005.5,
+                "buyVal": 0,
+                "sellQty": 75,
+                "sellAvg": 24005.5,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 11,
+                "symbol": "NSE:NIFTY26NOVFUT",
+                "id": "NSE:NIFTY26NOVFUT-MARGIN",
+                "exchange": 10
+              },
+              {
+                "netQty": 0,
+                "qty": 0,
+                "avgPrice": 0,
+                "netAvg": 0,
+                "side": 0,
+                "productType": "CNC",
+                "realized_profit": -2.5,
+                "unrealized_profit": 0,
+                "pl": -2.5,
+                "ltp": 1499,
+                "buyQty": 0,
+                "buyAvg": 0,
+                "buyVal": 0,
+                "sellQty": 0,
+                "sellAvg": 0,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 10,
+                "symbol": "NSE:INFY-EQ",
+                "id": "NSE:INFY-EQ-CNC",
+                "exchange": 10
+              }
+            ],
+            "overall": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "100500.00",
+            "collateral": "1500.00",
+            "m2mrealized": "-2.50",
+            "m2munrealized": "1205.83",
+            "utiliseddebits": "374.95"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/funds",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderstatus_complete",
+      "method": "POST",
+      "path": "/api/v1/orderstatus",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "4002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /api/v3/orders": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "orderBook": [
+              {
+                "clientId": "XA00001",
+                "id": "4001",
+                "exchOrdId": "x4001",
+                "qty": 10,
+                "remainingQuantity": 10,
+                "filledQty": 0,
+                "discloseQty": 0,
+                "limitPrice": 800.5,
+                "stopPrice": 0,
+                "tradedPrice": 0,
+                "type": 1,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 10,
+                "symbol": "NSE:SBIN-EQ",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:20:01",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "INTRADAY",
+                "side": 1,
+                "status": 6,
+                "source": "API",
+                "ex_sym": "NSE:SBIN-EQ",
+                "description": ""
+              },
+              {
+                "clientId": "XA00001",
+                "id": "4002",
+                "exchOrdId": "x4002",
+                "qty": 5,
+                "remainingQuantity": 0,
+                "filledQty": 5,
+                "discloseQty": 0,
+                "limitPrice": 1499.95,
+                "stopPrice": 0,
+                "tradedPrice": 1499.95,
+                "type": 2,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 10,
+                "symbol": "NSE:INFY-EQ",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:21:11",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "CNC",
+                "side": -1,
+                "status": 2,
+                "source": "API",
+                "ex_sym": "NSE:INFY-EQ",
+                "description": ""
+              },
+              {
+                "clientId": "XA00001",
+                "id": "4003",
+                "exchOrdId": "x4003",
+                "qty": 75,
+                "remainingQuantity": 75,
+                "filledQty": 0,
+                "discloseQty": 0,
+                "limitPrice": 24010,
+                "stopPrice": 24000,
+                "tradedPrice": 0,
+                "type": 4,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 11,
+                "symbol": "NSE:NIFTY26NOVFUT",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:22:00",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "MARGIN",
+                "side": 1,
+                "status": 4,
+                "source": "API",
+                "ex_sym": "NSE:NIFTY26NOVFUT",
+                "description": ""
+              },
+              {
+                "clientId": "XA00001",
+                "id": "4004",
+                "exchOrdId": "x4004",
+                "qty": 1,
+                "remainingQuantity": 1,
+                "filledQty": 0,
+                "discloseQty": 0,
+                "limitPrice": 0,
+                "stopPrice": 790.123,
+                "tradedPrice": 0,
+                "type": 3,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 10,
+                "symbol": "NSE:SBIN-EQ",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:23:00",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "INTRADAY",
+                "side": -1,
+                "status": 5,
+                "source": "API",
+                "ex_sym": "NSE:SBIN-EQ",
+                "description": ""
+              },
+              {
+                "clientId": "XA00001",
+                "id": "4005",
+                "exchOrdId": "x4005",
+                "qty": 2,
+                "remainingQuantity": 2,
+                "filledQty": 0,
+                "discloseQty": 0,
+                "limitPrice": 10,
+                "stopPrice": 0,
+                "tradedPrice": 0,
+                "type": 1,
+                "fyToken": "1",
+                "exchange": 10,
+                "segment": 10,
+                "symbol": "NSE:UNKNOWN-EQ",
+                "instrument": 0,
+                "message": "",
+                "offlineOrder": false,
+                "orderDateTime": "03-Nov-2026 09:24:00",
+                "orderValidity": "DAY",
+                "pan": "",
+                "productType": "CNC",
+                "side": 1,
+                "status": 1,
+                "source": "API",
+                "ex_sym": "NSE:UNKNOWN-EQ",
+                "description": ""
+              }
+            ]
+          }
+        },
+        "GET /api/v3/tradebook": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "tradeBook": [
+              {
+                "clientId": "XA00001",
+                "orderDateTime": "03-Nov-2026 09:21:12",
+                "orderNumber": "4002",
+                "exchangeOrderNo": "x4002",
+                "exchange": 10,
+                "side": -1,
+                "segment": 10,
+                "orderType": 2,
+                "fyToken": "1",
+                "productType": "CNC",
+                "tradedQty": 5,
+                "tradePrice": 1499.95,
+                "tradeValue": 7499.75,
+                "tradeNumber": "t1",
+                "row": 1,
+                "symbol": "NSE:INFY-EQ"
+              },
+              {
+                "clientId": "XA00001",
+                "orderDateTime": "03-Nov-2026 09:25:01",
+                "orderNumber": "4006",
+                "exchangeOrderNo": "x4006",
+                "exchange": 10,
+                "side": 1,
+                "segment": 11,
+                "orderType": 1,
+                "fyToken": "2",
+                "productType": "MARGIN",
+                "tradedQty": 75,
+                "tradePrice": 24005.555,
+                "tradeValue": 1800416.625,
+                "tradeNumber": "t2",
+                "row": 2,
+                "symbol": "NSE:NIFTY26NOVFUT"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "action": "SELL",
+            "average_price": 1499.95,
+            "exchange": "NSE",
+            "order_status": "complete",
+            "orderid": "4002",
+            "price": 0.0,
+            "pricetype": "MARKET",
+            "product": "CNC",
+            "quantity": 5,
+            "symbol": "INFY",
+            "timestamp": "03-Nov-2026 09:21:11",
+            "trigger_price": 0.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/tradebook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_short",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /api/v3/positions": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "netPositions": [
+              {
+                "netQty": 10,
+                "qty": 10,
+                "avgPrice": 801.1234,
+                "netAvg": 801.1234,
+                "side": 1,
+                "productType": "INTRADAY",
+                "realized_profit": 0,
+                "unrealized_profit": 43.3333,
+                "pl": 43.3333,
+                "ltp": 805.456,
+                "buyQty": 10,
+                "buyAvg": 801.1234,
+                "buyVal": 0,
+                "sellQty": 0,
+                "sellAvg": 801.1234,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 10,
+                "symbol": "NSE:SBIN-EQ",
+                "id": "NSE:SBIN-EQ-INTRADAY",
+                "exchange": 10
+              },
+              {
+                "netQty": -75,
+                "qty": 75,
+                "avgPrice": 24005.5,
+                "netAvg": 24005.5,
+                "side": -1,
+                "productType": "MARGIN",
+                "realized_profit": 0,
+                "unrealized_profit": 1162.5,
+                "pl": 1162.5,
+                "ltp": 23990,
+                "buyQty": 0,
+                "buyAvg": 24005.5,
+                "buyVal": 0,
+                "sellQty": 75,
+                "sellAvg": 24005.5,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 11,
+                "symbol": "NSE:NIFTY26NOVFUT",
+                "id": "NSE:NIFTY26NOVFUT-MARGIN",
+                "exchange": 10
+              },
+              {
+                "netQty": 0,
+                "qty": 0,
+                "avgPrice": 0,
+                "netAvg": 0,
+                "side": 0,
+                "productType": "CNC",
+                "realized_profit": -2.5,
+                "unrealized_profit": 0,
+                "pl": -2.5,
+                "ltp": 1499,
+                "buyQty": 0,
+                "buyAvg": 0,
+                "buyVal": 0,
+                "sellQty": 0,
+                "sellAvg": 0,
+                "sellVal": 0,
+                "slNo": 0,
+                "fyToken": "1",
+                "crossCurrency": "",
+                "rbiRefRate": 1.0,
+                "qtyMulti_com": 1.0,
+                "segment": 10,
+                "symbol": "NSE:INFY-EQ",
+                "id": "NSE:INFY-EQ-CNC",
+                "exchange": 10
+              }
+            ],
+            "overall": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": -75,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/depth": {
+          "body": {
+            "s": "ok",
+            "message": "",
+            "d": {
+              "NSE:SBIN-EQ": {
+                "totalbuyqty": 170,
+                "totalsellqty": 97,
+                "bids": [
+                  {
+                    "price": 805.4,
+                    "volume": 120,
+                    "ord": 3
+                  },
+                  {
+                    "price": 805.35,
+                    "volume": 50,
+                    "ord": 1
+                  }
+                ],
+                "ask": [
+                  {
+                    "price": 805.5,
+                    "volume": 80,
+                    "ord": 2
+                  },
+                  {
+                    "price": 805.55,
+                    "volume": 10,
+                    "ord": 1
+                  },
+                  {
+                    "price": 805.6,
+                    "volume": 7,
+                    "ord": 1
+                  }
+                ],
+                "o": 800.0,
+                "h": 810.0,
+                "l": 795.5,
+                "c": 799.95,
+                "chp": 0.69,
+                "tick_Size": 0.05,
+                "ch": 5.5,
+                "ltq": 5,
+                "ltt": 1793686800,
+                "ltp": 805.45,
+                "v": 1234567,
+                "atp": 803.1,
+                "lower_ckt": 720.0,
+                "upper_ckt": 880.0,
+                "expiry": "",
+                "oi": 0,
+                "oiflag": false,
+                "pdoi": 0,
+                "oipercent": 0
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 805.5,
+            "bid": 805.4,
+            "high": 810.0,
+            "low": 795.5,
+            "ltp": 805.45,
+            "oi": 0,
+            "open": 800.0,
+            "prev_close": 799.95,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/data/depth",
+          "query": [
+            [
+              "symbol",
+              "NSE:SBIN-EQ"
+            ],
+            [
+              "ohlcv_flag",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "depth",
+      "method": "POST",
+      "path": "/api/v1/depth",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/depth": {
+          "body": {
+            "s": "ok",
+            "message": "",
+            "d": {
+              "NSE:SBIN-EQ": {
+                "totalbuyqty": 170,
+                "totalsellqty": 97,
+                "bids": [
+                  {
+                    "price": 805.4,
+                    "volume": 120,
+                    "ord": 3
+                  },
+                  {
+                    "price": 805.35,
+                    "volume": 50,
+                    "ord": 1
+                  }
+                ],
+                "ask": [
+                  {
+                    "price": 805.5,
+                    "volume": 80,
+                    "ord": 2
+                  },
+                  {
+                    "price": 805.55,
+                    "volume": 10,
+                    "ord": 1
+                  },
+                  {
+                    "price": 805.6,
+                    "volume": 7,
+                    "ord": 1
+                  }
+                ],
+                "o": 800.0,
+                "h": 810.0,
+                "l": 795.5,
+                "c": 799.95,
+                "chp": 0.69,
+                "tick_Size": 0.05,
+                "ch": 5.5,
+                "ltq": 5,
+                "ltt": 1793686800,
+                "ltp": 805.45,
+                "v": 1234567,
+                "atp": 803.1,
+                "lower_ckt": 720.0,
+                "upper_ckt": 880.0,
+                "expiry": "",
+                "oi": 0,
+                "oiflag": false,
+                "pdoi": 0,
+                "oipercent": 0
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "asks": [
+              {
+                "price": 805.5,
+                "quantity": 80
+              },
+              {
+                "price": 805.55,
+                "quantity": 10
+              },
+              {
+                "price": 805.6,
+                "quantity": 7
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              }
+            ],
+            "bids": [
+              {
+                "price": 805.4,
+                "quantity": 120
+              },
+              {
+                "price": 805.35,
+                "quantity": 50
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              }
+            ],
+            "high": 810.0,
+            "low": 795.5,
+            "ltp": 805.45,
+            "ltq": 5,
+            "oi": 0,
+            "open": 800.0,
+            "prev_close": 799.95,
+            "totalbuyqty": 170,
+            "totalsellqty": 97,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/data/depth",
+          "query": [
+            [
+              "symbol",
+              "NSE:SBIN-EQ"
+            ],
+            [
+              "ohlcv_flag",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_refused",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/depth": {
+          "status": 401,
+          "body": {
+            "s": "error",
+            "code": -16,
+            "message": "Could not authenticate the user"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching quotes: Error from Fyers API: HTTP error: Client error '401 Unauthorized' for url 'https://api-t1.fyers.in/data/depth?symbol=NSE%3ASBIN-EQ&ohlcv_flag=1'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/data/depth",
+          "query": [
+            [
+              "symbol",
+              "NSE:SBIN-EQ"
+            ],
+            [
+              "ohlcv_flag",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ping",
+      "method": "POST",
+      "path": "/api/v1/ping",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "broker": "fyers",
+            "message": "pong"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}

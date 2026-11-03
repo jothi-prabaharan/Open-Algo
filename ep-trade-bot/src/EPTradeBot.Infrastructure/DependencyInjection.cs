@@ -12,6 +12,7 @@ using EPTradeBot.Infrastructure.Trading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace EPTradeBot.Infrastructure;
@@ -46,6 +47,8 @@ public static class DependencyInjection
         services.AddSingleton<IQuoteSource>(sp => sp.GetRequiredService<QuoteBook>());
         services.AddSingleton<IFreezeQuantityLookup, FreezeQuantityLookup>();
         services.AddSingleton<ITradingGuardService, TradingGuardService>();
+        // One clock for code that asks what day it is (a broker's "today's orders"), replaceable in tests.
+        services.TryAddSingleton(TimeProvider.System);
         services.AddSingleton<TokenProtector>();
         services.AddSingleton<ApiKeyService>();
         services.AddSingleton<BrokerSessionFactory>();

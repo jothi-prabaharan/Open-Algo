@@ -50,8 +50,8 @@
  {
   "name": "C7 modify skips the environment guard",
   "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
-  "old": "    public async Task<V1Result> ModifyOrderAsync(BrokerAccount account, ModifyOrderRequest r, CancellationToken ct)\n    {\n        if (guard.Check(account) is { } refused) return Refusal(account, refused);",
-  "new": "    public async Task<V1Result> ModifyOrderAsync(BrokerAccount account, ModifyOrderRequest r, CancellationToken ct)\n    {",
+  "old": "        if (Fractional(account, r.Quantity ?? 0) is { } fractional) return fractional;\n        if (guard.Check(account) is { } refused) return Refusal(account, refused);\n        if (account.KillSwitchEngaged)",
+  "new": "        if (Fractional(account, r.Quantity ?? 0) is { } fractional) return fractional;\n        if (account.KillSwitchEngaged)",
   "project": "EPTradeBot.IntegrationTests",
   "filter": "FullyQualifiedName~Every_write_to_a_live_broker"
  },

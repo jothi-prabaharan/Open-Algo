@@ -1,0 +1,136 @@
+[
+ {
+  "name": "F1 refusal sent with HTTP 200 reported as success (OpenAlgo's behaviour)",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "if (Str(reply?[\"s\"]) == \"ok\" && Str(reply?[\"id\"]) is { Length: > 0 } id) return BrokerCallResult.Success(id);\n            // OpenAlgo",
+  "new": "if (response.IsSuccessStatusCode) return BrokerCallResult.Success(Str(reply?[\"id\"]) ?? \"\");\n            // OpenAlgo",
+  "filter": "FullyQualifiedName~FyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F2 NFO exchange code read as NSE",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "(10, 10) => \"NSE\", (10, 11) => \"NFO\",",
+  "new": "(10, 10) => \"NSE\", (10, 11) => \"NSE\",",
+  "filter": "FullyQualifiedName~FyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F3 token sent without the app id",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "request.Headers.TryAddWithoutValidation(\"Authorization\", $\"{session.Key(\"ApiKey\")}:{session.AuthToken}\");",
+  "new": "request.Headers.TryAddWithoutValidation(\"Authorization\", session.AuthToken);",
+  "filter": "FullyQualifiedName~FyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F4 trigger-pending counted as open in statistics",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "else if (status == 6) open++;",
+  "new": "else if (status is 6 or 4) open++;",
+  "filter": "FullyQualifiedName~FyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F5 T1 holdings not shown as CNC",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "[\"product\"] = Str(h[\"holdingType\"]) is \"HLD\" or \"T1\" ? \"CNC\"",
+  "new": "[\"product\"] = Str(h[\"holdingType\"]) is \"HLD\" ? \"CNC\"",
+  "filter": "FullyQualifiedName~FyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F6 funds read the total balance, not the clear balance",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "BookFormatting.Fixed2(Total(\"clear_balance\"))",
+  "new": "BookFormatting.Fixed2(Total(\"total_balance\"))",
+  "filter": "FullyQualifiedName~FyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F7 depth asks read from the bid side",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "[\"bids\"] = Levels(d[\"bids\"]), [\"asks\"] = Levels(d[\"ask\"]),",
+  "new": "[\"bids\"] = Levels(d[\"bids\"]), [\"asks\"] = Levels(d[\"bids\"]),",
+  "filter": "FullyQualifiedName~FyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X1 signature leaves out the body",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "Sign(session.Key(\"ApiSecret\") ?? \"\", method.Method, timestamp, path, query, text)",
+  "new": "Sign(session.Key(\"ApiSecret\") ?? \"\", method.Method, timestamp, path, query, \"\")",
+  "filter": "FullyQualifiedName~DeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X2 books not limited to today",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "return Ist.TradingDay(utc) == Ist.TradingDay(clock.GetUtcNow().UtcDateTime);",
+  "new": "return utc.Year > 2000;",
+  "filter": "FullyQualifiedName~DeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X3 order id without its product id",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "return BrokerCallResult.Success($\"{Str(result[\"product_id\"]) ?? instrument.Token}:{Str(result[\"id\"])}\");",
+  "new": "return BrokerCallResult.Success(Str(result[\"id\"]) ?? \"\");",
+  "filter": "FullyQualifiedName~DeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X4 spot balances left out of positions",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "if (currency is \"\" or \"INR\" or \"USD\") continue;",
+  "new": "if (currency.Length >= 0) continue;",
+  "filter": "FullyQualifiedName~DeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X5 SL-M sent with a limit price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "private static string OrderType(string priceType) => priceType is \"LIMIT\" or \"SL\" ? \"limit_order\" : \"market_order\";",
+  "new": "private static string OrderType(string priceType) => priceType is \"LIMIT\" or \"SL\" or \"SL-M\" ? \"limit_order\" : \"market_order\";",
+  "filter": "FullyQualifiedName~DeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X6 unreadable order book shown as empty (OpenAlgo's behaviour)",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "var book = await PublicAsync($\"/v2/l2orderbook/{productId}\", \"order book\", cancellationToken);",
+  "new": "JsonObject book; try { book = await PublicAsync($\"/v2/l2orderbook/{productId}\", \"order book\", cancellationToken); } catch (BrokerException) { book = []; }",
+  "filter": "FullyQualifiedName~DeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X7 fractional positions silently left out of close-all",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "failures.AddRange(fractional.Select(",
+  "new": "_ = failures.Count + fractional.Select(",
+  "also": [
+   {
+    "old": "cannot place yet. Close it on {account.Broker} directly\"));",
+    "new": "cannot place yet. Close it on {account.Broker} directly\").Count();"
+   }
+  ],
+  "filter": "FullyQualifiedName~DeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X8 unknown symbol reaches the risk check",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "if (account.AccountType != AccountType.LIVE || registry.Find(account.Broker) is not { } plugin) return null;",
+  "new": "if (account.AccountType == account.AccountType || registry.Find(account.Broker) is not { } plugin) return null;",
+  "filter": "FullyQualifiedName~DeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X9 fractional quantity truncated",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "if (Fractional(account, r.Quantity) is { } fractional) return fractional;\n        if (await UnknownSymbolAsync",
+  "new": "if (await UnknownSymbolAsync",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~fractional_crypto"
+ }
+]
