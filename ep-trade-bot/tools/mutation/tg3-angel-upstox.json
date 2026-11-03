@@ -1,0 +1,138 @@
+[
+ {
+  "name": "A1 trade size read only from quantity (OpenAlgo's behaviour)",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "[\"quantity\"] = Get(t, \"quantity\", null) ?? Get(t, \"fillsize\", 0),",
+  "new": "[\"quantity\"] = Get(t, \"quantity\", 0),",
+  "filter": "FullyQualifiedName~AngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A2 refused cancel reported as success",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "if (Truthy(reply?[\"status\"])) return BrokerCallResult.Success(orderId);",
+  "new": "if (reply is not null) return BrokerCallResult.Success(orderId);",
+  "filter": "FullyQualifiedName~AngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A3 refused modify reported as success",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "if (accepted && Str(reply![\"data\"]?[\"orderid\"]) is { Length: > 0 } id) return BrokerCallResult.Success(id);",
+  "new": "if (response.IsSuccessStatusCode) return BrokerCallResult.Success(change.OrderId);",
+  "filter": "FullyQualifiedName~AngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A4 private key not sent",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "request.Headers.TryAddWithoutValidation(\"X-PrivateKey\", session.Key(\"ApiKey\") ?? \"\");",
+  "new": "",
+  "filter": "FullyQualifiedName~AngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A5 stop-loss orders sent as NORMAL variety",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "private static string Variety(string priceType) => priceType is \"SL\" or \"SL-M\" ? \"STOPLOSS\" : \"NORMAL\";",
+  "new": "private static string Variety(string priceType) => \"NORMAL\";",
+  "filter": "FullyQualifiedName~AngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A6 book product renamed when the symbol is unknown",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "[\"product\"] = record is null ? Get(o, \"producttype\", \"\") : BookProduct(exchange, Str(o[\"producttype\"]) ?? \"\"),",
+  "new": "[\"product\"] = BookProduct(\"NSE\", Str(o[\"producttype\"]) ?? \"\"),",
+  "filter": "FullyQualifiedName~AngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A7 lost order reply not reconciled from the order book",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "var found = await FindByTagAsync(session, tag, instrument, order, cancellationToken);",
+  "new": "string? found = null;",
+  "filter": "FullyQualifiedName~AngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A8 funds collateral not net of payout",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "var collateral = net - Float(data[\"utilisedpayout\"]);",
+  "new": "var collateral = net;",
+  "filter": "FullyQualifiedName~AngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A9 index quotes sent on the index exchange",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "var angelExchange = exchange switch { \"NSE_INDEX\" => \"NSE\", \"BSE_INDEX\" => \"BSE\", \"MCX_INDEX\" => \"MCX\", _ => exchange };",
+  "new": "var angelExchange = exchange;",
+  "filter": "FullyQualifiedName~AngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U1 NRML sent as intraday",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "private static string Product(string product) => product is \"CNC\" or \"NRML\" ? \"D\" : \"I\";",
+  "new": "private static string Product(string product) => product is \"CNC\" ? \"D\" : \"I\";",
+  "filter": "FullyQualifiedName~UpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U2 SL-M order carries a limit price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "[\"price\"] = type is \"LIMIT\" or \"SL\" ? (double)order.Price : \"0\",",
+  "new": "[\"price\"] = type is \"MARKET\" ? \"0\" : (double)order.Price,",
+  "filter": "FullyQualifiedName~UpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U3 modify-pending orders not read as open",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "\"OPEN\", \"OPEN PENDING\", \"TRIGGER PENDING\", \"VALIDATION PENDING\", \"MODIFY PENDING\",",
+  "new": "\"OPEN\", \"OPEN PENDING\", \"TRIGGER PENDING\", \"VALIDATION PENDING\",",
+  "filter": "FullyQualifiedName~UpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U4 missing average price left at 0",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "            if (average == 0)\n            {",
+  "new": "            if (average == -1 && quantity == 1e18)\n            {",
+  "filter": "FullyQualifiedName~UpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U5 cancel loses its order id",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "$\"/v3/order/cancel?order_id={Uri.EscapeDataString(orderId)}\"",
+  "new": "\"/v3/order/cancel\"",
+  "filter": "FullyQualifiedName~UpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U6 pledge margin used left out of debits",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "BookFormatting.Fixed2(Float(cash?[\"margin_used\"]?[\"total\"]) + pledgeUsed)",
+  "new": "BookFormatting.Fixed2(Float(cash?[\"margin_used\"]?[\"total\"]))",
+  "filter": "FullyQualifiedName~UpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U7 unpriced holding shown as a total loss",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "[\"pnlpercent\"] = average == 0 || last == 0 ? 0.0 :",
+  "new": "[\"pnlpercent\"] = average == 0 ? 0.0 :",
+  "filter": "FullyQualifiedName~UpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U8 orders sent to the books host",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "using var request = Request(session, HttpMethod.Post, OrderApi, \"/v3/order/place\", body);",
+  "new": "using var request = Request(session, HttpMethod.Post, Api, \"/v3/order/place\", body);",
+  "filter": "FullyQualifiedName~UpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

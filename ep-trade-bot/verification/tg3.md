@@ -1,9 +1,10 @@
-# Verification Gate 3, passes 1 and 2: broker contract, /api/v1 core, streaming, Zerodha, Dhan, Dhan Sandbox
+# Verification Gate 3, passes 1 to 3: broker contract, /api/v1 core, streaming, Zerodha, Dhan, Dhan Sandbox, Angel One, Upstox
 
 Date: 2026-11-03. Same toolchain as Gates 1 and 2, plus NetMQ 4.0.4.5 and the
-SignalR client 10.0.14 (tests only). Result: **both passes verified; Task Group 3
+SignalR client 10.0.14 (tests only). Result: **all three passes verified; Task Group 3
 is not finished.** Pass 1 built the broker contract, the /api/v1 core, streaming
-and Zerodha; pass 2 added Dhan and Dhan Sandbox (section 9). What is not done is
+and Zerodha; pass 2 added Dhan and Dhan Sandbox (section 9); pass 3 added Angel One
+and Upstox (section 10). What is not done is
 listed in section 7. Everything below was run in this session.
 
 ## 1. What was built
@@ -109,10 +110,10 @@ wording comes from marshmallow. Two fixtures are deliberate differences
 Passed!  - Failed: 0, Passed: 129, Skipped: 0, Total: 129 - EPTradeBot.Core.Tests.dll
 Passed!  - Failed: 0, Passed:  35, Skipped: 0, Total:  35 - EPTradeBot.Architecture.Tests.dll
 Passed!  - Failed: 0, Passed:  26, Skipped: 0, Total:  26 - EPTradeBot.IntegrationTests.dll
-Passed!  - Failed: 0, Passed: 100, Skipped: 0, Total: 100 - EPTradeBot.Contract.Tests.dll
+Passed!  - Failed: 0, Passed: 161, Skipped: 0, Total: 161 - EPTradeBot.Contract.Tests.dll
 ```
 
-290 tests in all after pass 2 (221 after pass 1, 164 at Gate 2). After the run, 0 test databases remain. New claims and the tests that prove them:
+351 tests in all after pass 3 (290 after pass 2, 221 after pass 1, 164 at Gate 2). After the run, 0 test databases remain. New claims and the tests that prove them:
 
 | Claim | Test |
 | --- | --- |
@@ -169,8 +170,9 @@ closed: C3 passed because no recorded order was a MARKET order carrying a price
 
 ## 7. Not done yet in Task Group 3
 
-- **Reference adapters: 3 of the 7 named (Zerodha, Dhan, Dhan Sandbox).** All three are contract-verified, none live-verified. Angel One, Upstox, Fyers and Delta Exchange are not started. The other 31 plugins follow in batches.
+- **Reference adapters: 5 of the 7 named (Zerodha, Dhan, Dhan Sandbox, Angel One, Upstox).** All five are contract-verified, none live-verified. Fyers and Delta Exchange are not started. The other 31 plugins follow in batches.
 - **25 of the remaining /api/v1 pairs** listed in section 2.
+- **Angel One and Upstox gaps, refused rather than guessed:** history, GTT, margin, login and the feeds; Upstox's global indicators. Neither plugin queues requests against the broker's rate limit yet (OpenAlgo paces and retries both).
 - **Dhan gaps, refused rather than guessed:** history, GTT, margin, login and the Dhan feed. Dhan allows one quote call a second and EP Trade bot does not queue them yet (OpenAlgo waits and retries); a refused quote leaves a position unpriced, which the risk check then values at its average price.
 - **Zerodha gaps, refused rather than guessed:** MCX (Kite counts contracts, OpenAlgo units; an MCX order or an MCX row in a book is refused), history, GTT, margin, login and the Kite ticker feed. With no broker feed adapter yet, the bus carries only what something publishes to it; in this pass that is the tests.
 - **Broker login.** A LIVE account's token is stored through the admin endpoint until the login flows arrive with the web app (TG5).
@@ -327,4 +329,133 @@ run again after the harness changes and stayed all red.
 | D14 holdings listing exchange always NSE | 1 failed (after two survivals, above) |
 | D15 sandbox order payload loses its fixed fields | 11 failed |
 | D16 unpriced live position valued at 0 | 1 failed |
+
+## 10. Pass 3: Angel One and Upstox
+
+**What was built.** `Infrastructure/Brokers/Angel/AngelPlugin.cs` (SmartAPI) and
+`Infrastructure/Brokers/Upstox/UpstoxPlugin.cs` (v2 books, v3 orders on the
+api-hft host, v3 funds and quotes): orders, the four books, funds, quotes and
+depth for each. Angel One keeps OpenAlgo's recovery of an order whose reply was
+lost (look for its tag in the order book before reporting); SmartAPI's numbers
+sent as text are passed through as the books show them.
+
+**The harness grew again.** It now also compares the host a request went to
+(Upstox sends orders to a different host from books and quotes) and the query
+of every write (Upstox cancels by `?order_id=`), and each broker's
+application keys are configured as the recorded install had them. OpenAlgo
+itself sends some order fields as numbers from /placeorder and as text from
+close-all, so for Angel One and Upstox, which accept both, request bodies
+compare by value. After these changes the pass 1 and pass 2 mutation sets were
+run again; all 33 still failed as they should.
+
+**Contract tests: 30 of 30 Angel One, 31 of 31 Upstox** (161 of 161 with the
+other three brokers).
+
+Angel One:
+
+| Fixture | Path | Python status | Writes | Compared | Result |
+| --- | --- | --- | --- | --- | --- |
+| auth_invalid_key | /api/v1/funds | 403 | 0 | full | Passed |
+| placeorder_missing_fields | /api/v1/placeorder | 400 | 0 | status and error shape | Passed |
+| placeorder_market | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_limit_cnc | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_sl_futures | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_slm | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_broker_refuses | /api/v1/placeorder | 500 | 1 | full | Passed |
+| placeorder_ambiguous_reply | /api/v1/placeorder | 502 | 1 | deliberate difference | Passed |
+| placeorder_unknown_symbol | /api/v1/placeorder | 200 | 1 | deliberate difference | Passed |
+| modifyorder | /api/v1/modifyorder | 200 | 1 | full | Passed |
+| modifyorder_refused | /api/v1/modifyorder | 200 | 1 | deliberate difference | Passed |
+| cancelorder | /api/v1/cancelorder | 200 | 1 | full | Passed |
+| cancelorder_refused | /api/v1/cancelorder | 200 | 1 | deliberate difference | Passed |
+| cancelallorder | /api/v1/cancelallorder | 200 | 2 | full | Passed |
+| closeposition | /api/v1/closeposition | 200 | 2 | full | Passed |
+| closeposition_one_exit_refused | /api/v1/closeposition | 200 | 2 | deliberate difference | Passed |
+| placesmartorder_reduce | /api/v1/placesmartorder | 200 | 1 | full | Passed |
+| orderbook | /api/v1/orderbook | 200 | 0 | full | Passed |
+| tradebook | /api/v1/tradebook | 200 | 0 | deliberate difference | Passed |
+| positionbook | /api/v1/positionbook | 200 | 0 | full | Passed |
+| holdings | /api/v1/holdings | 200 | 0 | full | Passed |
+| funds | /api/v1/funds | 200 | 0 | full | Passed |
+| funds_token_expired | /api/v1/funds | 200 | 0 | deliberate difference | Passed |
+| orderstatus_complete | /api/v1/orderstatus | 200 | 0 | full | Passed |
+| openposition_short | /api/v1/openposition | 200 | 0 | full | Passed |
+| quotes | /api/v1/quotes | 200 | 0 | full | Passed |
+| quotes_index | /api/v1/quotes | 200 | 0 | full | Passed |
+| depth | /api/v1/depth | 200 | 0 | full | Passed |
+| quotes_refused | /api/v1/quotes | 500 | 0 | deliberate difference | Passed |
+| ping | /api/v1/ping | 200 | 0 | full | Passed |
+
+Upstox:
+
+| Fixture | Path | Python status | Writes | Compared | Result |
+| --- | --- | --- | --- | --- | --- |
+| auth_invalid_key | /api/v1/funds | 403 | 0 | full | Passed |
+| placeorder_missing_fields | /api/v1/placeorder | 400 | 0 | status and error shape | Passed |
+| placeorder_market | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_limit_cnc | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_sl_futures | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_slm | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_broker_refuses | /api/v1/placeorder | 400 | 1 | full | Passed |
+| placeorder_unknown_symbol | /api/v1/placeorder | 500 | 0 | deliberate difference | Passed |
+| modifyorder | /api/v1/modifyorder | 200 | 1 | full | Passed |
+| modifyorder_refused | /api/v1/modifyorder | 400 | 1 | deliberate difference | Passed |
+| cancelorder | /api/v1/cancelorder | 200 | 1 | full | Passed |
+| cancelorder_refused | /api/v1/cancelorder | 400 | 1 | deliberate difference | Passed |
+| cancelallorder | /api/v1/cancelallorder | 200 | 2 | deliberate difference | Passed |
+| closeposition | /api/v1/closeposition | 200 | 2 | full | Passed |
+| closeposition_one_exit_refused | /api/v1/closeposition | 200 | 2 | deliberate difference | Passed |
+| placesmartorder_reduce | /api/v1/placesmartorder | 200 | 1 | full | Passed |
+| placesmartorder_matched | /api/v1/placesmartorder | 500 | 0 | deliberate difference | Passed |
+| orderbook | /api/v1/orderbook | 200 | 0 | full | Passed |
+| tradebook | /api/v1/tradebook | 200 | 0 | full | Passed |
+| positionbook | /api/v1/positionbook | 200 | 0 | full | Passed |
+| holdings | /api/v1/holdings | 200 | 0 | full | Passed |
+| holdings_unpriced | /api/v1/holdings | 500 | 0 | deliberate difference | Passed |
+| funds | /api/v1/funds | 200 | 0 | full | Passed |
+| funds_outside_hours | /api/v1/funds | 200 | 0 | deliberate difference | Passed |
+| funds_token_expired | /api/v1/funds | 200 | 0 | deliberate difference | Passed |
+| orderstatus_complete | /api/v1/orderstatus | 200 | 0 | full | Passed |
+| openposition_short | /api/v1/openposition | 200 | 0 | full | Passed |
+| quotes | /api/v1/quotes | 200 | 0 | full | Passed |
+| depth | /api/v1/depth | 200 | 0 | full | Passed |
+| quotes_refused | /api/v1/quotes | 500 | 0 | deliberate difference | Passed |
+| ping | /api/v1/ping | 200 | 0 | full | Passed |
+
+**Deliberate differences**, each recorded from the Python plugin
+(`tests/EPTradeBot.Contract.Tests/AngelUpstoxContractTests.cs`):
+
+- **Angel One trades all show quantity 0.** SmartAPI reports a trade's size as `fillsize`; OpenAlgo reads a `quantity` field SmartAPI does not send. EP Trade bot reads `fillsize`.
+- **A refused modify or cancel is reported as success on Angel One**, because SmartAPI answers both with HTTP 200 and OpenAlgo's service treats 200 as success. EP Trade bot reports the refusal. On Upstox the status is right but the reason is dropped; EP Trade bot passes it on.
+- **Close all reports success with an exit refused** on both. Upstox's plugin counts only exits its rate limit stopped.
+- **Funds:** Angel One answers success with no funds on a refused token; Upstox shows zero cash outside its funds hours (5:30 AM to midnight IST) and answers success with no funds on a refused token. EP Trade bot says which, and never shows zero as a balance.
+- **Upstox holdings fail whole** when one holding has pnl null (OpenAlgo's sum raises). EP Trade bot counts it as 0, and shows an unpriced holding's P&L percent as 0, not a -100% loss (executed directly: OpenAlgo's `transform_holdings_data` gives -100.0 for average 12.5 and last price 0).
+- **Upstox smart order at its target** answers an error saying no position is open. EP Trade bot answers "Positions Already Matched", as for every broker.
+- **Upstox cancel-all skips an order waiting on a modify**, though its order book shows it open. EP Trade bot cancels it.
+- **Unknown symbol:** Angel One's plugin sends symbol and token null; Upstox's fails with an internal error. EP Trade bot refuses before sending.
+- **Wording only:** a lost Angel One order reply and refused quotes are worded for a trader (same status and traffic, apart from refused quotes answering 403 for an expired session).
+
+**Mutation check** (`tools/mutation/tg3-angel-upstox.json`): all 18 turned red.
+U4 first did not compile (the mutated branch was unreachable, a build error here)
+and was rewritten so the branch stays reachable; it then failed as it should.
+
+| Mutation | Result |
+| --- | --- |
+| A1 trade size read only from quantity (OpenAlgo's behaviour) | 1 failed |
+| A2 refused cancel reported as success | 1 failed |
+| A3 refused modify reported as success | 1 failed |
+| A4 private key not sent | 26 failed |
+| A5 stop-loss orders sent as NORMAL variety | 2 failed |
+| A6 book product renamed when the symbol is unknown | 1 failed |
+| A7 lost order reply not reconciled from the order book | 1 failed |
+| A8 funds collateral not net of payout | 1 failed |
+| A9 index quotes sent on the index exchange | 1 failed |
+| U1 NRML sent as intraday | 3 failed |
+| U2 SL-M order carries a limit price | 1 failed |
+| U3 modify-pending orders not read as open | 2 failed |
+| U4 missing average price left at 0 | 1 failed |
+| U5 cancel loses its order id | 3 failed |
+| U6 pledge margin used left out of debits | 1 failed |
+| U7 unpriced holding shown as a total loss | 1 failed |
+| U8 orders sent to the books host | 8 failed |
 

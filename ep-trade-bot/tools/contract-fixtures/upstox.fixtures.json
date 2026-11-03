@@ -1,0 +1,3450 @@
+{
+  "broker": "upstox",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "upstox-access-token",
+  "client_id": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE_EQ",
+      "token": "NSE_EQ|INE062A01020",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE_EQ",
+      "token": "NSE_EQ|INE009A01021",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY FUT 25 NOV 26",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE_FO",
+      "token": "NSE_FO|35001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "Nifty 50",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE_INDEX",
+      "token": "NSE_INDEX|Nifty 50",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    }
+  ],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_missing_fields",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'strategy': ['Missing data for required field.'], 'exchange': ['Missing data for required field.'], 'action': ['Missing data for required field.'], 'quantity': ['Missing data for required field.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v3/order/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_ids": [
+                "251103000000001"
+              ]
+            },
+            "metadata": {
+              "latency": 30
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "251103000000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "quantity": 10,
+            "product": "I",
+            "validity": "DAY",
+            "price": "0",
+            "tag": "openalgo",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "order_type": "MARKET",
+            "transaction_type": "BUY",
+            "disclosed_quantity": 0,
+            "trigger_price": "0",
+            "is_amo": "false"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit_cnc",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "INFY",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": 5,
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": 1500.5,
+        "disclosed_quantity": "2",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v3/order/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_ids": [
+                "251103000000001"
+              ]
+            },
+            "metadata": {
+              "latency": 30
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "251103000000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "quantity": 5,
+            "product": "D",
+            "validity": "DAY",
+            "price": 1500.5,
+            "tag": "openalgo",
+            "instrument_token": "NSE_EQ|INE009A01021",
+            "order_type": "LIMIT",
+            "transaction_type": "SELL",
+            "disclosed_quantity": 2,
+            "trigger_price": "0",
+            "is_amo": "false"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_sl_futures",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "SL",
+        "product": "NRML",
+        "price": "24010",
+        "trigger_price": "24000",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v3/order/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_ids": [
+                "251103000000001"
+              ]
+            },
+            "metadata": {
+              "latency": 30
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "251103000000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "quantity": 75,
+            "product": "D",
+            "validity": "DAY",
+            "price": 24010.0,
+            "tag": "openalgo",
+            "instrument_token": "NSE_FO|35001",
+            "order_type": "SL",
+            "transaction_type": "BUY",
+            "disclosed_quantity": 0,
+            "trigger_price": 24000.0,
+            "is_amo": "false"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_slm",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "805",
+        "trigger_price": "801.05",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v3/order/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_ids": [
+                "251103000000001"
+              ]
+            },
+            "metadata": {
+              "latency": 30
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "251103000000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "quantity": 10,
+            "product": "I",
+            "validity": "DAY",
+            "price": "0",
+            "tag": "openalgo",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "order_type": "SL-M",
+            "transaction_type": "BUY",
+            "disclosed_quantity": 0,
+            "trigger_price": 801.05,
+            "is_amo": "false"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v3/order/place": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "errorCode": "UDAPI100500",
+                "message": "Insufficient funds",
+                "propertyPath": null,
+                "invalidValue": null,
+                "error_code": "UDAPI100500",
+                "property_path": null,
+                "invalid_value": null
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "UDAPI100500: Insufficient funds",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "quantity": 10,
+            "product": "I",
+            "validity": "DAY",
+            "price": "0",
+            "tag": "openalgo",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "order_type": "MARKET",
+            "transaction_type": "BUY",
+            "disclosed_quantity": 0,
+            "trigger_price": "0",
+            "is_amo": "false"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v3/order/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_ids": [
+                "251103000000001"
+              ]
+            },
+            "metadata": {
+              "latency": 30
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "An unexpected error occurred in the API endpoint",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "3001",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v3/order/modify": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "3001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "3001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/modify",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "quantity": 12,
+            "validity": "DAY",
+            "price": 801.0,
+            "order_id": "3001",
+            "order_type": "LIMIT",
+            "disclosed_quantity": 0,
+            "trigger_price": 0.0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "3002",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v3/order/modify": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "errorCode": "UDAPI100049",
+                "message": "Order is already complete"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to modify order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/modify",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "quantity": 12,
+            "validity": "DAY",
+            "price": 801.0,
+            "order_id": "3002",
+            "order_type": "LIMIT",
+            "disclosed_quantity": 0,
+            "trigger_price": 0.0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "3001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v3/order/cancel": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "3001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "3001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/cancel",
+          "query": [
+            [
+              "order_id",
+              "3001"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "3002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v3/order/cancel": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "errorCode": "UDAPI100049",
+                "message": "Order is already complete"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to cancel order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/cancel",
+          "query": [
+            [
+              "order_id",
+              "3002"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/order/retrieve-all": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "exchange": "NSE",
+                "product": "I",
+                "price": 800.5,
+                "quantity": 10,
+                "status": "open",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "placed_by": "AB1234",
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "order_type": "LIMIT",
+                "validity": "DAY",
+                "trigger_price": 0,
+                "disclosed_quantity": 0,
+                "transaction_type": "BUY",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 10,
+                "status_message": null,
+                "exchange_order_id": "x3001",
+                "parent_order_id": null,
+                "order_id": "3001",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:20:01",
+                "exchange_timestamp": "2026-11-03 09:20:01",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3001"
+              },
+              {
+                "exchange": "NSE",
+                "product": "D",
+                "price": 0,
+                "quantity": 5,
+                "status": "complete",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "placed_by": "AB1234",
+                "tradingsymbol": "INFY",
+                "trading_symbol": "INFY",
+                "order_type": "MARKET",
+                "validity": "DAY",
+                "trigger_price": 0,
+                "disclosed_quantity": 0,
+                "transaction_type": "SELL",
+                "average_price": 1499.95,
+                "filled_quantity": 5,
+                "pending_quantity": 0,
+                "status_message": null,
+                "exchange_order_id": "x3002",
+                "parent_order_id": null,
+                "order_id": "3002",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:21:11",
+                "exchange_timestamp": "2026-11-03 09:21:11",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3002"
+              },
+              {
+                "exchange": "NFO",
+                "product": "D",
+                "price": 24010,
+                "quantity": 75,
+                "status": "trigger pending",
+                "tag": "openalgo",
+                "instrument_token": "NSE_FO|35001",
+                "placed_by": "AB1234",
+                "tradingsymbol": "NIFTY FUT 25 NOV 26",
+                "trading_symbol": "NIFTY FUT 25 NOV 26",
+                "order_type": "SL",
+                "validity": "DAY",
+                "trigger_price": 24000,
+                "disclosed_quantity": 0,
+                "transaction_type": "BUY",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 75,
+                "status_message": null,
+                "exchange_order_id": "x3003",
+                "parent_order_id": null,
+                "order_id": "3003",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:22:00",
+                "exchange_timestamp": "2026-11-03 09:22:00",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3003"
+              },
+              {
+                "exchange": "NSE",
+                "product": "I",
+                "price": 0,
+                "quantity": 1,
+                "status": "rejected",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "placed_by": "AB1234",
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "order_type": "SL-M",
+                "validity": "DAY",
+                "trigger_price": 790.123,
+                "disclosed_quantity": 0,
+                "transaction_type": "SELL",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 1,
+                "status_message": null,
+                "exchange_order_id": "x3004",
+                "parent_order_id": null,
+                "order_id": "3004",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:23:00",
+                "exchange_timestamp": "2026-11-03 09:23:00",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3004"
+              },
+              {
+                "exchange": "NSE",
+                "product": "I",
+                "price": 700,
+                "quantity": 2,
+                "status": "modify pending",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "placed_by": "AB1234",
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "order_type": "LIMIT",
+                "validity": "DAY",
+                "trigger_price": 0,
+                "disclosed_quantity": 0,
+                "transaction_type": "BUY",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 2,
+                "status_message": null,
+                "exchange_order_id": "x3005",
+                "parent_order_id": null,
+                "order_id": "3005",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:24:00",
+                "exchange_timestamp": "2026-11-03 09:24:00",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3005"
+              },
+              {
+                "exchange": "NSE",
+                "product": "D",
+                "price": 10,
+                "quantity": 1,
+                "status": "cancelled",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE000000000",
+                "placed_by": "AB1234",
+                "tradingsymbol": "UNLISTED",
+                "trading_symbol": "UNLISTED",
+                "order_type": "LIMIT",
+                "validity": "DAY",
+                "trigger_price": 0,
+                "disclosed_quantity": 0,
+                "transaction_type": "BUY",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 1,
+                "status_message": null,
+                "exchange_order_id": "x3006",
+                "parent_order_id": null,
+                "order_id": "3006",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:25:00",
+                "exchange_timestamp": "2026-11-03 09:25:00",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3006"
+              }
+            ]
+          }
+        },
+        "DELETE /v3/order/cancel": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "x"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "3001",
+            "3003"
+          ],
+          "failed_cancellations": [],
+          "message": "Canceled 2 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v2/order/retrieve-all",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/cancel",
+          "query": [
+            [
+              "order_id",
+              "3001"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/cancel",
+          "query": [
+            [
+              "order_id",
+              "3003"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/portfolio/short-term-positions": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "exchange": "NSE",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": 43.3333,
+                "product": "I",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "average_price": 801.1234,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 10,
+                "day_sell_value": 0,
+                "day_sell_price": 0,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 0,
+                "quantity": 10,
+                "last_price": 805.456,
+                "unrealised": 43.3333,
+                "realised": 0,
+                "sell_value": 0,
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "close_price": 805.456,
+                "buy_price": 0,
+                "sell_price": 0
+              },
+              {
+                "exchange": "NFO",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": 1162.5,
+                "product": "D",
+                "instrument_token": "NSE_FO|35001",
+                "average_price": null,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 0,
+                "day_sell_value": 0,
+                "day_sell_price": 24005.5,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 75,
+                "quantity": -75,
+                "last_price": 23990,
+                "unrealised": 1162.5,
+                "realised": 0,
+                "sell_value": 0,
+                "tradingsymbol": "NIFTY FUT 25 NOV 26",
+                "trading_symbol": "NIFTY FUT 25 NOV 26",
+                "close_price": 23990,
+                "buy_price": 0,
+                "sell_price": 24005.5
+              },
+              {
+                "exchange": "NSE",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": -2.5,
+                "product": "D",
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "average_price": 0,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 0,
+                "day_sell_value": 0,
+                "day_sell_price": 0,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 0,
+                "quantity": 0,
+                "last_price": 1499,
+                "unrealised": 0,
+                "realised": -2.5,
+                "sell_value": 0,
+                "tradingsymbol": "INFY",
+                "trading_symbol": "INFY",
+                "close_price": 1499,
+                "buy_price": 0,
+                "sell_price": 0
+              }
+            ]
+          }
+        },
+        "POST /v3/order/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_ids": [
+                "251103000000001"
+              ]
+            },
+            "metadata": {
+              "latency": 30
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v2/portfolio/short-term-positions",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "quantity": "10",
+            "product": "I",
+            "validity": "DAY",
+            "price": "0",
+            "tag": "openalgo",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "order_type": "MARKET",
+            "transaction_type": "SELL",
+            "disclosed_quantity": "0",
+            "trigger_price": "0",
+            "is_amo": "false"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "quantity": "75",
+            "product": "D",
+            "validity": "DAY",
+            "price": "0",
+            "tag": "openalgo",
+            "instrument_token": "NSE_FO|35001",
+            "order_type": "MARKET",
+            "transaction_type": "BUY",
+            "disclosed_quantity": "0",
+            "trigger_price": "0",
+            "is_amo": "false"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_one_exit_refused",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/portfolio/short-term-positions": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "exchange": "NSE",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": 43.3333,
+                "product": "I",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "average_price": 801.1234,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 10,
+                "day_sell_value": 0,
+                "day_sell_price": 0,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 0,
+                "quantity": 10,
+                "last_price": 805.456,
+                "unrealised": 43.3333,
+                "realised": 0,
+                "sell_value": 0,
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "close_price": 805.456,
+                "buy_price": 0,
+                "sell_price": 0
+              },
+              {
+                "exchange": "NFO",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": 1162.5,
+                "product": "D",
+                "instrument_token": "NSE_FO|35001",
+                "average_price": null,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 0,
+                "day_sell_value": 0,
+                "day_sell_price": 24005.5,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 75,
+                "quantity": -75,
+                "last_price": 23990,
+                "unrealised": 1162.5,
+                "realised": 0,
+                "sell_value": 0,
+                "tradingsymbol": "NIFTY FUT 25 NOV 26",
+                "trading_symbol": "NIFTY FUT 25 NOV 26",
+                "close_price": 23990,
+                "buy_price": 0,
+                "sell_price": 24005.5
+              },
+              {
+                "exchange": "NSE",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": -2.5,
+                "product": "D",
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "average_price": 0,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 0,
+                "day_sell_value": 0,
+                "day_sell_price": 0,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 0,
+                "quantity": 0,
+                "last_price": 1499,
+                "unrealised": 0,
+                "realised": -2.5,
+                "sell_value": 0,
+                "tradingsymbol": "INFY",
+                "trading_symbol": "INFY",
+                "close_price": 1499,
+                "buy_price": 0,
+                "sell_price": 0
+              }
+            ]
+          }
+        },
+        "POST /v3/order/place": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "order_ids": [
+                  "251103000000001"
+                ]
+              },
+              "metadata": {
+                "latency": 30
+              }
+            }
+          },
+          {
+            "status": 400,
+            "body": {
+              "status": "error",
+              "errors": [
+                {
+                  "errorCode": "UDAPI100500",
+                  "message": "Insufficient funds",
+                  "propertyPath": null,
+                  "invalidValue": null,
+                  "error_code": "UDAPI100500",
+                  "property_path": null,
+                  "invalid_value": null
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v2/portfolio/short-term-positions",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "quantity": "10",
+            "product": "I",
+            "validity": "DAY",
+            "price": "0",
+            "tag": "openalgo",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "order_type": "MARKET",
+            "transaction_type": "SELL",
+            "disclosed_quantity": "0",
+            "trigger_price": "0",
+            "is_amo": "false"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "quantity": "75",
+            "product": "D",
+            "validity": "DAY",
+            "price": "0",
+            "tag": "openalgo",
+            "instrument_token": "NSE_FO|35001",
+            "order_type": "MARKET",
+            "transaction_type": "BUY",
+            "disclosed_quantity": "0",
+            "trigger_price": "0",
+            "is_amo": "false"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_reduce",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "position_size": "4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/portfolio/short-term-positions": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "exchange": "NSE",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": 43.3333,
+                "product": "I",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "average_price": 801.1234,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 10,
+                "day_sell_value": 0,
+                "day_sell_price": 0,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 0,
+                "quantity": 10,
+                "last_price": 805.456,
+                "unrealised": 43.3333,
+                "realised": 0,
+                "sell_value": 0,
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "close_price": 805.456,
+                "buy_price": 0,
+                "sell_price": 0
+              },
+              {
+                "exchange": "NFO",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": 1162.5,
+                "product": "D",
+                "instrument_token": "NSE_FO|35001",
+                "average_price": null,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 0,
+                "day_sell_value": 0,
+                "day_sell_price": 24005.5,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 75,
+                "quantity": -75,
+                "last_price": 23990,
+                "unrealised": 1162.5,
+                "realised": 0,
+                "sell_value": 0,
+                "tradingsymbol": "NIFTY FUT 25 NOV 26",
+                "trading_symbol": "NIFTY FUT 25 NOV 26",
+                "close_price": 23990,
+                "buy_price": 0,
+                "sell_price": 24005.5
+              },
+              {
+                "exchange": "NSE",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": -2.5,
+                "product": "D",
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "average_price": 0,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 0,
+                "day_sell_value": 0,
+                "day_sell_price": 0,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 0,
+                "quantity": 0,
+                "last_price": 1499,
+                "unrealised": 0,
+                "realised": -2.5,
+                "sell_value": 0,
+                "tradingsymbol": "INFY",
+                "trading_symbol": "INFY",
+                "close_price": 1499,
+                "buy_price": 0,
+                "sell_price": 0
+              }
+            ]
+          }
+        },
+        "POST /v3/order/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_ids": [
+                "251103000000001"
+              ]
+            },
+            "metadata": {
+              "latency": 30
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "251103000000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v2/portfolio/short-term-positions",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api-hft.upstox.com",
+          "path": "/v3/order/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "quantity": "6",
+            "product": "I",
+            "validity": "DAY",
+            "price": "0",
+            "tag": "openalgo",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "order_type": "MARKET",
+            "transaction_type": "SELL",
+            "disclosed_quantity": 0,
+            "trigger_price": "0",
+            "is_amo": "false"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_matched",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "position_size": "10",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/portfolio/short-term-positions": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "exchange": "NSE",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": 43.3333,
+                "product": "I",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "average_price": 801.1234,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 10,
+                "day_sell_value": 0,
+                "day_sell_price": 0,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 0,
+                "quantity": 10,
+                "last_price": 805.456,
+                "unrealised": 43.3333,
+                "realised": 0,
+                "sell_value": 0,
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "close_price": 805.456,
+                "buy_price": 0,
+                "sell_price": 0
+              },
+              {
+                "exchange": "NFO",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": 1162.5,
+                "product": "D",
+                "instrument_token": "NSE_FO|35001",
+                "average_price": null,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 0,
+                "day_sell_value": 0,
+                "day_sell_price": 24005.5,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 75,
+                "quantity": -75,
+                "last_price": 23990,
+                "unrealised": 1162.5,
+                "realised": 0,
+                "sell_value": 0,
+                "tradingsymbol": "NIFTY FUT 25 NOV 26",
+                "trading_symbol": "NIFTY FUT 25 NOV 26",
+                "close_price": 23990,
+                "buy_price": 0,
+                "sell_price": 24005.5
+              },
+              {
+                "exchange": "NSE",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": -2.5,
+                "product": "D",
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "average_price": 0,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 0,
+                "day_sell_value": 0,
+                "day_sell_price": 0,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 0,
+                "quantity": 0,
+                "last_price": 1499,
+                "unrealised": 0,
+                "realised": -2.5,
+                "sell_value": 0,
+                "tradingsymbol": "INFY",
+                "trading_symbol": "INFY",
+                "close_price": 1499,
+                "buy_price": 0,
+                "sell_price": 0
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "No open position found. Not placing exit order.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v2/portfolio/short-term-positions",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/order/retrieve-all": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "exchange": "NSE",
+                "product": "I",
+                "price": 800.5,
+                "quantity": 10,
+                "status": "open",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "placed_by": "AB1234",
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "order_type": "LIMIT",
+                "validity": "DAY",
+                "trigger_price": 0,
+                "disclosed_quantity": 0,
+                "transaction_type": "BUY",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 10,
+                "status_message": null,
+                "exchange_order_id": "x3001",
+                "parent_order_id": null,
+                "order_id": "3001",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:20:01",
+                "exchange_timestamp": "2026-11-03 09:20:01",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3001"
+              },
+              {
+                "exchange": "NSE",
+                "product": "D",
+                "price": 0,
+                "quantity": 5,
+                "status": "complete",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "placed_by": "AB1234",
+                "tradingsymbol": "INFY",
+                "trading_symbol": "INFY",
+                "order_type": "MARKET",
+                "validity": "DAY",
+                "trigger_price": 0,
+                "disclosed_quantity": 0,
+                "transaction_type": "SELL",
+                "average_price": 1499.95,
+                "filled_quantity": 5,
+                "pending_quantity": 0,
+                "status_message": null,
+                "exchange_order_id": "x3002",
+                "parent_order_id": null,
+                "order_id": "3002",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:21:11",
+                "exchange_timestamp": "2026-11-03 09:21:11",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3002"
+              },
+              {
+                "exchange": "NFO",
+                "product": "D",
+                "price": 24010,
+                "quantity": 75,
+                "status": "trigger pending",
+                "tag": "openalgo",
+                "instrument_token": "NSE_FO|35001",
+                "placed_by": "AB1234",
+                "tradingsymbol": "NIFTY FUT 25 NOV 26",
+                "trading_symbol": "NIFTY FUT 25 NOV 26",
+                "order_type": "SL",
+                "validity": "DAY",
+                "trigger_price": 24000,
+                "disclosed_quantity": 0,
+                "transaction_type": "BUY",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 75,
+                "status_message": null,
+                "exchange_order_id": "x3003",
+                "parent_order_id": null,
+                "order_id": "3003",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:22:00",
+                "exchange_timestamp": "2026-11-03 09:22:00",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3003"
+              },
+              {
+                "exchange": "NSE",
+                "product": "I",
+                "price": 0,
+                "quantity": 1,
+                "status": "rejected",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "placed_by": "AB1234",
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "order_type": "SL-M",
+                "validity": "DAY",
+                "trigger_price": 790.123,
+                "disclosed_quantity": 0,
+                "transaction_type": "SELL",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 1,
+                "status_message": null,
+                "exchange_order_id": "x3004",
+                "parent_order_id": null,
+                "order_id": "3004",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:23:00",
+                "exchange_timestamp": "2026-11-03 09:23:00",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3004"
+              },
+              {
+                "exchange": "NSE",
+                "product": "I",
+                "price": 700,
+                "quantity": 2,
+                "status": "modify pending",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "placed_by": "AB1234",
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "order_type": "LIMIT",
+                "validity": "DAY",
+                "trigger_price": 0,
+                "disclosed_quantity": 0,
+                "transaction_type": "BUY",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 2,
+                "status_message": null,
+                "exchange_order_id": "x3005",
+                "parent_order_id": null,
+                "order_id": "3005",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:24:00",
+                "exchange_timestamp": "2026-11-03 09:24:00",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3005"
+              },
+              {
+                "exchange": "NSE",
+                "product": "D",
+                "price": 10,
+                "quantity": 1,
+                "status": "cancelled",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE000000000",
+                "placed_by": "AB1234",
+                "tradingsymbol": "UNLISTED",
+                "trading_symbol": "UNLISTED",
+                "order_type": "LIMIT",
+                "validity": "DAY",
+                "trigger_price": 0,
+                "disclosed_quantity": 0,
+                "transaction_type": "BUY",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 1,
+                "status_message": null,
+                "exchange_order_id": "x3006",
+                "parent_order_id": null,
+                "order_id": "3006",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:25:00",
+                "exchange_timestamp": "2026-11-03 09:25:00",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3006"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "3001",
+                "price": 800.5,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 10,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 09:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "3002",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": 5,
+                "symbol": "INFY",
+                "timestamp": "2026-11-03 09:21:11",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NFO",
+                "order_status": "open",
+                "orderid": "3003",
+                "price": 24010.0,
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": 75,
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "2026-11-03 09:22:00",
+                "trigger_price": 24000.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "rejected",
+                "orderid": "3004",
+                "price": 0.0,
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": 1,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 09:23:00",
+                "trigger_price": 790.12
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "3005",
+                "price": 700.0,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 2,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 09:24:00",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "cancelled",
+                "orderid": "3006",
+                "price": 10.0,
+                "pricetype": "LIMIT",
+                "product": "D",
+                "quantity": 1,
+                "symbol": "UNLISTED",
+                "timestamp": "2026-11-03 09:25:00",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 4,
+              "total_completed_orders": 1,
+              "total_open_orders": 3,
+              "total_rejected_orders": 1,
+              "total_sell_orders": 2
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v2/order/retrieve-all",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/order/trades/get-trades-for-day": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "exchange": "NSE",
+                "product": "D",
+                "trading_symbol": "INFY",
+                "tradingsymbol": "INFY",
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "order_type": "MARKET",
+                "transaction_type": "SELL",
+                "quantity": 5,
+                "exchange_order_id": "x3002",
+                "order_id": "3002",
+                "exchange_timestamp": "2026-11-03 09:21:12",
+                "average_price": 1499.95,
+                "trade_id": "t1",
+                "order_ref_id": "r3002",
+                "order_timestamp": "2026-11-03 09:21:11"
+              },
+              {
+                "exchange": "NFO",
+                "product": "D",
+                "trading_symbol": "NIFTY FUT 25 NOV 26",
+                "tradingsymbol": "NIFTY FUT 25 NOV 26",
+                "instrument_token": "NSE_FO|35001",
+                "order_type": "LIMIT",
+                "transaction_type": "BUY",
+                "quantity": 75,
+                "exchange_order_id": "x3007",
+                "order_id": "3007",
+                "exchange_timestamp": "2026-11-03 09:25:01",
+                "average_price": 24005.555,
+                "trade_id": "t2",
+                "order_ref_id": "r3007",
+                "order_timestamp": "2026-11-03 09:25:00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "SELL",
+              "average_price": 1499.95,
+              "exchange": "NSE",
+              "orderid": "3002",
+              "product": "CNC",
+              "quantity": 5,
+              "symbol": "INFY",
+              "timestamp": "2026-11-03 09:21:11",
+              "trade_value": 7499.75
+            },
+            {
+              "action": "BUY",
+              "average_price": 24005.56,
+              "exchange": "NFO",
+              "orderid": "3007",
+              "product": "NRML",
+              "quantity": 75,
+              "symbol": "NIFTY25NOV26FUT",
+              "timestamp": "2026-11-03 09:25:00",
+              "trade_value": 1800416.62
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v2/order/trades/get-trades-for-day",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/portfolio/short-term-positions": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "exchange": "NSE",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": 43.3333,
+                "product": "I",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "average_price": 801.1234,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 10,
+                "day_sell_value": 0,
+                "day_sell_price": 0,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 0,
+                "quantity": 10,
+                "last_price": 805.456,
+                "unrealised": 43.3333,
+                "realised": 0,
+                "sell_value": 0,
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "close_price": 805.456,
+                "buy_price": 0,
+                "sell_price": 0
+              },
+              {
+                "exchange": "NFO",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": 1162.5,
+                "product": "D",
+                "instrument_token": "NSE_FO|35001",
+                "average_price": null,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 0,
+                "day_sell_value": 0,
+                "day_sell_price": 24005.5,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 75,
+                "quantity": -75,
+                "last_price": 23990,
+                "unrealised": 1162.5,
+                "realised": 0,
+                "sell_value": 0,
+                "tradingsymbol": "NIFTY FUT 25 NOV 26",
+                "trading_symbol": "NIFTY FUT 25 NOV 26",
+                "close_price": 23990,
+                "buy_price": 0,
+                "sell_price": 24005.5
+              },
+              {
+                "exchange": "NSE",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": -2.5,
+                "product": "D",
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "average_price": 0,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 0,
+                "day_sell_value": 0,
+                "day_sell_price": 0,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 0,
+                "quantity": 0,
+                "last_price": 1499,
+                "unrealised": 0,
+                "realised": -2.5,
+                "sell_value": 0,
+                "tradingsymbol": "INFY",
+                "trading_symbol": "INFY",
+                "close_price": 1499,
+                "buy_price": 0,
+                "sell_price": 0
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": 801.12,
+              "exchange": "NSE",
+              "ltp": 805.46,
+              "pnl": 43.33,
+              "product": "MIS",
+              "quantity": 10,
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": 24005.5,
+              "exchange": "NFO",
+              "ltp": 23990.0,
+              "pnl": 1162.5,
+              "product": "NRML",
+              "quantity": -75,
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": 0.0,
+              "exchange": "NSE",
+              "ltp": 1499.0,
+              "pnl": -2.5,
+              "product": "CNC",
+              "quantity": 0,
+              "symbol": "INFY"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v2/portfolio/short-term-positions",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/portfolio/long-term-holdings": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "isin": "INE009A01021",
+                "cnc_used_quantity": 0,
+                "collateral_type": "WC",
+                "company_name": "INFOSYS",
+                "haircut": 0.2,
+                "product": "D",
+                "quantity": 20,
+                "tradingsymbol": "INFY",
+                "trading_symbol": "INFY",
+                "last_price": 1499.0,
+                "close_price": 1490.0,
+                "pnl": 1980.0,
+                "day_change": 9.0,
+                "day_change_percentage": 0.6,
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "average_price": 1400.0,
+                "collateral_quantity": 0,
+                "collateral_update_quantity": 0,
+                "t1_quantity": 0,
+                "exchange": "NSE"
+              },
+              {
+                "isin": "INE000000000",
+                "cnc_used_quantity": 0,
+                "collateral_type": "WC",
+                "company_name": "OLDCO",
+                "haircut": 0.2,
+                "product": "D",
+                "quantity": 3,
+                "tradingsymbol": "OLDCO",
+                "trading_symbol": "OLDCO",
+                "last_price": 11.25,
+                "close_price": 11.0,
+                "pnl": -3.75,
+                "day_change": 0,
+                "day_change_percentage": 0,
+                "instrument_token": "NSE_EQ|INE000000000",
+                "average_price": 12.5,
+                "collateral_quantity": 0,
+                "collateral_update_quantity": 0,
+                "t1_quantity": 0,
+                "exchange": "NSE"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "average_price": 1400.0,
+                "exchange": "NSE",
+                "ltp": 1499.0,
+                "pnl": 1980.0,
+                "pnlpercent": 7.07,
+                "product": "CNC",
+                "quantity": 20,
+                "symbol": "INFY"
+              },
+              {
+                "average_price": 12.5,
+                "exchange": "NSE",
+                "ltp": 11.25,
+                "pnl": -3.75,
+                "pnlpercent": -10.0,
+                "product": "CNC",
+                "quantity": 3,
+                "symbol": "OLDCO"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 30013.75,
+              "totalinvvalue": 28037.5,
+              "totalpnlpercentage": 7.05,
+              "totalprofitandloss": 1976.25
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v2/portfolio/long-term-holdings",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_unpriced",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/portfolio/long-term-holdings": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "isin": "INE009A01021",
+                "cnc_used_quantity": 0,
+                "collateral_type": "WC",
+                "company_name": "INFOSYS",
+                "haircut": 0.2,
+                "product": "D",
+                "quantity": 20,
+                "tradingsymbol": "INFY",
+                "trading_symbol": "INFY",
+                "last_price": 1499.0,
+                "close_price": 1490.0,
+                "pnl": 1980.0,
+                "day_change": 9.0,
+                "day_change_percentage": 0.6,
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "average_price": 1400.0,
+                "collateral_quantity": 0,
+                "collateral_update_quantity": 0,
+                "t1_quantity": 0,
+                "exchange": "NSE"
+              },
+              {
+                "isin": "INE000000000",
+                "cnc_used_quantity": 0,
+                "collateral_type": "WC",
+                "company_name": "OLDCO",
+                "haircut": 0.2,
+                "product": "D",
+                "quantity": 3,
+                "tradingsymbol": "OLDCO",
+                "trading_symbol": "OLDCO",
+                "last_price": 0,
+                "close_price": 11.0,
+                "pnl": null,
+                "day_change": 0,
+                "day_change_percentage": 0,
+                "instrument_token": "NSE_EQ|INE000000000",
+                "average_price": 12.5,
+                "collateral_quantity": 0,
+                "collateral_update_quantity": 0,
+                "t1_quantity": 0,
+                "exchange": "NSE"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "unsupported operand type(s) for +: 'float' and 'NoneType'",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v2/portfolio/long-term-holdings",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/user/get-funds-and-margin": {
+          "body": {
+            "status": "success",
+            "data": {
+              "available_to_trade": {
+                "cash_available_to_trade": {
+                  "total": 98500.0,
+                  "margin_used": {
+                    "total": 274.95
+                  }
+                },
+                "pledge_available_to_trade": {
+                  "margin_from_pledge": {
+                    "total": 2000.0
+                  },
+                  "margin_used": {
+                    "total": 500.0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "GET /v2/portfolio/short-term-positions": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "exchange": "NSE",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": 43.3333,
+                "product": "I",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "average_price": 801.1234,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 10,
+                "day_sell_value": 0,
+                "day_sell_price": 0,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 0,
+                "quantity": 10,
+                "last_price": 805.456,
+                "unrealised": 43.3333,
+                "realised": 0,
+                "sell_value": 0,
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "close_price": 805.456,
+                "buy_price": 0,
+                "sell_price": 0
+              },
+              {
+                "exchange": "NFO",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": 1162.5,
+                "product": "D",
+                "instrument_token": "NSE_FO|35001",
+                "average_price": null,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 0,
+                "day_sell_value": 0,
+                "day_sell_price": 24005.5,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 75,
+                "quantity": -75,
+                "last_price": 23990,
+                "unrealised": 1162.5,
+                "realised": 0,
+                "sell_value": 0,
+                "tradingsymbol": "NIFTY FUT 25 NOV 26",
+                "trading_symbol": "NIFTY FUT 25 NOV 26",
+                "close_price": 23990,
+                "buy_price": 0,
+                "sell_price": 24005.5
+              },
+              {
+                "exchange": "NSE",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": -2.5,
+                "product": "D",
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "average_price": 0,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 0,
+                "day_sell_value": 0,
+                "day_sell_price": 0,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 0,
+                "quantity": 0,
+                "last_price": 1499,
+                "unrealised": 0,
+                "realised": -2.5,
+                "sell_value": 0,
+                "tradingsymbol": "INFY",
+                "trading_symbol": "INFY",
+                "close_price": 1499,
+                "buy_price": 0,
+                "sell_price": 0
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "98500.00",
+            "collateral": "1500.00",
+            "m2mrealized": "-2.50",
+            "m2munrealized": "1205.83",
+            "utiliseddebits": "774.95"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/user/get-funds-and-margin",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v2/portfolio/short-term-positions",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_outside_hours",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/user/get-funds-and-margin": {
+          "status": 423,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "errorCode": "UDAPI100072",
+                "message": "The Funds service is accessible from 5:30 AM to 12:00 AM IST daily"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "0.00",
+            "collateral": "0.00",
+            "m2mrealized": "0.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "0.00"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/user/get-funds-and-margin",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_token_expired",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/user/get-funds-and-margin": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "errorCode": "UDAPI100050",
+                "message": "Invalid token used to access API"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/user/get-funds-and-margin",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderstatus_complete",
+      "method": "POST",
+      "path": "/api/v1/orderstatus",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "3002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/order/retrieve-all": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "exchange": "NSE",
+                "product": "I",
+                "price": 800.5,
+                "quantity": 10,
+                "status": "open",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "placed_by": "AB1234",
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "order_type": "LIMIT",
+                "validity": "DAY",
+                "trigger_price": 0,
+                "disclosed_quantity": 0,
+                "transaction_type": "BUY",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 10,
+                "status_message": null,
+                "exchange_order_id": "x3001",
+                "parent_order_id": null,
+                "order_id": "3001",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:20:01",
+                "exchange_timestamp": "2026-11-03 09:20:01",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3001"
+              },
+              {
+                "exchange": "NSE",
+                "product": "D",
+                "price": 0,
+                "quantity": 5,
+                "status": "complete",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "placed_by": "AB1234",
+                "tradingsymbol": "INFY",
+                "trading_symbol": "INFY",
+                "order_type": "MARKET",
+                "validity": "DAY",
+                "trigger_price": 0,
+                "disclosed_quantity": 0,
+                "transaction_type": "SELL",
+                "average_price": 1499.95,
+                "filled_quantity": 5,
+                "pending_quantity": 0,
+                "status_message": null,
+                "exchange_order_id": "x3002",
+                "parent_order_id": null,
+                "order_id": "3002",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:21:11",
+                "exchange_timestamp": "2026-11-03 09:21:11",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3002"
+              },
+              {
+                "exchange": "NFO",
+                "product": "D",
+                "price": 24010,
+                "quantity": 75,
+                "status": "trigger pending",
+                "tag": "openalgo",
+                "instrument_token": "NSE_FO|35001",
+                "placed_by": "AB1234",
+                "tradingsymbol": "NIFTY FUT 25 NOV 26",
+                "trading_symbol": "NIFTY FUT 25 NOV 26",
+                "order_type": "SL",
+                "validity": "DAY",
+                "trigger_price": 24000,
+                "disclosed_quantity": 0,
+                "transaction_type": "BUY",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 75,
+                "status_message": null,
+                "exchange_order_id": "x3003",
+                "parent_order_id": null,
+                "order_id": "3003",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:22:00",
+                "exchange_timestamp": "2026-11-03 09:22:00",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3003"
+              },
+              {
+                "exchange": "NSE",
+                "product": "I",
+                "price": 0,
+                "quantity": 1,
+                "status": "rejected",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "placed_by": "AB1234",
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "order_type": "SL-M",
+                "validity": "DAY",
+                "trigger_price": 790.123,
+                "disclosed_quantity": 0,
+                "transaction_type": "SELL",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 1,
+                "status_message": null,
+                "exchange_order_id": "x3004",
+                "parent_order_id": null,
+                "order_id": "3004",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:23:00",
+                "exchange_timestamp": "2026-11-03 09:23:00",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3004"
+              },
+              {
+                "exchange": "NSE",
+                "product": "I",
+                "price": 700,
+                "quantity": 2,
+                "status": "modify pending",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "placed_by": "AB1234",
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "order_type": "LIMIT",
+                "validity": "DAY",
+                "trigger_price": 0,
+                "disclosed_quantity": 0,
+                "transaction_type": "BUY",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 2,
+                "status_message": null,
+                "exchange_order_id": "x3005",
+                "parent_order_id": null,
+                "order_id": "3005",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:24:00",
+                "exchange_timestamp": "2026-11-03 09:24:00",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3005"
+              },
+              {
+                "exchange": "NSE",
+                "product": "D",
+                "price": 10,
+                "quantity": 1,
+                "status": "cancelled",
+                "tag": "openalgo",
+                "instrument_token": "NSE_EQ|INE000000000",
+                "placed_by": "AB1234",
+                "tradingsymbol": "UNLISTED",
+                "trading_symbol": "UNLISTED",
+                "order_type": "LIMIT",
+                "validity": "DAY",
+                "trigger_price": 0,
+                "disclosed_quantity": 0,
+                "transaction_type": "BUY",
+                "average_price": 0,
+                "filled_quantity": 0,
+                "pending_quantity": 1,
+                "status_message": null,
+                "exchange_order_id": "x3006",
+                "parent_order_id": null,
+                "order_id": "3006",
+                "variety": "SIMPLE",
+                "order_timestamp": "2026-11-03 09:25:00",
+                "exchange_timestamp": "2026-11-03 09:25:00",
+                "is_amo": false,
+                "order_request_id": "1",
+                "order_ref_id": "r3006"
+              }
+            ]
+          }
+        },
+        "GET /v2/order/trades/get-trades-for-day": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "exchange": "NSE",
+                "product": "D",
+                "trading_symbol": "INFY",
+                "tradingsymbol": "INFY",
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "order_type": "MARKET",
+                "transaction_type": "SELL",
+                "quantity": 5,
+                "exchange_order_id": "x3002",
+                "order_id": "3002",
+                "exchange_timestamp": "2026-11-03 09:21:12",
+                "average_price": 1499.95,
+                "trade_id": "t1",
+                "order_ref_id": "r3002",
+                "order_timestamp": "2026-11-03 09:21:11"
+              },
+              {
+                "exchange": "NFO",
+                "product": "D",
+                "trading_symbol": "NIFTY FUT 25 NOV 26",
+                "tradingsymbol": "NIFTY FUT 25 NOV 26",
+                "instrument_token": "NSE_FO|35001",
+                "order_type": "LIMIT",
+                "transaction_type": "BUY",
+                "quantity": 75,
+                "exchange_order_id": "x3007",
+                "order_id": "3007",
+                "exchange_timestamp": "2026-11-03 09:25:01",
+                "average_price": 24005.555,
+                "trade_id": "t2",
+                "order_ref_id": "r3007",
+                "order_timestamp": "2026-11-03 09:25:00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "action": "SELL",
+            "average_price": 1499.95,
+            "exchange": "NSE",
+            "order_status": "complete",
+            "orderid": "3002",
+            "price": 0.0,
+            "pricetype": "MARKET",
+            "product": "CNC",
+            "quantity": 5,
+            "symbol": "INFY",
+            "timestamp": "2026-11-03 09:21:11",
+            "trigger_price": 0.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v2/order/retrieve-all",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v2/order/trades/get-trades-for-day",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_short",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/portfolio/short-term-positions": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "exchange": "NSE",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": 43.3333,
+                "product": "I",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "average_price": 801.1234,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 10,
+                "day_sell_value": 0,
+                "day_sell_price": 0,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 0,
+                "quantity": 10,
+                "last_price": 805.456,
+                "unrealised": 43.3333,
+                "realised": 0,
+                "sell_value": 0,
+                "tradingsymbol": "SBIN",
+                "trading_symbol": "SBIN",
+                "close_price": 805.456,
+                "buy_price": 0,
+                "sell_price": 0
+              },
+              {
+                "exchange": "NFO",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": 1162.5,
+                "product": "D",
+                "instrument_token": "NSE_FO|35001",
+                "average_price": null,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 0,
+                "day_sell_value": 0,
+                "day_sell_price": 24005.5,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 75,
+                "quantity": -75,
+                "last_price": 23990,
+                "unrealised": 1162.5,
+                "realised": 0,
+                "sell_value": 0,
+                "tradingsymbol": "NIFTY FUT 25 NOV 26",
+                "trading_symbol": "NIFTY FUT 25 NOV 26",
+                "close_price": 23990,
+                "buy_price": 0,
+                "sell_price": 24005.5
+              },
+              {
+                "exchange": "NSE",
+                "multiplier": 1,
+                "value": 0,
+                "pnl": -2.5,
+                "product": "D",
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "average_price": 0,
+                "buy_value": 0,
+                "overnight_quantity": 0,
+                "day_buy_value": 0,
+                "day_buy_price": 0,
+                "overnight_buy_amount": 0,
+                "overnight_buy_quantity": 0,
+                "day_buy_quantity": 0,
+                "day_sell_value": 0,
+                "day_sell_price": 0,
+                "overnight_sell_amount": 0,
+                "overnight_sell_quantity": 0,
+                "day_sell_quantity": 0,
+                "quantity": 0,
+                "last_price": 1499,
+                "unrealised": 0,
+                "realised": -2.5,
+                "sell_value": 0,
+                "tradingsymbol": "INFY",
+                "trading_symbol": "INFY",
+                "close_price": 1499,
+                "buy_price": 0,
+                "sell_price": 0
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": -75,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v2/portfolio/short-term-positions",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 120,
+                      "price": 805.4,
+                      "orders": 1
+                    },
+                    {
+                      "quantity": 50,
+                      "price": 805.35,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 80,
+                      "price": 805.5,
+                      "orders": 1
+                    },
+                    {
+                      "quantity": 10,
+                      "price": 805.55,
+                      "orders": 1
+                    },
+                    {
+                      "quantity": 7,
+                      "price": 805.6,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 799.95,
+                "last_quantity": 5
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 805.5,
+            "bid": 805.4,
+            "high": 810.0,
+            "low": 795.5,
+            "ltp": 805.45,
+            "oi": 0,
+            "open": 800.0,
+            "prev_close": 799.95,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "depth",
+      "method": "POST",
+      "path": "/api/v1/depth",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 120,
+                      "price": 805.4,
+                      "orders": 1
+                    },
+                    {
+                      "quantity": 50,
+                      "price": 805.35,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 80,
+                      "price": 805.5,
+                      "orders": 1
+                    },
+                    {
+                      "quantity": 10,
+                      "price": 805.55,
+                      "orders": 1
+                    },
+                    {
+                      "quantity": 7,
+                      "price": 805.6,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 799.95,
+                "last_quantity": 5
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "asks": [
+              {
+                "price": 805.5,
+                "quantity": 80
+              },
+              {
+                "price": 805.55,
+                "quantity": 10
+              },
+              {
+                "price": 805.6,
+                "quantity": 7
+              }
+            ],
+            "bids": [
+              {
+                "price": 805.4,
+                "quantity": 120
+              },
+              {
+                "price": 805.35,
+                "quantity": 50
+              }
+            ],
+            "high": 810.0,
+            "low": 795.5,
+            "ltp": 805.45,
+            "ltq": 5,
+            "oi": 0,
+            "open": 800.0,
+            "prev_close": 799.95,
+            "totalbuyqty": 170,
+            "totalsellqty": 97,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_refused",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "errorCode": "UDAPI100050",
+                "message": "Invalid token used to access API"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "API Error - Code: UDAPI100050, Message: Invalid token used to access API",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ping",
+      "method": "POST",
+      "path": "/api/v1/ping",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "broker": "upstox",
+            "message": "pong"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}

@@ -6,7 +6,7 @@ using System.Web;
 namespace EPTradeBot.IntegrationTests;
 
 /// <summary>One request a plugin sent, in the same shape the Python recorder writes.</summary>
-public sealed record SentRequest(string Method, string Path, List<KeyValuePair<string, string>> Query, Dictionary<string, string> Headers, List<KeyValuePair<string, string>>? Form, JsonNode? Json);
+public sealed record SentRequest(string Method, string Host, string Path, List<KeyValuePair<string, string>> Query, Dictionary<string, string> Headers, List<KeyValuePair<string, string>>? Form, JsonNode? Json);
 
 /// <summary>
 /// Stands in for the broker's HTTP API: answers from canned replies keyed by
@@ -78,7 +78,7 @@ public sealed class FakeBroker : HttpMessageHandler
         (int Status, string Body) reply;
         lock (gate)
         {
-            sent.Add(new SentRequest(request.Method.Method, uri.AbsolutePath, query, headers, form, json));
+            sent.Add(new SentRequest(request.Method.Method, uri.Authority, uri.AbsolutePath, query, headers, form, json));
             var key = $"{request.Method.Method} {uri.AbsolutePath}";
             if (canned.TryGetValue(key, out var list) && list.Count > 0)
             {

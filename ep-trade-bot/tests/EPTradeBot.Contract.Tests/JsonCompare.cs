@@ -11,14 +11,15 @@ namespace EPTradeBot.Contract.Tests;
 /// </summary>
 public static class JsonCompare
 {
-    public static List<string> Differences(JsonNode? expected, JsonNode? actual, string path = "$")
+    /// <param name="numbersMayBeText">For a broker that takes a number and its text form alike (OpenAlgo itself sends both), "10" equals 10.</param>
+    public static List<string> Differences(JsonNode? expected, JsonNode? actual, string path = "$", bool numbersMayBeText = false)
     {
         var diffs = new List<string>();
-        Walk(expected, actual, path, diffs);
+        Walk(expected, actual, path, diffs, numbersMayBeText);
         return diffs;
     }
 
-    private static void Walk(JsonNode? e, JsonNode? a, string path, List<string> diffs)
+    private static void Walk(JsonNode? e, JsonNode? a, string path, List<string> diffs, bool loose)
     {
         switch (e)
         {
@@ -36,7 +37,7 @@ public static class JsonCompare
                 {
                     if (!eo.ContainsKey(key)) diffs.Add($"{path}.{key}: not expected, got {ao[key]?.ToJsonString() ?? "null"}");
                     else if (!ao.ContainsKey(key)) diffs.Add($"{path}.{key}: missing, expected {eo[key]?.ToJsonString() ?? "null"}");
-                    else Walk(eo[key], ao[key], $"{path}.{key}", diffs);
+                    else Walk(eo[key], ao[key], $"{path}.{key}", diffs, loose);
                 }
 
                 return;
@@ -48,7 +49,7 @@ public static class JsonCompare
                 }
 
                 if (ea.Count != aa.Count) diffs.Add($"{path}: expected {ea.Count} items, got {aa.Count}");
-                for (var i = 0; i < Math.Min(ea.Count, aa.Count); i++) Walk(ea[i], aa[i], $"{path}[{i}]", diffs);
+                for (var i = 0; i < Math.Min(ea.Count, aa.Count); i++) Walk(ea[i], aa[i], $"{path}[{i}]", diffs, loose);
                 return;
             default:
                 var ee = JsonSerializer.SerializeToElement(e);
@@ -62,6 +63,10 @@ public static class JsonCompare
                 if (ee.ValueKind == JsonValueKind.Number && ae.ValueKind == JsonValueKind.Number)
                 {
                     if (ee.GetDecimal() != ae.GetDecimal()) diffs.Add($"{path}: expected {ee.GetRawText()}, got {ae.GetRawText()}");
+                }
+                else if (loose && ee.ValueKind is JsonValueKind.Number or JsonValueKind.String && ae.ValueKind is JsonValueKind.Number or JsonValueKind.String
+                    && SameValue(ee.ValueKind == JsonValueKind.String ? ee.GetString()! : ee.GetRawText(), ae.ValueKind == JsonValueKind.String ? ae.GetString()! : ae.GetRawText()))
+                {
                 }
                 else if (ee.ValueKind != ae.ValueKind || ee.GetRawText() != ae.GetRawText())
                 {

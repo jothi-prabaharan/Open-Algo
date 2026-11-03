@@ -44,6 +44,12 @@ public abstract class BrokerContractHost : IAsyncLifetime
     /// <summary>Fields that differ on every request by design (a fresh order tag, today's date), as "form.tag" or "json.fromDate", with the format each must have.</summary>
     public virtual IReadOnlyDictionary<string, string> VolatileFields { get; } = new Dictionary<string, string>();
 
+    /// <summary>The broker's application keys (Brokers:Keys:&lt;broker&gt;), as the recorded install had them in its environment.</summary>
+    public virtual IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string>();
+
+    /// <summary>The broker takes a number and its text form alike, and OpenAlgo itself sends both, so request bodies compare by value.</summary>
+    public virtual bool NumbersMayBeText => false;
+
     public static JsonObject Load(string file) =>
         (JsonObject)JsonNode.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", file)))!;
 
@@ -53,6 +59,7 @@ public abstract class BrokerContractHost : IAsyncLifetime
         Host = new TestHost("Production", b =>
         {
             b.UseSetting("Brokers:Enabled:0", BrokerName);
+            foreach (var (key, value) in Keys) b.UseSetting($"Brokers:Keys:{BrokerName}:{key}", value);
             b.ConfigureServices(s => s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => Broker)));
         });
 
@@ -176,6 +183,8 @@ public static class ContractRunner
             var a = actualWrites[i];
             Assert.Equal(e["method"]!.GetValue<string>(), a.Method);
             Assert.Equal(e["path"]!.GetValue<string>(), a.Path);
+            Assert.Equal(e["host"]!.GetValue<string>(), a.Host);
+            Assert.Equal(e["query"]!.AsArray().Select(p => $"{p![0]}={p[1]}"), a.Query.Select(q => $"{q.Key}={q.Value}"));
             CompareHeaders(e, a);
             CompareBody(host, e, a, $"Write {i} ({a.Method} {a.Path})");
         }
@@ -186,7 +195,7 @@ public static class ContractRunner
             var path = e["path"]!.GetValue<string>();
             var query = e["query"]!.AsArray().Select(p => $"{p![0]}={p[1]}").ToList();
             // Headers too (credentials, client id); a GET carries no body, so its content type is not compared.
-            var matches = actualSent.Where(a => isRead(a) && a.Method == e["method"]!.GetValue<string>() && a.Path == path
+            var matches = actualSent.Where(a => isRead(a) && a.Method == e["method"]!.GetValue<string>() && a.Path == path && a.Host == e["host"]!.GetValue<string>()
                 && a.Query.Select(q => $"{q.Key}={q.Value}").SequenceEqual(query)
                 && HeadersMatch(e, a, ignoreContentType: a.Method == "GET")).ToList();
             Assert.True(matches.Count > 0,
@@ -194,7 +203,7 @@ public static class ContractRunner
             if (e["json"] is not null)
             {
                 var expectedBody = Masked(host, "json", e["json"]);
-                Assert.True(matches.Any(a => JsonCompare.Differences(expectedBody, Masked(host, "json", a.Json)).Count == 0),
+                Assert.True(matches.Any(a => JsonCompare.Differences(expectedBody, Masked(host, "json", a.Json), numbersMayBeText: host.NumbersMayBeText).Count == 0),
                     $"No read of {path} carried the body {e["json"]!.ToJsonString()}; EP Trade bot sent: {string.Join(" | ", matches.Select(m => m.Json?.ToJsonString()))}");
             }
         }
@@ -243,7 +252,7 @@ public static class ContractRunner
         }
         else if (expected["json"] is { } json)
         {
-            var diffs = JsonCompare.Differences(Masked(host, "json", json), Masked(host, "json", actual.Json));
+            var diffs = JsonCompare.Differences(Masked(host, "json", json), Masked(host, "json", actual.Json), numbersMayBeText: host.NumbersMayBeText);
             Assert.True(diffs.Count == 0, $"{label} body differs from OpenAlgo's:\n" + string.Join("\n", diffs));
         }
     }
