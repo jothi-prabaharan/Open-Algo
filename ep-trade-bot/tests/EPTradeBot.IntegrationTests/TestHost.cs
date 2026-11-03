@@ -114,7 +114,10 @@ public sealed class TestHost : IAsyncDisposable
             try
             {
                 await using var db = new EpTradeDbContext(options);
-                await db.Database.EnsureDeletedAsync();
+                var dropped = await db.Database.EnsureDeletedAsync();
+                // A test must not leave its database behind; say so here rather than let it pile up unseen.
+                if (await db.Database.CanConnectAsync())
+                    throw new InvalidOperationException($"Test database {new NpgsqlConnectionStringBuilder(_connectionString).Database} still exists after the drop (EnsureDeleted returned {dropped}).");
                 return;
             }
             catch (Npgsql.PostgresException ex) when (ex.SqlState == "42501" && attempt < 40)
