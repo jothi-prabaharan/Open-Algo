@@ -1,7 +1,7 @@
 # EP Trade bot: Task List
 
 Status: plan approved 2026-11-02 with the default for every decision (D1 to D8).
-Task Group 1 done; Gate 1 evidence in [`ep-trade-bot/verification/tg1.md`](../../ep-trade-bot/verification/tg1.md).
+Task Groups 1 and 2 done; evidence in [`tg1.md`](../../ep-trade-bot/verification/tg1.md) and [`tg2.md`](../../ep-trade-bot/verification/tg2.md).
 
 ## Pre-flight
 - [x] Decisions D1 to D8 answered (defaults accepted)
@@ -19,12 +19,13 @@ Task Group 1 done; Gate 1 evidence in [`ep-trade-bot/verification/tg1.md`](../..
 - [x] Gate 1 artifact
 
 ## TG2: Guardrails, risk, sandbox, kill switches
-- [ ] `ITradingGuardService` (middleware + dispatcher)
-- [ ] `IAccountRiskManager` (pure core + adapter; reuse `test/risk/vectors.json`)
-- [ ] Sandbox engine with atomic order + margin transaction
-- [ ] Account and global kill-switch endpoints with append-only IST audit
-- [ ] Audit immutability interceptor
-- [ ] Gate 2 artifact (xUnit + Testcontainers)
+- [x] `ITradingGuardService` (endpoint filter + dispatcher, checked again under the account lock)
+- [x] `IAccountRiskManager` (pure rules + adapter); OpenAlgo `services/risk` core ported, held to `test/risk/vectors.json` (35/35)
+- [x] Sandbox engine with atomic order + margin transaction (market, limit, SL, SL-M, positions, P&L, cancel)
+- [x] Account and global kill-switch endpoints with append-only IST audit
+- [x] Audit immutability: SaveChanges interceptor + command interceptor (blocks ExecuteUpdate/ExecuteDelete)
+- [x] Gate 2 artifact (xUnit on PostgreSQL 17, 14 mutation checks)
+- [ ] Deferred to later groups: sandbox GTT, CNC holdings and T+1, catch-up after restart, auto square-off timers (TG4); admin token replaced by login (TG5)
 
 ## TG3: Brokers, /api/v1, streaming
 - [ ] Enumerate Flask `/api/v1` URL map; reconcile count

@@ -11,6 +11,7 @@ internal sealed class SandboxPositionConfiguration : IEntityTypeConfiguration<Sa
     {
         b.ToTable("sandbox_positions", schema: "sandbox");
         b.HasKey(x => x.Id);
+        b.Property(x => x.Version).HasColumnName("xmin").HasColumnType("xid").IsRowVersion();
         b.Property(x => x.Id).ValueGeneratedOnAdd();
         b.Property(x => x.Id).HasColumnName("id").IsRequired();
         b.Property(x => x.UserId).HasColumnName("user_id").HasMaxLength(50).IsRequired();

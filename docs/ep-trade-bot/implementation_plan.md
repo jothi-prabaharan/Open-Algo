@@ -1,7 +1,7 @@
 # EP Trade bot: Implementation Plan (OpenAlgo to .NET 10 / PostgreSQL / Angular)
 
-Status: **approved 2026-11-02, defaults accepted for D1 to D8.** Task Group 1 complete
-([verification](../../ep-trade-bot/verification/tg1.md)); Task Group 2 next. Each Task Group below
+Status: **approved 2026-11-02, defaults accepted for D1 to D8.** Task Groups 1 and 2 complete
+([TG1](../../ep-trade-bot/verification/tg1.md), [TG2](../../ep-trade-bot/verification/tg2.md)); Task Group 3 next. Each Task Group below
 ends at a verification gate and a review stop; nothing in the next group starts
 until the previous group's verification artifact is approved.
 
@@ -102,7 +102,7 @@ ep-trade-bot/
     EPTradeBot.Importer/        optional legacy data importer (D6)
   tests/
     EPTradeBot.Core.Tests/            unit tests (risk rules, guard, Greeks, indicators, backtests)
-    EPTradeBot.IntegrationTests/      WebApplicationFactory + Testcontainers/PostgreSQL
+    EPTradeBot.IntegrationTests/      WebApplicationFactory + a real PostgreSQL server (EPTRADE_TEST_PG)
     EPTradeBot.Contract.Tests/        /api/v1 request/response parity against recorded OpenAlgo fixtures
     EPTradeBot.Architecture.Tests/    NetArchTest rules + raw-SQL ban (see 3.4)
   web/                          Angular 22 zoneless PWA
@@ -190,8 +190,10 @@ back through EF metadata, and the raw-SQL search output showing zero matches.
 2. `IAccountRiskManager`, with a pure rule core plus an adapter.
    `MaxDailyLoss` uses realised plus marked-to-market P&L for the IST trading
    day. `MaxOrderQuantity` is the smaller of the configured limit and the
-   exchange freeze quantity; above the freeze, the auto-split path applies
-   instead of a rejection, matching OpenAlgo. `MaxPositionValue` is the
+   exchange freeze quantity. (Corrected in TG2: OpenAlgo does not auto-split
+   at the freeze limit, it only reports the freeze quantity, with 0 meaning
+   "unknown". The port refuses above the freeze and points to split orders, and
+   reads 0 as no known limit.) `MaxPositionValue` is the
    projected gross exposure after the order. The kill-switch flag is checked
    first. Each refusal has a trader-readable reason.
 3. Sandbox engine port: margin and leverage per product and exchange, order
@@ -212,7 +214,7 @@ back through EF metadata, and the raw-SQL search output showing zero matches.
      account stays flagged, never "success".
 
 **Verification Gate 2 (artifact: `verification/tg2.md`):** an xUnit integration
-run on Testcontainers PostgreSQL proving:
+run on PostgreSQL 17 proving:
 
 - a LIVE order is refused in Development from each entry path, and allowed in
   Production

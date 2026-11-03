@@ -17,4 +17,7 @@ public sealed class SandboxFund
     public int? ResetCount { get; set; } = 0;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    /// <summary>Optimistic concurrency token (PostgreSQL <c>xmin</c>). Added in the port: two writers can no longer both spend the same margin.</summary>
+    public uint Version { get; set; }
 }

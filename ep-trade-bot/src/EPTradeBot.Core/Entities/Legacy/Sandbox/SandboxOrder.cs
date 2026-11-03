@@ -25,4 +25,7 @@ public sealed class SandboxOrder
     public int? GttLegId { get; set; }
     public DateTime OrderTimestamp { get; set; } = DateTime.UtcNow;
     public DateTime UpdateTimestamp { get; set; } = DateTime.UtcNow;
+
+    /// <summary>Optimistic concurrency token (PostgreSQL <c>xmin</c>). Added in the port: two writers can no longer both spend the same margin.</summary>
+    public uint Version { get; set; }
 }

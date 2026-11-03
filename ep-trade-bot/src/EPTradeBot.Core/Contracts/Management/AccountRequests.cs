@@ -16,13 +16,13 @@ public sealed class CreateBrokerAccountRequest
 /// <summary>PUT /api/v1/accounts/{accountId}/risk</summary>
 public sealed class UpdateAccountRiskSettingsRequest
 {
-    [Required, Range(typeof(decimal), "0", "1000000000", ErrorMessage = "Max daily loss must be between 0 and 1,00,00,00,000 INR.")]
+    [Required, Range(typeof(decimal), "1", "1000000000", ErrorMessage = "Max daily loss must be between 1 and 1,00,00,00,000 INR.")]
     [JsonPropertyName("max_daily_loss")] public decimal? MaxDailyLoss { get; set; }
 
     [Required, Range(1, 10_000_000, ErrorMessage = "Max order quantity must be between 1 and 1,00,00,000.")]
     [JsonPropertyName("max_order_quantity")] public int? MaxOrderQuantity { get; set; }
 
-    [Required, Range(typeof(decimal), "0", "100000000000", ErrorMessage = "Max position value must be between 0 and 10,000 crore INR.")]
+    [Required, Range(typeof(decimal), "1", "100000000000", ErrorMessage = "Max position value must be between 1 and 10,000 crore INR.")]
     [JsonPropertyName("max_position_value")] public decimal? MaxPositionValue { get; set; }
 
     [JsonPropertyName("is_enabled")] public bool IsEnabled { get; set; } = true;

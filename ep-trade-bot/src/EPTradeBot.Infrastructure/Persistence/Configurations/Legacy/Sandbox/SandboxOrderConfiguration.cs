@@ -11,6 +11,7 @@ internal sealed class SandboxOrderConfiguration : IEntityTypeConfiguration<Sandb
     {
         b.ToTable("sandbox_orders", schema: "sandbox");
         b.HasKey(x => x.Id);
+        b.Property(x => x.Version).HasColumnName("xmin").HasColumnType("xid").IsRowVersion();
         b.Property(x => x.Id).ValueGeneratedOnAdd();
         b.Property(x => x.Id).HasColumnName("id").IsRequired();
         b.Property(x => x.Orderid).HasColumnName("orderid").HasMaxLength(50).IsRequired();

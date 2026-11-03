@@ -59,3 +59,16 @@ public sealed class StreamingOptions
     [Range(1024, 65535)]
     public int BusPort { get; set; } = 5555;
 }
+
+/// <summary>
+/// Bound from <c>Management</c>. Until the login of Task Group 5 lands, the
+/// account, risk, order and kill-switch endpoints require this token in the
+/// <c>X-Admin-Token</c> header. Startup fails without it.
+/// </summary>
+public sealed class ManagementOptions
+{
+    public const string Section = "Management";
+
+    [Required(AllowEmptyStrings = false), StringLength(256, MinimumLength = 32, ErrorMessage = "Management:AdminToken must be at least 32 characters.")]
+    public string AdminToken { get; set; } = "";
+}

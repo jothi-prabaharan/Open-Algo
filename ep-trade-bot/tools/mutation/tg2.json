@@ -1,0 +1,120 @@
+[
+ {
+  "name": "M1 guard allows LIVE everywhere",
+  "file": "src/EPTradeBot.Core/Trading/TradingGuard.cs",
+  "old": "string.Equals(environmentName, ProductionEnvironment, StringComparison.Ordinal);",
+  "new": "true;",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~GuardTests.Live_order"
+ },
+ {
+  "name": "M2 dispatcher skips the guard",
+  "file": "src/EPTradeBot.Infrastructure/Trading/OrderDispatcher.cs",
+  "old": "if (guard.Check(account) is { } refused)",
+  "new": "if (false && guard.Check(account) is { } refused)",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~every_source"
+ },
+ {
+  "name": "M2b dispatcher skips both guard checks",
+  "file": "src/EPTradeBot.Infrastructure/Trading/OrderDispatcher.cs",
+  "old": "        if (guard.Check(account) is { } refused)\n",
+  "new": "        if (false && guard.Check(account) is { } refused)\n",
+  "also": [
+   {
+    "old": "if (guard.Check(account) is { } late)",
+    "new": "if (false && guard.Check(account) is { } late)"
+   }
+  ],
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~every_source"
+ },
+ {
+  "name": "M3 HTTP guard filter removed",
+  "file": "src/EPTradeBot.Api/Security/TradingGuardFilter.cs",
+  "old": "if (guard.Check(account) is { } refusal)",
+  "new": "if (account is null && guard.Check(account) is { } refusal)",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~over_http"
+ },
+ {
+  "name": "M4 funds row version removed",
+  "file": "src/EPTradeBot.Infrastructure/Persistence/Configurations/Legacy/Sandbox/SandboxFundConfiguration.cs",
+  "old": "        b.Property(x => x.Version).HasColumnName(\"xmin\").HasColumnType(\"xid\").IsRowVersion();\n",
+  "new": "        b.Ignore(x => x.Version);\n",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~Concurrent_orders"
+ },
+ {
+  "name": "M5 exits treated as new exposure",
+  "file": "src/EPTradeBot.Core/Trading/AccountRiskRules.cs",
+  "old": "if (reducesOnly || intent.Source == OrderSource.KillSwitch) return null;",
+  "new": "if (intent.Source == OrderSource.KillSwitch) return null;",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~Max_daily_loss"
+ },
+ {
+  "name": "M6 kill switch skips square-off",
+  "file": "src/EPTradeBot.Infrastructure/Trading/KillSwitchService.cs",
+  "old": "            while (remaining > 0)",
+  "new": "            while (remaining > 0 && remaining < 0)",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~Account_kill_switch"
+ },
+ {
+  "name": "M7 kill switch hides failures",
+  "file": "src/EPTradeBot.Infrastructure/Trading/KillSwitchService.cs",
+  "old": "    public bool Completed => Failures.Count == 0;\n}\n\npublic sealed record GlobalKillResult",
+  "new": "    public bool Completed => true;\n}\n\npublic sealed record GlobalKillResult",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~Global_kill_switch"
+ },
+ {
+  "name": "M8 command interceptor never matches",
+  "file": "src/EPTradeBot.Infrastructure/Persistence/Interceptors/AuditImmutabilityInterceptors.cs",
+  "old": "internal static bool Targets(string commandText) => Mutation().IsMatch(commandText);",
+  "new": "internal static bool Targets(string commandText) => Mutation().IsMatch(commandText) && commandText.Length < 0;",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~Audit_records"
+ },
+ {
+  "name": "M9 save-changes interceptor never refuses",
+  "file": "src/EPTradeBot.Infrastructure/Persistence/Interceptors/AuditImmutabilityInterceptors.cs",
+  "old": "if (entry.State is EntityState.Modified or EntityState.Deleted)",
+  "new": "if (entry.State is EntityState.Detached)",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~Audit_records"
+ },
+ {
+  "name": "M10 dispatcher stops auditing refusals",
+  "file": "src/EPTradeBot.Infrastructure/Trading/OrderDispatcher.cs",
+  "old": "        await audit.RecordOrderAsync(intent, account, result, CancellationToken.None);",
+  "new": "        if (result.Status == DispatchStatus.Accepted) await audit.RecordOrderAsync(intent, account, result, CancellationToken.None);",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~every_source|FullyQualifiedName~Every_dispatch"
+ },
+ {
+  "name": "M11 trail no longer clamped to the peak",
+  "file": "src/EPTradeBot.Core/Risk/PositionEvaluator.cs",
+  "old": "                c = ClampToPeak(c, isLong, highest, lowest);",
+  "new": "",
+  "project": "EPTradeBot.Core.Tests",
+  "filter": "FullyQualifiedName~RiskVectorTests"
+ },
+ {
+  "name": "M12 zero accepted as a price",
+  "file": "src/EPTradeBot.Core/Risk/RiskModels.cs",
+  "old": "double.IsFinite(v) && v > 0.0;",
+  "new": "double.IsFinite(v) && v >= 0.0;",
+  "project": "EPTradeBot.Core.Tests",
+  "filter": "FullyQualifiedName~RiskVectorTests"
+ },
+ {
+  "name": "M13 closing order charged margin",
+  "file": "src/EPTradeBot.Core/Sandbox/SandboxRules.cs",
+  "old": "        if (netQuantity == 0 || Math.Sign(netQuantity) == sign) return quantity;\n        return Math.Max(0, quantity - Math.Abs(netQuantity));",
+  "new": "        return quantity;",
+  "project": "EPTradeBot.Core.Tests",
+  "filter": "FullyQualifiedName~SandboxRulesTests"
+ }
+]
