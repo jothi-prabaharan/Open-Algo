@@ -1,0 +1,234 @@
+[
+ {
+  "name": "L1 Midnight taken in UTC, not IST",
+  "file": "src/EPTradeBot.Core/Calendar/MarketCalendar.cs",
+  "old": "ToDateTime(TimeOnly.MinValue), TimeSpan.FromHours(5.5))",
+  "new": "ToDateTime(TimeOnly.MinValue), TimeSpan.Zero)",
+  "filter": "FullyQualifiedName~PlatformContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L2 Saturday treated as a trading day",
+  "file": "src/EPTradeBot.Core/Calendar/MarketCalendar.cs",
+  "old": "date.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday",
+  "new": "date.DayOfWeek is DayOfWeek.Sunday",
+  "filter": "FullyQualifiedName~PlatformContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L3 Settlement holiday closes the market",
+  "file": "src/EPTradeBot.Core/Calendar/MarketCalendar.cs",
+  "old": "if (entry.HolidayType == \"SETTLEMENT_HOLIDAY\")",
+  "new": "if (entry.HolidayType == \"SETTLEMENT\")",
+  "filter": "FullyQualifiedName~MarketCalendarTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "L4 Special session reordered by its last row",
+  "file": "src/EPTradeBot.Core/Calendar/MarketCalendar.cs",
+  "old": "if (!windows.ContainsKey(e.Exchange)) open.Add(e.Exchange);",
+  "new": "open.Remove(e.Exchange); open.Add(e.Exchange);",
+  "filter": "FullyQualifiedName~MarketCalendarTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "L5 Stored timings ignored",
+  "file": "src/EPTradeBot.Core/Calendar/MarketCalendar.cs",
+  "old": "if (!offsets.TryGetValue(x, out var o) && !DefaultOffsets.TryGetValue(x, out o)) continue;",
+  "new": "if (!DefaultOffsets.TryGetValue(x, out var o)) continue;",
+  "filter": "FullyQualifiedName~MarketCalendarTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "L6 Holidays of later years included",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Platform.cs",
+  "old": "h => h.Year == year",
+  "new": "h => h.Year >= year",
+  "filter": "FullyQualifiedName~PlatformContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L7 Timings read a later calendar entry",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Platform.cs",
+  "old": "h => h.HolidayDate == date",
+  "new": "h => h.HolidayDate >= date",
+  "filter": "FullyQualifiedName~PlatformContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L8 Timings accept 2019",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Platform.cs",
+  "old": "date < MarketCalendar.FirstDate",
+  "new": "date < MarketCalendar.FirstDate.AddYears(-1)",
+  "filter": "FullyQualifiedName~PlatformContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L9 Year range not validated",
+  "file": "src/EPTradeBot.Core/Contracts/V1/DataRequests.cs",
+  "old": "[Range(2020, 2050)] [JsonPropertyName(\"year\")]",
+  "new": "[JsonPropertyName(\"year\")]",
+  "filter": "FullyQualifiedName~PlatformContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L10 Holiday seed runs over a stored calendar",
+  "file": "src/EPTradeBot.Infrastructure/Persistence/Seed/MarketCalendarSeed.cs",
+  "old": "if (!await db.Set<MarketHoliday>().AnyAsync(cancellationToken))",
+  "new": "if (!await db.Set<MarketHoliday>().AnyAsync(h => h.Year > 2026, cancellationToken))",
+  "filter": "FullyQualifiedName~PlatformApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "L11 Timing seed runs over stored timings",
+  "file": "src/EPTradeBot.Infrastructure/Persistence/Seed/MarketCalendarSeed.cs",
+  "old": "if (!await db.Set<MarketTiming>().AnyAsync(cancellationToken))",
+  "new": "if (!await db.Set<MarketTiming>().AnyAsync(t => t.ExchangeCode == \"NONE\", cancellationToken))",
+  "filter": "FullyQualifiedName~PlatformApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "L12 Default year taken in UTC",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Platform.cs",
+  "old": "r.Year ?? Core.Time.Ist.FromUtc(clock.GetUtcNow().UtcDateTime).Year",
+  "new": "r.Year ?? clock.GetUtcNow().UtcDateTime.Year",
+  "filter": "FullyQualifiedName~PlatformApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "L13 Chart preferences read across accounts",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Platform.cs",
+  "old": ".Where(p => p.UserId == user).OrderBy(p => p.Key)",
+  "new": ".OrderBy(p => p.Key)",
+  "filter": "FullyQualifiedName~PlatformApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "L14 Saved preference not overwritten",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Platform.cs",
+  "old": "                row.Value = text;\n",
+  "new": "                _ = text;\n",
+  "filter": "FullyQualifiedName~PlatformApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "L15 Fifty-one keys accepted",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Platform.cs",
+  "old": "preferences.Count > MaxChartKeys)",
+  "new": "preferences.Count > MaxChartKeys + 1)",
+  "filter": "FullyQualifiedName~PlatformContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L16 Fifty-one character key accepted",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Platform.cs",
+  "old": "runes.Count > MaxChartKeyLength)",
+  "new": "runes.Count > MaxChartKeyLength + 1)",
+  "filter": "FullyQualifiedName~PlatformContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L17 Value size counted without JSON quoting",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Platform.cs",
+  "old": "PythonJsonLength(value) > MaxChartValueLength",
+  "new": "value.GetRawText().Length - 2 > MaxChartValueLength",
+  "filter": "FullyQualifiedName~PlatformContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L18 Number stored as nothing",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Platform.cs",
+  "old": "_ => value.GetRawText(),",
+  "new": "_ => null,",
+  "filter": "FullyQualifiedName~PlatformApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "L19 Empty chart body not refused first",
+  "file": "src/EPTradeBot.Api/Endpoints/OpenAlgoV1Endpoints.cs",
+  "old": "body.Count == 0 ? V1Result.Error(400, \"No data provided\") : null",
+  "new": "(V1Result?)null",
+  "filter": "FullyQualifiedName~PlatformContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L20 Chart limits checked after the key",
+  "file": "src/EPTradeBot.Api/Endpoints/OpenAlgoV1Endpoints.cs",
+  "old": "beforeKey: static r => OpenAlgoApiService.ChartLimits(r.Preferences));",
+  "new": "beforeKey: null);",
+  "filter": "FullyQualifiedName~PlatformContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L21 Chart GET without a key reaches validation",
+  "file": "src/EPTradeBot.Api/Endpoints/OpenAlgoV1Endpoints.cs",
+  "old": ": V1Result.Error(400, \"Missing apikey parameter\"));",
+  "new": ": null);",
+  "filter": "FullyQualifiedName~PlatformContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L22 Live account served a sandbox P&L",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Platform.cs",
+  "old": "if (account.AccountType != AccountType.PAPER)\n",
+  "new": "if (account.AccountType == AccountType.LIVE && account.Broker == \"none\")\n",
+  "filter": "FullyQualifiedName~PlatformContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L23 Closed position with realized P&L left out",
+  "file": "src/EPTradeBot.Core/Sandbox/SandboxDayPnl.cs",
+  "old": "? p.Quantity != 0 || p.TodayRealizedPnl != 0",
+  "new": "? p.Quantity != 0",
+  "filter": "FullyQualifiedName~PlatformContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L24 Earlier session's realized P&L counted today",
+  "file": "src/EPTradeBot.Core/Sandbox/SandboxDayPnl.cs",
+  "old": "p.UpdatedAtUtc >= sessionStartUtc ? p.TodayRealizedPnl : 0m",
+  "new": "p.TodayRealizedPnl",
+  "filter": "FullyQualifiedName~SandboxDayPnlTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "L25 Contract value ignored",
+  "file": "src/EPTradeBot.Core/Sandbox/SandboxDayPnl.cs",
+  "old": "(mark - p.AveragePrice) * p.Quantity * contractValue",
+  "new": "(mark - p.AveragePrice) * p.Quantity",
+  "filter": "FullyQualifiedName~SandboxDayPnlTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "L26 Earlier session's MIS listed",
+  "file": "src/EPTradeBot.Core/Sandbox/SandboxDayPnl.cs",
+  "old": ": p.Product == \"NRML\" && p.Quantity != 0;",
+  "new": ": p.Quantity != 0;",
+  "filter": "FullyQualifiedName~PlatformApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "L27 Fill resets today's realized P&L at midnight",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "if (position.UpdatedAt < sessionStart) position.TodayRealizedPnl = 0;",
+  "new": "if (Ist.TradingDay(position.UpdatedAt) != Ist.TradingDay(now)) position.TodayRealizedPnl = 0;",
+  "filter": "FullyQualifiedName~PlatformApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "L28 Session boundary at midnight",
+  "file": "src/EPTradeBot.Core/Time/Ist.cs",
+  "old": "var boundary = local.Date + (expiry ?? new TimeOnly(3, 0)).ToTimeSpan();",
+  "new": "var boundary = local.Date;",
+  "filter": "FullyQualifiedName~IstTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "L29 Open position marked to its stored price over the quote",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "private decimal Mark(SandboxPosition p) => quotes.Get(p.Exchange, p.Symbol)?.Ltp ?? p.Ltp ?? p.AveragePrice;",
+  "new": "private decimal Mark(SandboxPosition p) => p.Ltp ?? quotes.Get(p.Exchange, p.Symbol)?.Ltp ?? p.AveragePrice;",
+  "filter": "FullyQualifiedName~PlatformApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

@@ -48,6 +48,9 @@ public sealed class AnalyzerToggleRequest : ApiKeyRequest
     [Required] [JsonPropertyName("mode")] public bool? Mode { get; set; }
 }
 
+/// <summary>GET /api/v1/chart?apikey=...</summary>
+public sealed class ChartGetRequest : ApiKeyRequest;
+
 /// <summary>POST /api/v1/chart: free-form chart preferences, keys passed through.</summary>
 public sealed class ChartRequest : ApiKeyRequest
 {

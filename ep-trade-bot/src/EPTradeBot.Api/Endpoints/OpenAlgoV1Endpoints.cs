@@ -55,6 +55,11 @@ internal static class OpenAlgoV1Endpoints
         Post<SplitOrderRequest>(v1, "/splitorder", (s, a, r, ct) => s.SplitOrderAsync(a, r, ct));
         Post<OptionsOrderRequest>(v1, "/optionsorder", (s, a, r, ct) => s.OptionsOrderAsync(a, r, ct), ValidationShape.Errors);
         Post<OptionsMultiOrderRequest>(v1, "/optionsmultiorder", (s, a, r, ct) => s.OptionsMultiOrderAsync(a, r, ct), ValidationShape.Errors);
+        Post<MarketHolidaysRequest>(v1, "/market/holidays", (s, a, r, ct) => s.MarketHolidaysAsync(a, r, ct));
+        Post<MarketTimingsRequest>(v1, "/market/timings", (s, a, r, ct) => s.MarketTimingsAsync(a, r, ct));
+        Post<PnlSymbolsRequest>(v1, "/pnl/symbols", (s, a, _, ct) => s.PnlSymbolsAsync(a, ct));
+        v1.MapPost("/chart", (RequestDelegate)SaveChart).WithName("v1_chart");
+        v1.MapGet("/chart", (RequestDelegate)ServeChart).WithName("v1_chart_get");
         // OpenAlgo serves the instrument list on GET with the key in the query string (spreadsheets fetch it by URL).
         v1.MapGet("/instruments", (RequestDelegate)ServeInstruments).WithName("v1_instruments");
         return v1;
@@ -66,7 +71,7 @@ internal static class OpenAlgoV1Endpoints
         "/placeorder", "/placesmartorder", "/modifyorder", "/cancelorder", "/cancelallorder", "/closeposition", "/orderbook", "/tradebook",
         "/positionbook", "/holdings", "/funds", "/orderstatus", "/openposition", "/quotes", "/depth", "/ping", "/analyzer", "/analyzer/toggle",
         "/symbol", "/search", "/expiry", "/optionsymbol", "/basketorder", "/splitorder", "/optionsorder", "/optionsmultiorder", "/instruments",
-        "/multiquotes", "/syntheticfuture", "/optionchain",
+        "/multiquotes", "/syntheticfuture", "/optionchain", "/market/holidays", "/market/timings", "/pnl/symbols", "/chart",
     ];
 
     /// <summary>
@@ -89,8 +94,10 @@ internal static class OpenAlgoV1Endpoints
         v1.MapPost(path, run).WithName("v1" + path.Replace('/', '_'));
     }
 
+    /// <param name="beforeValidation">An answer OpenAlgo gives before it validates the body (an empty body, a missing key).</param>
+    /// <param name="beforeKey">An answer OpenAlgo gives after validation and before it checks the API key.</param>
     private static async Task Handle<T>(HttpContext context, Func<OpenAlgoApiService, BrokerAccount, T, CancellationToken, Task<V1Result>> handler,
-        ValidationShape shape, bool fromQuery = false)
+        ValidationShape shape, bool fromQuery = false, Func<HttpContext, JsonObject, V1Result?>? beforeValidation = null, Func<T, V1Result?>? beforeKey = null)
         where T : ApiKeyRequest
     {
         var ct = context.RequestAborted;
@@ -113,6 +120,13 @@ internal static class OpenAlgoV1Endpoints
                 await Write(context, V1Result.Error(400, "The request body is not valid JSON."));
                 return;
             }
+        }
+
+        // Before the header key is added: OpenAlgo looks at the body it was sent.
+        if (beforeValidation?.Invoke(context, body) is { } early)
+        {
+            await Write(context, early);
+            return;
         }
 
         if (!body.ContainsKey("apikey") && context.Request.Headers.TryGetValue("X-API-KEY", out var headerKey) && !string.IsNullOrWhiteSpace(headerKey))
@@ -146,6 +160,12 @@ internal static class OpenAlgoV1Endpoints
             return;
         }
 
+        if (beforeKey?.Invoke(request) is { } refused)
+        {
+            await Write(context, refused);
+            return;
+        }
+
         var keys = context.RequestServices.GetRequiredService<ApiKeyService>();
         var account = await keys.ResolveAsync(request.ApiKey, ct);
         if (account is null)
@@ -163,6 +183,24 @@ internal static class OpenAlgoV1Endpoints
 
     private static Task ServeInstruments(HttpContext context) =>
         Handle<InstrumentsRequest>(context, static (s, a, r, ct) => s.InstrumentsAsync(a, r, ct), ValidationShape.Message, fromQuery: true);
+
+    /// <summary>
+    /// GET /api/v1/chart?apikey=...: the saved chart preferences. OpenAlgo reads the key from the
+    /// query string only; EP Trade bot also takes the X-API-KEY header, which keeps the key out of
+    /// URLs and their logs.
+    /// </summary>
+    private static Task ServeChart(HttpContext context) =>
+        Handle<ChartGetRequest>(context, static (s, a, _, ct) => s.ChartPreferencesAsync(a, ct), ValidationShape.Message, fromQuery: true,
+            beforeValidation: static (context, body) =>
+                (body["apikey"] is JsonValue k && k.GetValue<string>().Length > 0) || !string.IsNullOrWhiteSpace(context.Request.Headers["X-API-KEY"])
+                    ? null
+                    : V1Result.Error(400, "Missing apikey parameter"));
+
+    /// <summary>POST /api/v1/chart: saves the preferences sent beside the key (any keys, within OpenAlgo's limits).</summary>
+    private static Task SaveChart(HttpContext context) =>
+        Handle<ChartRequest>(context, static (s, a, r, ct) => s.SaveChartPreferencesAsync(a, r, ct), ValidationShape.Message,
+            beforeValidation: static (_, body) => body.Count == 0 ? V1Result.Error(400, "No data provided") : null,
+            beforeKey: static r => OpenAlgoApiService.ChartLimits(r.Preferences));
 
     private static V1Result Invalid(ValidationShape shape, JsonObject fields) => shape == ValidationShape.Errors
         ? new V1Result(400, new JsonObject { ["status"] = "error", ["message"] = "Validation error", ["errors"] = fields })

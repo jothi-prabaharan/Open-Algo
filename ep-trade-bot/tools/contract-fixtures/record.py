@@ -53,6 +53,10 @@ SCENARIOS = importlib.import_module(f"scenarios_{FIXTURE}")
 BROKER = getattr(SCENARIOS, "BROKER", FIXTURE)
 for _k, _v in getattr(SCENARIOS, "ENV", {}).items():
     os.environ[_k] = _v
+if "TZ" in os.environ:
+    import time
+
+    time.tzset()
 
 import dotenv  # noqa: E402
 
@@ -66,7 +70,7 @@ import utils.httpx_client as httpx_client  # noqa: E402
 API_KEY = "fixture-api-key-0000000000000000000000000000000000000000000000"
 AUTH_TOKEN = getattr(SCENARIOS, "AUTH_TOKEN", "kite-access-token")
 
-state = {"canned": {}, "sent": [], "calls": {}}
+state = {"canned": {}, "sent": [], "calls": {}, "analyze": False}
 
 
 def _handler(request: httpx.Request) -> httpx.Response:
@@ -120,7 +124,7 @@ def _token_broker(api_key, include_feed_token=False):
 auth_db.get_auth_token_broker = _token_broker
 auth_db.verify_api_key = lambda k: "fixtureuser" if k == API_KEY else None
 auth_db.get_auth_token = lambda *a, **k: AUTH_TOKEN
-settings_db.get_analyze_mode = lambda: False
+settings_db.get_analyze_mode = lambda: state["analyze"]
 
 from database.symbol import SymToken, db_session, init_db  # noqa: E402
 
@@ -147,6 +151,11 @@ if getattr(SCENARIOS, "FREEZE", None):
     qfd.db_session.commit()
     qfd.load_freeze_qty_cache()
 
+# Further OpenAlgo tables a set needs: "module" runs its init_db, "module:function" that function.
+for _init in getattr(SCENARIOS, "INIT", []):
+    _mod, _, _fn = _init.partition(":")
+    getattr(importlib.import_module(_mod), _fn or "init_db")()
+
 import database.token_db_enhanced as tde  # noqa: E402
 
 tde.load_cache_for_broker(BROKER)
@@ -163,11 +172,38 @@ limiter.init_app(app)
 app.register_blueprint(api_v1_bp)
 client = app.test_client()
 
+if hasattr(SCENARIOS, "patch"):
+    # A set may replace what a recording cannot run (live price refresh, for one).
+    SCENARIOS.patch()
+
+
+def _seed(sc):
+    """Per-scenario stored state: chart preferences and sandbox positions of the key's user."""
+    if "chart_prefs" in sc:
+        import database.chart_prefs_db as cp
+
+        cp.ChartPreferences.query.delete()
+        for key, value in sc["chart_prefs"].items():
+            cp.db_session.add(cp.ChartPreferences(user_id="fixtureuser", key=key, value=value))
+        cp.db_session.commit()
+    if "sandbox_positions" in sc:
+        from datetime import datetime
+
+        import database.sandbox_db as sdb
+
+        sdb.SandboxPositions.query.delete()
+        for row in sc["sandbox_positions"]:
+            sdb.db_session.add(sdb.SandboxPositions(user_id="fixtureuser", created_at=datetime.utcnow(), updated_at=datetime.utcnow(), **row))
+        sdb.db_session.commit()
+
+
 out = []
 for sc in SCENARIOS.SCENARIOS:
     state["canned"] = sc.get("broker", {})
     state["sent"] = []
     state["calls"] = {}
+    state["analyze"] = sc.get("analyze", False)
+    _seed(sc)
     body = dict(sc["request"])
     if sc.get("auth", "body") == "body":
         body.setdefault("apikey", API_KEY)
@@ -188,6 +224,7 @@ for sc in SCENARIOS.SCENARIOS:
             "expected": {"status": resp.status_code, "body": resp.get_json(silent=True)},
             "sent": state["sent"],
             "ignore": sc.get("ignore", []),
+            **{k: sc[k] for k in ("analyze", "chart_prefs", "sandbox_positions") if k in sc},
         }
     )
     print(f"{resp.status_code} {sc['name']}")

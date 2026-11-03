@@ -152,5 +152,6 @@ public sealed class MarketHolidaysRequest : ApiKeyRequest
 /// <summary>POST /api/v1/market/timings</summary>
 public sealed class MarketTimingsRequest : ApiKeyRequest
 {
-    [Required, RegularExpression(ApiPatterns.IsoDate)] [JsonPropertyName("date")] public string Date { get; set; } = "";
+    // Any text: a date in another format is answered by the service, as OpenAlgo answers it ("Use YYYY-MM-DD").
+    [Required(AllowEmptyStrings = true)] [JsonPropertyName("date")] public string? Date { get; set; }
 }

@@ -28,7 +28,18 @@ public abstract class BrokerContractHost : IAsyncLifetime
     public FakeBroker Broker { get; } = new();
     public TestHost? Host { get; private set; }
     public string ApiKey { get; private set; } = "";
+    public Guid AccountId { get; private set; }
+
+    /// <summary>A PAPER account on the same broker, for fixtures recorded in analyze mode (<c>"analyze": true</c>).</summary>
+    public string PaperApiKey { get; private set; } = "";
+    public Guid PaperAccountId { get; private set; }
     public JsonObject Fixtures { get; }
+
+    /// <summary>Whether the fixtures include analyze-mode ones, which run on a PAPER account.</summary>
+    public virtual bool WithSandboxAccount => false;
+
+    /// <summary>Stored state a fixture needs before its request (saved preferences, sandbox positions).</summary>
+    public virtual Task PrepareAsync(JsonObject fixture) => Task.CompletedTask;
 
     protected BrokerContractHost() => Fixtures = Load(FixtureFile);
 
@@ -80,6 +91,12 @@ public abstract class BrokerContractHost : IAsyncLifetime
             broker: BrokerName, clientId: clientId);
         (await Host.Admin.PutAsJsonAsync($"/api/v1/accounts/{accountId}/broker-session", new { auth_token = Fixtures["auth_token"]!.GetValue<string>() })).EnsureSuccessStatusCode();
         ApiKey = (await Host.Get<ApiKeyService>().IssueAsync(accountId, "contract tests")).Key;
+        AccountId = accountId;
+        if (WithSandboxAccount)
+        {
+            PaperAccountId = await Host.CreateAccountAsync(AccountType.PAPER, "Contract sandbox", broker: BrokerName, clientId: clientId + "-sandbox");
+            PaperApiKey = (await Host.Get<ApiKeyService>().IssueAsync(PaperAccountId, "contract tests")).Key;
+        }
 
         await using var db = Host.NewDb();
         foreach (var row in Fixtures["symbols"]!.AsArray().OfType<JsonObject>())
@@ -148,18 +165,21 @@ public static class ContractRunner
         foreach (var (key, body) in host.HarnessReplies) replies.TryAdd(key, [(200, body)]);
         host.Broker.Reset(replies);
 
+        await host.PrepareAsync(f);
+        var apiKey = f["analyze"] is JsonValue analyze && analyze.GetValue<bool>() ? host.PaperApiKey : host.ApiKey;
         var request = (JsonObject)f["request"]!.DeepClone();
-        if (request["apikey"] is JsonValue k && k.GetValue<string>() == recordedKey) request["apikey"] = host.ApiKey;
+        if (request["apikey"] is JsonValue k && k.GetValue<string>() == recordedKey) request["apikey"] = apiKey;
         using var client = host.Host!.Anonymous();
         var isGet = f["method"]?.GetValue<string>() == "GET";
-        if (f["auth"]!.GetValue<string>() == "none") request.Remove("apikey");
+        // Without auth the request carries no key of the install's (a key it does carry is a wrong one, sent as recorded).
+        if (f["auth"]!.GetValue<string>() == "none" && request["apikey"] is JsonValue own && own.GetValue<string>() == apiKey) request.Remove("apikey");
         using var message = isGet
             ? new HttpRequestMessage(HttpMethod.Get, f["path"]!.GetValue<string>() + "?" + string.Join("&", request.Select(kv => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value!.ToString())}")))
             : new HttpRequestMessage(HttpMethod.Post, f["path"]!.GetValue<string>())
             {
                 Content = new StringContent(request.ToJsonString(), Encoding.UTF8, "application/json"),
             };
-        if (f["auth"]!.GetValue<string>() == "header") message.Headers.Add("X-API-KEY", host.ApiKey);
+        if (f["auth"]!.GetValue<string>() == "header") message.Headers.Add("X-API-KEY", apiKey);
         using var response = await client.SendAsync(message);
         var actual = JsonNode.Parse(await response.Content.ReadAsStringAsync());
         output.WriteLine($"EP Trade bot answered {(int)response.StatusCode}: {actual?.ToJsonString()}");

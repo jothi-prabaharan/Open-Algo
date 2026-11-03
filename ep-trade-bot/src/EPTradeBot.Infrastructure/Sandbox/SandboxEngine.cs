@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using EPTradeBot.Core.Configuration;
+using EPTradeBot.Core.Entities.Legacy.Core;
 using EPTradeBot.Core.Entities.Legacy.Sandbox;
 using EPTradeBot.Core.Sandbox;
 using EPTradeBot.Core.Time;
@@ -29,12 +30,15 @@ public sealed class SandboxEngine(
     IDbContextFactory<EpTradeDbContext> contexts,
     IQuoteSource quotes,
     IOptions<SandboxOptions> options,
+    TimeProvider clock,
     ILogger<SandboxEngine> logger)
 {
     private const int MaxAttempts = 8;
     private readonly SandboxLeverage _leverage = new();
 
     public static string UserId(Guid accountId) => accountId.ToString("N");
+
+    private DateTime UtcNow => clock.GetUtcNow().UtcDateTime;
 
     /// <summary>Places an order for a PAPER account. Fills immediately when the quote allows.</summary>
     public Task<DispatchResult> PlaceAsync(OrderIntent intent, CancellationToken cancellationToken = default) =>
@@ -66,7 +70,7 @@ public sealed class SandboxEngine(
                         $"Not enough sandbox funds: this order needs INR {margin:N2} of margin and INR {funds.AvailableBalance ?? 0:N2} is available.", Code: "insufficient_funds");
             }
 
-            var now = DateTime.UtcNow;
+            var now = UtcNow;
             var order = new SandboxOrder
             {
                 Orderid = NewId("SB"),
@@ -193,17 +197,19 @@ public sealed class SandboxEngine(
         await using var db = await contexts.CreateDbContextAsync(cancellationToken);
         var userId = UserId(intent.AccountId);
         var positions = await db.Set<SandboxPosition>().AsNoTracking().Where(p => p.UserId == userId).ToListAsync(cancellationToken);
-        var today = Ist.TradingDay(DateTime.UtcNow);
+        var sessionStart = Ist.LastSessionExpiryUtc(UtcNow);
 
         decimal unrealized = 0, gross = 0, realizedToday = 0;
         var net = 0;
         foreach (var p in positions)
         {
-            if (Ist.TradingDay(p.UpdatedAt) == today) realizedToday += p.TodayRealizedPnl ?? 0;
+            var state = State(p);
+            realizedToday += SandboxDayPnl.TodayRealized(state, sessionStart);
             if (p.Symbol == intent.Symbol && p.Exchange == intent.Exchange && p.Product == intent.Product) net = p.Quantity;
             if (p.Quantity == 0) continue;
-            var mark = quotes.Get(p.Exchange, p.Symbol)?.Ltp ?? p.Ltp ?? p.AveragePrice;
-            unrealized += (mark - p.AveragePrice) * p.Quantity;
+            // Every open position counts towards the limits, whichever session opened it.
+            var mark = Mark(p);
+            unrealized += SandboxDayPnl.Unrealized(state, mark);
             gross += Math.Abs(p.Quantity) * mark;
         }
 
@@ -216,6 +222,36 @@ public sealed class SandboxEngine(
             FreezeQuantity = freezeQuantity,
         };
     }
+
+    /// <summary>
+    /// The day's P&amp;L by position, as OpenAlgo's sandbox position book lists it: positions of this
+    /// session, and NRML ones carried from an earlier session, in the order they were opened.
+    /// Open positions are marked to the latest quote, else to the price stored with them.
+    /// </summary>
+    public async Task<IReadOnlyList<SandboxDayPnlRow>> GetDayPnlAsync(Guid accountId, string broker, CancellationToken cancellationToken = default)
+    {
+        await using var db = await contexts.CreateDbContextAsync(cancellationToken);
+        var userId = UserId(accountId);
+        var positions = await db.Set<SandboxPosition>().AsNoTracking().Where(p => p.UserId == userId).OrderBy(p => p.Id).ToListAsync(cancellationToken);
+        var sessionStart = Ist.LastSessionExpiryUtc(UtcNow);
+        var listed = positions.Where(p => SandboxDayPnl.Listed(State(p), sessionStart)).ToList();
+
+        var symbols = listed.Select(p => p.Symbol).Distinct().ToList();
+        var contractValues = (await db.Set<SymToken>().AsNoTracking()
+                .Where(t => t.Broker == broker && symbols.Contains(t.Symbol) && t.ContractValue != null)
+                .Select(t => new { t.Exchange, t.Symbol, t.ContractValue })
+                .ToListAsync(cancellationToken))
+            .GroupBy(t => (t.Exchange, t.Symbol))
+            .ToDictionary(g => g.Key, g => (decimal)g.First().ContractValue!.Value);
+
+        return listed.Select(p => SandboxDayPnl.Row(State(p), Mark(p),
+            contractValues.TryGetValue((p.Exchange, p.Symbol), out var cv) && cv > 0 ? cv : 1m, sessionStart)).ToList();
+    }
+
+    private static SandboxPositionState State(SandboxPosition p) =>
+        new(p.Symbol, p.Exchange, p.Product, p.Quantity, p.AveragePrice, p.TodayRealizedPnl ?? 0, DateTime.SpecifyKind(p.UpdatedAt, DateTimeKind.Utc));
+
+    private decimal Mark(SandboxPosition p) => quotes.Get(p.Exchange, p.Symbol)?.Ltp ?? p.Ltp ?? p.AveragePrice;
 
     public async Task<SandboxFund> GetFundsAsync(Guid accountId, CancellationToken cancellationToken = default)
     {
@@ -255,7 +291,7 @@ public sealed class SandboxEngine(
     {
         var isBuy = order.Action == "BUY";
         var sign = isBuy ? 1 : -1;
-        var now = DateTime.UtcNow;
+        var now = UtcNow;
         var blocked = order.MarginBlocked ?? 0;
         funds.AvailableBalance += blocked;
         funds.UsedMargin -= blocked;
@@ -277,13 +313,15 @@ public sealed class SandboxEngine(
             position = new SandboxPosition
             {
                 UserId = order.UserId, Symbol = order.Symbol, Exchange = order.Exchange, Product = order.Product,
-                Quantity = 0, AveragePrice = 0, MarginBlocked = 0, AccumulatedRealizedPnl = 0, TodayRealizedPnl = 0, CreatedAt = now,
+                Quantity = 0, AveragePrice = 0, MarginBlocked = 0, AccumulatedRealizedPnl = 0, TodayRealizedPnl = 0, CreatedAt = now, UpdatedAt = now,
             };
             db.Add(position);
         }
 
-        if (Ist.TradingDay(position.UpdatedAt) != Ist.TradingDay(now)) position.TodayRealizedPnl = 0;
-        if (Ist.TradingDay(funds.UpdatedAt) != Ist.TradingDay(now)) funds.TodayRealizedPnl = 0;
+        // Today's realized P&L starts again at the session boundary (03:00 IST), the boundary every reader uses.
+        var sessionStart = Ist.LastSessionExpiryUtc(now);
+        if (position.UpdatedAt < sessionStart) position.TodayRealizedPnl = 0;
+        if (funds.UpdatedAt < sessionStart) funds.TodayRealizedPnl = 0;
 
         var outcome = SandboxRules.ApplyFill(position.Quantity, position.AveragePrice, position.MarginBlocked ?? 0, sign, order.Quantity, price, openingMargin);
         funds.AvailableBalance = funds.AvailableBalance - openingMargin + outcome.MarginReleased + outcome.RealizedPnl;
@@ -316,15 +354,15 @@ public sealed class SandboxEngine(
         return true;
     }
 
-    private static void Cancel(SandboxOrder order, SandboxFund funds)
+    private void Cancel(SandboxOrder order, SandboxFund funds)
     {
         var blocked = order.MarginBlocked ?? 0;
         funds.AvailableBalance += blocked;
         funds.UsedMargin -= blocked;
-        funds.UpdatedAt = DateTime.UtcNow;
+        funds.UpdatedAt = UtcNow;
         order.MarginBlocked = 0;
         order.OrderStatus = "cancelled";
-        order.UpdateTimestamp = DateTime.UtcNow;
+        order.UpdateTimestamp = UtcNow;
     }
 
     private async Task<SandboxFund> LoadFundsAsync(EpTradeDbContext db, string userId, CancellationToken cancellationToken)

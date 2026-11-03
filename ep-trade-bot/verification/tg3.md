@@ -1,10 +1,10 @@
-# Verification Gate 3, passes 1 to 4: broker contract, /api/v1 core, streaming, and the seven reference brokers
+# Verification Gate 3, passes 1 to 7: broker contract, /api/v1, streaming, and the seven reference brokers
 
 Date: 2026-11-03. Same toolchain as Gates 1 and 2, plus NetMQ 4.0.4.5 and the
-SignalR client 10.0.14 (tests only). Result: **all four passes verified; Task Group 3
+SignalR client 10.0.14 (tests only). Result: **passes 1 to 7 verified; Task Group 3
 is not finished.** Pass 1 built the broker contract, the /api/v1 core, streaming
 and Zerodha; pass 2 added Dhan and Dhan Sandbox (section 9); pass 3 added Angel One
-and Upstox (section 10); pass 4 added Fyers and Delta Exchange (section 11). What is not done is
+and Upstox (section 10); pass 4 added Fyers and Delta Exchange (section 11); passes 5 to 7 added the composite, chain and platform endpoints (sections 12 to 14). What is not done is
 listed in section 7. Everything below was run in this session.
 
 ## 1. What was built
@@ -873,3 +873,135 @@ tear-down with "permission denied to terminate process".
 - **The check added:** tear-down now verifies that the database is gone and fails the test with its name when it is not.
 - **Since then:** six further full-solution runs passed with no database left and the check never fired.
 - **Status:** the cause is not known. If it recurs, the failing test will name the database.
+
+## 14. Pass 7: market calendar, chart preferences and sandbox P&L by symbol
+
+**What was built.** Four endpoint pairs that ask no broker anything:
+
+- `/market/holidays`
+- `/market/timings`
+- `/chart`, both GET and POST
+- `/pnl/symbols`
+
+`/intervals` moved to pass 8. It answers from each broker's history timeframes, so it belongs with `/history`.
+
+- **The market calendar, seeded as OpenAlgo seeds it.**
+  - `tools/seed/export_market_calendar.py` runs OpenAlgo's own startup path against an empty database and exports what it stored. That path includes the 2025 and 2026 seeds, the 2026 calendar correction, the published 2026 Muhurat session and the 15:40 F&O close.
+  - The export is `Persistence/Seed/market_calendar.json`: 31 entries and 9 exchange timings.
+  - It loads at startup, in one transaction, into empty tables only. A holiday or timing an administrator changed is never replaced.
+- **The calendar rules** (`Core/Calendar/MarketCalendar.cs`) are a pure port of `get_market_timings_for_date`:
+  - A special session answers its own windows.
+  - A settlement holiday trades normal hours.
+  - A trading holiday answers only the exchanges it opens.
+  - A weekend with no entry trades crypto only.
+  - Stored timings win over the defaults.
+- **Midnight is India's.** OpenAlgo builds a date's midnight from the server's local clock, so a server set to UTC answers every session 5.5 hours late. EP Trade bot always uses IST. The fixtures were recorded with the Python server in India's time zone, as OpenAlgo's deployments run.
+- **Chart preferences** are stored per account, in `core.chart_preferences`, keyed by the account. OpenAlgo's limits are checked before the API key, in OpenAlgo's order:
+  - at most 50 keys;
+  - at most 50 characters a key;
+  - at most 1 MB a value, counted as Python's `json.dumps` counts it.
+- **Sandbox day P&L by symbol** (`Core/Sandbox/SandboxDayPnl.cs`) ports the day book of OpenAlgo's sandbox position manager:
+  - The session runs from 03:00 IST.
+  - An earlier session's MIS and CNC positions were settled at the boundary and are not listed; carried NRML positions are.
+  - A closed position is listed only when it realized something this session.
+  - Open positions are marked to the latest quote and scaled by the contract value.
+  - The account risk check now reads the same rules, so `/pnl/symbols` and the daily loss limit cannot disagree about today's P&L.
+- **One day boundary everywhere in the sandbox.**
+  - **Before:** a fill reset today's realized P&L at IST midnight, while OpenAlgo resets it at the 03:00 session boundary.
+  - **Now:** fills, the risk check and `/pnl/symbols` all use `Ist.LastSessionExpiryUtc`. Its expected values were taken from OpenAlgo's `last_session_expiry_utc` run on the same instants.
+  - **Clock:** the sandbox engine now reads the injected clock, so this is tested at 22:00, 01:00 and 03:30 IST.
+- **The recorder** (`record.py`) can now:
+  - run a set's extra OpenAlgo initialisers (`INIT`);
+  - set the time zone (`ENV["TZ"]`);
+  - turn analyze mode on for one scenario;
+  - seed chart preferences and sandbox positions per scenario;
+  - stop live price refresh through the set's `patch()`.
+
+  The .NET harness replays that state through `PrepareAsync`. It runs analyze-mode fixtures on a PAPER account on the same broker.
+- **A harness fix.** An `auth: none` fixture that sends a wrong key on purpose now sends it as recorded. Before, the runner removed every key from such fixtures.
+
+**Contract tests: 45 new fixtures, 353 of 353 in all.**
+
+| Group | Fixtures | Compared in full | Status and error shape | Deliberate difference |
+| --- | --- | --- | --- | --- |
+| market/holidays | 9 | 4 | 4 | 1 |
+| market/timings | 13 | 11 | 1 | 1 |
+| chart GET | 5 | 4 | 0 | 1 |
+| chart POST | 14 | 12 | 1 | 1 |
+| pnl/symbols | 4 | 2 | 1 | 1 |
+
+The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening session on a holiday, a holiday with everything closed, 2025's MCX-only Muhurat and a Saturday. They also cover the date and year limits, every chart limit including the boundary (50 keys accepted, 51 refused), and a sandbox book with an open long, a closed position with realized P&L and a short future.
+
+**Deliberate differences, each recorded from the Python implementation.**
+
+| Fixture | OpenAlgo | EP Trade bot |
+| --- | --- | --- |
+| holidays_invalid_apikey, timings_invalid_apikey | Answers the calendar without checking the API key. | 403, as every /api/v1 call: the key names the account. |
+| chart_get_header_key | Reads the key for GET /chart from the query string only (400 with the key in the header). | Also takes the X-API-KEY header, which keeps the key out of URLs and their logs. |
+| chart_post_object_value | Cannot store an object and answers 500. | Stores its JSON text, as for a number. |
+| pnl_symbols_live_mode | "only available in sandbox/analyzer mode". | Same status; names the account and what to use instead, since sandbox is a kind of account here. |
+
+**Two differences without a fixture:**
+
+- **`true` and `false` read back differently.** A saved `true` reads back as `"true"`. OpenAlgo's SQLite column turns it into `"1"`.
+- **Closed positions show nothing unrealized.** For a position closed at expiry, OpenAlgo shows the realized amount in `unrealized_pnl`; EP Trade bot shows 0. The realized amount is in `today_realized_pnl` in both, and the totals agree.
+
+**Other tests.**
+
+- **Core: 23 new tests.**
+  - Session boundary, against OpenAlgo's values.
+  - Each day-book listing rule.
+  - The realized reset, long and short marks, and contract value.
+  - Settlement holidays, stored timings over defaults, weekend special sessions, and duplicate exchange rows.
+- **Integration: 5 new tests.**
+  - The seed loads once and keeps an administrator's edit and deletion.
+  - The default year is India's: 31 December 19:00 UTC asks for 2027.
+  - Chart preferences belong to the account and read back as saved.
+  - Day P&L follows real sandbox fills and the latest quote.
+  - Today's realized P&L runs from 03:00 IST, not from midnight.
+
+**Mutation check.**
+
+29 of 29 red (`tools/mutation/tg3-platform.json`).
+
+| Mutation | Result |
+| --- | --- |
+| L1 midnight taken in UTC, not IST | 3 failed |
+| L2 saturday treated as a trading day | 1 failed |
+| L3 settlement holiday closes the market | 1 failed |
+| L4 special session reordered by its last row | 1 failed |
+| L5 stored timings ignored | 1 failed |
+| L6 holidays of later years included | 1 failed |
+| L7 timings read a later calendar entry | 2 failed |
+| L8 timings accept 2019 | 1 failed |
+| L9 year range not validated | 2 failed |
+| L10 holiday seed runs over a stored calendar | 1 failed |
+| L11 timing seed runs over stored timings | 1 failed |
+| L12 default year taken in UTC | 1 failed |
+| L13 chart preferences read across accounts | 1 failed |
+| L14 saved preference not overwritten | 1 failed |
+| L15 fifty-one keys accepted | 2 failed |
+| L16 fifty-one character key accepted | 1 failed |
+| L17 value size counted without JSON quoting | 1 failed |
+| L18 number stored as nothing | 1 failed |
+| L19 empty chart body not refused first | 1 failed |
+| L20 chart limits checked after the key | 1 failed |
+| L21 chart GET without a key reaches validation | 1 failed |
+| L22 live account served a sandbox P&L | 1 failed |
+| L23 closed position with realized P&L left out | 1 failed |
+| L24 earlier session's realized P&L counted today | 1 failed |
+| L25 contract value ignored | 1 failed |
+| L26 earlier session's MIS listed | 1 failed |
+| L27 fill resets today's realized P&L at midnight | 1 failed |
+| L28 session boundary at midnight | 5 failed |
+| L29 open position marked to its stored price over the quote | 1 failed |
+
+**Earlier sets re-run.** P19 (freeze limits seed) and C12 (X-API-KEY header) patch files this pass changed; both are still red. Every other earlier mutation still applies exactly once to the current code. That is 135 mutation checks for Task Group 3 so far.
+
+**Full suite:** Core 152, Architecture 35, Integration 36, Contract 353: 576 of 576 passed.
+
+**Not done in this pass.**
+
+- **Funds' realized P&L between sessions.** The sandbox funds row still shows yesterday's realized P&L until that account's next fill in the new session. OpenAlgo's fund manager resets it on read.
+- **Market data source.** `/pnl/symbols` marks open positions to the bus's quotes. OpenAlgo falls back to a broker quote call when its feed is stale. EP Trade bot falls back to the price stored with the position.
+- **Still to come in Task Group 3:** history and intervals, ticker, margin, and the four GTT endpoints (pass 8 onward). Feeds and login remain as well.

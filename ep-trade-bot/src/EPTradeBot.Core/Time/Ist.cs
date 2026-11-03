@@ -17,6 +17,20 @@ public static class Ist
     /// <summary>The trading day (IST calendar date) a UTC instant falls on.</summary>
     public static DateOnly TradingDay(DateTime utc) => DateOnly.FromDateTime(FromUtc(utc));
 
+    /// <summary>
+    /// The most recent session boundary at or before <paramref name="utcNow"/>, in UTC: the IST
+    /// wall-clock <paramref name="expiry"/> (03:00 by default, when Indian broker sessions end)
+    /// today, or yesterday when today's has not come yet. Port of OpenAlgo's
+    /// sandbox/session_boundary.last_session_expiry_utc.
+    /// </summary>
+    public static DateTime LastSessionExpiryUtc(DateTime utcNow, TimeOnly? expiry = null)
+    {
+        var local = FromUtc(utcNow);
+        var boundary = local.Date + (expiry ?? new TimeOnly(3, 0)).ToTimeSpan();
+        if (local < boundary) boundary = boundary.AddDays(-1);
+        return DateTime.SpecifyKind(boundary - Offset, DateTimeKind.Utc);
+    }
+
     private static TimeZoneInfo ResolveZone()
     {
         foreach (var id in new[] { "Asia/Kolkata", "India Standard Time" })
