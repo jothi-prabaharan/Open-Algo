@@ -16,14 +16,20 @@ public sealed record SentRequest(string Method, string Path, List<KeyValuePair<s
 public sealed class FakeBroker : HttpMessageHandler
 {
     private readonly object gate = new();
-    private Dictionary<string, (int Status, string Body)> canned = new();
+    private Dictionary<string, List<(int Status, string Body)>> canned = new();
+    private readonly Dictionary<string, int> calls = new();
     private readonly List<SentRequest> sent = [];
 
-    public void Reset(IEnumerable<KeyValuePair<string, (int Status, string Body)>> replies)
+    public void Reset(IEnumerable<KeyValuePair<string, (int Status, string Body)>> replies) =>
+        Reset(replies.Select(kv => new KeyValuePair<string, List<(int, string)>>(kv.Key, [kv.Value])));
+
+    /// <summary>Successive calls to one endpoint get successive replies; the last one repeats.</summary>
+    public void Reset(IEnumerable<KeyValuePair<string, List<(int Status, string Body)>>> replies)
     {
         lock (gate)
         {
-            canned = new Dictionary<string, (int, string)>(replies);
+            canned = new Dictionary<string, List<(int, string)>>(replies);
+            calls.Clear();
             sent.Clear();
         }
     }
@@ -73,8 +79,17 @@ public sealed class FakeBroker : HttpMessageHandler
         lock (gate)
         {
             sent.Add(new SentRequest(request.Method.Method, uri.AbsolutePath, query, headers, form, json));
-            if (!canned.TryGetValue($"{request.Method.Method} {uri.AbsolutePath}", out reply))
-                reply = (599, $$"""{"status":"error","message":"no canned reply for {{request.Method.Method}} {{uri.AbsolutePath}}"}""");
+            var key = $"{request.Method.Method} {uri.AbsolutePath}";
+            if (canned.TryGetValue(key, out var list) && list.Count > 0)
+            {
+                var index = calls.GetValueOrDefault(key);
+                calls[key] = index + 1;
+                reply = list[Math.Min(index, list.Count - 1)];
+            }
+            else
+            {
+                reply = (599, $$"""{"status":"error","message":"no canned reply for {{key}}"}""");
+            }
         }
 
         return new HttpResponseMessage((HttpStatusCode)reply.Status) { Content = new StringContent(reply.Body, Encoding.UTF8, "application/json") };

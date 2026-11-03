@@ -67,7 +67,10 @@ public sealed class BrokerLiveOrderRouter(
             }
 
             if (quantity == 0) continue;
-            var mark = quotes.Get(Text(row["exchange"]) ?? "", Text(row["symbol"]) ?? "")?.Ltp ?? ltp;
+            // A position with no price (a broker that rate-limits its quotes reports 0) is valued at its
+            // average price, never at 0: valuing it at 0 would let the position-value limit pass unchecked.
+            var average = (decimal)(BookFormatting.Number(row["average_price"]) ?? Parse(row["average_price"]));
+            var mark = quotes.Get(Text(row["exchange"]) ?? "", Text(row["symbol"]) ?? "")?.Ltp ?? (ltp > 0 ? ltp : average);
             gross += Math.Abs(quantity) * mark;
         }
 

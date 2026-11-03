@@ -28,11 +28,14 @@ public static class BookFormatting
     };
 
     /// <summary>Python's <c>round(x, 2)</c>: rounds the binary value half-to-even, so 2.675 becomes 2.67.</summary>
-    public static double Round2(double value)
+    public static double Round2(double value) => RoundPy(value, 2);
+
+    /// <summary>Python's <c>round(x, digits)</c> on a float: half-to-even on the binary value.</summary>
+    public static double RoundPy(double value, int digits)
     {
         // G17 exposes the binary value (2.675 is 2.6749999999999998), which is what Python rounds.
         var exact = decimal.Parse(value.ToString("G17", CultureInfo.InvariantCulture), NumberStyles.Float, CultureInfo.InvariantCulture);
-        return (double)Math.Round(exact, 2, MidpointRounding.ToEven);
+        return (double)Math.Round(exact, digits, MidpointRounding.ToEven);
     }
 
     /// <summary>The numeric value of a JSON number node, or null for anything else (Python's isinstance(v, (int, float))).</summary>

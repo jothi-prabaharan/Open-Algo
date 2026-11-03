@@ -1,0 +1,292 @@
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
+using EPTradeBot.Core.Entities.Core;
+using EPTradeBot.Core.Entities.Legacy.Core;
+using EPTradeBot.Infrastructure.Security;
+using EPTradeBot.IntegrationTests;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Xunit.Abstractions;
+
+namespace EPTradeBot.Contract.Tests;
+
+/// <summary>
+/// A deliberate difference from OpenAlgo. With <see cref="Adjust"/>, the fixture is changed to
+/// the answer EP Trade bot gives instead and then compared in full (body and broker traffic).
+/// With only <see cref="Status"/>, the status is checked and nothing may be written to the broker.
+/// </summary>
+public sealed record Deviation(string Reason, Action<JsonObject>? Adjust = null, int? Status = null);
+
+/// <summary>
+/// One EP Trade bot host with a LIVE account on one broker, shared by that broker's fixtures.
+/// Production environment, so the guard lets LIVE orders through to the (fake) broker.
+/// </summary>
+public abstract class BrokerContractHost : IAsyncLifetime
+{
+    public FakeBroker Broker { get; } = new();
+    public TestHost? Host { get; private set; }
+    public string ApiKey { get; private set; } = "";
+    public JsonObject Fixtures { get; }
+
+    protected BrokerContractHost() => Fixtures = Load(FixtureFile);
+
+    public abstract string BrokerName { get; }
+    public abstract string FixtureFile { get; }
+
+    /// <summary>Prices the market feed would supply to the risk check.</summary>
+    public abstract IReadOnlyDictionary<(string Exchange, string Symbol), decimal> Prices { get; }
+
+    /// <summary>Replies for reads EP Trade bot makes that the Python request did not (the risk check reads positions before each order).</summary>
+    public abstract IReadOnlyDictionary<string, string> HarnessReplies { get; }
+
+    /// <summary>Fields that differ on every request by design (a fresh order tag, today's date), as "form.tag" or "json.fromDate", with the format each must have.</summary>
+    public virtual IReadOnlyDictionary<string, string> VolatileFields { get; } = new Dictionary<string, string>();
+
+    public static JsonObject Load(string file) =>
+        (JsonObject)JsonNode.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", file)))!;
+
+    public async Task InitializeAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(PostgresFactAttribute.Variable))) return;
+        Host = new TestHost("Production", b =>
+        {
+            b.UseSetting("Brokers:Enabled:0", BrokerName);
+            b.ConfigureServices(s => s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => Broker)));
+        });
+
+        var clientId = Fixtures["client_id"]?.GetValue<string>() ?? "contract";
+        var accountId = await Host.CreateAccountAsync(AccountType.LIVE, "Contract", maxLoss: 1_000_000_000m, maxQty: 100_000, maxValue: 100_000_000_000m,
+            broker: BrokerName, clientId: clientId);
+        (await Host.Admin.PutAsJsonAsync($"/api/v1/accounts/{accountId}/broker-session", new { auth_token = Fixtures["auth_token"]!.GetValue<string>() })).EnsureSuccessStatusCode();
+        ApiKey = (await Host.Get<ApiKeyService>().IssueAsync(accountId, "contract tests")).Key;
+
+        await using var db = Host.NewDb();
+        foreach (var row in Fixtures["symbols"]!.AsArray().OfType<JsonObject>())
+        {
+            db.Set<SymToken>().Add(new SymToken
+            {
+                Broker = BrokerName, Symbol = Text(row, "symbol")!, Brsymbol = Text(row, "brsymbol")!, Name = Text(row, "name"),
+                Exchange = Text(row, "exchange"), Brexchange = Text(row, "brexchange"), Token = Text(row, "token"), Expiry = Text(row, "expiry"),
+                Strike = row["strike"]?.GetValue<double>(), Lotsize = row["lotsize"]?.GetValue<int>(), Instrumenttype = Text(row, "instrumenttype"),
+                TickSize = row["tick_size"]?.GetValue<double>(),
+            });
+        }
+
+        await db.SaveChangesAsync();
+        foreach (var ((exchange, symbol), price) in Prices) Host.SetQuote(exchange, symbol, price);
+    }
+
+    public async Task DisposeAsync()
+    {
+        if (Host is not null) await Host.DisposeAsync();
+    }
+
+    private static string? Text(JsonObject o, string key) => o[key] is JsonValue v && v.TryGetValue<string>(out var s) ? s : null;
+}
+
+/// <summary>
+/// Replays a request recorded from the Python implementation against EP Trade bot, with the
+/// same broker replies, and requires the same answer and the same writes to the broker, field
+/// for field. Reads (GETs, and POSTs the broker uses for reading) must include every read the
+/// Python plugin made, with the same query and body; an extra read must be one with a reply.
+/// </summary>
+public static class ContractRunner
+{
+    public static IEnumerable<object[]> Names(string file) =>
+        BrokerContractHost.Load(file)["fixtures"]!.AsArray().Select(f => new object[] { f!["name"]!.GetValue<string>() });
+
+    public static async Task RunAsync(BrokerContractHost host, string name, IReadOnlyDictionary<string, Deviation> deviations, ITestOutputHelper output)
+    {
+        var f = (JsonObject)host.Fixtures["fixtures"]!.AsArray().OfType<JsonObject>().Single(x => x["name"]!.GetValue<string>() == name).DeepClone();
+        var recordedKey = host.Fixtures["api_key"]!.GetValue<string>();
+        var readPosts = (host.Fixtures["read_posts"] as JsonArray ?? []).Select(p => p!.GetValue<string>()).ToHashSet();
+
+        var replies = new Dictionary<string, List<(int, string)>>();
+        foreach (var (key, value) in f["broker"]!.AsObject())
+        {
+            replies[key] = value is JsonArray list
+                ? list.Select(r => (r!["status"]?.GetValue<int>() ?? 200, r["body"]!.ToJsonString())).ToList()
+                : [(value!["status"]?.GetValue<int>() ?? 200, value["body"]!.ToJsonString())];
+        }
+
+        foreach (var (key, body) in host.HarnessReplies) replies.TryAdd(key, [(200, body)]);
+        host.Broker.Reset(replies);
+
+        var request = (JsonObject)f["request"]!.DeepClone();
+        if (request["apikey"] is JsonValue k && k.GetValue<string>() == recordedKey) request["apikey"] = host.ApiKey;
+        using var client = host.Host!.Anonymous();
+        using var message = new HttpRequestMessage(HttpMethod.Post, f["path"]!.GetValue<string>())
+        {
+            Content = new StringContent(request.ToJsonString(), Encoding.UTF8, "application/json"),
+        };
+        if (f["auth"]!.GetValue<string>() == "header") message.Headers.Add("X-API-KEY", host.ApiKey);
+        using var response = await client.SendAsync(message);
+        var actual = JsonNode.Parse(await response.Content.ReadAsStringAsync());
+        output.WriteLine($"EP Trade bot answered {(int)response.StatusCode}: {actual?.ToJsonString()}");
+        var sent = host.Broker.Sent;
+        bool IsRead(SentRequest s) => s.Method == "GET" || readPosts.Contains(s.Path);
+
+        if (deviations.TryGetValue(name, out var deviation))
+        {
+            output.WriteLine($"Deliberate difference: {deviation.Reason}");
+            if (deviation.Adjust is null)
+            {
+                Assert.Equal(deviation.Status, (int)response.StatusCode);
+                if (deviation.Status != 200) Assert.DoesNotContain(sent, s => !IsRead(s));
+                return;
+            }
+
+            deviation.Adjust(f);
+        }
+
+        var expected = f["expected"]!;
+        Assert.Equal(expected["status"]!.GetValue<int>(), (int)response.StatusCode);
+        if (IsSchemaMessage(expected))
+        {
+            // Validation wording comes from marshmallow; the contract is the status and the error shape.
+            Assert.Equal("error", actual?["status"]?.GetValue<string>());
+            Assert.Empty(sent);
+            return;
+        }
+
+        var diffs = JsonCompare.Differences(expected["body"], actual);
+        Assert.True(diffs.Count == 0, "Response differs from OpenAlgo:\n" + string.Join("\n", diffs));
+        CompareTraffic(host, f, sent, IsRead, readPosts, replies.Keys);
+    }
+
+    private static bool IsSchemaMessage(JsonNode expected) =>
+        expected["status"]!.GetValue<int>() == 400 && expected["body"]?["message"] is { } m
+        && (m is JsonObject || (m is JsonValue v && v.TryGetValue<string>(out var s) && s.StartsWith('{')));
+
+    private static void CompareTraffic(BrokerContractHost host, JsonObject f, IReadOnlyList<SentRequest> actualSent, Func<SentRequest, bool> isRead,
+        HashSet<string> readPosts, IEnumerable<string> answered)
+    {
+        var expectedSent = f["sent"]!.AsArray().OfType<JsonObject>().ToList();
+        bool ExpectedRead(JsonObject s) => s["method"]!.GetValue<string>() == "GET" || readPosts.Contains(s["path"]!.GetValue<string>());
+
+        var expectedWrites = expectedSent.Where(s => !ExpectedRead(s)).ToList();
+        var actualWrites = actualSent.Where(s => !isRead(s)).ToList();
+        Assert.True(expectedWrites.Count == actualWrites.Count,
+            $"Expected {expectedWrites.Count} writes to the broker, EP Trade bot sent {actualWrites.Count}: {string.Join(", ", actualWrites.Select(w => $"{w.Method} {w.Path}"))}");
+        for (var i = 0; i < expectedWrites.Count; i++)
+        {
+            var e = expectedWrites[i];
+            var a = actualWrites[i];
+            Assert.Equal(e["method"]!.GetValue<string>(), a.Method);
+            Assert.Equal(e["path"]!.GetValue<string>(), a.Path);
+            CompareHeaders(e, a);
+            CompareBody(host, e, a, $"Write {i} ({a.Method} {a.Path})");
+        }
+
+        var answeredSet = answered.ToHashSet();
+        foreach (var e in expectedSent.Where(ExpectedRead))
+        {
+            var path = e["path"]!.GetValue<string>();
+            var query = e["query"]!.AsArray().Select(p => $"{p![0]}={p[1]}").ToList();
+            // Headers too (credentials, client id); a GET carries no body, so its content type is not compared.
+            var matches = actualSent.Where(a => isRead(a) && a.Method == e["method"]!.GetValue<string>() && a.Path == path
+                && a.Query.Select(q => $"{q.Key}={q.Value}").SequenceEqual(query)
+                && HeadersMatch(e, a, ignoreContentType: a.Method == "GET")).ToList();
+            Assert.True(matches.Count > 0,
+                $"Expected a read of {path}?{string.Join("&", query)}; EP Trade bot read: {string.Join(", ", actualSent.Where(isRead).Select(s => s.Path + "?" + string.Join("&", s.Query.Select(q => $"{q.Key}={q.Value}"))))}");
+            if (e["json"] is not null)
+            {
+                var expectedBody = Masked(host, "json", e["json"]);
+                Assert.True(matches.Any(a => JsonCompare.Differences(expectedBody, Masked(host, "json", a.Json)).Count == 0),
+                    $"No read of {path} carried the body {e["json"]!.ToJsonString()}; EP Trade bot sent: {string.Join(" | ", matches.Select(m => m.Json?.ToJsonString()))}");
+            }
+        }
+
+        foreach (var a in actualSent.Where(isRead))
+            Assert.True(answeredSet.Contains($"{a.Method} {a.Path}"), $"EP Trade bot read {a.Method} {a.Path}, which the Python implementation never reads here.");
+    }
+
+    /// <summary>A copy with the volatile fields replaced by a marker, after checking each has its expected format.</summary>
+    private static JsonNode? Masked(BrokerContractHost host, string kind, JsonNode? body)
+    {
+        if (body is not JsonObject obj) return body?.DeepClone();
+        var copy = (JsonObject)obj.DeepClone();
+        foreach (var (field, pattern) in host.VolatileFields)
+        {
+            if (!field.StartsWith(kind + ".", StringComparison.Ordinal)) continue;
+            var key = field[(kind.Length + 1)..];
+            if (copy[key] is JsonValue v && v.TryGetValue<string>(out var text))
+            {
+                Assert.Matches(pattern, text);
+                copy[key] = "<volatile>";
+            }
+        }
+
+        return copy;
+    }
+
+    private static void CompareBody(BrokerContractHost host, JsonObject expected, SentRequest actual, string label)
+    {
+        if (expected["form"] is JsonObject form)
+        {
+            Assert.NotNull(actual.Form);
+            var actualForm = actual.Form!.ToDictionary(kv => kv.Key, kv => kv.Value);
+            Assert.Equal(form.Select(kv => kv.Key).OrderBy(x => x), actualForm.Keys.OrderBy(x => x));
+            foreach (var (key, value) in form)
+            {
+                if (host.VolatileFields.TryGetValue("form." + key, out var pattern))
+                {
+                    Assert.Matches(pattern, actualForm[key]);
+                    continue;
+                }
+
+                var ev = value!.GetValue<string>();
+                Assert.True(JsonCompare.SameValue(ev, actualForm[key]), $"{label} field {key}: expected \"{ev}\", got \"{actualForm[key]}\"");
+            }
+        }
+        else if (expected["json"] is { } json)
+        {
+            var diffs = JsonCompare.Differences(Masked(host, "json", json), Masked(host, "json", actual.Json));
+            Assert.True(diffs.Count == 0, $"{label} body differs from OpenAlgo's:\n" + string.Join("\n", diffs));
+        }
+    }
+
+    private static bool HeadersMatch(JsonObject expected, SentRequest actual, bool ignoreContentType)
+    {
+        foreach (var (key, value) in expected["headers"]!.AsObject())
+        {
+            var isType = key.Equals("content-type", StringComparison.OrdinalIgnoreCase);
+            if (isType && ignoreContentType) continue;
+            // Python's HTTP client adds Accept: */* by itself; a value the plugin chose is compared.
+            if (key.Equals("accept", StringComparison.OrdinalIgnoreCase) && value!.GetValue<string>() == "*/*") continue;
+            if (!actual.Headers.TryGetValue(key, out var av)) return false;
+            if (isType ? !av.StartsWith(value!.GetValue<string>(), StringComparison.OrdinalIgnoreCase) : av != value!.GetValue<string>()) return false;
+        }
+
+        return true;
+    }
+
+    private static void CompareHeaders(JsonObject expected, SentRequest actual)
+    {
+        foreach (var (key, value) in expected["headers"]!.AsObject())
+        {
+            var ev = value!.GetValue<string>();
+            if (key.Equals("accept", StringComparison.OrdinalIgnoreCase) && ev == "*/*") continue;
+            Assert.True(actual.Headers.TryGetValue(key, out var av), $"Header {key} missing");
+            if (key.Equals("content-type", StringComparison.OrdinalIgnoreCase)) Assert.StartsWith(ev, av, StringComparison.OrdinalIgnoreCase);
+            else Assert.Equal(ev, av);
+        }
+    }
+
+    /// <summary>Sets an expected answer: the status and the JSON body.</summary>
+    public static void Expect(JsonObject fixture, int status, JsonObject body)
+    {
+        fixture["expected"]!["status"] = status;
+        fixture["expected"]!["body"] = body;
+    }
+
+    /// <summary>The first recorded write with this method.</summary>
+    public static JsonObject Write(JsonObject fixture, string method, int index = 0) =>
+        fixture["sent"]!.AsArray().OfType<JsonObject>().Where(s => s["method"]!.GetValue<string>() == method).ElementAt(index);
+
+    public static JsonObject Error(string message) => new() { ["status"] = "error", ["message"] = message };
+
+    internal static bool Like(string pattern, string text) => Regex.IsMatch(text, pattern);
+}

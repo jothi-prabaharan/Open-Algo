@@ -46,6 +46,12 @@ os.environ["API_RATE_LIMIT"] = "10000 per second"
 os.environ["SMART_ORDER_RATE_LIMIT"] = "10000 per second"
 os.environ["SMART_ORDER_DELAY"] = "0"
 
+BROKER = sys.argv[1] if len(sys.argv) > 1 else "zerodha"
+sys.path.insert(0, str(HERE))
+SCENARIOS = importlib.import_module(f"scenarios_{BROKER}")
+for _k, _v in getattr(SCENARIOS, "ENV", {}).items():
+    os.environ[_k] = _v
+
 import dotenv  # noqa: E402
 
 dotenv.load_dotenv = lambda *a, **k: False
@@ -56,9 +62,9 @@ import httpx  # noqa: E402
 import utils.httpx_client as httpx_client  # noqa: E402
 
 API_KEY = "fixture-api-key-0000000000000000000000000000000000000000000000"
-AUTH_TOKEN = "kite-access-token"
+AUTH_TOKEN = getattr(SCENARIOS, "AUTH_TOKEN", "kite-access-token")
 
-state = {"canned": {}, "sent": []}
+state = {"canned": {}, "sent": [], "calls": {}}
 
 
 def _handler(request: httpx.Request) -> httpx.Response:
@@ -80,13 +86,18 @@ def _handler(request: httpx.Request) -> httpx.Response:
             "headers": {
                 k: v
                 for k, v in request.headers.items()
-                if k.lower() in ("authorization", "x-kite-version", "content-type", "access-token", "client-id", "x-privatekey", "x-clientcode", "api-key")
+                if k.lower() in ("authorization", "x-kite-version", "content-type", "accept", "access-token", "client-id", "x-privatekey", "x-clientcode", "api-key")
             },
             **parsed_body,
         }
     )
     key = f"{request.method} {url.path}"
     reply = state["canned"].get(key)
+    if isinstance(reply, list):
+        # Successive calls get successive replies; the last one repeats.
+        index = state["calls"].get(key, 0)
+        state["calls"][key] = index + 1
+        reply = reply[min(index, len(reply) - 1)]
     if reply is None:
         return httpx.Response(599, json={"status": "error", "message": f"no canned reply for {key}"})
     return httpx.Response(reply.get("status", 200), json=reply["body"])
@@ -97,9 +108,6 @@ httpx_client.get_httpx_client = lambda *a, **k: _client
 
 import database.auth_db as auth_db  # noqa: E402
 import database.settings_db as settings_db  # noqa: E402
-
-BROKER = sys.argv[1] if len(sys.argv) > 1 else "zerodha"
-
 
 def _token_broker(api_key, include_feed_token=False):
     if api_key != API_KEY:
@@ -120,8 +128,9 @@ for _mod in ("database.auth_db", "database.apilog_db", "database.analyzer_db", "
         importlib.import_module(_mod).init_db()
     except Exception as exc:  # a reference module that is absent is not needed
         print(f"skip {_mod}: {exc}")
-sys.path.insert(0, str(HERE))
-SCENARIOS = importlib.import_module(f"scenarios_{BROKER}")
+if getattr(SCENARIOS, "SEED_API_KEY_ROW", False):
+    # Some plugins look up the install's API key row to call the quote service.
+    auth_db.upsert_api_key("fixtureuser", API_KEY)
 
 for row in SCENARIOS.SYMBOLS:
     db_session.add(SymToken(**row))
@@ -147,6 +156,7 @@ out = []
 for sc in SCENARIOS.SCENARIOS:
     state["canned"] = sc.get("broker", {})
     state["sent"] = []
+    state["calls"] = {}
     body = dict(sc["request"])
     if sc.get("auth", "body") == "body":
         body.setdefault("apikey", API_KEY)
@@ -172,5 +182,5 @@ for sc in SCENARIOS.SCENARIOS:
     print(f"{resp.status_code} {sc['name']}")
 
 dest = HERE / f"{BROKER}.fixtures.json"
-dest.write_text(json.dumps({"broker": BROKER, "api_key": API_KEY, "auth_token": AUTH_TOKEN, "symbols": SCENARIOS.SYMBOLS, "fixtures": out}, indent=2) + "\n", encoding="utf-8")
+dest.write_text(json.dumps({"broker": BROKER, "api_key": API_KEY, "auth_token": AUTH_TOKEN, "client_id": getattr(SCENARIOS, "CLIENT_ID", None), "read_posts": getattr(SCENARIOS, "READ_POSTS", []), "symbols": SCENARIOS.SYMBOLS, "fixtures": out}, indent=2) + "\n", encoding="utf-8")
 print(f"wrote {len(out)} fixtures to {dest}")

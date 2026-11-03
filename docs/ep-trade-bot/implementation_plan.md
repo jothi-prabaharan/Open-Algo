@@ -1,7 +1,7 @@
 # EP Trade bot: Implementation Plan (OpenAlgo to .NET 10 / PostgreSQL / Angular)
 
 Status: **approved 2026-11-02, defaults accepted for D1 to D8.** Task Groups 1 and 2 complete
-([TG1](../../ep-trade-bot/verification/tg1.md), [TG2](../../ep-trade-bot/verification/tg2.md)); Task Group 3 in progress, first pass verified
+([TG1](../../ep-trade-bot/verification/tg1.md), [TG2](../../ep-trade-bot/verification/tg2.md)); Task Group 3 in progress, passes 1 and 2 verified
 ([TG3](../../ep-trade-bot/verification/tg3.md)). Each Task Group below
 ends at a verification gate and a review stop; nothing in the next group starts
 until the previous group's verification artifact is approved.

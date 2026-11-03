@@ -1,0 +1,130 @@
+[
+ {
+  "name": "D1 SL-M sent to Dhan without a protective price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "                body[\"orderType\"] = \"STOP_LOSS\";\n                body[\"price\"] = limit;\n            }\n        }\n\n        using var request = Request(session, HttpMethod.Post",
+  "new": "                _ = limit;\n            }\n        }\n\n        using var request = Request(session, HttpMethod.Post",
+  "filter": "FullyQualifiedName~DhanContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D2 BUY protective price rounded down instead of up",
+  "file": "src/EPTradeBot.Core/Brokers/Dhan/DhanRules.cs",
+  "old": "return Snap(Math.Max(trigger * (1 + pct), trigger + tickSize), tickSize, floor: false);",
+  "new": "return Snap(Math.Max(trigger * (1 + pct), trigger + tickSize), tickSize, floor: true);",
+  "filter": "FullyQualifiedName~DhanContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D3 MPP slab for options read as equity",
+  "file": "src/EPTradeBot.Core/Brokers/Dhan/DhanRules.cs",
+  "old": "if (option) return price < 10 ? 5.0 : price < 100 ? 3.0 : price < 500 ? 2.0 : 1.0;",
+  "new": "if (false && option) return 0;",
+  "filter": "FullyQualifiedName~DhanContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D4 refused cancel reported as success (OpenAlgo's behaviour)",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "if (response.IsSuccessStatusCode && Str(reply?[\"errorType\"]) is null) return BrokerCallResult.Success(orderId);",
+  "new": "if (reply is not null) return BrokerCallResult.Success(orderId);",
+  "filter": "FullyQualifiedName~Dhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D5 modify sends the whole key as dhanClientId (OpenAlgo's behaviour)",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "            [\"dhanClientId\"] = client,\n            [\"orderId\"] = change.OrderId,",
+  "new": "            [\"dhanClientId\"] = Sandbox ? client : client + \":::\" + session.Key(\"ApiKey\"),\n            [\"orderId\"] = change.OrderId,",
+  "filter": "FullyQualifiedName~DhanContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D6 sandbox working states not mapped to open",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "        \"TRANSIT\" or \"PART_TRADED\" when Sandbox => \"open\",",
+  "new": "",
+  "filter": "FullyQualifiedName~DhanSandboxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D7 sandbox times left in UTC",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "? utc.Add(Ist.Offset).ToString(",
+  "new": "? utc.ToString(",
+  "filter": "FullyQualifiedName~DhanSandboxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D8 positions priced without the market feed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "                ltp = ltps.GetValueOrDefault($\"{exchange}:{symbol}\");",
+  "new": "                ltp = 0;",
+  "filter": "FullyQualifiedName~DhanContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D9 sandbox quote invents open interest",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "                [\"oi\"] = 0, [\"bid\"] = 0, [\"ask\"] = 0, [\"prev_close\"] = 0,",
+  "new": "                [\"oi\"] = 30045, [\"bid\"] = 0, [\"ask\"] = 0, [\"prev_close\"] = 0,",
+  "filter": "FullyQualifiedName~DhanSandboxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D10 funds report zeros when Dhan refuses (OpenAlgo's behaviour)",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "        if (funds is null || !response.IsSuccessStatusCode || Str(funds[\"errorType\"]) is not null || Str(funds[\"status\"]) is \"error\" or \"failed\")",
+  "new": "        if (funds is null)",
+  "filter": "FullyQualifiedName~Dhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D11 empty demat account treated as a failure",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "            if (Str(error[\"errorCode\"]) == \"DHOLDING_ERROR\" ||",
+  "new": "            if (false && Str(error[\"errorCode\"]) == \"DHOLDING_ERROR\" ||",
+  "filter": "FullyQualifiedName~DhanContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D12 quote calls sent without the client id",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "        if (clientHeader && client is not null) request.Headers.TryAddWithoutValidation(\"client-id\", client);",
+  "new": "        if (clientHeader && client is not null && !dataClientId) request.Headers.TryAddWithoutValidation(\"client-id\", client);",
+  "filter": "FullyQualifiedName~Dhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D13 book product renamed even when the symbol is unknown",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "        return (Sandbox ? fallback ?? \"\" : string.IsNullOrEmpty(fallback) ? token : fallback, exchange, product);",
+  "new": "        return (Sandbox ? fallback ?? \"\" : string.IsNullOrEmpty(fallback) ? token : fallback, exchange, DhanRules.BookProduct(\"NFO\", product));",
+  "filter": "FullyQualifiedName~DhanContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D14 holdings listing exchange always NSE",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "            foreach (var candidate in new[] { \"NSE\", \"BSE\" })",
+  "new": "            foreach (var candidate in new[] { \"BSE\" })",
+  "filter": "FullyQualifiedName~DhanContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D15 sandbox order payload loses its fixed fields",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "            body[\"amoTime\"] = \"OPEN\";",
+  "new": "",
+  "filter": "FullyQualifiedName~DhanSandboxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D16 unpriced live position valued at 0",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/BrokerLiveOrderRouter.cs",
+  "old": "?.Ltp ?? (ltp > 0 ? ltp : average);",
+  "new": "?.Ltp ?? ltp;",
+  "project": "EPTradeBot.IntegrationTests",
+  "filter": "FullyQualifiedName~cannot_price"
+ }
+]

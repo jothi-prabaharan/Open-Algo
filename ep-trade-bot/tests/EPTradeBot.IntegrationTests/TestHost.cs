@@ -75,9 +75,16 @@ public sealed class TestHost : IAsyncDisposable
 
     public EpTradeDbContext NewDb() => _factory.Services.GetRequiredService<IDbContextFactory<EpTradeDbContext>>().CreateDbContext();
 
-    public async Task<Guid> CreateAccountAsync(AccountType type, string name, decimal? maxLoss = null, int? maxQty = null, decimal? maxValue = null)
+    public async Task<Guid> CreateAccountAsync(AccountType type, string name, decimal? maxLoss = null, int? maxQty = null, decimal? maxValue = null,
+        string? broker = null, string? clientId = null)
     {
-        var created = await Admin.PostAsJsonAsync("/api/v1/accounts", new { display_name = name, broker = type == AccountType.PAPER ? "sandbox" : "zerodha", client_id = name, account_type = type.ToString() });
+        var created = await Admin.PostAsJsonAsync("/api/v1/accounts", new
+        {
+            display_name = name,
+            broker = broker ?? (type == AccountType.PAPER ? "sandbox" : "zerodha"),
+            client_id = clientId ?? name,
+            account_type = type.ToString(),
+        });
         created.EnsureSuccessStatusCode();
         var id = (await created.Content.ReadFromJsonAsync<Dictionary<string, object>>())!["id"].ToString()!;
         if (maxLoss is not null)

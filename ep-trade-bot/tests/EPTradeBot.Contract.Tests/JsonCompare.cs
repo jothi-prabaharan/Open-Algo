@@ -51,7 +51,7 @@ public static class JsonCompare
                 for (var i = 0; i < Math.Min(ea.Count, aa.Count); i++) Walk(ea[i], aa[i], $"{path}[{i}]", diffs);
                 return;
             default:
-                var ee = e.GetValue<JsonElement>();
+                var ee = JsonSerializer.SerializeToElement(e);
                 if (a is not JsonValue av)
                 {
                     diffs.Add($"{path}: expected {e.ToJsonString()}, got {a?.ToJsonString() ?? "null"}");

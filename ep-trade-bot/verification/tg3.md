@@ -1,9 +1,10 @@
-# Verification Gate 3, first pass: broker contract, /api/v1 core, streaming
+# Verification Gate 3, passes 1 and 2: broker contract, /api/v1 core, streaming, Zerodha, Dhan, Dhan Sandbox
 
 Date: 2026-11-03. Same toolchain as Gates 1 and 2, plus NetMQ 4.0.4.5 and the
-SignalR client 10.0.14 (tests only). Result: **this pass verified; Task Group 3
-is not finished.** What is done is listed in section 1, what is not in section 7.
-Everything below was run in this session.
+SignalR client 10.0.14 (tests only). Result: **both passes verified; Task Group 3
+is not finished.** Pass 1 built the broker contract, the /api/v1 core, streaming
+and Zerodha; pass 2 added Dhan and Dhan Sandbox (section 9). What is not done is
+listed in section 7. Everything below was run in this session.
 
 ## 1. What was built
 
@@ -107,11 +108,11 @@ wording comes from marshmallow. Two fixtures are deliberate differences
 ```
 Passed!  - Failed: 0, Passed: 129, Skipped: 0, Total: 129 - EPTradeBot.Core.Tests.dll
 Passed!  - Failed: 0, Passed:  35, Skipped: 0, Total:  35 - EPTradeBot.Architecture.Tests.dll
-Passed!  - Failed: 0, Passed:  25, Skipped: 0, Total:  25 - EPTradeBot.IntegrationTests.dll
-Passed!  - Failed: 0, Passed:  32, Skipped: 0, Total:  32 - EPTradeBot.Contract.Tests.dll
+Passed!  - Failed: 0, Passed:  26, Skipped: 0, Total:  26 - EPTradeBot.IntegrationTests.dll
+Passed!  - Failed: 0, Passed: 100, Skipped: 0, Total: 100 - EPTradeBot.Contract.Tests.dll
 ```
 
-221 tests in all (164 at Gate 2). New claims and the tests that prove them:
+290 tests in all after pass 2 (221 after pass 1, 164 at Gate 2). After the run, 0 test databases remain. New claims and the tests that prove them:
 
 | Claim | Test |
 | --- | --- |
@@ -168,8 +169,9 @@ closed: C3 passed because no recorded order was a MARKET order carrying a price
 
 ## 7. Not done yet in Task Group 3
 
-- **Reference adapters: 1 of 6.** Zerodha is ported and contract-verified (not live-verified). Dhan, Dhan Sandbox, Angel One, Upstox, Fyers and Delta Exchange are not started. The other 31 plugins follow in batches.
+- **Reference adapters: 3 of the 7 named (Zerodha, Dhan, Dhan Sandbox).** All three are contract-verified, none live-verified. Angel One, Upstox, Fyers and Delta Exchange are not started. The other 31 plugins follow in batches.
 - **25 of the remaining /api/v1 pairs** listed in section 2.
+- **Dhan gaps, refused rather than guessed:** history, GTT, margin, login and the Dhan feed. Dhan allows one quote call a second and EP Trade bot does not queue them yet (OpenAlgo waits and retries); a refused quote leaves a position unpriced, which the risk check then values at its average price.
 - **Zerodha gaps, refused rather than guessed:** MCX (Kite counts contracts, OpenAlgo units; an MCX order or an MCX row in a book is refused), history, GTT, margin, login and the Kite ticker feed. With no broker feed adapter yet, the bus carries only what something publishes to it; in this pass that is the tests.
 - **Broker login.** A LIVE account's token is stored through the admin endpoint until the login flows arrive with the web app (TG5).
 - **Not live-verified.** No real Kite account was used. The contract tests prove EP Trade bot behaves as the Python plugin does against the same replies; they do not prove Kite's replies are as recorded.
@@ -179,3 +181,150 @@ closed: C3 passed because no recorded order was a MARKET order carrying a price
 - LIVE daily loss for the risk check is the sum of the broker's position P&L, which for Kite's net positions includes carried-forward positions, not only today's.
 - PAPER books are built from the sandbox tables in OpenAlgo's analyze-mode shape; they are tested for behaviour, not recorded against Python's sandbox (whose ids and timestamps differ by design).
 - One test database was left behind by mutation C16, where the mutated host started and was never disposed; it was dropped by hand. A normal run leaves none (checked).
+
+## 9. Pass 2: Dhan and Dhan Sandbox
+
+**What was built.** `Core/Brokers/Dhan/DhanRules.cs` (Dhan's vocabulary and the
+stop-loss-market protective price, pure) and
+`Infrastructure/Brokers/Dhan/DhanPlugins.cs`: one implementation, two plugins
+(`dhan`, `dhan_sandbox`), covering orders, the four books, funds, quotes and
+depth. The sandbox variant follows its own Python plugin where it differs: client
+id on every call, a fuller order payload with a per-order reference, more working
+states (TRANSIT, PART_TRADED, EXPIRED), times converted from UTC, positions priced
+from their own row, and quotes from today's one-minute candles because the
+sandbox has no market feed.
+
+**The harness grew** to handle a second broker: POSTs a broker uses for reading
+(Dhan's quotes) are compared as reads with their bodies and headers, a canned
+reply can differ from call to call (one exit filled, the next refused), and
+fields that change on every request by design (Kite's tag, the sandbox's
+reference and today's date) are checked by format. Read headers are now
+compared too, which pass 1 did not do.
+
+**Contract tests: 34 of 34 Dhan, 34 of 34 Dhan Sandbox** (100 of 100 with Zerodha).
+
+Dhan:
+
+| Fixture | Path | Python status | Writes | Compared | Result |
+| --- | --- | --- | --- | --- | --- |
+| auth_invalid_key | /api/v1/funds | 403 | 0 | full | Passed |
+| placeorder_missing_fields | /api/v1/placeorder | 400 | 0 | status and error shape | Passed |
+| placeorder_market | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_limit_cnc | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_sl_futures | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_slm_buy_equity | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_slm_sell_option | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_slm_sell_cheap_option | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_slm_no_tick_size | /api/v1/placeorder | 500 | 0 | deliberate difference | Passed |
+| placeorder_broker_refuses | /api/v1/placeorder | 400 | 1 | deliberate difference | Passed |
+| placeorder_unknown_symbol | /api/v1/placeorder | 200 | 1 | deliberate difference | Passed |
+| modifyorder_limit | /api/v1/modifyorder | 200 | 1 | deliberate difference | Passed |
+| modifyorder_slm | /api/v1/modifyorder | 200 | 1 | deliberate difference | Passed |
+| modifyorder_refused | /api/v1/modifyorder | 500 | 1 | deliberate difference | Passed |
+| cancelorder | /api/v1/cancelorder | 200 | 1 | full | Passed |
+| cancelorder_refused | /api/v1/cancelorder | 200 | 1 | deliberate difference | Passed |
+| cancelallorder | /api/v1/cancelallorder | 200 | 2 | full | Passed |
+| closeposition | /api/v1/closeposition | 200 | 2 | full | Passed |
+| closeposition_one_exit_refused | /api/v1/closeposition | 200 | 2 | deliberate difference | Passed |
+| placesmartorder_reduce | /api/v1/placesmartorder | 200 | 1 | full | Passed |
+| orderbook | /api/v1/orderbook | 200 | 0 | full | Passed |
+| tradebook | /api/v1/tradebook | 200 | 0 | full | Passed |
+| positionbook | /api/v1/positionbook | 200 | 0 | full | Passed |
+| holdings | /api/v1/holdings | 200 | 0 | full | Passed |
+| holdings_none | /api/v1/holdings | 200 | 0 | full | Passed |
+| funds | /api/v1/funds | 200 | 0 | full | Passed |
+| funds_token_expired | /api/v1/funds | 200 | 0 | deliberate difference | Passed |
+| orderstatus_complete | /api/v1/orderstatus | 200 | 0 | full | Passed |
+| openposition_short | /api/v1/openposition | 200 | 0 | full | Passed |
+| quotes | /api/v1/quotes | 200 | 0 | full | Passed |
+| quotes_futures | /api/v1/quotes | 200 | 0 | full | Passed |
+| depth | /api/v1/depth | 200 | 0 | full | Passed |
+| quotes_not_subscribed | /api/v1/quotes | 200 | 0 | deliberate difference | Passed |
+| ping | /api/v1/ping | 200 | 0 | full | Passed |
+
+Dhan Sandbox:
+
+| Fixture | Path | Python status | Writes | Compared | Result |
+| --- | --- | --- | --- | --- | --- |
+| auth_invalid_key | /api/v1/funds | 403 | 0 | full | Passed |
+| placeorder_missing_fields | /api/v1/placeorder | 400 | 0 | status and error shape | Passed |
+| placeorder_market | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_limit_cnc | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_sl_futures | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_slm_buy_equity | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_slm_sell_option | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_slm_sell_cheap_option | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_slm_no_tick_size | /api/v1/placeorder | 200 | 1 | full | Passed |
+| placeorder_broker_refuses | /api/v1/placeorder | 400 | 1 | deliberate difference | Passed |
+| placeorder_unknown_symbol | /api/v1/placeorder | 200 | 1 | deliberate difference | Passed |
+| modifyorder_limit | /api/v1/modifyorder | 200 | 1 | full | Passed |
+| modifyorder_slm | /api/v1/modifyorder | 200 | 1 | full | Passed |
+| modifyorder_refused | /api/v1/modifyorder | 400 | 1 | full | Passed |
+| cancelorder | /api/v1/cancelorder | 200 | 1 | full | Passed |
+| cancelorder_refused | /api/v1/cancelorder | 200 | 1 | deliberate difference | Passed |
+| closeposition | /api/v1/closeposition | 200 | 2 | full | Passed |
+| closeposition_one_exit_refused | /api/v1/closeposition | 200 | 2 | deliberate difference | Passed |
+| placesmartorder_reduce | /api/v1/placesmartorder | 200 | 1 | full | Passed |
+| orderbook | /api/v1/orderbook | 200 | 0 | full | Passed |
+| tradebook | /api/v1/tradebook | 200 | 0 | full | Passed |
+| positionbook | /api/v1/positionbook | 200 | 0 | full | Passed |
+| holdings | /api/v1/holdings | 200 | 0 | full | Passed |
+| funds | /api/v1/funds | 200 | 0 | full | Passed |
+| funds_token_expired | /api/v1/funds | 200 | 0 | deliberate difference | Passed |
+| orderstatus_complete | /api/v1/orderstatus | 200 | 0 | full | Passed |
+| openposition_short | /api/v1/openposition | 200 | 0 | full | Passed |
+| quotes | /api/v1/quotes | 200 | 1 | deliberate difference | Passed |
+| quotes_futures | /api/v1/quotes | 200 | 1 | deliberate difference | Passed |
+| depth | /api/v1/depth | 200 | 1 | deliberate difference | Passed |
+| quotes_not_subscribed | /api/v1/quotes | 200 | 1 | deliberate difference | Passed |
+| ping | /api/v1/ping | 200 | 0 | full | Passed |
+| quotes_no_candles | /api/v1/quotes | 200 | 1 | deliberate difference | Passed |
+| cancelallorder_working_states | /api/v1/cancelallorder | 200 | 3 | deliberate difference | Passed |
+
+**Deliberate differences.** Every one is recorded from the Python plugin, then the
+fixture is changed to EP Trade bot's answer and compared in full, broker traffic
+included (`tests/EPTradeBot.Contract.Tests/DhanContractTests.cs`).
+
+- **The app key leaves the server on a modify.** OpenAlgo sends the whole `BROKER_API_KEY` value (`client_id:::app_key`) to Dhan as `dhanClientId` on every modify. EP Trade bot sends the client id. Recorded in all three modify fixtures.
+- **A refused cancel is reported as cancelled** (both plugins accept any reply). EP Trade bot reports Dhan's refusal.
+- **A refused modify answers "internal error"** (Dhan only). EP Trade bot passes Dhan's reason on.
+- **Close all reports success with an exit refused.** EP Trade bot names the position still open, as it already did for Zerodha.
+- **Funds show zero cash when Dhan refuses the token.** EP Trade bot says the token has expired; a zero is never shown as a balance.
+- **Quotes answer success with every price 0** when Dhan's market data is not subscribed. EP Trade bot answers with the reason.
+- **The sandbox plugin invents prices.** Executed: in the committed fixture, candles whose last close is 805.90 are reported as an LTP of 806.72, and with no candles at all it reports 100.51 with open interest 87937; open interest always comes from a hash of the security id. The noise is seeded by the minute, so each recording shows different numbers (an earlier one gave 804.49 and 99.13). EP Trade bot reports the candles as they are and answers "no price" when there are none.
+- **A part-traded sandbox order survives cancel-all**, although the order book shows it open and its remainder can still fill. EP Trade bot cancels it.
+- **Unknown symbol:** OpenAlgo sends `securityId: null`; EP Trade bot refuses before sending.
+- **Wording only:** a refused order carries Dhan's reason instead of "Failed to place order", and a stop-loss-market order on an instrument with no tick size says why instead of "internal error" (same status 500, nothing sent).
+
+**A risk gap closed.** Dhan allows one quote call a second, so a position's price
+can come back as 0. The LIVE risk check valued such a position at 0, so the
+position-value limit could be passed unchecked. A position with no price is now
+valued at its average price
+(`OpenAlgoApiTests.A_live_position_the_broker_cannot_price_still_counts_against_the_position_value_limit`).
+
+**Mutation check** (`tools/mutation/tg3-dhan.json`): all 16 turned red. D14 first
+survived twice: no recorded holding was listed only on BSE, and then the NSE
+holding's Dhan symbol equalled its OpenAlgo symbol, so skipping the NSE lookup
+gave the same answer. A BSE-only holding and a holding whose Dhan symbol differs
+were recorded, and D14 then failed as it should. The pass 1 set (C1 to C17) was
+run again after the harness changes and stayed all red.
+
+| Mutation | Result |
+| --- | --- |
+| D1 SL-M sent to Dhan without a protective price | 3 failed |
+| D2 BUY protective price rounded down instead of up | 1 failed |
+| D3 MPP slab for options read as equity | 1 failed |
+| D4 refused cancel reported as success (OpenAlgo's behaviour) | 2 failed |
+| D5 modify sends the whole key as dhanClientId (OpenAlgo's behaviour) | 3 failed |
+| D6 sandbox working states not mapped to open | 2 failed |
+| D7 sandbox times left in UTC | 3 failed |
+| D8 positions priced without the market feed | 1 failed |
+| D9 sandbox quote invents open interest | 2 failed |
+| D10 funds report zeros when Dhan refuses (OpenAlgo's behaviour) | 2 failed |
+| D11 empty demat account treated as a failure | 1 failed |
+| D12 quote calls sent without the client id | 12 failed |
+| D13 book product renamed when the symbol is unknown | 1 failed |
+| D14 holdings listing exchange always NSE | 1 failed (after two survivals, above) |
+| D15 sandbox order payload loses its fixed fields | 11 failed |
+| D16 unpriced live position valued at 0 | 1 failed |
+

@@ -137,6 +137,9 @@ public interface ISymbolMaster
     Task<SymbolRecord?> FindAsync(string broker, string symbol, string exchange, CancellationToken cancellationToken);
 
     Task<SymbolRecord?> FindByBrokerSymbolAsync(string broker, string brokerSymbol, string exchange, CancellationToken cancellationToken);
+
+    /// <summary>By the broker's instrument token (Dhan's security id) and OpenAlgo exchange.</summary>
+    Task<SymbolRecord?> FindByTokenAsync(string broker, string token, string exchange, CancellationToken cancellationToken);
 }
 
 /// <summary>One master-contract row.</summary>

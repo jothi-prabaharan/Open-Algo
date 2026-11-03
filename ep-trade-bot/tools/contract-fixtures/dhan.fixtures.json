@@ -1,0 +1,4186 @@
+{
+  "broker": "dhan",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "dhan-access-token",
+  "client_id": "1100000001",
+  "read_posts": [
+    "/v2/marketfeed/quote"
+  ],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500209",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY-Nov2026-FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE_FNO",
+      "token": "35001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY-Nov2026-24000-CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE_FNO",
+      "token": "40001",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "OPTIDX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "BSEONLY",
+      "brsymbol": "BSEONLY",
+      "name": "LISTED ON BSE ONLY",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500325",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NOTICK",
+      "brsymbol": "NOTICK",
+      "name": "NO TICK SIZE",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "9999",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.0
+    }
+  ],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_missing_fields",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'strategy': ['Missing data for required field.'], 'exchange': ['Missing data for required field.'], 'action': ['Missing data for required field.'], 'quantity': ['Missing data for required field.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "orderId": "112111182198",
+            "orderStatus": "PENDING"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "112111182198",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "INTRADAY",
+            "orderType": "MARKET",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit_cnc",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "INFY",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": 5,
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": 1500.5,
+        "disclosed_quantity": "2",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "orderId": "112111182198",
+            "orderStatus": "PENDING"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "112111182198",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "transactionType": "SELL",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "CNC",
+            "orderType": "LIMIT",
+            "validity": "DAY",
+            "securityId": "1594",
+            "quantity": 5,
+            "price": 1500.5,
+            "disclosedQuantity": 2
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_sl_futures",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "SL",
+        "product": "NRML",
+        "price": "24010",
+        "trigger_price": "24000",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "orderId": "112111182198",
+            "orderStatus": "PENDING"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "112111182198",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_FNO",
+            "productType": "MARGIN",
+            "orderType": "STOP_LOSS",
+            "validity": "DAY",
+            "securityId": "35001",
+            "quantity": 75,
+            "price": 24010.0,
+            "triggerPrice": 24000.0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_slm_buy_equity",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "trigger_price": "801.03",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "orderId": "112111182198",
+            "orderStatus": "PENDING"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "112111182198",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "INTRADAY",
+            "orderType": "STOP_LOSS",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10,
+            "triggerPrice": 801.03,
+            "price": 805.05
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_slm_sell_option",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV2624000CE",
+        "exchange": "NFO",
+        "action": "SELL",
+        "quantity": "75",
+        "pricetype": "SL-M",
+        "product": "NRML",
+        "trigger_price": "120.3",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "orderId": "112111182198",
+            "orderStatus": "PENDING"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "112111182198",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "transactionType": "SELL",
+            "exchangeSegment": "NSE_FNO",
+            "productType": "MARGIN",
+            "orderType": "STOP_LOSS",
+            "validity": "DAY",
+            "securityId": "40001",
+            "quantity": 75,
+            "triggerPrice": 120.3,
+            "price": 117.85
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_slm_sell_cheap_option",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV2624000CE",
+        "exchange": "NFO",
+        "action": "SELL",
+        "quantity": "75",
+        "pricetype": "SL-M",
+        "product": "NRML",
+        "trigger_price": "0.4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "orderId": "112111182198",
+            "orderStatus": "PENDING"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "112111182198",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "transactionType": "SELL",
+            "exchangeSegment": "NSE_FNO",
+            "productType": "MARGIN",
+            "orderType": "STOP_LOSS",
+            "validity": "DAY",
+            "securityId": "40001",
+            "quantity": 75,
+            "triggerPrice": 0.4,
+            "price": 0.35
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_slm_no_tick_size",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOTICK",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "trigger_price": "50",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "orderId": "112111182198",
+            "orderStatus": "PENDING"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to place order due to internal error",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "status": 400,
+          "body": {
+            "errorType": "Order_Error",
+            "errorCode": "DH-906",
+            "errorMessage": "Incorrect order request: insufficient funds"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "INTRADAY",
+            "orderType": "MARKET",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "orderId": "112111182198",
+            "orderStatus": "PENDING"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "112111182198",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "INTRADAY",
+            "orderType": "MARKET",
+            "validity": "DAY",
+            "securityId": null,
+            "quantity": 10
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "1001",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/orders/1001": {
+          "body": {
+            "orderId": "1001",
+            "orderStatus": "PENDING"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "1001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/orders/1001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "dhanClientId": "1100000001:::dhan-app-key",
+            "orderId": "1001",
+            "orderType": "LIMIT",
+            "legName": "ENTRY_LEG",
+            "quantity": 12,
+            "validity": "DAY",
+            "price": 801.0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_slm",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "1004",
+        "action": "SELL",
+        "quantity": "1",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "disclosed_quantity": "1",
+        "trigger_price": "790.1",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/orders/1004": {
+          "body": {
+            "orderId": "1004",
+            "orderStatus": "PENDING"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "1004",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/orders/1004",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "dhanClientId": "1100000001:::dhan-app-key",
+            "orderId": "1004",
+            "orderType": "STOP_LOSS",
+            "legName": "ENTRY_LEG",
+            "quantity": 1,
+            "validity": "DAY",
+            "disclosedQuantity": 1,
+            "triggerPrice": 790.1,
+            "price": 786.1
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "1002",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/orders/1002": {
+          "status": 400,
+          "body": {
+            "errorType": "Order_Error",
+            "errorCode": "DH-908",
+            "errorMessage": "Order is already traded"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to modify order due to internal error",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/orders/1002",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "dhanClientId": "1100000001:::dhan-app-key",
+            "orderId": "1002",
+            "orderType": "LIMIT",
+            "legName": "ENTRY_LEG",
+            "quantity": 12,
+            "validity": "DAY",
+            "price": 801.0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "1001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/orders/1001": {
+          "body": {
+            "orderId": "1001",
+            "orderStatus": "CANCELLED"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "1001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.dhan.co",
+          "path": "/v2/orders/1001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "1002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/orders/1002": {
+          "status": 400,
+          "body": {
+            "errorType": "Order_Error",
+            "errorCode": "DH-908",
+            "errorMessage": "Order is already traded"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "1002",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.dhan.co",
+          "path": "/v2/orders/1002",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1001",
+              "correlationId": "",
+              "orderStatus": "PENDING",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "orderType": "LIMIT",
+              "validity": "DAY",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "disclosedQuantity": 0,
+              "price": 800.5,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:20:01",
+              "updateTime": "2026-11-03 09:20:01",
+              "exchangeTime": "2026-11-03 09:20:01",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1002",
+              "correlationId": "",
+              "orderStatus": "TRADED",
+              "transactionType": "SELL",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "MARKET",
+              "validity": "DAY",
+              "tradingSymbol": "INFY",
+              "securityId": "1594",
+              "quantity": 5,
+              "disclosedQuantity": 0,
+              "price": 1499.95,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:21:11",
+              "updateTime": "2026-11-03 09:21:11",
+              "exchangeTime": "2026-11-03 09:21:11",
+              "filledQty": 5,
+              "averageTradedPrice": 1499.95
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1003",
+              "correlationId": "",
+              "orderStatus": "PENDING",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_FNO",
+              "productType": "MARGIN",
+              "orderType": "STOP_LOSS",
+              "validity": "DAY",
+              "tradingSymbol": "NIFTY-Nov2026-FUT",
+              "securityId": "35001",
+              "quantity": 75,
+              "disclosedQuantity": 0,
+              "price": 24010,
+              "triggerPrice": 24000,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:22:00",
+              "updateTime": "2026-11-03 09:22:00",
+              "exchangeTime": "2026-11-03 09:22:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1004",
+              "correlationId": "",
+              "orderStatus": "REJECTED",
+              "transactionType": "SELL",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "orderType": "STOP_LOSS_MARKET",
+              "validity": "DAY",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 1,
+              "disclosedQuantity": 0,
+              "price": 0,
+              "triggerPrice": 790.123,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:23:00",
+              "updateTime": "2026-11-03 09:23:00",
+              "exchangeTime": "2026-11-03 09:23:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1005",
+              "correlationId": "",
+              "orderStatus": "CANCELLED",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "orderType": "LIMIT",
+              "validity": "DAY",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 2,
+              "disclosedQuantity": 0,
+              "price": 700,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:24:00",
+              "updateTime": "2026-11-03 09:24:00",
+              "exchangeTime": "2026-11-03 09:24:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1006",
+              "correlationId": "",
+              "orderStatus": "TRANSIT",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "orderType": "LIMIT",
+              "validity": "DAY",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 3,
+              "disclosedQuantity": 0,
+              "price": 701,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:25:00",
+              "updateTime": "2026-11-03 09:25:00",
+              "exchangeTime": "2026-11-03 09:25:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1007",
+              "correlationId": "",
+              "orderStatus": "PART_TRADED",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "MARGIN",
+              "orderType": "LIMIT",
+              "validity": "DAY",
+              "tradingSymbol": "UNLISTED",
+              "securityId": "77777",
+              "quantity": 1,
+              "disclosedQuantity": 0,
+              "price": 10,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:26:00",
+              "updateTime": "2026-11-03 09:26:00",
+              "exchangeTime": "2026-11-03 09:26:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            }
+          ]
+        },
+        "DELETE /v2/orders/1001": {
+          "body": {
+            "orderId": "1001",
+            "orderStatus": "CANCELLED"
+          }
+        },
+        "DELETE /v2/orders/1003": {
+          "body": {
+            "orderId": "1003",
+            "orderStatus": "CANCELLED"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "1001",
+            "1003"
+          ],
+          "failed_cancellations": [],
+          "message": "Canceled 2 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "api.dhan.co",
+          "path": "/v2/orders/1001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "api.dhan.co",
+          "path": "/v2/orders/1003",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/positions": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "positionType": "LONG",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "buyAvg": 801.1234,
+              "buyQty": 10,
+              "costPrice": 801.1234,
+              "sellAvg": 0,
+              "sellQty": 0,
+              "netQty": 10,
+              "realizedProfit": 0,
+              "unrealizedProfit": 43.3333,
+              "dayBuyQty": 10,
+              "daySellQty": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "NIFTY-Nov2026-FUT",
+              "securityId": "35001",
+              "positionType": "SHORT",
+              "exchangeSegment": "NSE_FNO",
+              "productType": "MARGIN",
+              "buyAvg": 0,
+              "buyQty": 0,
+              "costPrice": 24005.5,
+              "sellAvg": 24005.5,
+              "sellQty": 75,
+              "netQty": -75,
+              "realizedProfit": 0,
+              "unrealizedProfit": 1162.5,
+              "dayBuyQty": 0,
+              "daySellQty": 75
+            },
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "INFY",
+              "securityId": "1594",
+              "positionType": "CLOSED",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "buyAvg": 1500,
+              "buyQty": 5,
+              "costPrice": 0,
+              "sellAvg": 1499.5,
+              "sellQty": 5,
+              "netQty": 0,
+              "realizedProfit": -2.5,
+              "unrealizedProfit": 0,
+              "dayBuyQty": 5,
+              "daySellQty": 5
+            }
+          ]
+        },
+        "POST /v2/orders": {
+          "body": {
+            "orderId": "112111182198",
+            "orderStatus": "PENDING"
+          }
+        },
+        "POST /v2/marketfeed/quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ": {
+                "3045": {
+                  "last_price": 805.45,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 800.75,
+                    "high": 813.5,
+                    "low": 797.4,
+                    "close": 799.95
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                },
+                "1594": {
+                  "last_price": 1499.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 1491.49,
+                    "high": 1513.99,
+                    "low": 1484.01,
+                    "close": 1490.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 1498.9,
+                        "quantity": 10,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 1499.1,
+                        "quantity": 20,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              },
+              "NSE_FNO": {
+                "35001": {
+                  "last_price": 23990.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 1200000,
+                  "ohlc": {
+                    "open": 24074.05,
+                    "high": 24229.9,
+                    "low": 23750.1,
+                    "close": 24050.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              },
+              "BSE_EQ": {
+                "500325": {
+                  "last_price": 262.5,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 260.26,
+                    "high": 265.12,
+                    "low": 259.88,
+                    "close": 260.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/positions",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "transactionType": "SELL",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "INTRADAY",
+            "orderType": "MARKET",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_FNO",
+            "productType": "MARGIN",
+            "orderType": "MARKET",
+            "validity": "DAY",
+            "securityId": "35001",
+            "quantity": 75
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_one_exit_refused",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/positions": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "positionType": "LONG",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "buyAvg": 801.1234,
+              "buyQty": 10,
+              "costPrice": 801.1234,
+              "sellAvg": 0,
+              "sellQty": 0,
+              "netQty": 10,
+              "realizedProfit": 0,
+              "unrealizedProfit": 43.3333,
+              "dayBuyQty": 10,
+              "daySellQty": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "NIFTY-Nov2026-FUT",
+              "securityId": "35001",
+              "positionType": "SHORT",
+              "exchangeSegment": "NSE_FNO",
+              "productType": "MARGIN",
+              "buyAvg": 0,
+              "buyQty": 0,
+              "costPrice": 24005.5,
+              "sellAvg": 24005.5,
+              "sellQty": 75,
+              "netQty": -75,
+              "realizedProfit": 0,
+              "unrealizedProfit": 1162.5,
+              "dayBuyQty": 0,
+              "daySellQty": 75
+            },
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "INFY",
+              "securityId": "1594",
+              "positionType": "CLOSED",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "buyAvg": 1500,
+              "buyQty": 5,
+              "costPrice": 0,
+              "sellAvg": 1499.5,
+              "sellQty": 5,
+              "netQty": 0,
+              "realizedProfit": -2.5,
+              "unrealizedProfit": 0,
+              "dayBuyQty": 5,
+              "daySellQty": 5
+            }
+          ]
+        },
+        "POST /v2/orders": [
+          {
+            "body": {
+              "orderId": "112111182198",
+              "orderStatus": "PENDING"
+            }
+          },
+          {
+            "status": 400,
+            "body": {
+              "errorType": "Order_Error",
+              "errorCode": "DH-906",
+              "errorMessage": "Incorrect order request: insufficient funds"
+            }
+          }
+        ],
+        "POST /v2/marketfeed/quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ": {
+                "3045": {
+                  "last_price": 805.45,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 800.75,
+                    "high": 813.5,
+                    "low": 797.4,
+                    "close": 799.95
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                },
+                "1594": {
+                  "last_price": 1499.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 1491.49,
+                    "high": 1513.99,
+                    "low": 1484.01,
+                    "close": 1490.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 1498.9,
+                        "quantity": 10,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 1499.1,
+                        "quantity": 20,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              },
+              "NSE_FNO": {
+                "35001": {
+                  "last_price": 23990.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 1200000,
+                  "ohlc": {
+                    "open": 24074.05,
+                    "high": 24229.9,
+                    "low": 23750.1,
+                    "close": 24050.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              },
+              "BSE_EQ": {
+                "500325": {
+                  "last_price": 262.5,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 260.26,
+                    "high": 265.12,
+                    "low": 259.88,
+                    "close": 260.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/positions",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "transactionType": "SELL",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "INTRADAY",
+            "orderType": "MARKET",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_FNO",
+            "productType": "MARGIN",
+            "orderType": "MARKET",
+            "validity": "DAY",
+            "securityId": "35001",
+            "quantity": 75
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_reduce",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "position_size": "4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/positions": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "positionType": "LONG",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "buyAvg": 801.1234,
+              "buyQty": 10,
+              "costPrice": 801.1234,
+              "sellAvg": 0,
+              "sellQty": 0,
+              "netQty": 10,
+              "realizedProfit": 0,
+              "unrealizedProfit": 43.3333,
+              "dayBuyQty": 10,
+              "daySellQty": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "NIFTY-Nov2026-FUT",
+              "securityId": "35001",
+              "positionType": "SHORT",
+              "exchangeSegment": "NSE_FNO",
+              "productType": "MARGIN",
+              "buyAvg": 0,
+              "buyQty": 0,
+              "costPrice": 24005.5,
+              "sellAvg": 24005.5,
+              "sellQty": 75,
+              "netQty": -75,
+              "realizedProfit": 0,
+              "unrealizedProfit": 1162.5,
+              "dayBuyQty": 0,
+              "daySellQty": 75
+            },
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "INFY",
+              "securityId": "1594",
+              "positionType": "CLOSED",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "buyAvg": 1500,
+              "buyQty": 5,
+              "costPrice": 0,
+              "sellAvg": 1499.5,
+              "sellQty": 5,
+              "netQty": 0,
+              "realizedProfit": -2.5,
+              "unrealizedProfit": 0,
+              "dayBuyQty": 5,
+              "daySellQty": 5
+            }
+          ]
+        },
+        "POST /v2/orders": {
+          "body": {
+            "orderId": "112111182198",
+            "orderStatus": "PENDING"
+          }
+        },
+        "POST /v2/marketfeed/quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ": {
+                "3045": {
+                  "last_price": 805.45,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 800.75,
+                    "high": 813.5,
+                    "low": 797.4,
+                    "close": 799.95
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                },
+                "1594": {
+                  "last_price": 1499.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 1491.49,
+                    "high": 1513.99,
+                    "low": 1484.01,
+                    "close": 1490.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 1498.9,
+                        "quantity": 10,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 1499.1,
+                        "quantity": 20,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              },
+              "NSE_FNO": {
+                "35001": {
+                  "last_price": 23990.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 1200000,
+                  "ohlc": {
+                    "open": 24074.05,
+                    "high": 24229.9,
+                    "low": 23750.1,
+                    "close": 24050.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              },
+              "BSE_EQ": {
+                "500325": {
+                  "last_price": 262.5,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 260.26,
+                    "high": 265.12,
+                    "low": 259.88,
+                    "close": 260.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "112111182198",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/positions",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "transactionType": "SELL",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "INTRADAY",
+            "orderType": "MARKET",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 6
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1001",
+              "correlationId": "",
+              "orderStatus": "PENDING",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "orderType": "LIMIT",
+              "validity": "DAY",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "disclosedQuantity": 0,
+              "price": 800.5,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:20:01",
+              "updateTime": "2026-11-03 09:20:01",
+              "exchangeTime": "2026-11-03 09:20:01",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1002",
+              "correlationId": "",
+              "orderStatus": "TRADED",
+              "transactionType": "SELL",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "MARKET",
+              "validity": "DAY",
+              "tradingSymbol": "INFY",
+              "securityId": "1594",
+              "quantity": 5,
+              "disclosedQuantity": 0,
+              "price": 1499.95,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:21:11",
+              "updateTime": "2026-11-03 09:21:11",
+              "exchangeTime": "2026-11-03 09:21:11",
+              "filledQty": 5,
+              "averageTradedPrice": 1499.95
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1003",
+              "correlationId": "",
+              "orderStatus": "PENDING",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_FNO",
+              "productType": "MARGIN",
+              "orderType": "STOP_LOSS",
+              "validity": "DAY",
+              "tradingSymbol": "NIFTY-Nov2026-FUT",
+              "securityId": "35001",
+              "quantity": 75,
+              "disclosedQuantity": 0,
+              "price": 24010,
+              "triggerPrice": 24000,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:22:00",
+              "updateTime": "2026-11-03 09:22:00",
+              "exchangeTime": "2026-11-03 09:22:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1004",
+              "correlationId": "",
+              "orderStatus": "REJECTED",
+              "transactionType": "SELL",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "orderType": "STOP_LOSS_MARKET",
+              "validity": "DAY",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 1,
+              "disclosedQuantity": 0,
+              "price": 0,
+              "triggerPrice": 790.123,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:23:00",
+              "updateTime": "2026-11-03 09:23:00",
+              "exchangeTime": "2026-11-03 09:23:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1005",
+              "correlationId": "",
+              "orderStatus": "CANCELLED",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "orderType": "LIMIT",
+              "validity": "DAY",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 2,
+              "disclosedQuantity": 0,
+              "price": 700,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:24:00",
+              "updateTime": "2026-11-03 09:24:00",
+              "exchangeTime": "2026-11-03 09:24:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1006",
+              "correlationId": "",
+              "orderStatus": "TRANSIT",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "orderType": "LIMIT",
+              "validity": "DAY",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 3,
+              "disclosedQuantity": 0,
+              "price": 701,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:25:00",
+              "updateTime": "2026-11-03 09:25:00",
+              "exchangeTime": "2026-11-03 09:25:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1007",
+              "correlationId": "",
+              "orderStatus": "PART_TRADED",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "MARGIN",
+              "orderType": "LIMIT",
+              "validity": "DAY",
+              "tradingSymbol": "UNLISTED",
+              "securityId": "77777",
+              "quantity": 1,
+              "disclosedQuantity": 0,
+              "price": 10,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:26:00",
+              "updateTime": "2026-11-03 09:26:00",
+              "exchangeTime": "2026-11-03 09:26:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "1001",
+                "price": 800.5,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 10,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 09:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "1002",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": 5,
+                "symbol": "INFY",
+                "timestamp": "2026-11-03 09:21:11",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NFO",
+                "order_status": "open",
+                "orderid": "1003",
+                "price": 24010.0,
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": 75,
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "2026-11-03 09:22:00",
+                "trigger_price": 24000.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "rejected",
+                "orderid": "1004",
+                "price": 0.0,
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": 1,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 09:23:00",
+                "trigger_price": 790.12
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "cancelled",
+                "orderid": "1005",
+                "price": 700.0,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 2,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 09:24:00",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "TRANSIT",
+                "orderid": "1006",
+                "price": 701.0,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 3,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 09:25:00",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "PART_TRADED",
+                "orderid": "1007",
+                "price": 10.0,
+                "pricetype": "LIMIT",
+                "product": "MARGIN",
+                "quantity": 1,
+                "symbol": "UNLISTED",
+                "timestamp": "2026-11-03 09:26:00",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 5,
+              "total_completed_orders": 1,
+              "total_open_orders": 2,
+              "total_rejected_orders": 1,
+              "total_sell_orders": 2
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trades": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1002",
+              "exchangeOrderId": "x1",
+              "exchangeTradeId": "t1",
+              "transactionType": "SELL",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "MARKET",
+              "tradingSymbol": "INFY",
+              "securityId": "1594",
+              "tradedQuantity": 5,
+              "tradedPrice": 1499.95,
+              "createTime": "2026-11-03 09:21:11",
+              "updateTime": "2026-11-03 09:21:12",
+              "exchangeTime": "2026-11-03 09:21:12"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1008",
+              "exchangeOrderId": "x2",
+              "exchangeTradeId": "t2",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_FNO",
+              "productType": "MARGIN",
+              "orderType": "LIMIT",
+              "tradingSymbol": "NIFTY-Nov2026-FUT",
+              "securityId": "35001",
+              "tradedQuantity": 75,
+              "tradedPrice": 24005.555,
+              "createTime": "2026-11-03 09:25:00",
+              "updateTime": "2026-11-03 09:25:01",
+              "exchangeTime": "2026-11-03 09:25:01"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "SELL",
+              "average_price": 1499.95,
+              "exchange": "NSE",
+              "orderid": "1002",
+              "product": "CNC",
+              "quantity": 5,
+              "symbol": "INFY",
+              "timestamp": "2026-11-03 09:21:12",
+              "trade_value": 7499.75
+            },
+            {
+              "action": "BUY",
+              "average_price": 24005.56,
+              "exchange": "NFO",
+              "orderid": "1008",
+              "product": "NRML",
+              "quantity": 75,
+              "symbol": "NIFTY25NOV26FUT",
+              "timestamp": "2026-11-03 09:25:01",
+              "trade_value": 1800416.62
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/trades",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/positions": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "positionType": "LONG",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "buyAvg": 801.1234,
+              "buyQty": 10,
+              "costPrice": 801.1234,
+              "sellAvg": 0,
+              "sellQty": 0,
+              "netQty": 10,
+              "realizedProfit": 0,
+              "unrealizedProfit": 43.3333,
+              "dayBuyQty": 10,
+              "daySellQty": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "NIFTY-Nov2026-FUT",
+              "securityId": "35001",
+              "positionType": "SHORT",
+              "exchangeSegment": "NSE_FNO",
+              "productType": "MARGIN",
+              "buyAvg": 0,
+              "buyQty": 0,
+              "costPrice": 24005.5,
+              "sellAvg": 24005.5,
+              "sellQty": 75,
+              "netQty": -75,
+              "realizedProfit": 0,
+              "unrealizedProfit": 1162.5,
+              "dayBuyQty": 0,
+              "daySellQty": 75
+            },
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "INFY",
+              "securityId": "1594",
+              "positionType": "CLOSED",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "buyAvg": 1500,
+              "buyQty": 5,
+              "costPrice": 0,
+              "sellAvg": 1499.5,
+              "sellQty": 5,
+              "netQty": 0,
+              "realizedProfit": -2.5,
+              "unrealizedProfit": 0,
+              "dayBuyQty": 5,
+              "daySellQty": 5
+            }
+          ]
+        },
+        "POST /v2/marketfeed/quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ": {
+                "3045": {
+                  "last_price": 805.45,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 800.75,
+                    "high": 813.5,
+                    "low": 797.4,
+                    "close": 799.95
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                },
+                "1594": {
+                  "last_price": 1499.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 1491.49,
+                    "high": 1513.99,
+                    "low": 1484.01,
+                    "close": 1490.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 1498.9,
+                        "quantity": 10,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 1499.1,
+                        "quantity": 20,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              },
+              "NSE_FNO": {
+                "35001": {
+                  "last_price": 23990.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 1200000,
+                  "ohlc": {
+                    "open": 24074.05,
+                    "high": 24229.9,
+                    "low": 23750.1,
+                    "close": 24050.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              },
+              "BSE_EQ": {
+                "500325": {
+                  "last_price": 262.5,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 260.26,
+                    "high": 265.12,
+                    "low": 259.88,
+                    "close": 260.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": 801.12,
+              "exchange": "NSE",
+              "ltp": 805.45,
+              "pnl": 43.33,
+              "product": "MIS",
+              "quantity": 10,
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": 24005.5,
+              "exchange": "NFO",
+              "ltp": 23990.0,
+              "pnl": 1162.5,
+              "product": "NRML",
+              "quantity": -75,
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": 0.0,
+              "exchange": "NSE",
+              "ltp": 1499.0,
+              "pnl": -2.5,
+              "product": "CNC",
+              "quantity": 0,
+              "symbol": "INFY"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/positions",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/marketfeed/quote",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "client-id": "1100000001",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "NSE_EQ": [
+              3045,
+              1594
+            ],
+            "NSE_FNO": [
+              35001
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/holdings": {
+          "body": [
+            {
+              "exchange": "ALL",
+              "tradingSymbol": "INFOSYS",
+              "securityId": "1594",
+              "isin": "INE009A01021",
+              "totalQty": 20,
+              "dpQty": 20,
+              "t1Qty": 0,
+              "availableQty": 20,
+              "collateralQty": 0,
+              "avgCostPrice": 1400.0
+            },
+            {
+              "exchange": "ALL",
+              "tradingSymbol": "BSEONLY",
+              "securityId": "500325",
+              "isin": "INE111111111",
+              "totalQty": 4,
+              "dpQty": 4,
+              "t1Qty": 0,
+              "availableQty": 4,
+              "collateralQty": 0,
+              "avgCostPrice": 250.0
+            },
+            {
+              "exchange": "ALL",
+              "tradingSymbol": "OLDCO",
+              "securityId": "55555",
+              "isin": "INE000000000",
+              "totalQty": 3,
+              "dpQty": 3,
+              "t1Qty": 0,
+              "availableQty": 3,
+              "collateralQty": 0,
+              "avgCostPrice": 12.5
+            }
+          ]
+        },
+        "POST /v2/marketfeed/quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ": {
+                "3045": {
+                  "last_price": 805.45,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 800.75,
+                    "high": 813.5,
+                    "low": 797.4,
+                    "close": 799.95
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                },
+                "1594": {
+                  "last_price": 1499.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 1491.49,
+                    "high": 1513.99,
+                    "low": 1484.01,
+                    "close": 1490.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 1498.9,
+                        "quantity": 10,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 1499.1,
+                        "quantity": 20,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              },
+              "NSE_FNO": {
+                "35001": {
+                  "last_price": 23990.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 1200000,
+                  "ohlc": {
+                    "open": 24074.05,
+                    "high": 24229.9,
+                    "low": 23750.1,
+                    "close": 24050.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              },
+              "BSE_EQ": {
+                "500325": {
+                  "last_price": 262.5,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 260.26,
+                    "high": 265.12,
+                    "low": 259.88,
+                    "close": 260.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "average_price": 1400.0,
+                "exchange": "NSE",
+                "ltp": 1499.0,
+                "pnl": 1980.0,
+                "pnlpercent": 7.07,
+                "product": "CNC",
+                "quantity": 20,
+                "symbol": "INFY"
+              },
+              {
+                "average_price": 250.0,
+                "exchange": "BSE",
+                "ltp": 262.5,
+                "pnl": 50.0,
+                "pnlpercent": 5.0,
+                "product": "CNC",
+                "quantity": 4,
+                "symbol": "BSEONLY"
+              },
+              {
+                "average_price": 12.5,
+                "exchange": "NSE",
+                "ltp": 0.0,
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 3,
+                "symbol": "OLDCO"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 31067.5,
+              "totalinvvalue": 29037.5,
+              "totalpnlpercentage": 6.99,
+              "totalprofitandloss": 2030.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/holdings",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/marketfeed/quote",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "client-id": "1100000001",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "NSE_EQ": [
+              1594
+            ],
+            "BSE_EQ": [
+              500325
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_none",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/holdings": {
+          "status": 500,
+          "body": {
+            "errorType": "Holding_Error",
+            "errorCode": "DHOLDING_ERROR",
+            "errorMessage": "No holdings available"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/holdings",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/fundlimit": {
+          "body": {
+            "dhanClientId": "1100000001",
+            "availabelBalance": 101500.0,
+            "sodLimit": 100000.0,
+            "collateralAmount": 1500.0,
+            "receiveableAmount": 0,
+            "utilizedAmount": 274.95,
+            "blockedPayoutAmount": 0,
+            "withdrawableBalance": 98000.0
+          }
+        },
+        "GET /v2/positions": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "positionType": "LONG",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "buyAvg": 801.1234,
+              "buyQty": 10,
+              "costPrice": 801.1234,
+              "sellAvg": 0,
+              "sellQty": 0,
+              "netQty": 10,
+              "realizedProfit": 0,
+              "unrealizedProfit": 43.3333,
+              "dayBuyQty": 10,
+              "daySellQty": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "NIFTY-Nov2026-FUT",
+              "securityId": "35001",
+              "positionType": "SHORT",
+              "exchangeSegment": "NSE_FNO",
+              "productType": "MARGIN",
+              "buyAvg": 0,
+              "buyQty": 0,
+              "costPrice": 24005.5,
+              "sellAvg": 24005.5,
+              "sellQty": 75,
+              "netQty": -75,
+              "realizedProfit": 0,
+              "unrealizedProfit": 1162.5,
+              "dayBuyQty": 0,
+              "daySellQty": 75
+            },
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "INFY",
+              "securityId": "1594",
+              "positionType": "CLOSED",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "buyAvg": 1500,
+              "buyQty": 5,
+              "costPrice": 0,
+              "sellAvg": 1499.5,
+              "sellQty": 5,
+              "netQty": 0,
+              "realizedProfit": -2.5,
+              "unrealizedProfit": 0,
+              "dayBuyQty": 5,
+              "daySellQty": 5
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "100000.00",
+            "collateral": "1500.00",
+            "m2mrealized": "-2.50",
+            "m2munrealized": "1205.83",
+            "utiliseddebits": "274.95"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/fundlimit",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/positions",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_token_expired",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/fundlimit": {
+          "status": 401,
+          "body": {
+            "errorType": "Invalid_Authentication",
+            "errorCode": "DH-901",
+            "errorMessage": "Client ID or user generated access token is invalid or expired."
+          }
+        },
+        "GET /v2/positions": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "positionType": "LONG",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "buyAvg": 801.1234,
+              "buyQty": 10,
+              "costPrice": 801.1234,
+              "sellAvg": 0,
+              "sellQty": 0,
+              "netQty": 10,
+              "realizedProfit": 0,
+              "unrealizedProfit": 43.3333,
+              "dayBuyQty": 10,
+              "daySellQty": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "NIFTY-Nov2026-FUT",
+              "securityId": "35001",
+              "positionType": "SHORT",
+              "exchangeSegment": "NSE_FNO",
+              "productType": "MARGIN",
+              "buyAvg": 0,
+              "buyQty": 0,
+              "costPrice": 24005.5,
+              "sellAvg": 24005.5,
+              "sellQty": 75,
+              "netQty": -75,
+              "realizedProfit": 0,
+              "unrealizedProfit": 1162.5,
+              "dayBuyQty": 0,
+              "daySellQty": 75
+            },
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "INFY",
+              "securityId": "1594",
+              "positionType": "CLOSED",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "buyAvg": 1500,
+              "buyQty": 5,
+              "costPrice": 0,
+              "sellAvg": 1499.5,
+              "sellQty": 5,
+              "netQty": 0,
+              "realizedProfit": -2.5,
+              "unrealizedProfit": 0,
+              "dayBuyQty": 5,
+              "daySellQty": 5
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "0.00",
+            "collateral": "0.00",
+            "m2mrealized": "0.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "0.00"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/fundlimit",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderstatus_complete",
+      "method": "POST",
+      "path": "/api/v1/orderstatus",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "1002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1001",
+              "correlationId": "",
+              "orderStatus": "PENDING",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "orderType": "LIMIT",
+              "validity": "DAY",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "disclosedQuantity": 0,
+              "price": 800.5,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:20:01",
+              "updateTime": "2026-11-03 09:20:01",
+              "exchangeTime": "2026-11-03 09:20:01",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1002",
+              "correlationId": "",
+              "orderStatus": "TRADED",
+              "transactionType": "SELL",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "MARKET",
+              "validity": "DAY",
+              "tradingSymbol": "INFY",
+              "securityId": "1594",
+              "quantity": 5,
+              "disclosedQuantity": 0,
+              "price": 1499.95,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:21:11",
+              "updateTime": "2026-11-03 09:21:11",
+              "exchangeTime": "2026-11-03 09:21:11",
+              "filledQty": 5,
+              "averageTradedPrice": 1499.95
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1003",
+              "correlationId": "",
+              "orderStatus": "PENDING",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_FNO",
+              "productType": "MARGIN",
+              "orderType": "STOP_LOSS",
+              "validity": "DAY",
+              "tradingSymbol": "NIFTY-Nov2026-FUT",
+              "securityId": "35001",
+              "quantity": 75,
+              "disclosedQuantity": 0,
+              "price": 24010,
+              "triggerPrice": 24000,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:22:00",
+              "updateTime": "2026-11-03 09:22:00",
+              "exchangeTime": "2026-11-03 09:22:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1004",
+              "correlationId": "",
+              "orderStatus": "REJECTED",
+              "transactionType": "SELL",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "orderType": "STOP_LOSS_MARKET",
+              "validity": "DAY",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 1,
+              "disclosedQuantity": 0,
+              "price": 0,
+              "triggerPrice": 790.123,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:23:00",
+              "updateTime": "2026-11-03 09:23:00",
+              "exchangeTime": "2026-11-03 09:23:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1005",
+              "correlationId": "",
+              "orderStatus": "CANCELLED",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "orderType": "LIMIT",
+              "validity": "DAY",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 2,
+              "disclosedQuantity": 0,
+              "price": 700,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:24:00",
+              "updateTime": "2026-11-03 09:24:00",
+              "exchangeTime": "2026-11-03 09:24:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1006",
+              "correlationId": "",
+              "orderStatus": "TRANSIT",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "orderType": "LIMIT",
+              "validity": "DAY",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 3,
+              "disclosedQuantity": 0,
+              "price": 701,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:25:00",
+              "updateTime": "2026-11-03 09:25:00",
+              "exchangeTime": "2026-11-03 09:25:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1007",
+              "correlationId": "",
+              "orderStatus": "PART_TRADED",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "MARGIN",
+              "orderType": "LIMIT",
+              "validity": "DAY",
+              "tradingSymbol": "UNLISTED",
+              "securityId": "77777",
+              "quantity": 1,
+              "disclosedQuantity": 0,
+              "price": 10,
+              "triggerPrice": 0,
+              "afterMarketOrder": false,
+              "createTime": "2026-11-03 09:26:00",
+              "updateTime": "2026-11-03 09:26:00",
+              "exchangeTime": "2026-11-03 09:26:00",
+              "filledQty": 0,
+              "averageTradedPrice": 0
+            }
+          ]
+        },
+        "GET /v2/trades": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1002",
+              "exchangeOrderId": "x1",
+              "exchangeTradeId": "t1",
+              "transactionType": "SELL",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "MARKET",
+              "tradingSymbol": "INFY",
+              "securityId": "1594",
+              "tradedQuantity": 5,
+              "tradedPrice": 1499.95,
+              "createTime": "2026-11-03 09:21:11",
+              "updateTime": "2026-11-03 09:21:12",
+              "exchangeTime": "2026-11-03 09:21:12"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1008",
+              "exchangeOrderId": "x2",
+              "exchangeTradeId": "t2",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_FNO",
+              "productType": "MARGIN",
+              "orderType": "LIMIT",
+              "tradingSymbol": "NIFTY-Nov2026-FUT",
+              "securityId": "35001",
+              "tradedQuantity": 75,
+              "tradedPrice": 24005.555,
+              "createTime": "2026-11-03 09:25:00",
+              "updateTime": "2026-11-03 09:25:01",
+              "exchangeTime": "2026-11-03 09:25:01"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "action": "SELL",
+            "average_price": 1499.95,
+            "exchange": "NSE",
+            "order_status": "complete",
+            "orderid": "1002",
+            "price": 0.0,
+            "pricetype": "MARKET",
+            "product": "CNC",
+            "quantity": 5,
+            "symbol": "INFY",
+            "timestamp": "2026-11-03 09:21:11",
+            "trigger_price": 0.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/trades",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_short",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/positions": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "positionType": "LONG",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "INTRADAY",
+              "buyAvg": 801.1234,
+              "buyQty": 10,
+              "costPrice": 801.1234,
+              "sellAvg": 0,
+              "sellQty": 0,
+              "netQty": 10,
+              "realizedProfit": 0,
+              "unrealizedProfit": 43.3333,
+              "dayBuyQty": 10,
+              "daySellQty": 0
+            },
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "NIFTY-Nov2026-FUT",
+              "securityId": "35001",
+              "positionType": "SHORT",
+              "exchangeSegment": "NSE_FNO",
+              "productType": "MARGIN",
+              "buyAvg": 0,
+              "buyQty": 0,
+              "costPrice": 24005.5,
+              "sellAvg": 24005.5,
+              "sellQty": 75,
+              "netQty": -75,
+              "realizedProfit": 0,
+              "unrealizedProfit": 1162.5,
+              "dayBuyQty": 0,
+              "daySellQty": 75
+            },
+            {
+              "dhanClientId": "1100000001",
+              "tradingSymbol": "INFY",
+              "securityId": "1594",
+              "positionType": "CLOSED",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "buyAvg": 1500,
+              "buyQty": 5,
+              "costPrice": 0,
+              "sellAvg": 1499.5,
+              "sellQty": 5,
+              "netQty": 0,
+              "realizedProfit": -2.5,
+              "unrealizedProfit": 0,
+              "dayBuyQty": 5,
+              "daySellQty": 5
+            }
+          ]
+        },
+        "POST /v2/marketfeed/quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ": {
+                "3045": {
+                  "last_price": 805.45,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 800.75,
+                    "high": 813.5,
+                    "low": 797.4,
+                    "close": 799.95
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                },
+                "1594": {
+                  "last_price": 1499.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 1491.49,
+                    "high": 1513.99,
+                    "low": 1484.01,
+                    "close": 1490.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 1498.9,
+                        "quantity": 10,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 1499.1,
+                        "quantity": 20,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              },
+              "NSE_FNO": {
+                "35001": {
+                  "last_price": 23990.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 1200000,
+                  "ohlc": {
+                    "open": 24074.05,
+                    "high": 24229.9,
+                    "low": 23750.1,
+                    "close": 24050.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              },
+              "BSE_EQ": {
+                "500325": {
+                  "last_price": 262.5,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 260.26,
+                    "high": 265.12,
+                    "low": 259.88,
+                    "close": 260.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": -75,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/positions",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/marketfeed/quote",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "client-id": "1100000001",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "NSE_EQ": [
+              3045,
+              1594
+            ],
+            "NSE_FNO": [
+              35001
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/marketfeed/quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ": {
+                "3045": {
+                  "last_price": 805.45,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 800.75,
+                    "high": 813.5,
+                    "low": 797.4,
+                    "close": 799.95
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                },
+                "1594": {
+                  "last_price": 1499.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 1491.49,
+                    "high": 1513.99,
+                    "low": 1484.01,
+                    "close": 1490.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 1498.9,
+                        "quantity": 10,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 1499.1,
+                        "quantity": 20,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              },
+              "NSE_FNO": {
+                "35001": {
+                  "last_price": 23990.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 1200000,
+                  "ohlc": {
+                    "open": 24074.05,
+                    "high": 24229.9,
+                    "low": 23750.1,
+                    "close": 24050.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              },
+              "BSE_EQ": {
+                "500325": {
+                  "last_price": 262.5,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 260.26,
+                    "high": 265.12,
+                    "low": 259.88,
+                    "close": 260.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 805.5,
+            "bid": 805.4,
+            "high": 813.5,
+            "low": 797.4,
+            "ltp": 805.45,
+            "oi": 0,
+            "open": 800.75,
+            "prev_close": 799.95,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/marketfeed/quote",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "client-id": "1100000001",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "NSE_EQ": [
+              3045
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_futures",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/marketfeed/quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ": {
+                "3045": {
+                  "last_price": 805.45,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 800.75,
+                    "high": 813.5,
+                    "low": 797.4,
+                    "close": 799.95
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                },
+                "1594": {
+                  "last_price": 1499.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 1491.49,
+                    "high": 1513.99,
+                    "low": 1484.01,
+                    "close": 1490.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 1498.9,
+                        "quantity": 10,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 1499.1,
+                        "quantity": 20,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              },
+              "NSE_FNO": {
+                "35001": {
+                  "last_price": 23990.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 1200000,
+                  "ohlc": {
+                    "open": 24074.05,
+                    "high": 24229.9,
+                    "low": 23750.1,
+                    "close": 24050.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              },
+              "BSE_EQ": {
+                "500325": {
+                  "last_price": 262.5,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 260.26,
+                    "high": 265.12,
+                    "low": 259.88,
+                    "close": 260.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 0,
+            "bid": 0,
+            "high": 24229.9,
+            "low": 23750.1,
+            "ltp": 23990.0,
+            "oi": 1200000,
+            "open": 24074.05,
+            "prev_close": 24050.0,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/marketfeed/quote",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "client-id": "1100000001",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "NSE_FNO": [
+              35001
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "depth",
+      "method": "POST",
+      "path": "/api/v1/depth",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/marketfeed/quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ": {
+                "3045": {
+                  "last_price": 805.45,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 800.75,
+                    "high": 813.5,
+                    "low": 797.4,
+                    "close": 799.95
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                },
+                "1594": {
+                  "last_price": 1499.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 1491.49,
+                    "high": 1513.99,
+                    "low": 1484.01,
+                    "close": 1490.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 1498.9,
+                        "quantity": 10,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 1499.1,
+                        "quantity": 20,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              },
+              "NSE_FNO": {
+                "35001": {
+                  "last_price": 23990.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 1200000,
+                  "ohlc": {
+                    "open": 24074.05,
+                    "high": 24229.9,
+                    "low": 23750.1,
+                    "close": 24050.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              },
+              "BSE_EQ": {
+                "500325": {
+                  "last_price": 262.5,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 260.26,
+                    "high": 265.12,
+                    "low": 259.88,
+                    "close": 260.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "asks": [
+              {
+                "price": 805.5,
+                "quantity": 80
+              },
+              {
+                "price": 805.55,
+                "quantity": 10
+              },
+              {
+                "price": 805.6,
+                "quantity": 7
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              }
+            ],
+            "bids": [
+              {
+                "price": 805.4,
+                "quantity": 120
+              },
+              {
+                "price": 805.35,
+                "quantity": 50
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              }
+            ],
+            "high": 813.5,
+            "low": 797.4,
+            "ltp": 805.45,
+            "ltq": 5,
+            "oi": 0,
+            "open": 800.75,
+            "prev_close": 799.95,
+            "totalbuyqty": 170,
+            "totalsellqty": 97,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/marketfeed/quote",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "client-id": "1100000001",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "NSE_EQ": [
+              3045
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_not_subscribed",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/marketfeed/quote": {
+          "body": {
+            "status": "failed",
+            "data": {
+              "806": "Data APIs not subscribed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 0,
+            "bid": 0,
+            "error": "Data APIs not subscribed. Please subscribe to Dhan's market data service.",
+            "high": 0,
+            "low": 0,
+            "ltp": 0,
+            "open": 0,
+            "prev_close": 0,
+            "volume": 0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/marketfeed/quote",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "client-id": "1100000001",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "NSE_EQ": [
+              3045
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ping",
+      "method": "POST",
+      "path": "/api/v1/ping",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "broker": "dhan",
+            "message": "pong"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}

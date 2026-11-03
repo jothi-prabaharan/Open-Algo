@@ -178,4 +178,45 @@ public sealed class OpenAlgoApiTests
         await using var db = host.NewDb();
         Assert.Equal(3, await db.OrderAuditLogs.CountAsync(a => a.AccountId == account && a.Source == OrderSource.Api && a.Outcome == OrderOutcome.Accepted));
     }
+
+    [PostgresFact]
+    public async Task A_live_position_the_broker_cannot_price_still_counts_against_the_position_value_limit()
+    {
+        var broker = new FakeBroker();
+        await using var host = new TestHost("Production", b =>
+        {
+            b.UseSetting("Brokers:Enabled:0", "dhan");
+            b.ConfigureServices(s => s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => broker)));
+        });
+        var account = await host.CreateAccountAsync(AccountType.LIVE, "dhan", 1_000_000, 1000, 100_000, broker: "dhan", clientId: "1100000001");
+        (await host.Admin.PutAsJsonAsync($"/api/v1/accounts/{account}/broker-session", new { auth_token = "dhan-token" })).EnsureSuccessStatusCode();
+        var key = (await host.Get<ApiKeyService>().IssueAsync(account, "tv")).Key;
+        await using (var db = host.NewDb())
+        {
+            db.Set<SymToken>().Add(new SymToken { Broker = "dhan", Symbol = "SBIN", Brsymbol = "SBIN", Exchange = "NSE", Brexchange = "NSE", Token = "3045", Lotsize = 1, TickSize = 0.05 });
+            db.Set<SymToken>().Add(new SymToken { Broker = "dhan", Symbol = "INFY", Brsymbol = "INFY", Exchange = "NSE", Brexchange = "NSE", Token = "1594", Lotsize = 1, TickSize = 0.05 });
+            await db.SaveChangesAsync();
+        }
+
+        // 100 SBIN held at 800 (80,000), and Dhan's quote limit refuses the price. No feed price for SBIN either.
+        broker.Reset(new Dictionary<string, (int, string)>
+        {
+            ["GET /v2/positions"] = (200, """[{"tradingSymbol":"SBIN","securityId":"3045","exchangeSegment":"NSE_EQ","productType":"INTRADAY","netQty":100,"costPrice":800,"realizedProfit":0,"unrealizedProfit":0}]"""),
+            ["POST /v2/marketfeed/quote"] = (200, """{"status":"failed","data":{"805":"Too many requests"}}"""),
+            ["POST /v2/orders"] = (200, """{"orderId":"1","orderStatus":"PENDING"}"""),
+        });
+        host.SetQuote("NSE", "INFY", 1500);
+
+        // 20 INFY at 1,500 is 30,000 more: 1,10,000 against a 1,00,000 limit.
+        var (status, answer) = await PostAsync(host, "/api/v1/placeorder", new { apikey = key, strategy = "tv", symbol = "INFY", exchange = "NSE", action = "BUY", quantity = 20, pricetype = "MARKET", product = "MIS" });
+        Assert.Equal(400, status);
+        Assert.Equal("error", answer["status"]!.GetValue<string>());
+        Assert.DoesNotContain(broker.Sent, s => s.Path == "/v2/orders");
+
+        // 10 INFY (15,000) fits: 95,000.
+        (status, _) = await PostAsync(host, "/api/v1/placeorder", new { apikey = key, strategy = "tv", symbol = "INFY", exchange = "NSE", action = "BUY", quantity = 10, pricetype = "MARKET", product = "MIS" });
+        Assert.Equal(200, status);
+        Assert.Single(broker.Sent, s => s.Path == "/v2/orders");
+    }
 }
+
