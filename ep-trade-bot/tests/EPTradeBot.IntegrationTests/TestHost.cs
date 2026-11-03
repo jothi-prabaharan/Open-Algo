@@ -99,19 +99,37 @@ public sealed class TestHost : IAsyncDisposable
     public void SetQuote(string exchange, string symbol, decimal ltp) =>
         Get<QuoteBook>().Set(exchange, symbol, new EPTradeBot.Core.Trading.Quote(ltp));
 
-    /// <summary>Built from the connection string alone, so a host that failed to start still drops its database.</summary>
+    /// <summary>
+    /// Built from the connection string alone, so a host that failed to start still drops its database.
+    /// EF drops with <c>WITH (FORCE)</c>, which a non-superuser cannot use while a superuser session is on
+    /// the database ("permission denied to terminate process"). PostgreSQL's autovacuum workers are such
+    /// sessions and come and go on their own, most often under the load of a full test run, so that one
+    /// refusal is retried for a few seconds while the worker finishes.
+    /// </summary>
     private async ValueTask DropDatabase()
     {
         var options = new DbContextOptionsBuilder<EpTradeDbContext>().UseNpgsql(_connectionString).Options;
-        await using var db = new EpTradeDbContext(options);
-        await db.Database.EnsureDeletedAsync();
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                await using var db = new EpTradeDbContext(options);
+                await db.Database.EnsureDeletedAsync();
+                return;
+            }
+            catch (Npgsql.PostgresException ex) when (ex.SqlState == "42501" && attempt < 40)
+            {
+                await Task.Delay(250);
+            }
+        }
     }
 
     public async ValueTask DisposeAsync()
     {
-        await DropDatabase();
-
+        // The host first, so its own connections (and its background services) are gone before the drop.
         Admin.Dispose();
         await _factory.DisposeAsync();
+        Npgsql.NpgsqlConnection.ClearAllPools();
+        await DropDatabase();
     }
 }

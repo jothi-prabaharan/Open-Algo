@@ -858,3 +858,11 @@ That is 106 mutation checks for Task Group 3 so far.
 - **Greeks on the option chain**, which arrive with the option Greeks tools in Task Group 4.
 - **Upstox global indicator prices.**
 - **Still to come in Task Group 3:** history, intervals, ticker, margin, the four GTT endpoints, market holidays and timings, chart and pnl/symbols. Feeds and login remain as well.
+
+**A test tear-down race, fixed.** In full-solution runs, a test occasionally failed in
+tear-down with "permission denied to terminate process".
+
+- **The cause:** EF drops a test database with `DROP DATABASE ... WITH (FORCE)`. A non-superuser cannot use that while a superuser session is on the database, and PostgreSQL's autovacuum workers are such sessions. The tear-down also dropped the database before stopping the test host.
+- **The fix:** `TestHost` now stops the host first, then retries that one refusal for up to 10 seconds while the worker finishes.
+- **How it was proven:** a temporary test held a superuser session on a test database during tear-down. It passed with the fix and failed with the retry removed, with the same error as the full run. It was then deleted, because it needs the machine's `postgres` account.
+- **Not proven:** one earlier failure, of `Audit_records_cannot_be_updated_or_deleted_by_any_ef_path`, has no saved message. Its timing fits this cause, but that is not proven.
