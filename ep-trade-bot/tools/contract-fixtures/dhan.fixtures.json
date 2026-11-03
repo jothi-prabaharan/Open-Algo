@@ -3,6 +3,7 @@
   "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
   "auth_token": "dhan-access-token",
   "client_id": "1100000001",
+  "recorded_at": null,
   "read_posts": [
     "/v2/marketfeed/quote"
   ],
@@ -99,6 +100,7 @@
       "tick_size": 0.0
     }
   ],
+  "freeze": [],
   "fixtures": [
     {
       "name": "auth_invalid_key",
@@ -4180,6 +4182,295 @@
         }
       },
       "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO"
+          },
+          {
+            "symbol": "NOPE",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "NIFTY25NOV2624000CE",
+            "exchange": "NFO"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/marketfeed/quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ": {
+                "3045": {
+                  "last_price": 805.45,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 800.75,
+                    "high": 813.5,
+                    "low": 797.4,
+                    "close": 799.95
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                },
+                "1594": {
+                  "last_price": 1499.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 1491.49,
+                    "high": 1513.99,
+                    "low": 1484.01,
+                    "close": 1490.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 1498.9,
+                        "quantity": 10,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 1499.1,
+                        "quantity": 20,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              },
+              "NSE_FNO": {
+                "35001": {
+                  "last_price": 23990.0,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 1200000,
+                  "ohlc": {
+                    "open": 24074.05,
+                    "high": 24229.9,
+                    "low": 23750.1,
+                    "close": 24050.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              },
+              "BSE_EQ": {
+                "500325": {
+                  "last_price": 262.5,
+                  "last_quantity": 5,
+                  "volume": 1234567,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 260.26,
+                    "high": 265.12,
+                    "low": 259.88,
+                    "close": 260.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [
+            {
+              "error": "Symbol 'NOPE' not found for exchange 'NSE'. Please verify the symbol name and ensure master contracts are downloaded.",
+              "exchange": "NSE",
+              "symbol": "NOPE"
+            },
+            {
+              "data": {
+                "ask": 805.5,
+                "bid": 805.4,
+                "high": 813.5,
+                "low": 797.4,
+                "ltp": 805.45,
+                "oi": 0,
+                "open": 800.75,
+                "prev_close": 799.95,
+                "volume": 1234567
+              },
+              "exchange": "NSE",
+              "symbol": "SBIN"
+            },
+            {
+              "data": {
+                "ask": 0,
+                "bid": 0,
+                "high": 24229.9,
+                "low": 23750.1,
+                "ltp": 23990.0,
+                "oi": 1200000,
+                "open": 24074.05,
+                "prev_close": 24050.0,
+                "volume": 1234567
+              },
+              "exchange": "NFO",
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "data": {
+                "ask": 1499.1,
+                "bid": 1498.9,
+                "high": 1513.99,
+                "low": 1484.01,
+                "ltp": 1499.0,
+                "oi": 0,
+                "open": 1491.49,
+                "prev_close": 1490.0,
+                "volume": 1234567
+              },
+              "exchange": "NSE",
+              "symbol": "INFY"
+            },
+            {
+              "error": "No quote data available",
+              "exchange": "NFO",
+              "symbol": "NIFTY25NOV2624000CE"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/marketfeed/quote",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "client-id": "1100000001",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "NSE_EQ": [
+              3045,
+              1594
+            ],
+            "NSE_FNO": [
+              35001,
+              40001
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes_not_subscribed",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/marketfeed/quote": {
+          "body": {
+            "status": "failed",
+            "data": {
+              "806": "Data APIs not subscribed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching multiquotes: API Error: Data APIs not subscribed. Please subscribe to Dhan's market data service.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/marketfeed/quote",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "client-id": "1100000001",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "NSE_EQ": [
+              3045
+            ]
+          }
+        }
+      ],
       "ignore": []
     }
   ]

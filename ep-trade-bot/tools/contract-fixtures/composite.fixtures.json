@@ -2192,6 +2192,3101 @@
       "ignore": []
     },
     {
+      "name": "multiquotes_with_unknown",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "NOPE",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "NIFTY",
+            "exchange": "NSE_INDEX"
+          },
+          {
+            "symbol": "NIFTY30DEC3024000CE",
+            "exchange": "NFO"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "instrument_token": 1,
+                "last_price": 805.45,
+                "last_quantity": 1,
+                "volume": 1000,
+                "oi": 0,
+                "ohlc": {
+                  "open": 806.45,
+                  "high": 810.45,
+                  "low": 800.45,
+                  "close": 803.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4000000000001,
+                      "quantity": 75,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 150,
+                      "orders": 2
+                    }
+                  ]
+                }
+              },
+              "NSE:NIFTY 50": {
+                "instrument_token": 1,
+                "last_price": 24040.35,
+                "last_quantity": 1,
+                "volume": 1000,
+                "oi": 0,
+                "ohlc": {
+                  "open": 24041.35,
+                  "high": 24045.35,
+                  "low": 24035.35,
+                  "close": 24038.35
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 24040.3,
+                      "quantity": 75,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 24040.399999999998,
+                      "quantity": 150,
+                      "orders": 2
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [
+            {
+              "error": "Symbol 'NOPE' not found for exchange 'NSE'. Please verify the symbol name and ensure master contracts are downloaded.",
+              "exchange": "NSE",
+              "symbol": "NOPE"
+            },
+            {
+              "data": {
+                "ask": 805.5,
+                "ask_qty": 150,
+                "bid": 805.4000000000001,
+                "bid_qty": 75,
+                "high": 810.45,
+                "low": 800.45,
+                "ltp": 805.45,
+                "oi": 0,
+                "open": 806.45,
+                "prev_close": 803.45,
+                "volume": 1000
+              },
+              "exchange": "NSE",
+              "symbol": "SBIN"
+            },
+            {
+              "data": {
+                "ask": 24040.399999999998,
+                "ask_qty": 150,
+                "bid": 24040.3,
+                "bid_qty": 75,
+                "high": 24045.35,
+                "low": 24035.35,
+                "ltp": 24040.35,
+                "oi": 0,
+                "open": 24041.35,
+                "prev_close": 24038.35,
+                "volume": 1000
+              },
+              "exchange": "NSE_INDEX",
+              "symbol": "NIFTY"
+            },
+            {
+              "error": "No quote data available",
+              "exchange": "NFO",
+              "symbol": "NIFTY30DEC3024000CE"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NSE:SBIN"
+            ],
+            [
+              "i",
+              "NSE:NIFTY 50"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24000CE"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes_all_unknown",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "NOPE",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "ZZZ",
+            "exchange": "BSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "invalid_symbols": [
+            {
+              "error": "Symbol 'NOPE' not found for exchange 'NSE'. Please verify the symbol name and ensure master contracts are downloaded.",
+              "exchange": "NSE",
+              "symbol": "NOPE"
+            },
+            {
+              "error": "Symbol 'ZZZ' not found for exchange 'BSE'. Please verify the symbol name and ensure master contracts are downloaded.",
+              "exchange": "BSE",
+              "symbol": "ZZZ"
+            }
+          ],
+          "message": "Symbol 'NOPE' not found for exchange 'NSE'. Please verify the symbol name and ensure master contracts are downloaded.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes_refused",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": {
+          "status": 403,
+          "body": {
+            "status": "error",
+            "message": "Incorrect `api_key` or `access_token`.",
+            "error_type": "TokenException"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching multiquotes: API Error: Incorrect `api_key` or `access_token`.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NSE:SBIN"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes_empty",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": {
+            "symbols": [
+              "Shorter than minimum length 1."
+            ]
+          },
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "syntheticfuture",
+      "method": "POST",
+      "path": "/api/v1/syntheticfuture",
+      "auth": "body",
+      "request": {
+        "underlying": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "expiry_date": "30DEC30",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "NSE:NIFTY 50": {
+                  "instrument_token": 1,
+                  "last_price": 24040.35,
+                  "last_quantity": 1,
+                  "volume": 10,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 24040.35,
+                    "high": 24040.35,
+                    "low": 24040.35,
+                    "close": 24040.35
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "NFO:NIFTY30DEC23900CE": {
+                  "instrument_token": 1,
+                  "last_price": 180.5,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 1000,
+                  "ohlc": {
+                    "open": 181.5,
+                    "high": 185.5,
+                    "low": 175.5,
+                    "close": 178.5
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 180.45,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 180.55,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24000CE": {
+                  "instrument_token": 1,
+                  "last_price": 120.25,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 2000,
+                  "ohlc": {
+                    "open": 121.25,
+                    "high": 125.25,
+                    "low": 115.25,
+                    "close": 118.25
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 120.2,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 120.3,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24100CE": {
+                  "instrument_token": 1,
+                  "last_price": 75.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 1500,
+                  "ohlc": {
+                    "open": 76.0,
+                    "high": 80.0,
+                    "low": 70.0,
+                    "close": 73.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 74.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 75.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC23900PE": {
+                  "instrument_token": 1,
+                  "last_price": 40.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 900,
+                  "ohlc": {
+                    "open": 41.0,
+                    "high": 45.0,
+                    "low": 35.0,
+                    "close": 38.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 39.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 40.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24000PE": {
+                  "instrument_token": 1,
+                  "last_price": 80.15,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 2500,
+                  "ohlc": {
+                    "open": 81.15,
+                    "high": 85.15,
+                    "low": 75.15,
+                    "close": 78.15
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 80.10000000000001,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 80.2,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24100PE": {
+                  "instrument_token": 1,
+                  "last_price": 135.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 700,
+                  "ohlc": {
+                    "open": 136.0,
+                    "high": 140.0,
+                    "low": 130.0,
+                    "close": 133.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 134.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 135.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "atm_strike": 24000.0,
+          "expiry": "30DEC30",
+          "status": "success",
+          "synthetic_future_price": 24040.1,
+          "underlying": "NIFTY",
+          "underlying_ltp": 24040.35
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NSE:NIFTY 50"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NFO:NIFTY30DEC24000CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24000PE"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "syntheticfuture_no_strikes",
+      "method": "POST",
+      "path": "/api/v1/syntheticfuture",
+      "auth": "body",
+      "request": {
+        "underlying": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "expiry_date": "29NOV30",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:NIFTY 50": {
+                "instrument_token": 1,
+                "last_price": 24040.35,
+                "last_quantity": 1,
+                "volume": 10,
+                "oi": 0,
+                "ohlc": {
+                  "open": 24040.35,
+                  "high": 24040.35,
+                  "low": 24040.35,
+                  "close": 24040.35
+                },
+                "depth": {
+                  "buy": [],
+                  "sell": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "message": "No strikes found for NIFTY expiring 29NOV30. Please check expiry date or update master contract.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NSE:NIFTY 50"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "syntheticfuture_option_unpriced",
+      "method": "POST",
+      "path": "/api/v1/syntheticfuture",
+      "auth": "body",
+      "request": {
+        "underlying": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "expiry_date": "30DEC30",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "NSE:NIFTY 50": {
+                  "instrument_token": 1,
+                  "last_price": 24040.35,
+                  "last_quantity": 1,
+                  "volume": 10,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 24040.35,
+                    "high": 24040.35,
+                    "low": 24040.35,
+                    "close": 24040.35
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "NFO:NIFTY30DEC24000CE": {
+                  "instrument_token": 1,
+                  "last_price": 120.25,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 121.25,
+                    "high": 125.25,
+                    "low": 115.25,
+                    "close": 118.25
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 120.2,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 120.3,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Could not fetch LTP for Put option: NIFTY30DEC3024000PE",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NSE:NIFTY 50"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NFO:NIFTY30DEC24000CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24000PE"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "optionchain_three_strikes",
+      "method": "POST",
+      "path": "/api/v1/optionchain",
+      "auth": "body",
+      "request": {
+        "underlying": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "expiry_date": "30DEC30",
+        "strike_count": 1,
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "NSE:NIFTY 50": {
+                  "instrument_token": 1,
+                  "last_price": 24040.35,
+                  "last_quantity": 1,
+                  "volume": 10,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 24040.35,
+                    "high": 24040.35,
+                    "low": 24040.35,
+                    "close": 24040.35
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "NFO:NIFTY30DEC23900CE": {
+                  "instrument_token": 1,
+                  "last_price": 180.5,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 1000,
+                  "ohlc": {
+                    "open": 181.5,
+                    "high": 185.5,
+                    "low": 175.5,
+                    "close": 178.5
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 180.45,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 180.55,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24000CE": {
+                  "instrument_token": 1,
+                  "last_price": 120.25,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 2000,
+                  "ohlc": {
+                    "open": 121.25,
+                    "high": 125.25,
+                    "low": 115.25,
+                    "close": 118.25
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 120.2,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 120.3,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24100CE": {
+                  "instrument_token": 1,
+                  "last_price": 75.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 1500,
+                  "ohlc": {
+                    "open": 76.0,
+                    "high": 80.0,
+                    "low": 70.0,
+                    "close": 73.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 74.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 75.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC23900PE": {
+                  "instrument_token": 1,
+                  "last_price": 40.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 900,
+                  "ohlc": {
+                    "open": 41.0,
+                    "high": 45.0,
+                    "low": 35.0,
+                    "close": 38.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 39.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 40.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24000PE": {
+                  "instrument_token": 1,
+                  "last_price": 80.15,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 2500,
+                  "ohlc": {
+                    "open": 81.15,
+                    "high": 85.15,
+                    "low": 75.15,
+                    "close": 78.15
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 80.10000000000001,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 80.2,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24100PE": {
+                  "instrument_token": 1,
+                  "last_price": 135.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 700,
+                  "ohlc": {
+                    "open": 136.0,
+                    "high": 140.0,
+                    "low": 130.0,
+                    "close": 133.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 134.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 135.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "underlying": "NIFTY",
+          "underlying_symbol": "NIFTY",
+          "underlying_exchange": "NSE_INDEX",
+          "underlying_ltp": 24040.35,
+          "underlying_prev_close": 24040.35,
+          "expiry_date": "30DEC30",
+          "expiry_ts": 1924855200,
+          "server_ts": 1793720092,
+          "atm_strike": 24000.0,
+          "quotes_included": true,
+          "greeks_included": false,
+          "forward_price": null,
+          "chain": [
+            {
+              "strike": 23900.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3023900CE",
+                "label": "ITM1",
+                "ltp": 180.5,
+                "bid": 180.45,
+                "ask": 180.55,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 181.5,
+                "high": 185.5,
+                "low": 175.5,
+                "prev_close": 178.5,
+                "volume": 1000,
+                "oi": 1000,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3023900PE",
+                "label": "OTM1",
+                "ltp": 40.0,
+                "bid": 39.95,
+                "ask": 40.05,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 41.0,
+                "high": 45.0,
+                "low": 35.0,
+                "prev_close": 38.0,
+                "volume": 1000,
+                "oi": 900,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            },
+            {
+              "strike": 24000.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024000CE",
+                "label": "ATM",
+                "ltp": 120.25,
+                "bid": 120.2,
+                "ask": 120.3,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 121.25,
+                "high": 125.25,
+                "low": 115.25,
+                "prev_close": 118.25,
+                "volume": 1000,
+                "oi": 2000,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024000PE",
+                "label": "ATM",
+                "ltp": 80.15,
+                "bid": 80.10000000000001,
+                "ask": 80.2,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 81.15,
+                "high": 85.15,
+                "low": 75.15,
+                "prev_close": 78.15,
+                "volume": 1000,
+                "oi": 2500,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            },
+            {
+              "strike": 24100.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024100CE",
+                "label": "OTM1",
+                "ltp": 75.0,
+                "bid": 74.95,
+                "ask": 75.05,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 76.0,
+                "high": 80.0,
+                "low": 70.0,
+                "prev_close": 73.0,
+                "volume": 1000,
+                "oi": 1500,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024100PE",
+                "label": "ITM1",
+                "ltp": 135.0,
+                "bid": 134.95,
+                "ask": 135.05,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 136.0,
+                "high": 140.0,
+                "low": 130.0,
+                "prev_close": 133.0,
+                "volume": 1000,
+                "oi": 700,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            }
+          ]
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NSE:NIFTY 50"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NFO:NIFTY30DEC23900CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC23900PE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24000CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24000PE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24100CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24100PE"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "optionchain_whole",
+      "method": "POST",
+      "path": "/api/v1/optionchain",
+      "auth": "body",
+      "request": {
+        "underlying": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "expiry_date": "30DEC30",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "NSE:NIFTY 50": {
+                  "instrument_token": 1,
+                  "last_price": 24040.35,
+                  "last_quantity": 1,
+                  "volume": 10,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 24040.35,
+                    "high": 24040.35,
+                    "low": 24040.35,
+                    "close": 24040.35
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "NFO:NIFTY30DEC23900CE": {
+                  "instrument_token": 1,
+                  "last_price": 180.5,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 1000,
+                  "ohlc": {
+                    "open": 181.5,
+                    "high": 185.5,
+                    "low": 175.5,
+                    "close": 178.5
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 180.45,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 180.55,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24000CE": {
+                  "instrument_token": 1,
+                  "last_price": 120.25,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 2000,
+                  "ohlc": {
+                    "open": 121.25,
+                    "high": 125.25,
+                    "low": 115.25,
+                    "close": 118.25
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 120.2,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 120.3,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24100CE": {
+                  "instrument_token": 1,
+                  "last_price": 75.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 1500,
+                  "ohlc": {
+                    "open": 76.0,
+                    "high": 80.0,
+                    "low": 70.0,
+                    "close": 73.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 74.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 75.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC23900PE": {
+                  "instrument_token": 1,
+                  "last_price": 40.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 900,
+                  "ohlc": {
+                    "open": 41.0,
+                    "high": 45.0,
+                    "low": 35.0,
+                    "close": 38.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 39.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 40.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24000PE": {
+                  "instrument_token": 1,
+                  "last_price": 80.15,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 2500,
+                  "ohlc": {
+                    "open": 81.15,
+                    "high": 85.15,
+                    "low": 75.15,
+                    "close": 78.15
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 80.10000000000001,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 80.2,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24100PE": {
+                  "instrument_token": 1,
+                  "last_price": 135.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 700,
+                  "ohlc": {
+                    "open": 136.0,
+                    "high": 140.0,
+                    "low": 130.0,
+                    "close": 133.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 134.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 135.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "underlying": "NIFTY",
+          "underlying_symbol": "NIFTY",
+          "underlying_exchange": "NSE_INDEX",
+          "underlying_ltp": 24040.35,
+          "underlying_prev_close": 24040.35,
+          "expiry_date": "30DEC30",
+          "expiry_ts": 1924855200,
+          "server_ts": 1793720092,
+          "atm_strike": 24000.0,
+          "quotes_included": true,
+          "greeks_included": false,
+          "forward_price": null,
+          "chain": [
+            {
+              "strike": 23800.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3023800CE",
+                "label": "ITM2",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3023800PE",
+                "label": "OTM2",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            },
+            {
+              "strike": 23900.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3023900CE",
+                "label": "ITM1",
+                "ltp": 180.5,
+                "bid": 180.45,
+                "ask": 180.55,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 181.5,
+                "high": 185.5,
+                "low": 175.5,
+                "prev_close": 178.5,
+                "volume": 1000,
+                "oi": 1000,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3023900PE",
+                "label": "OTM1",
+                "ltp": 40.0,
+                "bid": 39.95,
+                "ask": 40.05,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 41.0,
+                "high": 45.0,
+                "low": 35.0,
+                "prev_close": 38.0,
+                "volume": 1000,
+                "oi": 900,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            },
+            {
+              "strike": 24000.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024000CE",
+                "label": "ATM",
+                "ltp": 120.25,
+                "bid": 120.2,
+                "ask": 120.3,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 121.25,
+                "high": 125.25,
+                "low": 115.25,
+                "prev_close": 118.25,
+                "volume": 1000,
+                "oi": 2000,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024000PE",
+                "label": "ATM",
+                "ltp": 80.15,
+                "bid": 80.10000000000001,
+                "ask": 80.2,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 81.15,
+                "high": 85.15,
+                "low": 75.15,
+                "prev_close": 78.15,
+                "volume": 1000,
+                "oi": 2500,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            },
+            {
+              "strike": 24100.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024100CE",
+                "label": "OTM1",
+                "ltp": 75.0,
+                "bid": 74.95,
+                "ask": 75.05,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 76.0,
+                "high": 80.0,
+                "low": 70.0,
+                "prev_close": 73.0,
+                "volume": 1000,
+                "oi": 1500,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024100PE",
+                "label": "ITM1",
+                "ltp": 135.0,
+                "bid": 134.95,
+                "ask": 135.05,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 136.0,
+                "high": 140.0,
+                "low": 130.0,
+                "prev_close": 133.0,
+                "volume": 1000,
+                "oi": 700,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            },
+            {
+              "strike": 24200.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024200CE",
+                "label": "OTM2",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024200PE",
+                "label": "ITM2",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            }
+          ]
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NSE:NIFTY 50"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NFO:NIFTY30DEC23800CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC23800PE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC23900CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC23900PE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24000CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24000PE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24100CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24100PE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24200CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24200PE"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "optionchain_embedded_expiry",
+      "method": "POST",
+      "path": "/api/v1/optionchain",
+      "auth": "body",
+      "request": {
+        "underlying": "NIFTY30DEC30FUT",
+        "exchange": "NFO",
+        "expiry_date": "26DEC24",
+        "strike_count": 1,
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "NSE:NIFTY 50": {
+                  "instrument_token": 1,
+                  "last_price": 24150.0,
+                  "last_quantity": 1,
+                  "volume": 10,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 24150.0,
+                    "high": 24150.0,
+                    "low": 24150.0,
+                    "close": 24150.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "NFO:NIFTY30DEC23900CE": {
+                  "instrument_token": 1,
+                  "last_price": 180.5,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 1000,
+                  "ohlc": {
+                    "open": 181.5,
+                    "high": 185.5,
+                    "low": 175.5,
+                    "close": 178.5
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 180.45,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 180.55,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24000CE": {
+                  "instrument_token": 1,
+                  "last_price": 120.25,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 2000,
+                  "ohlc": {
+                    "open": 121.25,
+                    "high": 125.25,
+                    "low": 115.25,
+                    "close": 118.25
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 120.2,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 120.3,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24100CE": {
+                  "instrument_token": 1,
+                  "last_price": 75.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 1500,
+                  "ohlc": {
+                    "open": 76.0,
+                    "high": 80.0,
+                    "low": 70.0,
+                    "close": 73.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 74.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 75.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC23900PE": {
+                  "instrument_token": 1,
+                  "last_price": 40.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 900,
+                  "ohlc": {
+                    "open": 41.0,
+                    "high": 45.0,
+                    "low": 35.0,
+                    "close": 38.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 39.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 40.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24000PE": {
+                  "instrument_token": 1,
+                  "last_price": 80.15,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 2500,
+                  "ohlc": {
+                    "open": 81.15,
+                    "high": 85.15,
+                    "low": 75.15,
+                    "close": 78.15
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 80.10000000000001,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 80.2,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24100PE": {
+                  "instrument_token": 1,
+                  "last_price": 135.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 700,
+                  "ohlc": {
+                    "open": 136.0,
+                    "high": 140.0,
+                    "low": 130.0,
+                    "close": 133.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 134.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 135.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "underlying": "NIFTY",
+          "underlying_symbol": "NIFTY",
+          "underlying_exchange": "NSE_INDEX",
+          "underlying_ltp": 24150.0,
+          "underlying_prev_close": 24150.0,
+          "expiry_date": "30DEC30",
+          "expiry_ts": 1924855200,
+          "server_ts": 1793720092,
+          "atm_strike": 24100.0,
+          "quotes_included": true,
+          "greeks_included": false,
+          "forward_price": null,
+          "chain": [
+            {
+              "strike": 24000.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024000CE",
+                "label": "ITM1",
+                "ltp": 120.25,
+                "bid": 120.2,
+                "ask": 120.3,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 121.25,
+                "high": 125.25,
+                "low": 115.25,
+                "prev_close": 118.25,
+                "volume": 1000,
+                "oi": 2000,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024000PE",
+                "label": "OTM1",
+                "ltp": 80.15,
+                "bid": 80.10000000000001,
+                "ask": 80.2,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 81.15,
+                "high": 85.15,
+                "low": 75.15,
+                "prev_close": 78.15,
+                "volume": 1000,
+                "oi": 2500,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            },
+            {
+              "strike": 24100.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024100CE",
+                "label": "ATM",
+                "ltp": 75.0,
+                "bid": 74.95,
+                "ask": 75.05,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 76.0,
+                "high": 80.0,
+                "low": 70.0,
+                "prev_close": 73.0,
+                "volume": 1000,
+                "oi": 1500,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024100PE",
+                "label": "ATM",
+                "ltp": 135.0,
+                "bid": 134.95,
+                "ask": 135.05,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 136.0,
+                "high": 140.0,
+                "low": 130.0,
+                "prev_close": 133.0,
+                "volume": 1000,
+                "oi": 700,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            },
+            {
+              "strike": 24200.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024200CE",
+                "label": "OTM1",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024200PE",
+                "label": "ITM1",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            }
+          ]
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NSE:NIFTY 50"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NFO:NIFTY30DEC24000CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24000PE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24100CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24100PE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24200CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24200PE"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "optionchain_mcx",
+      "method": "POST",
+      "path": "/api/v1/optionchain",
+      "auth": "body",
+      "request": {
+        "underlying": "CRUDEOIL",
+        "exchange": "MCX",
+        "expiry_date": "18NOV30",
+        "strike_count": 5,
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "MCX:CRUDEOIL30NOVFUT": {
+                  "instrument_token": 1,
+                  "last_price": 6080.0,
+                  "last_quantity": 1,
+                  "volume": 10,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 6080.0,
+                    "high": 6080.0,
+                    "low": 6080.0,
+                    "close": 6080.0
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "MCX:CRUDEOIL30NOV6000CE": {
+                  "instrument_token": 1,
+                  "last_price": 110.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 5000,
+                  "ohlc": {
+                    "open": 111.0,
+                    "high": 115.0,
+                    "low": 105.0,
+                    "close": 108.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 109.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 110.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "underlying": "CRUDEOIL",
+          "underlying_symbol": "CRUDEOIL19NOV30FUT",
+          "underlying_exchange": "MCX",
+          "underlying_ltp": 6080.0,
+          "underlying_prev_close": 6080.0,
+          "expiry_date": "18NOV30",
+          "expiry_ts": 1921255200,
+          "server_ts": 1793720092,
+          "atm_strike": 6100.0,
+          "quotes_included": true,
+          "greeks_included": false,
+          "forward_price": null,
+          "chain": [
+            {
+              "strike": 6000.0,
+              "ce": {
+                "symbol": "CRUDEOIL18NOV306000CE",
+                "label": "ITM1",
+                "ltp": 110.0,
+                "bid": 109.95,
+                "ask": 110.05,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 111.0,
+                "high": 115.0,
+                "low": 105.0,
+                "prev_close": 108.0,
+                "volume": 1000,
+                "oi": 5000,
+                "lotsize": 100,
+                "tick_size": 0.1
+              },
+              "pe": null
+            },
+            {
+              "strike": 6100.0,
+              "ce": {
+                "symbol": "CRUDEOIL18NOV306100CE",
+                "label": "ATM",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 100,
+                "tick_size": 0.1
+              },
+              "pe": null
+            }
+          ]
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "MCX:CRUDEOIL30NOVFUT"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "MCX:CRUDEOIL30NOV6000CE"
+            ],
+            [
+              "i",
+              "MCX:CRUDEOIL30NOV6100CE"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "optionchain_mcx_no_future",
+      "method": "POST",
+      "path": "/api/v1/optionchain",
+      "auth": "body",
+      "request": {
+        "underlying": "GOLD",
+        "exchange": "MCX",
+        "expiry_date": "18NOV30",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 404,
+        "body": {
+          "status": "error",
+          "message": "No unexpired futures found for GOLD on MCX. MCX options are priced against the near-month future, which this product does not currently have."
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "optionchain_no_strikes",
+      "method": "POST",
+      "path": "/api/v1/optionchain",
+      "auth": "body",
+      "request": {
+        "underlying": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "expiry_date": "29NOV30",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:NIFTY 50": {
+                "instrument_token": 1,
+                "last_price": 24040.35,
+                "last_quantity": 1,
+                "volume": 10,
+                "oi": 0,
+                "ohlc": {
+                  "open": 24040.35,
+                  "high": 24040.35,
+                  "low": 24040.35,
+                  "close": 24040.35
+                },
+                "depth": {
+                  "buy": [],
+                  "sell": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "status": "error",
+          "message": "No strikes found for NIFTY expiring 29NOV30. Please check expiry date or update master contract."
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NSE:NIFTY 50"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "optionchain_quote_refused",
+      "method": "POST",
+      "path": "/api/v1/optionchain",
+      "auth": "body",
+      "request": {
+        "underlying": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "expiry_date": "30DEC30",
+        "strike_count": 1,
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": {
+          "status": 403,
+          "body": {
+            "status": "error",
+            "message": "Incorrect `api_key` or `access_token`.",
+            "error_type": "TokenException"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "status": "error",
+          "message": "Failed to fetch LTP for NIFTY: Error fetching quotes: API Error: Incorrect `api_key` or `access_token`."
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NSE:NIFTY 50"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "optionchain_option_quotes_refused",
+      "method": "POST",
+      "path": "/api/v1/optionchain",
+      "auth": "body",
+      "request": {
+        "underlying": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "expiry_date": "30DEC30",
+        "strike_count": 1,
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "NSE:NIFTY 50": {
+                  "instrument_token": 1,
+                  "last_price": 24040.35,
+                  "last_quantity": 1,
+                  "volume": 10,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 24040.35,
+                    "high": 24040.35,
+                    "low": 24040.35,
+                    "close": 24040.35
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          },
+          {
+            "status": 403,
+            "body": {
+              "status": "error",
+              "message": "Incorrect `api_key` or `access_token`.",
+              "error_type": "TokenException"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "underlying": "NIFTY",
+          "underlying_symbol": "NIFTY",
+          "underlying_exchange": "NSE_INDEX",
+          "underlying_ltp": 24040.35,
+          "underlying_prev_close": 24040.35,
+          "expiry_date": "30DEC30",
+          "expiry_ts": 1924855200,
+          "server_ts": 1793720092,
+          "atm_strike": 24000.0,
+          "quotes_included": true,
+          "greeks_included": false,
+          "forward_price": null,
+          "chain": [
+            {
+              "strike": 23900.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3023900CE",
+                "label": "ITM1",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3023900PE",
+                "label": "OTM1",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            },
+            {
+              "strike": 24000.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024000CE",
+                "label": "ATM",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024000PE",
+                "label": "ATM",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            },
+            {
+              "strike": 24100.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024100CE",
+                "label": "OTM1",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024100PE",
+                "label": "ITM1",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            }
+          ]
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NSE:NIFTY 50"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NFO:NIFTY30DEC23900CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC23900PE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24000CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24000PE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24100CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24100PE"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "optionchain_with_greeks",
+      "method": "POST",
+      "path": "/api/v1/optionchain",
+      "auth": "body",
+      "request": {
+        "underlying": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "expiry_date": "30DEC30",
+        "strike_count": 1,
+        "with_greeks": true,
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "NSE:NIFTY 50": {
+                  "instrument_token": 1,
+                  "last_price": 24040.35,
+                  "last_quantity": 1,
+                  "volume": 10,
+                  "oi": 0,
+                  "ohlc": {
+                    "open": 24040.35,
+                    "high": 24040.35,
+                    "low": 24040.35,
+                    "close": 24040.35
+                  },
+                  "depth": {
+                    "buy": [],
+                    "sell": []
+                  }
+                }
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "NFO:NIFTY30DEC23900CE": {
+                  "instrument_token": 1,
+                  "last_price": 180.5,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 1000,
+                  "ohlc": {
+                    "open": 181.5,
+                    "high": 185.5,
+                    "low": 175.5,
+                    "close": 178.5
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 180.45,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 180.55,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24000CE": {
+                  "instrument_token": 1,
+                  "last_price": 120.25,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 2000,
+                  "ohlc": {
+                    "open": 121.25,
+                    "high": 125.25,
+                    "low": 115.25,
+                    "close": 118.25
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 120.2,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 120.3,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24100CE": {
+                  "instrument_token": 1,
+                  "last_price": 75.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 1500,
+                  "ohlc": {
+                    "open": 76.0,
+                    "high": 80.0,
+                    "low": 70.0,
+                    "close": 73.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 74.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 75.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC23900PE": {
+                  "instrument_token": 1,
+                  "last_price": 40.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 900,
+                  "ohlc": {
+                    "open": 41.0,
+                    "high": 45.0,
+                    "low": 35.0,
+                    "close": 38.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 39.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 40.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24000PE": {
+                  "instrument_token": 1,
+                  "last_price": 80.15,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 2500,
+                  "ohlc": {
+                    "open": 81.15,
+                    "high": 85.15,
+                    "low": 75.15,
+                    "close": 78.15
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 80.10000000000001,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 80.2,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                },
+                "NFO:NIFTY30DEC24100PE": {
+                  "instrument_token": 1,
+                  "last_price": 135.0,
+                  "last_quantity": 1,
+                  "volume": 1000,
+                  "oi": 700,
+                  "ohlc": {
+                    "open": 136.0,
+                    "high": 140.0,
+                    "low": 130.0,
+                    "close": 133.0
+                  },
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 134.95,
+                        "quantity": 75,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 135.05,
+                        "quantity": 150,
+                        "orders": 2
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "underlying": "NIFTY",
+          "underlying_symbol": "NIFTY",
+          "underlying_exchange": "NSE_INDEX",
+          "underlying_ltp": 24040.35,
+          "underlying_prev_close": 24040.35,
+          "expiry_date": "30DEC30",
+          "expiry_ts": 1924855200,
+          "server_ts": 1793720092,
+          "atm_strike": 24000.0,
+          "quotes_included": true,
+          "greeks_included": true,
+          "forward_price": 24040.1,
+          "chain": [
+            {
+              "strike": 23900.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3023900CE",
+                "label": "ITM1",
+                "ltp": 180.5,
+                "bid": 180.45,
+                "ask": 180.55,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 181.5,
+                "high": 185.5,
+                "low": 175.5,
+                "prev_close": 178.5,
+                "volume": 1000,
+                "oi": 1000,
+                "lotsize": 75,
+                "tick_size": 0.05,
+                "implied_volatility": 0.48,
+                "delta": 0.7248,
+                "gamma": 0.001407,
+                "theta": -0.0261,
+                "vega": 163.6256
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3023900PE",
+                "label": "OTM1",
+                "ltp": 40.0,
+                "bid": 39.95,
+                "ask": 40.05,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 41.0,
+                "high": 45.0,
+                "low": 35.0,
+                "prev_close": 38.0,
+                "volume": 1000,
+                "oi": 900,
+                "lotsize": 75,
+                "tick_size": 0.05,
+                "implied_volatility": 0.48,
+                "delta": -0.2742,
+                "gamma": 0.001412,
+                "theta": -0.0259,
+                "vega": 163.3334
+              }
+            },
+            {
+              "strike": 24000.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024000CE",
+                "label": "ATM",
+                "ltp": 120.25,
+                "bid": 120.2,
+                "ask": 120.3,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 121.25,
+                "high": 125.25,
+                "low": 115.25,
+                "prev_close": 118.25,
+                "volume": 1000,
+                "oi": 2000,
+                "lotsize": 75,
+                "tick_size": 0.05,
+                "implied_volatility": 0.51,
+                "delta": 0.5663,
+                "gamma": 0.001586,
+                "theta": -0.0322,
+                "vega": 192.8651
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024000PE",
+                "label": "ATM",
+                "ltp": 80.15,
+                "bid": 80.10000000000001,
+                "ask": 80.2,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 81.15,
+                "high": 85.15,
+                "low": 75.15,
+                "prev_close": 78.15,
+                "volume": 1000,
+                "oi": 2500,
+                "lotsize": 75,
+                "tick_size": 0.05,
+                "implied_volatility": 0.51,
+                "delta": -0.4337,
+                "gamma": 0.001586,
+                "theta": -0.0322,
+                "vega": 192.8651
+              }
+            },
+            {
+              "strike": 24100.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024100CE",
+                "label": "OTM1",
+                "ltp": 75.0,
+                "bid": 74.95,
+                "ask": 75.05,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 76.0,
+                "high": 80.0,
+                "low": 70.0,
+                "prev_close": 73.0,
+                "volume": 1000,
+                "oi": 1500,
+                "lotsize": 75,
+                "tick_size": 0.05,
+                "implied_volatility": 0.52,
+                "delta": 0.4096,
+                "gamma": 0.001519,
+                "theta": -0.0327,
+                "vega": 190.5274
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024100PE",
+                "label": "ITM1",
+                "ltp": 135.0,
+                "bid": 134.95,
+                "ask": 135.05,
+                "bid_qty": 75,
+                "ask_qty": 150,
+                "open": 136.0,
+                "high": 140.0,
+                "low": 130.0,
+                "prev_close": 133.0,
+                "volume": 1000,
+                "oi": 700,
+                "lotsize": 75,
+                "tick_size": 0.05,
+                "implied_volatility": 0.52,
+                "delta": -0.5903,
+                "gamma": 0.001518,
+                "theta": -0.0328,
+                "vega": 190.5378
+              }
+            }
+          ]
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NSE:NIFTY 50"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/quote",
+          "query": [
+            [
+              "i",
+              "NFO:NIFTY30DEC23900CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC23900PE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24000CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24000PE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24100CE"
+            ],
+            [
+              "i",
+              "NFO:NIFTY30DEC24100PE"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "optionchain_bad_count",
+      "method": "POST",
+      "path": "/api/v1/optionchain",
+      "auth": "body",
+      "request": {
+        "underlying": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "expiry_date": "30DEC30",
+        "strike_count": 0,
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Validation error",
+          "errors": {
+            "strike_count": [
+              "Must be greater than or equal to 1 and less than or equal to 100."
+            ]
+          }
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
       "name": "basketorder_two",
       "method": "POST",
       "path": "/api/v1/basketorder",
@@ -2275,7 +5370,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgode17e8eb2c69"
+            "tag": "openalgo6e570d1aa2d3"
           }
         },
         {
@@ -2301,7 +5396,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgo45477e9cac22"
+            "tag": "openalgoacce59cac80b"
           }
         }
       ],
@@ -2371,7 +5466,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgob4ecc85eda3a"
+            "tag": "openalgofc86da77ba4d"
           }
         }
       ],
@@ -2522,7 +5617,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgof85419b01d4a"
+            "tag": "openalgodbf880b6d09b"
           }
         },
         {
@@ -2548,7 +5643,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgo60f54e4c06ce"
+            "tag": "openalgob8998571b270"
           }
         },
         {
@@ -2574,7 +5669,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgofa823c169c7a"
+            "tag": "openalgo670a33f7ba54"
           }
         }
       ],
@@ -2651,7 +5746,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgod599eaf2afbc"
+            "tag": "openalgo1031548c4768"
           }
         },
         {
@@ -2677,7 +5772,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgo6b5e65a6a773"
+            "tag": "openalgo1466ecc48fb3"
           }
         }
       ],
@@ -2839,7 +5934,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgoddcb09b8d656"
+            "tag": "openalgodc31441f86b8"
           }
         }
       ],
@@ -2989,7 +6084,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgoa2b67bc70660"
+            "tag": "openalgo51bda17a8253"
           }
         },
         {
@@ -3015,7 +6110,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgo91f178d6d748"
+            "tag": "openalgobb12bdd703fb"
           }
         },
         {
@@ -3041,7 +6136,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgo70f45ee401ba"
+            "tag": "openalgoc2c7f60f99f7"
           }
         }
       ],
@@ -3145,7 +6240,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgo51129838cc32"
+            "tag": "openalgo5f5326452dd1"
           }
         }
       ],
@@ -3567,7 +6662,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgo5af50e21088c"
+            "tag": "openalgo486d096b14db"
           }
         },
         {
@@ -3593,7 +6688,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgo3a5c0f352217"
+            "tag": "openalgoc1681b15d630"
           }
         },
         {
@@ -3619,7 +6714,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgo0dbbee4ed804"
+            "tag": "openalgod4d7a3765b6f"
           }
         }
       ],
@@ -3756,7 +6851,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgo3150ff1187bd"
+            "tag": "openalgo6bf1bbe5871e"
           }
         }
       ],
@@ -3896,7 +6991,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgo9edd33c63908"
+            "tag": "openalgof8142313f417"
           }
         },
         {
@@ -3922,7 +7017,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgo76fc0cec66d7"
+            "tag": "openalgod647e12002cd"
           }
         }
       ],
@@ -4062,7 +7157,7 @@
             "disclosed_quantity": "0",
             "validity": "DAY",
             "market_protection": "-1",
-            "tag": "openalgof9ff5e0e369c"
+            "tag": "openalgo22f8c9413d0f"
           }
         }
       ],

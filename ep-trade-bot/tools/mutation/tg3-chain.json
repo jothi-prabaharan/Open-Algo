@@ -1,0 +1,138 @@
+[
+ {
+  "name": "Q1 Kite quotes matched to the wrong instrument",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "if (data[key] is not JsonObject { Count: > 0 } quote)",
+  "new": "if (data[batch.Keys.First()] is not JsonObject { Count: > 0 } quote)",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q2 an index asked of Kite on NSE_INDEX",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "\"NSE_INDEX\" => \"NSE\",\n        \"BSE_INDEX\"",
+  "new": "\"NSE_INDEX\" => \"NSE_INDEX\",\n        \"BSE_INDEX\"",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q3 unknown symbols left out of /multiquotes",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Chain.cs",
+  "old": "var results = new JsonArray(invalid.Select(i => i!.DeepClone()).ToArray());",
+  "new": "var results = new JsonArray();",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q4 /multiquotes with no known symbol answers success",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Chain.cs",
+  "old": "if (valid.Count == 0)\n        {",
+  "new": "if (valid.Count < 0)\n        {",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q5 Dhan reads every quote from the equity segment",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "wanted.TryAdd($\"{segment}:{instrument.Token}\", instrument);",
+  "new": "wanted.TryAdd($\"NSE_EQ:{instrument.Token}\", instrument);",
+  "filter": "FullyQualifiedName~DhanContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q6 Angel index asked for on NSE_INDEX",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "var exchange = AngelExchange(instrument.Exchange);",
+  "new": "var exchange = instrument.Exchange;",
+  "filter": "FullyQualifiedName~AngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q7 Upstox quotes matched by symbol, not instrument key",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "wanted[instrument.Token] = instrument;",
+  "new": "wanted[instrument.Symbol] = instrument;",
+  "filter": "FullyQualifiedName~UpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q8 Fyers derivatives without open interest",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "withOpenInterest && DerivativeExchanges.Contains(original.Exchange)",
+  "new": "withOpenInterest && original.Exchange == \"none\"",
+  "filter": "FullyQualifiedName~FyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q9 Fyers' own option chain never used",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Chain.cs",
+  "old": "r.StrikeCount is <= 50",
+  "new": "r.StrikeCount is <= 0",
+  "filter": "FullyQualifiedName~FyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q10 Fyers chain previous close taken as the last price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "[\"prev_close\"] = ltp - change,",
+  "new": "[\"prev_close\"] = ltp,",
+  "filter": "FullyQualifiedName~FyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q11 one missing Delta ticker fails the whole /multiquotes",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Chain.cs",
+  "old": "catch (BrokerException ex) when (ex.HttpStatus != 429)",
+  "new": "catch (BrokerException ex) when (ex.HttpStatus == -1)",
+  "filter": "FullyQualifiedName~DeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q12 chain labels ITM and OTM swapped",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Chain.cs",
+  "old": "s < atm ? (s, $\"ITM{position}\", $\"OTM{position}\")",
+  "new": "s < atm ? (s, $\"OTM{position}\", $\"ITM{position}\")",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q13 chain window one strike short above ATM",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Chain.cs",
+  "old": "Math.Min(strikes.Count, index + n + 1)",
+  "new": "Math.Min(strikes.Count, index + n)",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q14 refused option quotes answered as a chain of zeros (OpenAlgo's behaviour)",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Chain.cs",
+  "old": "if (fetched.Status != 200) return V1Result.Error(fetched.Status, $\"Option quotes could not be read: {Text(fetched.Body[\"message\"]) ?? \"Unknown error\"}\");",
+  "new": "",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q15 MCX expiry at the equity cut-off",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Chain.cs",
+  "old": "\"MCX\" => (23, 30)",
+  "new": "\"MCX\" => (15, 30)",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q16 synthetic future with call and put swapped",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Chain.cs",
+  "old": "strike + callLtp.Value - putLtp.Value",
+  "new": "strike - callLtp.Value + putLtp.Value",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q17 with_greeks silently ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Chain.cs",
+  "old": "if (r.WithGreeks)\n        {",
+  "new": "if (r.WithGreeks && r.StrikeCount < 0)\n        {",
+  "filter": "FullyQualifiedName~CompositeContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

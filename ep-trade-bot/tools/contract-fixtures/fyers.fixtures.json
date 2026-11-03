@@ -3,6 +3,7 @@
   "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
   "auth_token": "fyers-access-token",
   "client_id": null,
+  "recorded_at": null,
   "read_posts": [],
   "symbols": [
     {
@@ -56,8 +57,87 @@
       "lotsize": 1,
       "instrumenttype": "INDEX",
       "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY30DEC3023900CE",
+      "brsymbol": "NSE:NIFTY30DEC23900CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "1011239001",
+      "expiry": "30-DEC-30",
+      "strike": 23900.0,
+      "lotsize": 75,
+      "instrumenttype": "CE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY30DEC3023900PE",
+      "brsymbol": "NSE:NIFTY30DEC23900PE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "1011239002",
+      "expiry": "30-DEC-30",
+      "strike": 23900.0,
+      "lotsize": 75,
+      "instrumenttype": "PE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY30DEC3024000CE",
+      "brsymbol": "NSE:NIFTY30DEC24000CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "1011240001",
+      "expiry": "30-DEC-30",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "CE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY30DEC3024000PE",
+      "brsymbol": "NSE:NIFTY30DEC24000PE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "1011240002",
+      "expiry": "30-DEC-30",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "PE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY30DEC3024100CE",
+      "brsymbol": "NSE:NIFTY30DEC24100CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "1011241001",
+      "expiry": "30-DEC-30",
+      "strike": 24100.0,
+      "lotsize": 75,
+      "instrumenttype": "CE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY30DEC3024100PE",
+      "brsymbol": "NSE:NIFTY30DEC24100PE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "1011241002",
+      "expiry": "30-DEC-30",
+      "strike": 24100.0,
+      "lotsize": 75,
+      "instrumenttype": "PE",
+      "tick_size": 0.05
     }
   ],
+  "freeze": [],
   "fixtures": [
     {
       "name": "auth_invalid_key",
@@ -2847,6 +2927,890 @@
         }
       },
       "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO"
+          },
+          {
+            "symbol": "NOPE",
+            "exchange": "NSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/quotes": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "d": [
+              {
+                "n": "NSE:SBIN-EQ",
+                "s": "ok",
+                "v": {
+                  "ch": 1.5,
+                  "chp": 0.2,
+                  "lp": 805.45,
+                  "spread": 0.1,
+                  "ask": 805.5,
+                  "bid": 805.4000000000001,
+                  "open_price": 802.45,
+                  "high_price": 809.45,
+                  "low_price": 799.45,
+                  "prev_close_price": 799.95,
+                  "volume": 1000,
+                  "short_name": "NSE:SBIN-EQ",
+                  "exchange": "NSE",
+                  "fyToken": "1",
+                  "tt": "1793686800"
+                }
+              },
+              {
+                "n": "NSE:NIFTY26NOVFUT",
+                "s": "ok",
+                "v": {
+                  "ch": 1.5,
+                  "chp": 0.2,
+                  "lp": 23990.0,
+                  "spread": 0.1,
+                  "ask": 23990.05,
+                  "bid": 23989.95,
+                  "open_price": 23987.0,
+                  "high_price": 23994.0,
+                  "low_price": 23984.0,
+                  "prev_close_price": 24050.0,
+                  "volume": 1000,
+                  "short_name": "NSE:NIFTY26NOVFUT",
+                  "exchange": "NSE",
+                  "fyToken": "1",
+                  "tt": "1793686800"
+                }
+              }
+            ]
+          }
+        },
+        "GET /data/depth": {
+          "body": {
+            "s": "ok",
+            "message": "",
+            "d": {
+              "NSE:NIFTY26NOVFUT": {
+                "ltp": 23990.0,
+                "oi": 1200000,
+                "bids": [],
+                "ask": []
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [
+            {
+              "error": "Symbol 'NOPE' not found for exchange 'NSE'. Please verify the symbol name and ensure master contracts are downloaded.",
+              "exchange": "NSE",
+              "symbol": "NOPE"
+            },
+            {
+              "data": {
+                "ask": 805.5,
+                "bid": 805.4000000000001,
+                "high": 809.45,
+                "low": 799.45,
+                "ltp": 805.45,
+                "oi": 0,
+                "open": 802.45,
+                "prev_close": 799.95,
+                "volume": 1000
+              },
+              "exchange": "NSE",
+              "symbol": "SBIN"
+            },
+            {
+              "data": {
+                "ask": 23990.05,
+                "bid": 23989.95,
+                "high": 23994.0,
+                "low": 23984.0,
+                "ltp": 23990.0,
+                "oi": 1200000,
+                "open": 23987.0,
+                "prev_close": 24050.0,
+                "volume": 1000
+              },
+              "exchange": "NFO",
+              "symbol": "NIFTY25NOV26FUT"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/data/quotes",
+          "query": [
+            [
+              "symbols",
+              "NSE:SBIN-EQ,NSE:NIFTY26NOVFUT"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/data/depth",
+          "query": [
+            [
+              "symbol",
+              "NSE:NIFTY26NOVFUT"
+            ],
+            [
+              "ohlcv_flag",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes_missing_quote",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/quotes": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "d": [
+              {
+                "n": "NSE:SBIN-EQ",
+                "s": "ok",
+                "v": {
+                  "ch": 1.5,
+                  "chp": 0.2,
+                  "lp": 805.45,
+                  "spread": 0.1,
+                  "ask": 805.5,
+                  "bid": 805.4000000000001,
+                  "open_price": 802.45,
+                  "high_price": 809.45,
+                  "low_price": 799.45,
+                  "prev_close_price": 799.95,
+                  "volume": 1000,
+                  "short_name": "NSE:SBIN-EQ",
+                  "exchange": "NSE",
+                  "fyToken": "1",
+                  "tt": "1793686800"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [
+            {
+              "data": {
+                "ask": 805.5,
+                "bid": 805.4000000000001,
+                "high": 809.45,
+                "low": 799.45,
+                "ltp": 805.45,
+                "oi": 0,
+                "open": 802.45,
+                "prev_close": 799.95,
+                "volume": 1000
+              },
+              "exchange": "NSE",
+              "symbol": "SBIN"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/data/quotes",
+          "query": [
+            [
+              "symbols",
+              "NSE:SBIN-EQ,NSE:INFY-EQ"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes_refused",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/quotes": {
+          "body": {
+            "s": "error",
+            "code": -300,
+            "message": "Invalid symbol"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/data/quotes",
+          "query": [
+            [
+              "symbols",
+              "NSE:SBIN-EQ"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "optionchain_native",
+      "method": "POST",
+      "path": "/api/v1/optionchain",
+      "auth": "body",
+      "request": {
+        "underlying": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "expiry_date": "30DEC30",
+        "strike_count": 1,
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/depth": {
+          "body": {
+            "s": "ok",
+            "message": "",
+            "d": {
+              "NSE:NIFTY50-INDEX": {
+                "ltp": 24040.35,
+                "o": 24000.0,
+                "h": 24100.0,
+                "l": 23950.0,
+                "c": 23980.0,
+                "v": 0,
+                "oi": 0,
+                "bids": [],
+                "ask": []
+              }
+            }
+          }
+        },
+        "GET /data/options-chain-v3": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "data": {
+              "optionsChain": [
+                {
+                  "strike_price": -1,
+                  "symbol": "NSE:NIFTY50-INDEX",
+                  "ltp": 24040.35,
+                  "option_type": ""
+                },
+                {
+                  "strike_price": 23900,
+                  "option_type": "CE",
+                  "symbol": "NSE:NIFTY30DEC23900CE",
+                  "ltp": 180.5,
+                  "ltpch": 2.5,
+                  "bid": 180.45,
+                  "ask": 180.55,
+                  "volume": 5000,
+                  "oi": 1000
+                },
+                {
+                  "strike_price": 24000,
+                  "option_type": "CE",
+                  "symbol": "NSE:NIFTY30DEC24000CE",
+                  "ltp": 120.25,
+                  "ltpch": -1.25,
+                  "bid": 120.2,
+                  "ask": 120.3,
+                  "volume": 5000,
+                  "oi": 2000
+                },
+                {
+                  "strike_price": 24100,
+                  "option_type": "CE",
+                  "symbol": "NSE:NIFTY30DEC24100CE",
+                  "ltp": 75.0,
+                  "ltpch": 0,
+                  "bid": 74.95,
+                  "ask": 75.05,
+                  "volume": 5000,
+                  "oi": 1500
+                },
+                {
+                  "strike_price": 23900,
+                  "option_type": "PE",
+                  "symbol": "NSE:NIFTY30DEC23900PE",
+                  "ltp": 40.0,
+                  "ltpch": 1.0,
+                  "bid": 39.95,
+                  "ask": 40.05,
+                  "volume": 5000,
+                  "oi": 900
+                },
+                {
+                  "strike_price": 24000,
+                  "option_type": "PE",
+                  "symbol": "NSE:NIFTY30DEC24000PE",
+                  "ltp": 80.15,
+                  "ltpch": 0.15,
+                  "bid": 80.10000000000001,
+                  "ask": 80.2,
+                  "volume": 5000,
+                  "oi": 2500
+                },
+                {
+                  "strike_price": 24100,
+                  "option_type": "PE",
+                  "symbol": "NSE:NIFTY30DEC24100PE",
+                  "ltp": 135.0,
+                  "ltpch": -5.0,
+                  "bid": 134.95,
+                  "ask": 135.05,
+                  "volume": 5000,
+                  "oi": 700
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "underlying": "NIFTY",
+          "underlying_symbol": "NIFTY",
+          "underlying_exchange": "NSE_INDEX",
+          "underlying_ltp": 24040.35,
+          "underlying_prev_close": 23980.0,
+          "expiry_date": "30DEC30",
+          "expiry_ts": 1924855200,
+          "server_ts": 1793720602,
+          "atm_strike": 24000.0,
+          "quotes_included": true,
+          "greeks_included": false,
+          "forward_price": null,
+          "chain": [
+            {
+              "strike": 23900.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3023900CE",
+                "label": "ITM1",
+                "ltp": 180.5,
+                "bid": 180.45,
+                "ask": 180.55,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 178.0,
+                "volume": 5000,
+                "oi": 1000,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3023900PE",
+                "label": "OTM1",
+                "ltp": 40.0,
+                "bid": 39.95,
+                "ask": 40.05,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 39.0,
+                "volume": 5000,
+                "oi": 900,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            },
+            {
+              "strike": 24000.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024000CE",
+                "label": "ATM",
+                "ltp": 120.25,
+                "bid": 120.2,
+                "ask": 120.3,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 121.5,
+                "volume": 5000,
+                "oi": 2000,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024000PE",
+                "label": "ATM",
+                "ltp": 80.15,
+                "bid": 80.10000000000001,
+                "ask": 80.2,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 80.0,
+                "volume": 5000,
+                "oi": 2500,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            },
+            {
+              "strike": 24100.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024100CE",
+                "label": "OTM1",
+                "ltp": 75.0,
+                "bid": 74.95,
+                "ask": 75.05,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 75.0,
+                "volume": 5000,
+                "oi": 1500,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024100PE",
+                "label": "ITM1",
+                "ltp": 135.0,
+                "bid": 134.95,
+                "ask": 135.05,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 140.0,
+                "volume": 5000,
+                "oi": 700,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            }
+          ]
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/data/depth",
+          "query": [
+            [
+              "symbol",
+              "NSE:NIFTY50-INDEX"
+            ],
+            [
+              "ohlcv_flag",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/data/options-chain-v3",
+          "query": [
+            [
+              "symbol",
+              "NSE:NIFTY50-INDEX"
+            ],
+            [
+              "strikecount",
+              "3"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "optionchain_native_fails",
+      "method": "POST",
+      "path": "/api/v1/optionchain",
+      "auth": "body",
+      "request": {
+        "underlying": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "expiry_date": "30DEC30",
+        "strike_count": 1,
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/depth": {
+          "body": {
+            "s": "ok",
+            "message": "",
+            "d": {
+              "NSE:NIFTY50-INDEX": {
+                "ltp": 24040.35,
+                "o": 24000.0,
+                "h": 24100.0,
+                "l": 23950.0,
+                "c": 23980.0,
+                "v": 0,
+                "oi": 0,
+                "bids": [],
+                "ask": []
+              }
+            }
+          }
+        },
+        "GET /data/options-chain-v3": {
+          "body": {
+            "s": "error",
+            "code": -50,
+            "message": "Invalid input"
+          }
+        },
+        "GET /data/quotes": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "d": [
+              {
+                "n": "NSE:NIFTY30DEC24000CE",
+                "s": "ok",
+                "v": {
+                  "ch": 1.5,
+                  "chp": 0.2,
+                  "lp": 120.25,
+                  "spread": 0.1,
+                  "ask": 120.3,
+                  "bid": 120.2,
+                  "open_price": 117.25,
+                  "high_price": 124.25,
+                  "low_price": 114.25,
+                  "prev_close_price": 121.5,
+                  "volume": 1000,
+                  "short_name": "NSE:NIFTY30DEC24000CE",
+                  "exchange": "NSE",
+                  "fyToken": "1",
+                  "tt": "1793686800"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "underlying": "NIFTY",
+          "underlying_symbol": "NIFTY",
+          "underlying_exchange": "NSE_INDEX",
+          "underlying_ltp": 24040.35,
+          "underlying_prev_close": 23980.0,
+          "expiry_date": "30DEC30",
+          "expiry_ts": 1924855200,
+          "server_ts": 1793720602,
+          "atm_strike": 24000.0,
+          "quotes_included": true,
+          "greeks_included": false,
+          "forward_price": null,
+          "chain": [
+            {
+              "strike": 23900.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3023900CE",
+                "label": "ITM1",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3023900PE",
+                "label": "OTM1",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            },
+            {
+              "strike": 24000.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024000CE",
+                "label": "ATM",
+                "ltp": 120.25,
+                "bid": 120.2,
+                "ask": 120.3,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 117.25,
+                "high": 124.25,
+                "low": 114.25,
+                "prev_close": 121.5,
+                "volume": 1000,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024000PE",
+                "label": "ATM",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            },
+            {
+              "strike": 24100.0,
+              "ce": {
+                "symbol": "NIFTY30DEC3024100CE",
+                "label": "OTM1",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              },
+              "pe": {
+                "symbol": "NIFTY30DEC3024100PE",
+                "label": "ITM1",
+                "ltp": 0,
+                "bid": 0,
+                "ask": 0,
+                "bid_qty": 0,
+                "ask_qty": 0,
+                "open": 0,
+                "high": 0,
+                "low": 0,
+                "prev_close": 0,
+                "volume": 0,
+                "oi": 0,
+                "lotsize": 75,
+                "tick_size": 0.05
+              }
+            }
+          ]
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/data/depth",
+          "query": [
+            [
+              "symbol",
+              "NSE:NIFTY50-INDEX"
+            ],
+            [
+              "ohlcv_flag",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/data/options-chain-v3",
+          "query": [
+            [
+              "symbol",
+              "NSE:NIFTY50-INDEX"
+            ],
+            [
+              "strikecount",
+              "3"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/data/quotes",
+          "query": [
+            [
+              "symbols",
+              "NSE:NIFTY30DEC23900CE,NSE:NIFTY30DEC23900PE,NSE:NIFTY30DEC24000CE,NSE:NIFTY30DEC24000PE,NSE:NIFTY30DEC24100CE,NSE:NIFTY30DEC24100PE"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/data/depth",
+          "query": [
+            [
+              "symbol",
+              "NSE:NIFTY30DEC24000CE"
+            ],
+            [
+              "ohlcv_flag",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
       "ignore": []
     }
   ]

@@ -201,6 +201,14 @@ public static class ContractRunner
             return;
         }
 
+        // The instant of answering (/optionchain's server_ts) is checked against the clock, not against the recording.
+        if (expected["body"] is JsonObject eb && eb.ContainsKey("server_ts") && actual is JsonObject ab)
+        {
+            var now = (host.RecordedAt ?? DateTimeOffset.UtcNow).ToUnixTimeSeconds();
+            Assert.True(ab["server_ts"] is JsonValue ts && Math.Abs(ts.GetValue<long>() - now) < 300, $"server_ts {ab["server_ts"]} is not the time of answering");
+            eb["server_ts"] = ab["server_ts"]!.DeepClone();
+        }
+
         var diffs = JsonCompare.Differences(expected["body"], actual);
         Assert.True(diffs.Count == 0, "Response differs from OpenAlgo:\n" + string.Join("\n", diffs));
         CompareTraffic(host, f, sent, IsRead, readPosts, replies.Keys);

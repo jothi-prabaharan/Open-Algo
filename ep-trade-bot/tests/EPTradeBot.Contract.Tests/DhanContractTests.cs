@@ -91,6 +91,9 @@ public sealed class DhanContractTests(DhanHost host, ITestOutputHelper output) :
         d["quotes_not_subscribed"] = new(
             "OpenAlgo answers success with every price 0 when market data is not subscribed. EP Trade bot answers with the reason, so 0 is never read as a price.",
             f => Expect(f, 500, Error("Dhan says market data is not subscribed for this account. Subscribe to Dhan's data APIs, then try again.")));
+        d["multiquotes_not_subscribed"] = new(
+            "Same status; EP Trade bot names the cause and the next step instead of \"Error fetching multiquotes: API Error: ...\".",
+            f => Expect(f, 500, Error("Dhan says market data is not subscribed for this account. Subscribe to Dhan's data APIs, then try again.")));
         return d;
     }
 
@@ -133,6 +136,16 @@ public sealed class DhanSandboxContractTests(DhanSandboxHost host, ITestOutputHe
         });
         var none = "Dhan Sandbox has no price for SBIN today. The sandbox only has prices while its market is open.";
         d["quotes_not_subscribed"] = new(invented, f => Expect(f, 500, Error(none)));
+        static void CandleResults(JsonObject f)
+        {
+            foreach (var item in f["expected"]!["body"]!["results"]!.AsArray().OfType<JsonObject>())
+            {
+                if (item.ContainsKey("data")) item["data"] = CandleQuote();
+            }
+        }
+
+        d["multiquotes"] = new(invented, CandleResults);
+        d["multiquotes_not_subscribed"] = new(invented, CandleResults);
         d["quotes_no_candles"] = new(invented, f => Expect(f, 500, Error(none)));
         d["cancelallorder_working_states"] = new(
             "OpenAlgo's cancel-all skips a part-traded order, although its order book shows it open and its remainder can still fill. EP Trade bot cancels it too.",

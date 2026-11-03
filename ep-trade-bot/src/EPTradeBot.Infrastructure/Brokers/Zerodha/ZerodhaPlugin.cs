@@ -24,7 +24,7 @@ public sealed class ZerodhaPlugin(
     IHttpClientFactory httpClients,
     BrokerSessionFactory sessions,
     ISymbolMaster symbols,
-    ILogger<ZerodhaPlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerQuotes
+    ILogger<ZerodhaPlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
 {
     public const string BrokerName = "zerodha";
     private const string DefaultBaseUrl = "https://api.kite.trade";
@@ -366,7 +366,11 @@ public sealed class ZerodhaPlugin(
 
     public async Task<JsonObject> GetQuoteAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken)
     {
-        var quote = await RawQuoteAsync(session, symbol, exchange, cancellationToken);
+        return QuoteFields(await RawQuoteAsync(session, symbol, exchange, cancellationToken));
+    }
+
+    private static JsonObject QuoteFields(JsonObject quote)
+    {
         var buy = quote["depth"]?["buy"] as JsonArray;
         var sell = quote["depth"]?["sell"] as JsonArray;
         var bestBid = buy is { Count: > 0 } ? buy[0] : null;
@@ -413,19 +417,52 @@ public sealed class ZerodhaPlugin(
     {
         var instrument = await symbols.FindAsync(BrokerName, symbol, exchange, cancellationToken)
             ?? throw new BrokerException($"Error fetching quotes: Could not find exchange token for {exchange}:{symbol}");
-        var kiteExchange = exchange switch
-        {
-            "NSE_INDEX" => "NSE",
-            "BSE_INDEX" => "BSE",
-            "MCX_INDEX" => "MCX",
-            "GLOBAL_INDEX" => string.IsNullOrEmpty(instrument.BrokerExchange) || instrument.BrokerExchange == "GLOBAL_INDEX" ? "GLOBAL" : instrument.BrokerExchange,
-            _ => exchange,
-        };
-        var key = $"{kiteExchange}:{instrument.BrokerSymbol}";
+        var key = $"{KiteExchange(exchange, instrument)}:{instrument.BrokerSymbol}";
         var raw = await GetAsync(session, $"/quote?i={Uri.EscapeDataString(key)}", cancellationToken);
         return raw["data"]?[key] as JsonObject is { Count: > 0 } quote
             ? quote
             : throw new BrokerException("Error fetching quotes: No quote data found");
+    }
+
+    /// <summary>The exchange Kite's quote API names an instrument by (indices on their cash exchange).</summary>
+    private static string KiteExchange(string exchange, SymbolRecord instrument) => exchange switch
+    {
+        "NSE_INDEX" => "NSE",
+        "BSE_INDEX" => "BSE",
+        "MCX_INDEX" => "MCX",
+        "GLOBAL_INDEX" => string.IsNullOrEmpty(instrument.BrokerExchange) || instrument.BrokerExchange == "GLOBAL_INDEX" ? "GLOBAL" : instrument.BrokerExchange,
+        _ => exchange,
+    };
+
+    /// <summary>Kite answers up to 500 instruments per /quote call; OpenAlgo waits a second between calls.</summary>
+    private const int QuoteBatch = 500;
+
+    public async Task<JsonArray> GetMultiQuotesAsync(BrokerSession session, IReadOnlyList<SymbolRecord> instruments, CancellationToken cancellationToken)
+    {
+        var results = new JsonArray();
+        for (var start = 0; start < instruments.Count; start += QuoteBatch)
+        {
+            if (start > 0) await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+            // One entry per Kite key: an instrument asked for twice is answered once, as OpenAlgo's map does.
+            var batch = new Dictionary<string, SymbolRecord>();
+            foreach (var instrument in instruments.Skip(start).Take(QuoteBatch))
+                batch.TryAdd($"{KiteExchange(instrument.Exchange, instrument)}:{instrument.BrokerSymbol}", instrument);
+
+            var query = string.Join("&", batch.Keys.Select(k => "i=" + Uri.EscapeDataString(k)));
+            var data = (await GetAsync(session, "/quote?" + query, cancellationToken))["data"] as JsonObject ?? [];
+            foreach (var (key, instrument) in batch)
+            {
+                if (data[key] is not JsonObject { Count: > 0 } quote)
+                {
+                    results.Add(new JsonObject { ["symbol"] = instrument.Symbol, ["exchange"] = instrument.Exchange, ["error"] = "No quote data available" });
+                    continue;
+                }
+
+                results.Add(new JsonObject { ["symbol"] = instrument.Symbol, ["exchange"] = instrument.Exchange, ["data"] = QuoteFields(quote) });
+            }
+        }
+
+        return results;
     }
 
     // ---- plumbing --------------------------------------------------------------------------------------------

@@ -745,3 +745,116 @@ did not change and were not re-run.
 - **Next pass:** /multiquotes, /syntheticfuture and /optionchain. Each of the six Indian brokers has its own batched multi-quote call, so these need a plugin capability per broker rather than one shared port.
 - **Option symbols for a crypto underlying** (the perpetual future that prices it) are ported but have no fixture yet.
 - **Per-broker endpoints still to come:** history, intervals, ticker, margin, the four GTT endpoints, market holidays and timings, chart and pnl/symbols. Feeds and login remain as well.
+
+## 13. Pass 6: multiquotes, synthetic future and option chain
+
+**What was built.**
+
+- **A batched quote capability.** `IBrokerMultiQuotes` asks for several quotes in as few broker calls as each broker allows. Batch sizes match OpenAlgo, as do the pauses between batches:
+
+  | Broker | Call | Per call | Pause between calls |
+  | --- | --- | --- | --- |
+  | Zerodha | `/quote` | 500 | 1 s |
+  | Dhan | `/v2/marketfeed/quote` | 1000 | 1 s |
+  | Dhan Sandbox | one quote at a time | 1 | 150 ms |
+  | Angel One | market quote | 50 | none |
+  | Upstox | v3 full quotes | 500 | none |
+  | Fyers | `/data/quotes` | 50 | 100 ms |
+
+  Fyers' bulk quotes carry no open interest, so up to 100 symbols each derivative's open interest is read from `/data/depth`, as in OpenAlgo. Delta Exchange has no batched call, so EP Trade bot quotes one symbol at a time there.
+- **Fyers' own option chain call** (`IBrokerOptionChain`, `/data/options-chain-v3`). It answers a chain of up to 50 strikes either side in one request. When it fails, the chain falls back to batched quotes (`optionchain_native_fails`).
+- **The service** (`OpenAlgoApiService.Chain.cs`) has three endpoints:
+  - `/multiquotes` names each unknown symbol ahead of the rest, and refuses the request when no symbol is known.
+  - `/syntheticfuture` adds the ATM call and subtracts the ATM put, both from one batched quote, and reads the strike back from the call's symbol as OpenAlgo does.
+  - `/optionchain` returns the listed strikes around ATM. Each strike is labelled per side (below ATM a call is ITM and a put OTM), with an expiry timestamp at 15:30 IST (12:30 for CDS, 23:30 for MCX). The answering instant is compared against the clock rather than the recording.
+
+**Contract tests: 31 new fixtures, 308 of 308 in all.**
+
+| Broker | Fixture | Path | Python status | Broker reads | Compared | Result |
+| --- | --- | --- | --- | --- | --- | --- |
+| Zerodha | multiquotes_with_unknown | /api/v1/multiquotes | 200 | 1 | full | Passed |
+| Zerodha | multiquotes_all_unknown | /api/v1/multiquotes | 400 | 0 | full | Passed |
+| Zerodha | multiquotes_refused | /api/v1/multiquotes | 500 | 1 | deliberate difference | Passed |
+| Zerodha | multiquotes_empty | /api/v1/multiquotes | 400 | 0 | status and error shape | Passed |
+| Zerodha | syntheticfuture | /api/v1/syntheticfuture | 200 | 2 | full | Passed |
+| Zerodha | syntheticfuture_no_strikes | /api/v1/syntheticfuture | 404 | 1 | full | Passed |
+| Zerodha | syntheticfuture_option_unpriced | /api/v1/syntheticfuture | 500 | 2 | full | Passed |
+| Zerodha | optionchain_three_strikes | /api/v1/optionchain | 200 | 2 | full | Passed |
+| Zerodha | optionchain_whole | /api/v1/optionchain | 200 | 2 | full | Passed |
+| Zerodha | optionchain_embedded_expiry | /api/v1/optionchain | 200 | 2 | full | Passed |
+| Zerodha | optionchain_mcx | /api/v1/optionchain | 200 | 2 | full | Passed |
+| Zerodha | optionchain_mcx_no_future | /api/v1/optionchain | 404 | 0 | full | Passed |
+| Zerodha | optionchain_no_strikes | /api/v1/optionchain | 404 | 1 | full | Passed |
+| Zerodha | optionchain_quote_refused | /api/v1/optionchain | 500 | 1 | deliberate difference | Passed |
+| Zerodha | optionchain_option_quotes_refused | /api/v1/optionchain | 200 | 2 | deliberate difference | Passed |
+| Zerodha | optionchain_with_greeks | /api/v1/optionchain | 200 | 2 | deliberate difference | Passed |
+| Zerodha | optionchain_bad_count | /api/v1/optionchain | 400 | 0 | status and error shape | Passed |
+| dhan | multiquotes | /api/v1/multiquotes | 200 | 1 | full | Passed |
+| dhan | multiquotes_not_subscribed | /api/v1/multiquotes | 500 | 1 | deliberate difference | Passed |
+| dhan_sandbox | multiquotes | /api/v1/multiquotes | 200 | 4 | deliberate difference | Passed |
+| dhan_sandbox | multiquotes_not_subscribed | /api/v1/multiquotes | 200 | 1 | deliberate difference | Passed |
+| angel | multiquotes | /api/v1/multiquotes | 200 | 1 | full | Passed |
+| angel | multiquotes_refused | /api/v1/multiquotes | 500 | 1 | deliberate difference | Passed |
+| upstox | multiquotes | /api/v1/multiquotes | 200 | 1 | full | Passed |
+| upstox | multiquotes_refused | /api/v1/multiquotes | 500 | 1 | deliberate difference | Passed |
+| fyers | multiquotes | /api/v1/multiquotes | 200 | 2 | full | Passed |
+| fyers | multiquotes_missing_quote | /api/v1/multiquotes | 200 | 1 | deliberate difference | Passed |
+| fyers | multiquotes_refused | /api/v1/multiquotes | 200 | 1 | deliberate difference | Passed |
+| fyers | optionchain_native | /api/v1/optionchain | 200 | 2 | full | Passed |
+| fyers | optionchain_native_fails | /api/v1/optionchain | 200 | 4 | full | Passed |
+| deltaexchange | multiquotes | /api/v1/multiquotes | 200 | 2 | deliberate difference | Passed |
+
+**Deliberate differences, each recorded from the Python implementation.**
+
+| Fixture | OpenAlgo | EP Trade bot |
+| --- | --- | --- |
+| Zerodha optionchain_option_quotes_refused | When the option quotes are refused, answers success with every price in the chain at 0. | Reports the refusal (500), so a 0 is never read as a price. |
+| Zerodha optionchain_with_greeks | Attaches implied volatility and Greeks (Black-76). | Refuses `with_greeks` (501) until the Greeks are ported with their own parity tests, rather than answer without them. |
+| Fyers multiquotes_refused | A refused `/data/quotes` call is answered as success with an empty list. | Reports the refusal. |
+| Fyers multiquotes_missing_quote | Leaves a symbol Fyers did not quote out of the answer. | Keeps it, with "No quote data available", as OpenAlgo does for the other brokers. |
+| Angel One and Upstox multiquotes_refused | 500 with the broker's text. | 403 with the cause and the next step, as for /quotes. |
+| Dhan Sandbox multiquotes, multiquotes_not_subscribed | Invented prices and open interest (as recorded for /quotes). | The candles as they are. |
+| Dhan multiquotes_not_subscribed, Zerodha multiquotes_refused and optionchain_quote_refused, Delta multiquotes | The broker's or the library's text. | Same status; worded as each plugin words its refusals. |
+
+Two differences in plugin code have no fixture:
+
+- **Dhan and Dhan Sandbox:** an instrument they cannot quote (an exchange with no Dhan data segment, or no sandbox candles today) is named with the reason. OpenAlgo leaves it out of the answer.
+- **Upstox global indicators** are answered with "not priced in EP Trade bot yet". OpenAlgo makes a separate last-price call for them.
+
+**Mutation check.**
+
+17 of 17 red (`tools/mutation/tg3-chain.json`).
+
+| Mutation | Result |
+| --- | --- |
+| Q1 Kite quotes matched to the wrong instrument | 7 failed |
+| Q2 an index asked of Kite on NSE_INDEX | 29 failed |
+| Q3 unknown symbols left out of /multiquotes | 1 failed |
+| Q4 /multiquotes with no known symbol answers success | 1 failed |
+| Q5 Dhan reads every quote from the equity segment | 1 failed |
+| Q6 Angel One index asked for on NSE_INDEX | 1 failed |
+| Q7 Upstox quotes matched by symbol, not instrument key | 2 failed |
+| Q8 Fyers derivatives without open interest | 2 failed |
+| Q9 Fyers' own option chain never used | 2 failed |
+| Q10 Fyers chain previous close taken as the last price | 1 failed |
+| Q11 one missing Delta ticker fails the whole /multiquotes | 1 failed |
+| Q12 chain labels ITM and OTM swapped | 4 failed |
+| Q13 chain window one strike short above ATM | 3 failed |
+| Q14 refused option quotes answered as a chain of zeros (OpenAlgo's behaviour) | 1 failed |
+| Q15 MCX expiry at the equity cut-off | 1 failed |
+| Q16 synthetic future with call and put swapped | 1 failed |
+| Q17 with_greeks silently ignored | 1 failed |
+
+**Earlier sets re-run.** This pass changed five plugin files that the earlier sets patch,
+so all of them were run again:
+
+- C1 to C17, D1 to D16, A1 to A9, U1 to U8, F1 to F7, X1 to X9 and P1 to P22: all red.
+- A9 was skipped at first. Its pattern pointed at Angel One's exchange mapping, which moved into `AngelExchange` so single and batched quotes share it. It was re-pointed at the new code and is red (2 failed).
+
+That is 106 mutation checks for Task Group 3 so far.
+
+**Not done in this pass.**
+
+- **Greeks on the option chain**, which arrive with the option Greeks tools in Task Group 4.
+- **Upstox global indicator prices.**
+- **Still to come in Task Group 3:** history, intervals, ticker, margin, the four GTT endpoints, market holidays and timings, chart and pnl/symbols. Feeds and login remain as well.

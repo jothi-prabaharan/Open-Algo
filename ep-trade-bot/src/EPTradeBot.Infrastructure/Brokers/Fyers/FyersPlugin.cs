@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.Json.Nodes;
@@ -16,7 +17,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Fyers;
 /// </summary>
 [BrokerPlugin]
 public sealed class FyersPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<FyersPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerQuotes
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerOptionChain
 {
     private const string BaseUrl = "https://api-t1.fyers.in";
 
@@ -261,6 +262,117 @@ public sealed class FyersPlugin(IHttpClientFactory http, BrokerSessionFactory se
         return reply!["d"]?[instrument.BrokerSymbol] as JsonObject is { Count: > 0 } data
             ? data
             : throw new BrokerException($"Fyers has no {what} for {symbol} right now.");
+    }
+
+    /// <summary>Fyers answers up to 50 symbols per /data/quotes call; OpenAlgo waits 100 ms between calls.</summary>
+    private const int QuoteBatch = 50;
+
+    /// <summary>Above this many symbols OpenAlgo leaves open interest at 0: Fyers' bulk quotes carry none, and one depth call per symbol would take too long.</summary>
+    private const int OpenInterestLimit = 100;
+
+    private static readonly HashSet<string> DerivativeExchanges = ["NFO", "BFO", "MCX", "CDS", "BCD", "NCDEX", "NCO", "CRYPTO"];
+
+    public async Task<JsonArray> GetMultiQuotesAsync(BrokerSession session, IReadOnlyList<SymbolRecord> instruments, CancellationToken cancellationToken)
+    {
+        var withOpenInterest = instruments.Count <= OpenInterestLimit;
+        var results = new JsonArray();
+        for (var start = 0; start < instruments.Count; start += QuoteBatch)
+        {
+            if (start > 0) await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
+            var batch = instruments.Skip(start).Take(QuoteBatch).ToList();
+            var wanted = new Dictionary<string, SymbolRecord>();
+            foreach (var instrument in batch) wanted[instrument.BrokerSymbol] = instrument;
+
+            using var request = Request(session, HttpMethod.Get, $"/data/quotes?symbols={Uri.EscapeDataString(string.Join(",", batch.Select(b => b.BrokerSymbol)))}");
+            using var response = await SendAsync(request, cancellationToken);
+            var reply = await ReadAsync(response, cancellationToken) as JsonObject;
+            if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+                throw new BrokerException("Fyers says the session has expired. Log in to Fyers again.", 403);
+            // OpenAlgo answers a refused batch as success with the symbols left out; here the refusal is reported.
+            if (Str(reply?["s"]) != "ok") throw new BrokerException($"Fyers could not send quotes: {Str(reply?["message"]) ?? "no reason given."}");
+
+            var quotes = new Dictionary<string, JsonObject>();
+            foreach (var item in (reply!["d"] as JsonArray ?? []).OfType<JsonObject>())
+            {
+                if (Str(item["s"]) == "ok" && Str(item["n"]) is { } n && item["v"] is JsonObject v) quotes[n] = v;
+            }
+
+            foreach (var instrument in batch)
+            {
+                if (!quotes.TryGetValue(instrument.BrokerSymbol, out var q) || q.Count == 0)
+                {
+                    results.Add(new JsonObject { ["symbol"] = instrument.Symbol, ["exchange"] = instrument.Exchange, ["error"] = "No quote data available" });
+                    continue;
+                }
+
+                var original = wanted[instrument.BrokerSymbol];
+                var oi = withOpenInterest && DerivativeExchanges.Contains(original.Exchange) ? await OpenInterestAsync(session, instrument.BrokerSymbol, cancellationToken) : 0;
+                results.Add(new JsonObject
+                {
+                    ["symbol"] = original.Symbol, ["exchange"] = original.Exchange,
+                    ["data"] = new JsonObject
+                    {
+                        ["bid"] = Get(q, "bid", 0), ["ask"] = Get(q, "ask", 0), ["open"] = Get(q, "open_price", 0), ["high"] = Get(q, "high_price", 0),
+                        ["low"] = Get(q, "low_price", 0), ["ltp"] = Get(q, "lp", 0), ["prev_close"] = Get(q, "prev_close_price", 0),
+                        ["volume"] = Get(q, "volume", 0), ["oi"] = oi,
+                    },
+                });
+            }
+        }
+
+        return results;
+    }
+
+    /// <summary>One symbol's open interest from /data/depth; 0 when Fyers cannot say, so one symbol never fails the batch.</summary>
+    private async Task<long> OpenInterestAsync(BrokerSession session, string brokerSymbol, CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var request = Request(session, HttpMethod.Get, $"/data/depth?symbol={Uri.EscapeDataString(brokerSymbol)}&ohlcv_flag=1");
+            using var response = await SendAsync(request, cancellationToken);
+            var reply = await ReadAsync(response, cancellationToken) as JsonObject;
+            return Str(reply?["s"]) == "ok" ? Int(reply!["d"]?[brokerSymbol]?["oi"]) : 0;
+        }
+        catch (BrokerException)
+        {
+            return 0;
+        }
+    }
+
+    /// <summary>Fyers' options-chain-v3 caps the strikes either side of ATM at 50.</summary>
+    public async Task<IReadOnlyDictionary<(double Strike, string Type), JsonObject>> GetOptionChainAsync(BrokerSession session, SymbolRecord underlying, int strikeCount,
+        CancellationToken cancellationToken)
+    {
+        var chain = new Dictionary<(double, string), JsonObject>();
+        JsonObject? reply;
+        try
+        {
+            using var request = Request(session, HttpMethod.Get,
+                $"/data/options-chain-v3?symbol={Uri.EscapeDataString(underlying.BrokerSymbol)}&strikecount={Math.Clamp(strikeCount, 1, 50).ToString(CultureInfo.InvariantCulture)}");
+            using var response = await SendAsync(request, cancellationToken);
+            reply = await ReadAsync(response, cancellationToken) as JsonObject;
+        }
+        catch (BrokerException ex)
+        {
+            logger.LogWarning(ex, "Fyers option chain unavailable; falling back to quotes.");
+            return chain;
+        }
+
+        if (reply is null || Str(reply["s"]) == "error" || Int(reply["code"]) != 200) return chain;
+        foreach (var item in (reply["data"]?["optionsChain"] as JsonArray ?? []).OfType<JsonObject>())
+        {
+            var type = Str(item["option_type"]);
+            if (type is not ("CE" or "PE") || item["strike_price"] is null) continue;
+            var ltp = Truthy(item["ltp"]) ? Float(item["ltp"]) : 0;
+            var change = Truthy(item["ltpch"]) ? Float(item["ltpch"]) : 0;
+            chain[(Float(item["strike_price"]), type)] = new JsonObject
+            {
+                ["ltp"] = Truthy(item["ltp"]) ? item["ltp"]!.DeepClone() : 0, ["bid"] = Get(item, "bid", 0), ["ask"] = Get(item, "ask", 0),
+                ["prev_close"] = ltp - change, ["volume"] = Get(item, "volume", 0), ["oi"] = Truthy(item["oi"]) ? Int(item["oi"]) : 0,
+            };
+        }
+
+        return chain;
     }
 
     public async Task<JsonObject> GetQuoteAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken)

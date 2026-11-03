@@ -131,6 +131,26 @@ public interface IBrokerQuotes : IBrokerPlugin
     Task<JsonObject> GetDepthAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken);
 }
 
+/// <summary>
+/// Several quotes in as few broker calls as the broker allows (OpenAlgo's get_multiquotes).
+/// Each item is <c>{symbol, exchange, data}</c> or <c>{symbol, exchange, error}</c>, in the
+/// broker plugin's own order. The instruments have already been found in the master contract.
+/// </summary>
+public interface IBrokerMultiQuotes : IBrokerQuotes
+{
+    Task<JsonArray> GetMultiQuotesAsync(BrokerSession session, IReadOnlyList<SymbolRecord> instruments, CancellationToken cancellationToken);
+}
+
+/// <summary>
+/// A broker's own option chain call (Fyers' options-chain-v3): quotes for the strikes around
+/// ATM in one request, by (strike, CE or PE). Empty when the broker cannot answer, so the
+/// caller falls back to <see cref="IBrokerMultiQuotes"/>.
+/// </summary>
+public interface IBrokerOptionChain : IBrokerPlugin
+{
+    Task<IReadOnlyDictionary<(double Strike, string Type), JsonObject>> GetOptionChainAsync(BrokerSession session, SymbolRecord underlying, int strikeCount, CancellationToken cancellationToken);
+}
+
 /// <summary>Resolves symbols between OpenAlgo's format and a broker's. Backed by that broker's master contract.</summary>
 public interface ISymbolMaster
 {

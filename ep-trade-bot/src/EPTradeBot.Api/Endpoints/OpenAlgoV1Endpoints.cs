@@ -48,6 +48,9 @@ internal static class OpenAlgoV1Endpoints
         Post<SearchRequest>(v1, "/search", (s, a, r, ct) => s.SearchAsync(a, r, ct));
         Post<ExpiryRequest>(v1, "/expiry", (s, a, r, ct) => s.ExpiryAsync(a, r, ct));
         Post<OptionSymbolRequest>(v1, "/optionsymbol", (s, a, r, ct) => s.OptionSymbolAsync(a, r, ct), ValidationShape.Errors);
+        Post<MultiQuotesRequest>(v1, "/multiquotes", (s, a, r, ct) => s.MultiQuotesAsync(a, r, ct));
+        Post<SyntheticFutureRequest>(v1, "/syntheticfuture", (s, a, r, ct) => s.SyntheticFutureAsync(a, r, ct), ValidationShape.Errors);
+        Post<OptionChainRequest>(v1, "/optionchain", (s, a, r, ct) => s.OptionChainAsync(a, r, ct), ValidationShape.Errors);
         Post<BasketOrderRequest>(v1, "/basketorder", (s, a, r, ct) => s.BasketOrderAsync(a, r, ct));
         Post<SplitOrderRequest>(v1, "/splitorder", (s, a, r, ct) => s.SplitOrderAsync(a, r, ct));
         Post<OptionsOrderRequest>(v1, "/optionsorder", (s, a, r, ct) => s.OptionsOrderAsync(a, r, ct), ValidationShape.Errors);
@@ -63,6 +66,7 @@ internal static class OpenAlgoV1Endpoints
         "/placeorder", "/placesmartorder", "/modifyorder", "/cancelorder", "/cancelallorder", "/closeposition", "/orderbook", "/tradebook",
         "/positionbook", "/holdings", "/funds", "/orderstatus", "/openposition", "/quotes", "/depth", "/ping", "/analyzer", "/analyzer/toggle",
         "/symbol", "/search", "/expiry", "/optionsymbol", "/basketorder", "/splitorder", "/optionsorder", "/optionsmultiorder", "/instruments",
+        "/multiquotes", "/syntheticfuture", "/optionchain",
     ];
 
     /// <summary>

@@ -3,6 +3,7 @@
   "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
   "auth_token": "upstox-access-token",
   "client_id": null,
+  "recorded_at": null,
   "read_posts": [],
   "symbols": [
     {
@@ -58,6 +59,7 @@
       "tick_size": 0.05
     }
   ],
+  "freeze": [],
   "fixtures": [
     {
       "name": "auth_invalid_key",
@@ -3444,6 +3446,232 @@
         }
       },
       "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "NIFTY",
+            "exchange": "NSE_INDEX"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "NOPE",
+            "exchange": "NSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 120,
+                      "price": 805.4,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 80,
+                      "price": 805.5,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 799.95,
+                "last_quantity": 5
+              },
+              "NSE_INDEX:Nifty 50": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 24050.5
+                },
+                "depth": {
+                  "buy": [],
+                  "sell": []
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_INDEX|Nifty 50",
+                "symbol": "Nifty 50",
+                "last_price": 24050.5,
+                "volume": 1234567,
+                "average_price": 24050.5,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 24000.0,
+                "last_quantity": 5
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [
+            {
+              "error": "Symbol 'NOPE' not found for exchange 'NSE'. Please verify the symbol name and ensure master contracts are downloaded.",
+              "exchange": "NSE",
+              "symbol": "NOPE"
+            },
+            {
+              "data": {
+                "ask": 805.5,
+                "bid": 805.4,
+                "high": 810.0,
+                "low": 795.5,
+                "ltp": 805.45,
+                "oi": 0,
+                "open": 800.0,
+                "prev_close": 799.95,
+                "volume": 1234567
+              },
+              "exchange": "NSE",
+              "symbol": "SBIN"
+            },
+            {
+              "data": {
+                "ask": 0,
+                "bid": 0,
+                "high": 810.0,
+                "low": 795.5,
+                "ltp": 24050.5,
+                "oi": 0,
+                "open": 800.0,
+                "prev_close": 24000.0,
+                "volume": 1234567
+              },
+              "exchange": "NSE_INDEX",
+              "symbol": "NIFTY"
+            },
+            {
+              "error": "No quote data available",
+              "exchange": "NSE",
+              "symbol": "INFY"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020,NSE_INDEX|Nifty 50,NSE_EQ|INE009A01021"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes_refused",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "errorCode": "UDAPI100050",
+                "message": "Invalid token used to access API"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching multiquotes: API Error: Invalid token used to access API",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        }
+      ],
       "ignore": []
     }
   ]

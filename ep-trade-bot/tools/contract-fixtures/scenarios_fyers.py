@@ -99,3 +99,36 @@ SCENARIOS = [
     {"name": "quotes_refused", "path": "/api/v1/quotes", "request": {"symbol": "SBIN", "exchange": "NSE"}, "broker": {"GET /data/depth": {"status": 401, "body": {"s": "error", "code": -16, "message": "Could not authenticate the user"}}}},
     {"name": "ping", "path": "/api/v1/ping", "request": {}},
 ]
+
+# Several quotes in one /data/quotes call; open interest for derivatives from /data/depth (pass 6).
+def _fq(n, lp, prev):
+    return {"n": n, "s": "ok", "v": {"ch": 1.5, "chp": 0.2, "lp": lp, "spread": 0.1, "ask": lp + 0.05, "bid": lp - 0.05, "open_price": lp - 3, "high_price": lp + 4,
+                                     "low_price": lp - 6, "prev_close_price": prev, "volume": 1000, "short_name": n, "exchange": "NSE", "fyToken": "1", "tt": "1793686800"}}
+
+
+FQUOTES = {"body": {"s": "ok", "code": 200, "d": [_fq("NSE:SBIN-EQ", 805.45, 799.95), _fq("NSE:NIFTY26NOVFUT", 23990.0, 24050.0)]}}
+FDEPTH = {"body": {"s": "ok", "message": "", "d": {"NSE:NIFTY26NOVFUT": {"ltp": 23990.0, "oi": 1200000, "bids": [], "ask": []}}}}
+SCENARIOS.append({"name": "multiquotes", "path": "/api/v1/multiquotes", "request": {"symbols": [
+    {"symbol": "SBIN", "exchange": "NSE"}, {"symbol": "NIFTY25NOV26FUT", "exchange": "NFO"}, {"symbol": "NOPE", "exchange": "NSE"}]},
+    "broker": {"GET /data/quotes": FQUOTES, "GET /data/depth": FDEPTH}})
+SCENARIOS.append({"name": "multiquotes_missing_quote", "path": "/api/v1/multiquotes", "request": {"symbols": [{"symbol": "SBIN", "exchange": "NSE"}, {"symbol": "INFY", "exchange": "NSE"}]},
+                  "broker": {"GET /data/quotes": {"body": {"s": "ok", "code": 200, "d": [_fq("NSE:SBIN-EQ", 805.45, 799.95)]}}}})
+SCENARIOS.append({"name": "multiquotes_refused", "path": "/api/v1/multiquotes", "request": {"symbols": [{"symbol": "SBIN", "exchange": "NSE"}]},
+                  "broker": {"GET /data/quotes": {"body": {"s": "error", "code": -300, "message": "Invalid symbol"}}}})
+
+# Fyers' own option chain call for a chain of up to 50 strikes either side.
+for _k in (23900, 24000, 24100):
+    for _t in ("CE", "PE"):
+        SYMBOLS.append({"symbol": f"NIFTY30DEC30{_k}{_t}", "brsymbol": f"NSE:NIFTY30DEC{_k}{_t}", "name": "NIFTY", "exchange": "NFO", "brexchange": "NFO",
+                        "token": f"1011{_k}{1 if _t == 'CE' else 2}", "expiry": "30-DEC-30", "strike": float(_k), "lotsize": 75, "instrumenttype": _t, "tick_size": 0.05})
+NIFTY_DEPTH = {"body": {"s": "ok", "message": "", "d": {"NSE:NIFTY50-INDEX": {"ltp": 24040.35, "o": 24000.0, "h": 24100.0, "l": 23950.0, "c": 23980.0, "v": 0, "oi": 0, "bids": [], "ask": []}}}}
+FCHAIN = {"body": {"s": "ok", "code": 200, "message": "", "data": {"optionsChain": [
+    {"strike_price": -1, "symbol": "NSE:NIFTY50-INDEX", "ltp": 24040.35, "option_type": ""},
+    *[{"strike_price": k, "option_type": t, "symbol": f"NSE:NIFTY30DEC{k}{t}", "ltp": l, "ltpch": c, "bid": l - 0.05, "ask": l + 0.05, "volume": 5000, "oi": oi}
+      for k, t, l, c, oi in [(23900, "CE", 180.5, 2.5, 1000), (24000, "CE", 120.25, -1.25, 2000), (24100, "CE", 75.0, 0, 1500),
+                             (23900, "PE", 40.0, 1.0, 900), (24000, "PE", 80.15, 0.15, 2500), (24100, "PE", 135.0, -5.0, 700)]]]}}}
+SCENARIOS.append({"name": "optionchain_native", "path": "/api/v1/optionchain", "request": {"underlying": "NIFTY", "exchange": "NSE_INDEX", "expiry_date": "30DEC30", "strike_count": 1},
+                  "broker": {"GET /data/depth": NIFTY_DEPTH, "GET /data/options-chain-v3": FCHAIN}})
+SCENARIOS.append({"name": "optionchain_native_fails", "path": "/api/v1/optionchain", "request": {"underlying": "NIFTY", "exchange": "NSE_INDEX", "expiry_date": "30DEC30", "strike_count": 1},
+                  "broker": {"GET /data/depth": NIFTY_DEPTH, "GET /data/options-chain-v3": {"body": {"s": "error", "code": -50, "message": "Invalid input"}},
+                             "GET /data/quotes": {"body": {"s": "ok", "code": 200, "d": [_fq("NSE:NIFTY30DEC24000CE", 120.25, 121.5)]}}}})

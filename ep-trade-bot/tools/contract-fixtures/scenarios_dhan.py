@@ -110,3 +110,10 @@ SCENARIOS = [
     {"name": "quotes_not_subscribed", "path": "/api/v1/quotes", "request": {"symbol": "SBIN", "exchange": "NSE"}, "broker": {"POST /v2/marketfeed/quote": {"body": {"status": "failed", "data": {"806": "Data APIs not subscribed"}}}}},
     {"name": "ping", "path": "/api/v1/ping", "request": {}},
 ]
+
+# Several quotes in one market-feed call (pass 6). The option has no quote in the reply.
+SCENARIOS.append({"name": "multiquotes", "path": "/api/v1/multiquotes", "request": {"symbols": [
+    {"symbol": "SBIN", "exchange": "NSE"}, {"symbol": "NIFTY25NOV26FUT", "exchange": "NFO"}, {"symbol": "NOPE", "exchange": "NSE"},
+    {"symbol": "INFY", "exchange": "NSE"}, {"symbol": "NIFTY25NOV2624000CE", "exchange": "NFO"}]}, "broker": {"POST /v2/marketfeed/quote": QUOTES}})
+SCENARIOS.append({"name": "multiquotes_not_subscribed", "path": "/api/v1/multiquotes", "request": {"symbols": [{"symbol": "SBIN", "exchange": "NSE"}]},
+                  "broker": {"POST /v2/marketfeed/quote": {"body": {"status": "failed", "data": {"806": "Data APIs not subscribed"}}}}})

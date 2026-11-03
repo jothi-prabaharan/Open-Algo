@@ -94,6 +94,10 @@ public sealed class FyersContractTests(FyersHost host, ITestOutputHelper output)
             }),
         ["funds_token_expired"] = new("OpenAlgo answers success with no funds when Fyers refuses the session. EP Trade bot says it has expired.", f => Expect(f, 403, Error(Expired))),
         ["quotes_refused"] = new("Same refusal; OpenAlgo's message carries the request URL, EP Trade bot names the cause and the next step.", f => Expect(f, 403, Error(Expired))),
+        ["multiquotes_refused"] = new("OpenAlgo answers a refused /data/quotes call with success and an empty list, so a trader sees no quotes and no reason. EP Trade bot reports the refusal.",
+            f => Expect(f, 500, Error("Fyers could not send quotes: Invalid symbol"))),
+        ["multiquotes_missing_quote"] = new("OpenAlgo leaves a symbol Fyers did not quote out of the answer. EP Trade bot keeps it, with the reason, as OpenAlgo does for the other brokers.",
+            f => f["expected"]!["body"]!["results"]!.AsArray().Add(new JsonObject { ["symbol"] = "INFY", ["exchange"] = "NSE", ["error"] = "No quote data available" })),
     };
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("fyers.fixtures.json");
@@ -140,6 +144,8 @@ public sealed class DeltaContractTests(DeltaHost host, ITestOutputHelper output)
             f => Expect(f, 500, Error("Delta Exchange could not send the order book right now. Try again in a moment."))),
         ["quotes_refused"] = new("Same status; EP Trade bot words it for a trader instead of quoting the raw reply.",
             f => f["expected"]!["body"]!["message"] = "Delta Exchange has no ticker for this contract."),
+        ["multiquotes"] = new("Same answer; the missing ticker is worded for a trader instead of quoting the raw reply.",
+            f => f["expected"]!["body"]!["results"]![2]!["error"] = "Delta Exchange has no ticker for this contract."),
     };
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("deltaexchange.fixtures.json");

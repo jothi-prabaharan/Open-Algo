@@ -35,7 +35,7 @@ for sc in copy.deepcopy(dhan.SCENARIOS):
         broker["GET /v2/orders"] = ORDERS
     if "GET /v2/positions" in broker:
         broker["GET /v2/positions"] = POSITIONS
-    if "POST /v2/marketfeed/quote" in broker and sc["name"].startswith(("quotes", "depth")):
+    if "POST /v2/marketfeed/quote" in broker and sc["name"].startswith(("quotes", "depth", "multiquotes")):
         # The sandbox has no market feed; it derives a quote from today's one-minute candles.
         del broker["POST /v2/marketfeed/quote"]
         if sc["name"] != "quotes_not_subscribed":

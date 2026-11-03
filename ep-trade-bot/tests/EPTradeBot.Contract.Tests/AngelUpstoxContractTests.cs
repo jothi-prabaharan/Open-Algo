@@ -71,6 +71,8 @@ public sealed class AngelContractTests(AngelHost host, ITestOutputHelper output)
         ["funds_token_expired"] = new("OpenAlgo answers success with no funds when Angel One refuses the token. EP Trade bot says the session has expired.",
             f => Expect(f, 403, Error(Expired))),
         ["quotes_refused"] = new("Same refusal; EP Trade bot names the cause and the next step instead of the API's text.", f => Expect(f, 403, Error(Expired))),
+        ["multiquotes_refused"] = new("OpenAlgo answers an expired session on /multiquotes with 500 and Angel One's text. EP Trade bot answers 403 with the cause and the next step, as it does for /quotes.",
+            f => Expect(f, 403, Error(Expired))),
     };
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("angel.fixtures.json");
@@ -122,6 +124,8 @@ public sealed class UpstoxContractTests(UpstoxHost host, ITestOutputHelper outpu
         ["funds_token_expired"] = new("OpenAlgo answers success with no funds when Upstox refuses the token. EP Trade bot says the token has expired.",
             f => Expect(f, 403, Error(Expired))),
         ["quotes_refused"] = new("Same refusal; EP Trade bot names the cause and the next step instead of the API's code.", f => Expect(f, 403, Error(Expired))),
+        ["multiquotes_refused"] = new("OpenAlgo answers an expired token on /multiquotes with 500 and Upstox's text. EP Trade bot answers 403 with the cause and the next step, as it does for /quotes.",
+            f => Expect(f, 403, Error(Expired))),
     };
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("upstox.fixtures.json");

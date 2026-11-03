@@ -102,3 +102,7 @@ SCENARIOS = [
     {"name": "quotes_refused", "path": "/api/v1/quotes", "request": {"symbol": "BTCUSD", "exchange": "CRYPTO"}, "broker": {"GET /v2/tickers/BTCUSD": {"status": 404, "body": {"success": False, "error": {"code": "not_found"}}}}},
     {"name": "ping", "path": "/api/v1/ping", "request": {}},
 ]
+
+# No batched quote at Delta Exchange: /multiquotes asks for each ticker in turn (pass 6).
+SCENARIOS.append({"name": "multiquotes", "path": "/api/v1/multiquotes", "request": {"symbols": [{"symbol": "BTCUSD", "exchange": "CRYPTO"}, {"symbol": "ETHUSD", "exchange": "CRYPTO"}, {"symbol": "NOPE", "exchange": "CRYPTO"}]},
+                  "broker": {"GET /v2/tickers/BTCUSD": TICKER, "GET /v2/tickers/ETHUSD": {"status": 404, "body": {"success": False, "error": {"code": "not_found"}}}}})

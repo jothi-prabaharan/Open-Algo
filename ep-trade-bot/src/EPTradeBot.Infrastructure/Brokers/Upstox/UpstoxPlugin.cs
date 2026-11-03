@@ -15,7 +15,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Upstox;
 /// </summary>
 [BrokerPlugin]
 public sealed class UpstoxPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<UpstoxPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerQuotes
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
 {
     private const string Api = "https://api.upstox.com";
     private const string OrderApi = "https://api-hft.upstox.com";
@@ -303,7 +303,15 @@ public sealed class UpstoxPlugin(IHttpClientFactory http, BrokerSessionFactory s
         if (record is null && exchange.EndsWith("_INDEX", StringComparison.Ordinal)) record = await symbols.FindAsync(Name, symbol, exchange[..^6], cancellationToken);
         if (record is null) throw new BrokerException($"Error fetching quotes: {symbol} on {exchange} is not in the Upstox master contract.");
 
-        using var request = Request(session, HttpMethod.Get, Api, $"/v3/market-quote/quotes?instrument_key={Uri.EscapeDataString(record.Token)}", contentType: false);
+        return (await FullQuotesAsync(session, [record.Token], cancellationToken)).TryGetValue(record.Token, out var quote)
+            ? quote
+            : throw new BrokerException($"Upstox has no quote for {symbol} right now.");
+    }
+
+    /// <summary>GET /v3/market-quote/quotes for instrument keys; the quotes by instrument key.</summary>
+    private async Task<Dictionary<string, JsonObject>> FullQuotesAsync(BrokerSession session, IEnumerable<string> keys, CancellationToken cancellationToken)
+    {
+        using var request = Request(session, HttpMethod.Get, Api, $"/v3/market-quote/quotes?instrument_key={Uri.EscapeDataString(string.Join(",", keys))}", contentType: false);
         using var response = await SendAsync(request, cancellationToken);
         var reply = await ReadAsync(response, cancellationToken) as JsonObject;
         if (Str(reply?["status"]) != "success")
@@ -313,13 +321,54 @@ public sealed class UpstoxPlugin(IHttpClientFactory http, BrokerSessionFactory s
             throw new BrokerException($"Upstox could not send a quote: {ErrorMessage(reply, "no reason given.")}");
         }
 
-        return (reply!["data"] as JsonObject ?? []).Select(kv => kv.Value).OfType<JsonObject>().FirstOrDefault(v => Str(v["instrument_token"]) == record.Token)
-            ?? throw new BrokerException($"Upstox has no quote for {symbol} right now.");
+        var quotes = new Dictionary<string, JsonObject>();
+        foreach (var quote in (reply!["data"] as JsonObject ?? []).Select(kv => kv.Value).OfType<JsonObject>())
+        {
+            if (Str(quote["instrument_token"]) is { Length: > 0 } key) quotes[key] = quote;
+        }
+
+        return quotes;
     }
 
-    public async Task<JsonObject> GetQuoteAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken)
+    /// <summary>Upstox answers up to 500 instrument keys per full-quote call.</summary>
+    private const int QuoteBatch = 500;
+
+    public async Task<JsonArray> GetMultiQuotesAsync(BrokerSession session, IReadOnlyList<SymbolRecord> instruments, CancellationToken cancellationToken)
     {
-        var q = await QuoteAsync(session, symbol, exchange, cancellationToken);
+        var results = new JsonArray();
+        for (var start = 0; start < instruments.Count; start += QuoteBatch)
+        {
+            var wanted = new Dictionary<string, SymbolRecord>();
+            foreach (var instrument in instruments.Skip(start).Take(QuoteBatch))
+            {
+                if (instrument.Token.StartsWith("GLOBAL_INDICATOR|", StringComparison.Ordinal))
+                {
+                    // OpenAlgo prices these through a separate last-price call, which EP Trade bot does not make yet.
+                    results.Add(new JsonObject { ["symbol"] = instrument.Symbol, ["exchange"] = instrument.Exchange, ["error"] = "Upstox global indicators are not priced in EP Trade bot yet." });
+                    continue;
+                }
+
+                wanted[instrument.Token] = instrument;
+            }
+
+            if (wanted.Count == 0) continue;
+            var quotes = await FullQuotesAsync(session, wanted.Keys, cancellationToken);
+            foreach (var (key, instrument) in wanted)
+            {
+                results.Add(quotes.TryGetValue(key, out var q)
+                    ? new JsonObject { ["symbol"] = instrument.Symbol, ["exchange"] = instrument.Exchange, ["data"] = QuoteFields(q) }
+                    : new JsonObject { ["symbol"] = instrument.Symbol, ["exchange"] = instrument.Exchange, ["error"] = "No quote data available" });
+            }
+        }
+
+        return results;
+    }
+
+    public async Task<JsonObject> GetQuoteAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken) =>
+        QuoteFields(await QuoteAsync(session, symbol, exchange, cancellationToken));
+
+    private static JsonObject QuoteFields(JsonObject q)
+    {
         var ohlc = q["ohlc"];
         var bid = (q["depth"]?["buy"] as JsonArray) is { Count: > 0 } b ? b[0] : null;
         var ask = (q["depth"]?["sell"] as JsonArray) is { Count: > 0 } s ? s[0] : null;

@@ -112,3 +112,12 @@ SCENARIOS = [
     {"name": "quotes_refused", "path": "/api/v1/quotes", "request": {"symbol": "SBIN", "exchange": "NSE"}, "broker": {QUOTE: {"status": 401, "body": {"status": "error", "errors": [{"errorCode": "UDAPI100050", "message": "Invalid token used to access API"}]}}}},
     {"name": "ping", "path": "/api/v1/ping", "request": {}},
 ]
+
+# Several quotes in one full-quote call (pass 6); INFY has no quote in the reply.
+QUOTE_MULTI = {"body": {"status": "success", "data": {"NSE_EQ:SBIN": _q(SBIN, "SBIN", 805.45, 799.95, buy=[(805.4, 120)], sell=[(805.5, 80)]),
+                                                      "NSE_INDEX:Nifty 50": _q("NSE_INDEX|Nifty 50", "Nifty 50", 24050.5, 24000.0)}}}
+SCENARIOS.append({"name": "multiquotes", "path": "/api/v1/multiquotes", "request": {"symbols": [
+    {"symbol": "SBIN", "exchange": "NSE"}, {"symbol": "NIFTY", "exchange": "NSE_INDEX"}, {"symbol": "INFY", "exchange": "NSE"}, {"symbol": "NOPE", "exchange": "NSE"}]},
+    "broker": {QUOTE: QUOTE_MULTI}})
+SCENARIOS.append({"name": "multiquotes_refused", "path": "/api/v1/multiquotes", "request": {"symbols": [{"symbol": "SBIN", "exchange": "NSE"}]},
+                  "broker": {QUOTE: {"status": 401, "body": {"status": "error", "errors": [{"errorCode": "UDAPI100050", "message": "Invalid token used to access API"}]}}}})

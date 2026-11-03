@@ -13,6 +13,7 @@ public sealed class CompositeHost : BrokerContractHost
     {
         [("NSE", "SBIN")] = 805m, [("NSE", "INFY")] = 1500m,
         [("NFO", "NIFTY30DEC3023900CE")] = 260m, [("NFO", "NIFTY30DEC3024000CE")] = 200m, [("NFO", "NIFTY30DEC3024200CE")] = 110m,
+        [("NFO", "NIFTY30DEC3024100CE")] = 75m, [("NFO", "NIFTY30DEC3024100PE")] = 135m,
         [("NFO", "NIFTY30DEC3023800PE")] = 90m, [("NFO", "NIFTY30DEC3023900PE")] = 120m, [("NFO", "NIFTY30DEC3024000PE")] = 160m,
     };
 
@@ -31,6 +32,18 @@ public sealed class CompositeContractTests(CompositeHost host, ITestOutputHelper
         ["optionsymbol_quote_refused"] = new(
             "Same status; the reason is worded as EP Trade bot's Zerodha plugin words every refusal (\"Zerodha refused the request: ...\") instead of OpenAlgo's \"Error fetching quotes: API Error: ...\".",
             f => ContractRunner.Expect(f, 500, ContractRunner.Error("Failed to fetch LTP for NIFTY. Zerodha refused the request: Incorrect `api_key` or `access_token`."))),
+        ["optionchain_option_quotes_refused"] = new(
+            "OpenAlgo answers success with every price in the chain at 0 when the option quotes are refused. EP Trade bot reports the refusal.",
+            f => ContractRunner.Expect(f, 500, ContractRunner.Error("Option quotes could not be read: Zerodha refused the request: Incorrect `api_key` or `access_token`."))),
+        ["optionchain_with_greeks"] = new(
+            "OpenAlgo attaches implied volatility and Greeks (Black-76). EP Trade bot refuses with_greeks until the Greeks are ported with their own parity tests, rather than answer without them.",
+            Status: 501),
+        ["multiquotes_refused"] = new(
+            "Same status; the reason is worded by EP Trade bot's Zerodha plugin (\"Zerodha refused the request: ...\").",
+            f => ContractRunner.Expect(f, 500, ContractRunner.Error("Zerodha refused the request: Incorrect `api_key` or `access_token`."))),
+        ["optionchain_quote_refused"] = new(
+            "Same status; the reason is worded by EP Trade bot's Zerodha plugin.",
+            f => ContractRunner.Expect(f, 500, ContractRunner.Error("Failed to fetch LTP for NIFTY: Zerodha refused the request: Incorrect `api_key` or `access_token`."))),
         ["optionsorder_bad_offset"] = new(
             "OpenAlgo's /optionsorder schema takes any offset, quotes the underlying and then answers that offset MIDDLE is out of range. EP Trade bot refuses it in validation, as OpenAlgo's /optionsymbol does, before asking the broker for anything.",
             Status: 400),

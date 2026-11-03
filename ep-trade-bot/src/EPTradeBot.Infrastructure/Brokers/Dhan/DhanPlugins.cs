@@ -42,7 +42,7 @@ public sealed class DhanSandboxPlugin(IHttpClientFactory http, BrokerSessionFact
 /// Not ported yet, and refused rather than guessed: history, GTT, margin, login and the feed.
 /// </summary>
 public abstract class DhanPluginBase(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerQuotes
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
 {
     public abstract string Name { get; }
     public abstract string DisplayName { get; }
@@ -500,6 +500,91 @@ public abstract class DhanPluginBase(IHttpClientFactory http, BrokerSessionFacto
             ["open"] = Float(ohlc?["open"]), ["high"] = Float(ohlc?["high"]), ["low"] = Float(ohlc?["low"]), ["prev_close"] = Float(ohlc?["close"]),
             ["oi"] = Int(q["oi"]), ["totalbuyqty"] = buyTotal, ["totalsellqty"] = sellTotal,
         };
+    }
+
+    /// <summary>Dhan answers up to 1000 instruments per market-feed call; OpenAlgo waits a second between calls.</summary>
+    private const int QuoteBatch = 1000;
+
+    public async Task<JsonArray> GetMultiQuotesAsync(BrokerSession session, IReadOnlyList<SymbolRecord> instruments, CancellationToken cancellationToken)
+    {
+        var results = new JsonArray();
+        if (Sandbox)
+        {
+            // The sandbox has no batch quote, so each symbol is asked for in turn, 150 ms apart as in OpenAlgo.
+            for (var i = 0; i < instruments.Count; i++)
+            {
+                if (i > 0) await Task.Delay(TimeSpan.FromMilliseconds(150), cancellationToken);
+                var instrument = instruments[i];
+                try
+                {
+                    var q = await GetQuoteAsync(session, instrument.Symbol, instrument.Exchange, cancellationToken);
+                    results.Add(new JsonObject
+                    {
+                        ["symbol"] = instrument.Symbol, ["exchange"] = instrument.Exchange,
+                        ["data"] = new JsonObject
+                        {
+                            ["bid"] = q["bid"]?.DeepClone(), ["ask"] = q["ask"]?.DeepClone(), ["open"] = q["open"]?.DeepClone(), ["high"] = q["high"]?.DeepClone(),
+                            ["low"] = q["low"]?.DeepClone(), ["ltp"] = q["ltp"]?.DeepClone(), ["prev_close"] = q["prev_close"]?.DeepClone(),
+                            ["volume"] = q["volume"]?.DeepClone(), ["oi"] = q["oi"]?.DeepClone(),
+                        },
+                    });
+                }
+                catch (BrokerException ex)
+                {
+                    // OpenAlgo leaves a symbol it could not price out of the answer; here it is named with the reason.
+                    results.Add(new JsonObject { ["symbol"] = instrument.Symbol, ["exchange"] = instrument.Exchange, ["error"] = ex.Message });
+                }
+            }
+
+            return results;
+        }
+
+        for (var start = 0; start < instruments.Count; start += QuoteBatch)
+        {
+            if (start > 0) await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+            var request = new JsonObject();
+            var wanted = new Dictionary<string, SymbolRecord>();
+            foreach (var instrument in instruments.Skip(start).Take(QuoteBatch))
+            {
+                if (DhanRules.DataSegment(instrument.Exchange) is not { } segment)
+                {
+                    results.Add(new JsonObject { ["symbol"] = instrument.Symbol, ["exchange"] = instrument.Exchange, ["error"] = $"{DisplayName} has no market data for {instrument.Exchange}." });
+                    continue;
+                }
+
+                if (request[segment] is not JsonArray ids) request[segment] = ids = [];
+                ids.Add(long.Parse(instrument.Token, CultureInfo.InvariantCulture));
+                wanted.TryAdd($"{segment}:{instrument.Token}", instrument);
+            }
+
+            if (request.Count == 0) continue;
+            var data = await MarketFeedAsync(session, request, cancellationToken);
+            foreach (var (key, instrument) in wanted)
+            {
+                var parts = key.Split(':');
+                if (data[parts[0]]?[parts[1]] is not JsonObject { Count: > 0 } q)
+                {
+                    results.Add(new JsonObject { ["symbol"] = instrument.Symbol, ["exchange"] = instrument.Exchange, ["error"] = "No quote data available" });
+                    continue;
+                }
+
+                var ohlc = q["ohlc"];
+                var buy = q["depth"]?["buy"] as JsonArray;
+                var sell = q["depth"]?["sell"] as JsonArray;
+                results.Add(new JsonObject
+                {
+                    ["symbol"] = instrument.Symbol, ["exchange"] = instrument.Exchange,
+                    ["data"] = new JsonObject
+                    {
+                        ["bid"] = buy is { Count: > 0 } ? Float(buy[0]?["price"]) : 0, ["ask"] = sell is { Count: > 0 } ? Float(sell[0]?["price"]) : 0,
+                        ["open"] = Float(ohlc?["open"]), ["high"] = Float(ohlc?["high"]), ["low"] = Float(ohlc?["low"]), ["ltp"] = LastPrice(q),
+                        ["prev_close"] = Float(ohlc?["close"]), ["volume"] = Int(q["volume"]), ["oi"] = Int(Truthy(q["oi"]) ? q["oi"] : q["open_interest"]),
+                    },
+                });
+            }
+        }
+
+        return results;
     }
 
     private static double LastPrice(JsonObject quote) => Float(Truthy(quote["last_price"]) ? quote["last_price"] : quote["lastPrice"]);

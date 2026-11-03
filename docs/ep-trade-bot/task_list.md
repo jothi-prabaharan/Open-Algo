@@ -1,7 +1,7 @@
 # EP Trade bot: Task List
 
 Status: plan approved 2026-11-02 with the default for every decision (D1 to D8).
-Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 5 verified). Evidence in [`tg1.md`](../../ep-trade-bot/verification/tg1.md), [`tg2.md`](../../ep-trade-bot/verification/tg2.md) and [`tg3.md`](../../ep-trade-bot/verification/tg3.md).
+Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 6 verified). Evidence in [`tg1.md`](../../ep-trade-bot/verification/tg1.md), [`tg2.md`](../../ep-trade-bot/verification/tg2.md) and [`tg3.md`](../../ep-trade-bot/verification/tg3.md).
 
 ## Pre-flight
 - [x] Decisions D1 to D8 answered (defaults accepted)
@@ -31,10 +31,11 @@ Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 5 verified). Evi
 - [x] Enumerate Flask `/api/v1` URL map; reconcile count (76 pairs, 74 application endpoints; the brief's 57 is out of date)
 - [x] `IBrokerPlugin` contract, discovery gated by `Brokers:Enabled`, keys read when called, recorded-fixture harness
 - [x] Per-account API keys (hashed), encrypted broker tokens bound to their account
-- [x] 27 of 74 `/api/v1` pairs with contract tests against the Python implementation (277 fixtures: 32 Zerodha, 34 Dhan, 34 Dhan Sandbox, 30 Angel One, 31 Upstox, 28 Fyers, 29 Delta Exchange, 59 composite)
+- [x] 30 of 74 `/api/v1` pairs with contract tests against the Python implementation (308 fixtures: 32 Zerodha, 36 Dhan, 36 Dhan Sandbox, 32 Angel One, 33 Upstox, 33 Fyers, 30 Delta Exchange, 76 composite)
 - [x] Symbol master and multi-order pairs: symbol, search, expiry, instruments, optionsymbol, basketorder, splitorder, optionsorder, optionsmultiorder (pass 5)
 - [x] Freeze limits seeded from NSE's list at startup (empty table only)
-- [ ] Remaining 16 broker and market-data pairs (multiquotes, syntheticfuture, optionchain, history, intervals, ticker, margin, 4 GTT, market holidays and timings, chart GET and POST, pnl/symbols)
+- [x] multiquotes (batched per broker), syntheticfuture, optionchain (Fyers' own chain call; Greeks not yet) (pass 6)
+- [ ] Remaining 13 broker and market-data pairs (history, intervals, ticker, margin, 4 GTT, market holidays and timings, chart GET and POST, pnl/symbols)
 - [x] Zerodha (contract-verified; MCX, history, GTT, margin, login and ticker feed not yet)
 - [x] Dhan, Dhan Sandbox (contract-verified; history, GTT, margin, login and feed not yet)
 - [x] Angel One, Upstox (contract-verified; history, GTT, margin, login and feeds not yet)
@@ -43,7 +44,7 @@ Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 5 verified). Evi
 - [x] NetMQ bus (SUB binds, PUBs connect, startup fails on a taken port) and 8765 WebSocket proxy (OpenAlgo protocol)
 - [ ] Broker market-data feed adapters onto the bus
 - [x] SignalR order-update stream (and WebSocket `subscribe_orders`)
-- [x] Gate 3 artifact, passes 1 to 5 (89 mutation checks)
+- [x] Gate 3 artifact, passes 1 to 6 (106 mutation checks)
 - [ ] Gate 3 artifact, final
 
 ## TG4: Strategy host, Flow, Action Center, agent, MCP, tools

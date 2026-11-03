@@ -17,7 +17,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Angel;
 /// </summary>
 [BrokerPlugin]
 public sealed class AngelPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<AngelPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerQuotes
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
 {
     private const string BaseUrl = "https://apiconnect.angelone.in";
 
@@ -293,8 +293,18 @@ public sealed class AngelPlugin(IHttpClientFactory http, BrokerSessionFactory se
     {
         var instrument = await symbols.FindAsync(Name, symbol, exchange, cancellationToken)
             ?? throw new BrokerException($"Error fetching {what}: {symbol} on {exchange} is not in the Angel One master contract.");
-        var angelExchange = exchange switch { "NSE_INDEX" => "NSE", "BSE_INDEX" => "BSE", "MCX_INDEX" => "MCX", _ => exchange };
-        var body = new JsonObject { ["mode"] = "FULL", ["exchangeTokens"] = new JsonObject { [angelExchange] = new JsonArray(instrument.Token) } };
+        var fetched = await FetchQuotesAsync(session, new JsonObject { [AngelExchange(exchange)] = new JsonArray(instrument.Token) }, what, cancellationToken);
+        return fetched is { Count: > 0 } && fetched[0] is JsonObject quote
+            ? quote
+            : throw new BrokerException($"Angel One has no {what} for {symbol} right now.");
+    }
+
+    private static string AngelExchange(string exchange) => exchange switch { "NSE_INDEX" => "NSE", "BSE_INDEX" => "BSE", "MCX_INDEX" => "MCX", _ => exchange };
+
+    /// <summary>POST market/v1/quote in FULL mode; the reply's fetched quotes.</summary>
+    private async Task<JsonArray> FetchQuotesAsync(BrokerSession session, JsonObject exchangeTokens, string what, CancellationToken cancellationToken)
+    {
+        var body = new JsonObject { ["mode"] = "FULL", ["exchangeTokens"] = exchangeTokens };
         using var request = Request(session, HttpMethod.Post, "/rest/secure/angelbroking/market/v1/quote/", body);
         using var response = await SendAsync(request, cancellationToken);
         var reply = await ReadAsync(response, cancellationToken) as JsonObject;
@@ -306,14 +316,49 @@ public sealed class AngelPlugin(IHttpClientFactory http, BrokerSessionFactory se
             throw new BrokerException(Str(reply?["message"]) == "Invalid Token"
                 ? "Angel One says the session has expired. Log in to Angel One again."
                 : $"Angel One could not send the {what}: {Str(reply?["message"]) ?? "no reason given."}", Str(reply?["message"]) == "Invalid Token" ? 403 : 500);
-        return reply!["data"]?["fetched"] is JsonArray { Count: > 0 } fetched && fetched[0] is JsonObject quote
-            ? quote
-            : throw new BrokerException($"Angel One has no {what} for {symbol} right now.");
+        return reply!["data"]?["fetched"] as JsonArray ?? [];
     }
 
-    public async Task<JsonObject> GetQuoteAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken)
+    /// <summary>Angel One answers up to 50 instruments per quote call.</summary>
+    private const int QuoteBatch = 50;
+
+    public async Task<JsonArray> GetMultiQuotesAsync(BrokerSession session, IReadOnlyList<SymbolRecord> instruments, CancellationToken cancellationToken)
     {
-        var q = await QuoteAsync(session, symbol, exchange, "quotes", cancellationToken);
+        var results = new JsonArray();
+        for (var start = 0; start < instruments.Count; start += QuoteBatch)
+        {
+            var tokens = new JsonObject();
+            var wanted = new Dictionary<string, SymbolRecord>();
+            foreach (var instrument in instruments.Skip(start).Take(QuoteBatch))
+            {
+                var exchange = AngelExchange(instrument.Exchange);
+                if (tokens[exchange] is not JsonArray list) tokens[exchange] = list = [];
+                list.Add(instrument.Token);
+                wanted.TryAdd($"{exchange}:{instrument.Token}", instrument);
+            }
+
+            var byToken = new Dictionary<string, JsonObject>();
+            foreach (var quote in (await FetchQuotesAsync(session, tokens, "quotes", cancellationToken)).OfType<JsonObject>())
+            {
+                if (Str(quote["exchange"]) is { Length: > 0 } e && Str(quote["symbolToken"]) is { Length: > 0 } t) byToken[$"{e}:{t}"] = quote;
+            }
+
+            foreach (var (key, instrument) in wanted)
+            {
+                results.Add(byToken.TryGetValue(key, out var q)
+                    ? new JsonObject { ["symbol"] = instrument.Symbol, ["exchange"] = instrument.Exchange, ["data"] = QuoteFields(q) }
+                    : new JsonObject { ["symbol"] = instrument.Symbol, ["exchange"] = instrument.Exchange, ["error"] = "No quote data available" });
+            }
+        }
+
+        return results;
+    }
+
+    public async Task<JsonObject> GetQuoteAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken) =>
+        QuoteFields(await QuoteAsync(session, symbol, exchange, "quotes", cancellationToken));
+
+    private static JsonObject QuoteFields(JsonObject q)
+    {
         var bids = q["depth"]?["buy"] as JsonArray;
         var asks = q["depth"]?["sell"] as JsonArray;
         JsonNode First(JsonArray? side, string key, bool integer) =>
