@@ -1,0 +1,90 @@
+[
+ {
+  "name": "H1 Kite chunks of 90 days",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "var chunkDays = resolution == \"day\" ? 2000 : 60;",
+  "new": "var chunkDays = resolution == \"day\" ? 2000 : 90;",
+  "filter": "FullyQualifiedName~HistoryContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H2 Daily candles not shifted to IST",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "(interval == \"D\" ? 19_800 : 0)",
+  "new": "0",
+  "filter": "FullyQualifiedName~HistoryContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H3 Duplicate timestamp keeps the last candle",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "candles.TryAdd(stamp, new JsonObject",
+  "new": "candles[stamp] = (new JsonObject",
+  "filter": "FullyQualifiedName~HistoryContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H4 Open interest not requested",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "&oi=1\";",
+  "new": "\";",
+  "filter": "FullyQualifiedName~HistoryContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H5 Instrument token taken from the exchange half",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "instrument.Token.Split(\"::::\")[0]",
+  "new": "instrument.Token.Split(\"::::\")[1]",
+  "filter": "FullyQualifiedName~HistoryContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H6 Candle offset east of UTC read as west",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "var sign = text.Length > 19 && text[19] == '-' ? -1 : 1;",
+  "new": "var sign = -1;",
+  "filter": "FullyQualifiedName~HistoryContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H7 Intervals offer the 60m spelling",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.History.cs",
+  "old": "history!.HistoryTimeframes.Where(SupportedIntervals.Contains)",
+  "new": "history!.HistoryTimeframes",
+  "filter": "FullyQualifiedName~HistoryContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H8 Intervals sorted as text",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.History.cs",
+  "old": "? offered.Where(pick).OrderBy(Number)",
+  "new": "? offered.Where(pick).OrderBy(i => Number(i).ToString())",
+  "filter": "FullyQualifiedName~HistoryContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H9 History spaced 35 ms",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.History.cs",
+  "old": "\"OpenAlgoApi:HistorySpacingMs\", 350",
+  "new": "\"OpenAlgoApi:HistorySpacingMs\", 35",
+  "filter": "FullyQualifiedName~HistoryApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H10 Historify read silently answered from the broker",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.History.cs",
+  "old": "if (r.Source == \"db\")",
+  "new": "if (r.Source == \"never\")",
+  "filter": "FullyQualifiedName~HistoryApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H11 Unknown symbol worded as another instrument",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.History.cs",
+  "old": "return V1Result.Error(400, $\"Symbol '{r.Symbol}' not found for exchange",
+  "new": "return V1Result.Error(400, $\"Instrument '{r.Symbol}' not found for exchange",
+  "filter": "FullyQualifiedName~HistoryContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

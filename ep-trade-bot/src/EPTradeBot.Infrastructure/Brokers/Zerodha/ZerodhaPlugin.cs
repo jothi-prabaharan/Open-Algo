@@ -24,14 +24,14 @@ public sealed class ZerodhaPlugin(
     IHttpClientFactory httpClients,
     BrokerSessionFactory sessions,
     ISymbolMaster symbols,
-    ILogger<ZerodhaPlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
+    ILogger<ZerodhaPlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory
 {
     public const string BrokerName = "zerodha";
     private const string DefaultBaseUrl = "https://api.kite.trade";
 
     public string Name => BrokerName;
     public string DisplayName => "Zerodha";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     private static readonly Dictionary<string, string> StatusMap = new(StringComparer.Ordinal)
@@ -463,6 +463,61 @@ public sealed class ZerodhaPlugin(
         }
 
         return results;
+    }
+
+    // ---- history ---------------------------------------------------------------------------------------------
+
+    // timeframe_map of broker/zerodha/api/data.py, in its order. "1h" is the alias of "60m" OpenAlgo keeps for scans.
+    private static readonly Dictionary<string, string> Resolutions = new()
+    {
+        ["1m"] = "minute", ["3m"] = "3minute", ["5m"] = "5minute", ["10m"] = "10minute", ["15m"] = "15minute", ["30m"] = "30minute",
+        ["60m"] = "60minute", ["1h"] = "60minute", ["D"] = "day",
+    };
+
+    public IReadOnlyList<string> HistoryTimeframes { get; } = [.. Resolutions.Keys];
+
+    public async Task<JsonArray> GetHistoryAsync(BrokerSession session, SymbolRecord instrument, string interval, DateOnly start, DateOnly end, CancellationToken cancellationToken)
+    {
+        if (!Resolutions.TryGetValue(interval, out var resolution))
+            throw new BrokerException($"Zerodha does not offer {interval} candles. Choose one of: {string.Join(", ", Resolutions.Keys.Where(k => k != "1h"))}.", 400);
+
+        // Kite's limits on one request: 2000 days of daily candles, 60 days of anything shorter.
+        var chunkDays = resolution == "day" ? 2000 : 60;
+        var instrumentToken = instrument.Token.Split("::::")[0];
+        var candles = new SortedDictionary<long, JsonObject>();
+        for (var from = start; from <= end;)
+        {
+            var to = from.AddDays(chunkDays - 1) < end ? from.AddDays(chunkDays - 1) : end;
+            // The "+" is Kite's own spelling of the space between date and time; it is sent as is.
+            var query = $"from={from:yyyy-MM-dd}+00:00:00&to={to:yyyy-MM-dd}+23:59:59&oi=1";
+            var reply = await GetAsync(session, $"/instruments/historical/{instrumentToken}/{resolution}?{query}", cancellationToken);
+            if (Str(reply["status"]) != "success")
+                throw new BrokerException($"Error fetching historical data: Error from Zerodha API: {Str(reply["message"]) ?? "Unknown error"}");
+            foreach (var row in reply["data"]?["candles"] as JsonArray ?? [])
+            {
+                if (row is not JsonArray c || c.Count < 7) continue;
+                var stamp = KiteEpoch(Str(c[0]) ?? "") + (interval == "D" ? 19_800 : 0);
+                // Two candles with one timestamp: the first one received is kept, as OpenAlgo's drop_duplicates keeps it.
+                candles.TryAdd(stamp, new JsonObject
+                {
+                    ["timestamp"] = stamp, ["open"] = Float(c[1]), ["high"] = Float(c[2]), ["low"] = Float(c[3]), ["close"] = Float(c[4]),
+                    ["volume"] = (long)Float(c[5]), ["oi"] = (long)Float(c[6]),
+                });
+            }
+
+            from = to.AddDays(1);
+        }
+
+        return new JsonArray(candles.Values.Select(v => (JsonNode?)v).ToArray());
+    }
+
+    /// <summary>Epoch seconds of Kite's "2026-11-03T09:15:00+0530".</summary>
+    private static long KiteEpoch(string text)
+    {
+        var local = DateTime.ParseExact(text[..19], "yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture);
+        var sign = text.Length > 19 && text[19] == '-' ? -1 : 1;
+        var offset = text.Length >= 24 ? TimeSpan.FromHours(int.Parse(text[20..22], CultureInfo.InvariantCulture)) + TimeSpan.FromMinutes(int.Parse(text[22..24], CultureInfo.InvariantCulture)) : TimeSpan.Zero;
+        return new DateTimeOffset(local, sign * offset).ToUnixTimeSeconds();
     }
 
     // ---- plumbing --------------------------------------------------------------------------------------------

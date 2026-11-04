@@ -55,6 +55,8 @@ internal static class OpenAlgoV1Endpoints
         Post<SplitOrderRequest>(v1, "/splitorder", (s, a, r, ct) => s.SplitOrderAsync(a, r, ct));
         Post<OptionsOrderRequest>(v1, "/optionsorder", (s, a, r, ct) => s.OptionsOrderAsync(a, r, ct), ValidationShape.Errors);
         Post<OptionsMultiOrderRequest>(v1, "/optionsmultiorder", (s, a, r, ct) => s.OptionsMultiOrderAsync(a, r, ct), ValidationShape.Errors);
+        Post<HistoryRequest>(v1, "/history", (s, a, r, ct) => s.HistoryAsync(a, r, ct));
+        Post<IntervalsRequest>(v1, "/intervals", (s, a, _, _) => Task.FromResult(s.Intervals(a)));
         Post<MarketHolidaysRequest>(v1, "/market/holidays", (s, a, r, ct) => s.MarketHolidaysAsync(a, r, ct));
         Post<MarketTimingsRequest>(v1, "/market/timings", (s, a, r, ct) => s.MarketTimingsAsync(a, r, ct));
         Post<PnlSymbolsRequest>(v1, "/pnl/symbols", (s, a, _, ct) => s.PnlSymbolsAsync(a, ct));
@@ -71,7 +73,7 @@ internal static class OpenAlgoV1Endpoints
         "/placeorder", "/placesmartorder", "/modifyorder", "/cancelorder", "/cancelallorder", "/closeposition", "/orderbook", "/tradebook",
         "/positionbook", "/holdings", "/funds", "/orderstatus", "/openposition", "/quotes", "/depth", "/ping", "/analyzer", "/analyzer/toggle",
         "/symbol", "/search", "/expiry", "/optionsymbol", "/basketorder", "/splitorder", "/optionsorder", "/optionsmultiorder", "/instruments",
-        "/multiquotes", "/syntheticfuture", "/optionchain", "/market/holidays", "/market/timings", "/pnl/symbols", "/chart",
+        "/multiquotes", "/syntheticfuture", "/optionchain", "/market/holidays", "/market/timings", "/pnl/symbols", "/chart", "/history", "/intervals",
     ];
 
     /// <summary>

@@ -58,6 +58,9 @@ public abstract class BrokerContractHost : IAsyncLifetime
     /// <summary>The broker's application keys (Brokers:Keys:&lt;broker&gt;), as the recorded install had them in its environment.</summary>
     public virtual IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string>();
 
+    /// <summary>Further configuration for the host (a spacing between calls that a fixture run does not wait for).</summary>
+    public virtual IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string>();
+
     /// <summary>A check of every request the broker would see (a signature, say), beyond the comparison with the recording.</summary>
     public virtual void Verify(SentRequest request)
     {
@@ -79,6 +82,7 @@ public abstract class BrokerContractHost : IAsyncLifetime
         {
             b.UseSetting("Brokers:Enabled:0", BrokerName);
             foreach (var (key, value) in Keys) b.UseSetting($"Brokers:Keys:{BrokerName}:{key}", value);
+            foreach (var (key, value) in Settings) b.UseSetting(key, value);
             b.ConfigureServices(s =>
             {
                 s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => Broker));

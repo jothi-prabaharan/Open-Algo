@@ -36,7 +36,9 @@ Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 7 verified). Evi
 - [x] Freeze limits seeded from NSE's list at startup (empty table only)
 - [x] multiquotes (batched per broker), syntheticfuture, optionchain (Fyers' own chain call; Greeks not yet) (pass 6)
 - [x] market/holidays and market/timings (calendar seeded from OpenAlgo's fresh install), chart GET and POST, pnl/symbols (pass 7)
-- [ ] Remaining 8 broker and market-data pairs (history, intervals, ticker, margin, 4 GTT)
+- [x] history and intervals contract-verified on Zerodha (24 fixtures); `IBrokerHistory` contract and the 350 ms spacing in place
+- [ ] history for Dhan, Dhan Sandbox, Angel One, Upstox, Fyers and Delta Exchange
+- [ ] Remaining 6 broker and market-data pairs (ticker, margin, 4 GTT)
 - [x] Zerodha (contract-verified; MCX, history, GTT, margin, login and ticker feed not yet)
 - [x] Dhan, Dhan Sandbox (contract-verified; history, GTT, margin, login and feed not yet)
 - [x] Angel One, Upstox (contract-verified; history, GTT, margin, login and feeds not yet)

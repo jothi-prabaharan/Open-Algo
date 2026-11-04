@@ -1005,3 +1005,25 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
 - **Funds' realized P&L between sessions.** The sandbox funds row still shows yesterday's realized P&L until that account's next fill in the new session. OpenAlgo's fund manager resets it on read.
 - **Market data source.** `/pnl/symbols` marks open positions to the bus's quotes. OpenAlgo falls back to a broker quote call when its feed is stale. EP Trade bot falls back to the price stored with the position.
 - **Still to come in Task Group 3:** history and intervals, ticker, margin, and the four GTT endpoints (pass 8 onward). Feeds and login remain as well.
+
+## 15. Pass 8 (in progress): history and intervals, Zerodha first
+
+**Built.** `IBrokerHistory` gives a plugin its timeframe map and its candles. The service (`OpenAlgoApiService.History.cs`) ports `/history` and `/intervals`:
+
+- **Spacing:** history calls are 350 ms apart, as OpenAlgo spaces them for every broker. A test measures it.
+- **`/intervals`:** it offers only intervals in OpenAlgo's supported list. Zerodha's `60m` is therefore left out and `1h` is offered, as OpenAlgo does.
+- **`source: "db"`:** it is refused with 501 and a plain reason, because the local Historify store belongs to Task Group 4.
+- **Zerodha candles** (`GetHistoryAsync`):
+  - Requests are cut into 60-day pieces, or 2000 days for daily candles, as Kite requires.
+  - Daily candles are stamped at 00:00 India time.
+  - Candles are sorted. When two share a timestamp, the first one received is kept.
+
+**Contract tests: 24 new fixtures, 377 of 377 in all.** They cover 5m, 1m, `1h`, daily, futures with open interest, an index, a 130-day range in three pieces, nothing traded, unsorted candles with a duplicate, an end date before the start, the schema errors and the key errors. Two are deliberate differences:
+
+- **Unsupported interval:** OpenAlgo answers 500 with a library message. EP Trade bot answers 400 and names what Zerodha offers.
+- **Refused request:** same status, worded as EP Trade bot's Zerodha plugin words every refusal.
+
+**Mutation check:** 11 of 11 red (`tools/mutation/tg3-history.json`). H1 to H8 cover the Zerodha candle code and `/intervals` (the 90-day chunk and the daily IST shift among them); H9 to H11 cover the 350 ms spacing, the Historify refusal and the unknown-symbol answer.
+
+**Still to do in this pass:** history for Dhan, Dhan Sandbox, Angel One, Upstox, Fyers and Delta Exchange. A broker that sends no open interest will also need its own check that the service adds `oi: 0`.
+

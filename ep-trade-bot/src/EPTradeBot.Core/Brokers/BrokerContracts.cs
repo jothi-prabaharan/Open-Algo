@@ -151,6 +151,18 @@ public interface IBrokerOptionChain : IBrokerPlugin
     Task<IReadOnlyDictionary<(double Strike, string Type), JsonObject>> GetOptionChainAsync(BrokerSession session, SymbolRecord underlying, int strikeCount, CancellationToken cancellationToken);
 }
 
+/// <summary>
+/// Candles from a broker (OpenAlgo's BrokerData.get_history). <see cref="HistoryTimeframes"/> are the keys
+/// of the plugin's timeframe map in OpenAlgo's spelling, in map order. A candle is
+/// <c>{timestamp, open, high, low, close, volume, oi}</c> with the timestamp in epoch seconds.
+/// </summary>
+public interface IBrokerHistory : IBrokerPlugin
+{
+    IReadOnlyList<string> HistoryTimeframes { get; }
+
+    Task<JsonArray> GetHistoryAsync(BrokerSession session, SymbolRecord instrument, string interval, DateOnly start, DateOnly end, CancellationToken cancellationToken);
+}
+
 /// <summary>Resolves symbols between OpenAlgo's format and a broker's. Backed by that broker's master contract.</summary>
 public interface ISymbolMaster
 {
