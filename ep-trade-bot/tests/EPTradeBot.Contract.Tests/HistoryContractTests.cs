@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using EPTradeBot.IntegrationTests;
 using Xunit.Abstractions;
 
@@ -94,6 +95,46 @@ public sealed class HistoryUpstoxContractTests(HistoryUpstoxHost host, ITestOutp
     };
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("history_upstox.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
+
+/// <summary>History and intervals on Fyers (tools/contract-fixtures/history_fyers.fixtures.json), run with the clock stopped at the recording.</summary>
+public sealed class HistoryFyersHost : BrokerContractHost
+{
+    public override string BrokerName => "fyers";
+    public override string FixtureFile => "history_fyers.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "FYAPPID-100" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string>
+    {
+        ["OpenAlgoApi:HistorySpacingMs"] = "0", ["Brokers:RetryBackoffMs:fyers"] = "0",
+    };
+}
+
+public sealed class HistoryFyersContractTests(HistoryFyersHost host, ITestOutputHelper output) : IClassFixture<HistoryFyersHost>
+{
+    private const string Gap = "OpenAlgo tries a chunk Fyers will not answer four times, carries on and answers success with the candles it has (none at all, here). EP Trade bot stops and says so, because a history with a missing stretch looks like a quiet market.";
+
+    private static Action<JsonObject> Refusal(int status, string message) => f => ContractRunner.Expect(f, status, ContractRunner.Error(message));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_start_after_end"] = new("OpenAlgo answers 500 with a library message. EP Trade bot answers 400 and names the two dates.", Status: 400),
+        ["history_weekly_not_offered"] = new("OpenAlgo answers 500 with a multi-line list of what Fyers offers. EP Trade bot answers 400 on one line.", Status: 400),
+        ["history_interval_fyers_lacks"] = new("OpenAlgo answers 500 with a multi-line list of what Fyers offers. EP Trade bot answers 400 on one line.", Status: 400),
+        ["history_session_expired"] = new(Gap, Refusal(403, "Fyers says the session has expired. Log in to Fyers again.")),
+        ["history_chunk_refused_every_time"] = new(Gap, f =>
+        {
+            var day = f["request"]!["start_date"]!.GetValue<string>();
+            ContractRunner.Expect(f, 500, ContractRunner.Error($"Fyers could not send the candles for {day} to {day}: Please provide a valid symbol"));
+        }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_fyers.fixtures.json");
 
     [PostgresTheory]
     [MemberData(nameof(Names))]

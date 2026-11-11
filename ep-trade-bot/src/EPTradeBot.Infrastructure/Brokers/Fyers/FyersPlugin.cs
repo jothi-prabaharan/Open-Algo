@@ -16,14 +16,14 @@ namespace EPTradeBot.Infrastructure.Brokers.Fyers;
 /// and refused rather than guessed: history, GTT, margin, login and the Fyers feed.
 /// </summary>
 [BrokerPlugin]
-public sealed class FyersPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<FyersPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerOptionChain
+public sealed class FyersPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<FyersPlugin> logger)
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerOptionChain, IBrokerHistory
 {
     private const string BaseUrl = "https://api-t1.fyers.in";
 
     public string Name => "fyers";
     public string DisplayName => "Fyers";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
 
     /// <summary>ApiKey: the Fyers app id, sent with the token as "app_id:token".</summary>
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
@@ -406,6 +406,90 @@ public sealed class FyersPlugin(IHttpClientFactory http, BrokerSessionFactory se
             ["high"] = Get(d, "h", 0), ["low"] = Get(d, "l", 0), ["ltp"] = Get(d, "ltp", 0), ["ltq"] = Get(d, "ltq", 0), ["open"] = Get(d, "o", 0),
             ["prev_close"] = Get(d, "c", 0), ["volume"] = Get(d, "v", 0), ["oi"] = Int(d["oi"]),
         };
+    }
+
+    // ---- history ---------------------------------------------------------------------------------------------
+
+    // timeframe_map of broker/fyers/api/data.py, in its order. Fyers has no weekly or monthly candles.
+    private static readonly Dictionary<string, string> Resolutions = new()
+    {
+        ["5s"] = "5S", ["10s"] = "10S", ["15s"] = "15S", ["30s"] = "30S", ["45s"] = "45S",
+        ["1m"] = "1", ["2m"] = "2", ["3m"] = "3", ["5m"] = "5", ["10m"] = "10", ["15m"] = "15", ["20m"] = "20", ["30m"] = "30",
+        ["1h"] = "60", ["2h"] = "120", ["4h"] = "240", ["D"] = "1D",
+    };
+
+    public IReadOnlyList<string> HistoryTimeframes { get; } = [.. Resolutions.Keys];
+
+    public async Task<JsonArray> GetHistoryAsync(BrokerSession session, SymbolRecord instrument, string interval, DateOnly start, DateOnly end, CancellationToken cancellationToken)
+    {
+        if (!Resolutions.TryGetValue(interval, out var resolution))
+            throw new BrokerException($"Fyers does not offer {interval} candles. Choose one of: {string.Join(", ", Resolutions.Keys)}.", 400);
+
+        // A request can end no later than today in India, and starts no later than it ends.
+        var today = DateOnly.FromDateTime(clock.GetUtcNow().ToOffset(TimeSpan.FromHours(5.5)).DateTime);
+        if (end > today) end = today;
+        if (start > end) throw new BrokerException($"The start date {start:yyyy-MM-dd} cannot be after the end date {end:yyyy-MM-dd}.", 400);
+        var seconds = resolution.EndsWith('S');
+        // Candles of a few seconds exist for the last 30 days only.
+        if (seconds && start < today.AddDays(-30)) start = today.AddDays(-30);
+
+        var chunkDays = resolution == "1D" ? 300 : seconds ? 25 : 60;
+        var withInterest = instrument.Exchange is "NFO" or "BFO" or "MCX" or "CDS";
+        var candles = new SortedDictionary<long, JsonObject>();
+        for (var from = start; from <= end;)
+        {
+            var to = from.AddDays(chunkDays - 1) < end ? from.AddDays(chunkDays - 1) : end;
+            var path = $"/data/history?symbol={Uri.EscapeDataString(instrument.BrokerSymbol)}&resolution={resolution}&date_format=1&range_from={from:yyyy-MM-dd}&range_to={to:yyyy-MM-dd}&cont_flag=1"
+                + (withInterest ? "&oi_flag=1" : "");
+            foreach (var row in await ChunkAsync(session, path, from, to, cancellationToken))
+            {
+                if (row is not JsonArray c || c.Count < 6) continue;
+                var stamp = (long)Float(c[0]);
+                // Two candles with one timestamp: the first one received is kept.
+                candles.TryAdd(stamp, new JsonObject
+                {
+                    ["timestamp"] = stamp, ["open"] = c[1]?.DeepClone(), ["high"] = c[2]?.DeepClone(), ["low"] = c[3]?.DeepClone(), ["close"] = c[4]?.DeepClone(),
+                    ["volume"] = c[5]?.DeepClone(), ["oi"] = withInterest && c.Count == 7 ? c[6]?.DeepClone() : 0,
+                });
+            }
+
+            from = to.AddDays(1);
+        }
+
+        return new JsonArray(candles.Values.Select(v => (JsonNode?)v).ToArray());
+    }
+
+    /// <summary>
+    /// One /data/history request. A refused call is tried again three times (after 2, 4 and 6 seconds), and a 429 up to
+    /// three times (1, 2, 4). A chunk Fyers still will not answer is an error naming the days: OpenAlgo carries on
+    /// without it, which leaves a gap in the candles with nothing to show for it.
+    /// </summary>
+    private async Task<JsonArray> ChunkAsync(BrokerSession session, string path, DateOnly from, DateOnly to, CancellationToken cancellationToken)
+    {
+        string? message = null;
+        for (var retry = 0; retry <= 3; retry++)
+        {
+            if (retry > 0) await Task.Delay(sessions.RetryBackoff(Name, TimeSpan.FromSeconds(2 * retry)), cancellationToken);
+            for (var limited = 0; ; limited++)
+            {
+                using var request = Request(session, HttpMethod.Get, path);
+                using var response = await SendAsync(request, cancellationToken);
+                if (response.StatusCode == HttpStatusCode.TooManyRequests && limited < 3)
+                {
+                    await Task.Delay(sessions.RetryBackoff(Name, TimeSpan.FromSeconds(1 << limited)), cancellationToken);
+                    continue;
+                }
+
+                var reply = await ReadAsync(response, cancellationToken) as JsonObject;
+                if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+                    throw new BrokerException("Fyers says the session has expired. Log in to Fyers again.", 403);
+                if (response.IsSuccessStatusCode && Str(reply?["s"]) == "ok") return reply!["candles"] as JsonArray ?? [];
+                message = Str(reply?["message"]);
+                break;
+            }
+        }
+
+        throw new BrokerException($"Fyers could not send the candles for {from:yyyy-MM-dd} to {to:yyyy-MM-dd}: {message ?? "no reason given."}");
     }
 
     // ---- plumbing --------------------------------------------------------------------------------------------

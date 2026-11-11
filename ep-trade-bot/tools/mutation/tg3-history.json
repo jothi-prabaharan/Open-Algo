@@ -278,5 +278,101 @@
   "new": "&& Float(last[4]) == ltp && Float(last[5]) == -1)",
   "filter": "FullyQualifiedName~HistoryApiTests",
   "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "HF1 minute candles asked 61 days at a time",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "var chunkDays = resolution == \"1D\" ? 300 : seconds ? 25 : 60;",
+  "new": "var chunkDays = resolution == \"1D\" ? 300 : seconds ? 25 : 61;",
+  "filter": "FullyQualifiedName~HistoryFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF2 daily candles asked 90 days at a time",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "var chunkDays = resolution == \"1D\" ? 300 :",
+  "new": "var chunkDays = resolution == \"1D\" ? 90 :",
+  "filter": "FullyQualifiedName~HistoryFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF3 second candles asked 10 days at a time",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "seconds ? 25 : 60;",
+  "new": "seconds ? 10 : 60;",
+  "filter": "FullyQualifiedName~HistoryFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF4 second candles allowed beyond 30 days",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "if (seconds && start < today.AddDays(-30)) start = today.AddDays(-30);",
+  "new": "if (seconds && start < today.AddDays(-60)) start = today.AddDays(-60);",
+  "filter": "FullyQualifiedName~HistoryFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF5 end date in the future not moved to today",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "if (end > today) end = today;",
+  "new": "if (end > today.AddYears(1)) end = today;",
+  "filter": "FullyQualifiedName~HistoryFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF6 no open interest asked for NFO",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "instrument.Exchange is \"NFO\" or \"BFO\" or \"MCX\" or \"CDS\"",
+  "new": "instrument.Exchange is \"BFO\" or \"MCX\" or \"CDS\"",
+  "filter": "FullyQualifiedName~HistoryFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF7 open interest read from a six figure candle",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "withInterest && c.Count == 7 ?",
+  "new": "withInterest && c.Count >= 6 ?",
+  "filter": "FullyQualifiedName~HistoryFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF8 duplicate timestamp keeps the last candle",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "candles.TryAdd(stamp, new JsonObject",
+  "new": "candles[stamp] = (new JsonObject",
+  "filter": "FullyQualifiedName~HistoryFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF9 rate limit never retried",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "response.StatusCode == HttpStatusCode.TooManyRequests && limited < 3",
+  "new": "response.StatusCode == HttpStatusCode.TooManyRequests && limited < 0",
+  "filter": "FullyQualifiedName~HistoryFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF10 refused call never tried again",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "for (var retry = 0; retry <= 3; retry++)",
+  "new": "for (var retry = 0; retry <= 0; retry++)",
+  "filter": "FullyQualifiedName~HistoryFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF11 a chunk Fyers will not answer left out",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "throw new BrokerException($\"Fyers could not send the candles for",
+  "new": "return [];\n        throw new BrokerException($\"Fyers could not send the candles for",
+  "filter": "FullyQualifiedName~HistoryFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF12 start after end answered with no candles",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "if (start > end) throw new BrokerException",
+  "new": "if (start > end.AddYears(9)) throw new BrokerException",
+  "filter": "FullyQualifiedName~HistoryFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
  }
 ]

@@ -1025,7 +1025,7 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
 
 **Mutation check:** 11 of 11 red (`tools/mutation/tg3-history.json`). H1 to H8 cover the Zerodha candle code and `/intervals` (the 90-day chunk and the daily IST shift among them); H9 to H11 cover the 350 ms spacing, the Historify refusal and the unknown-symbol answer.
 
-**Still to do in this pass:** history for Dhan, Dhan Sandbox, Fyers and Delta Exchange. A broker that sends no open interest will also need its own check that the service adds `oi: 0`.
+**Still to do in this pass:** history for Dhan, Dhan Sandbox and Delta Exchange. A broker that sends no open interest will also need its own check that the service adds `oi: 0`.
 
 **Angel One (added).**
 
@@ -1058,5 +1058,21 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
 - **`/intervals` on Upstox** offers 1m, 2m, 3m, 5m, 10m, 15m, 30m, 1h to 4h, D, W and M. `60m` is left out because it is not in the supported list.
 - **Mutation check:** 12 more, HU1 to HU12, all red; `tg3-history.json` now holds 35.
   - The first HU7 (leaving the instrument key unescaped) survived, because .NET escapes `|` in an address on its own. It was an equivalent mutation, not a test gap, and it was replaced by one that escapes the key twice.
+
+**Fyers (added).**
+
+- **Candles:** `/data/history` with the candle spans Fyers allows.
+  - Daily candles are asked 300 days at a time, second candles 25, others 60.
+  - Open interest is asked for NFO, BFO, MCX and CDS.
+  - An end date in the future moves to today in India, and a start before the 30-day limit for second candles moves up to it.
+  - A refused call is tried again three times (2, 4 and 6 seconds), and a 429 up to three times (1, 2 and 4).
+  - Fyers has no weekly or monthly candles.
+- **Recording by the recording day:** the window clamps to today, so the fixtures use dates relative to the day they were recorded, and the .NET test runs with its clock stopped at that instant. Without that, the fixtures would stop matching after 30 days.
+- **Contract tests:** 26 new fixtures, 443 in all. They include 5 deliberate differences:
+  - **Start after end, `W`, and an interval Fyers lacks:** 400 on one line, where OpenAlgo answers 500 with a library or multi-line message.
+  - **Expired session and a chunk refused every time:** OpenAlgo tries four times and then answers success with the candles it has, which is none in these two recordings. EP Trade bot stops and names the days.
+- **Retry backoff:** `Brokers:RetryBackoffMs:<broker>` overrides the waits between retries, so a run does not sit through them.
+- **Mutation check:** 12 more, HF1 to HF12, all red; `tg3-history.json` now holds 47.
+  - HF9 (rate limit never retried) first survived: Fyers history has two retry layers, and the refused-call retry covered for a single 429. A fixture with five 429s in a row needs both layers, and HF9 is red with it.
 
 **Task Groups 5 (the Angular app) and 6 (deployment)** are Antigravity's and are not worked on here.

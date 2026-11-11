@@ -101,6 +101,9 @@ public sealed class BrokerOptions
     /// <summary>Optional per-broker pause, in milliseconds, between that broker's history calls. Absent means the broker's own limit, as OpenAlgo paces it.</summary>
     public Dictionary<string, int> HistoryGapMs { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>Optional per-broker wait, in milliseconds, between the retries of a refused or rate-limited call. Absent means the broker's own backoff, as OpenAlgo waits.</summary>
+    public Dictionary<string, int> RetryBackoffMs { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
     [System.ComponentModel.DataAnnotations.Range(1, 120)]
     public int TimeoutSeconds { get; set; } = 15;
 }

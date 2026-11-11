@@ -67,6 +67,10 @@ public sealed class BrokerSessionFactory(TokenProtector protector, IOptionsMonit
     public TimeSpan HistoryGap(string broker, TimeSpan fallback) =>
         options.CurrentValue.HistoryGapMs.TryGetValue(broker, out var ms) ? TimeSpan.FromMilliseconds(ms) : fallback;
 
+    /// <summary>The wait before a retry: the configured one, else the broker's own backoff.</summary>
+    public TimeSpan RetryBackoff(string broker, TimeSpan fallback) =>
+        options.CurrentValue.RetryBackoffMs.TryGetValue(broker, out var ms) ? TimeSpan.FromMilliseconds(ms) : fallback;
+
     public string BaseUrl(string broker, string fallback) =>
         options.CurrentValue.BaseUrls.TryGetValue(broker, out var url) && !string.IsNullOrWhiteSpace(url) ? url.TrimEnd('/') : fallback;
 }
