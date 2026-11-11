@@ -1025,7 +1025,7 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
 
 **Mutation check:** 11 of 11 red (`tools/mutation/tg3-history.json`). H1 to H8 cover the Zerodha candle code and `/intervals` (the 90-day chunk and the daily IST shift among them); H9 to H11 cover the 350 ms spacing, the Historify refusal and the unknown-symbol answer.
 
-**Still to do in this pass:** history for Dhan, Dhan Sandbox, Upstox, Fyers and Delta Exchange. A broker that sends no open interest will also need its own check that the service adds `oi: 0`.
+**Still to do in this pass:** history for Dhan, Dhan Sandbox, Fyers and Delta Exchange. A broker that sends no open interest will also need its own check that the service adds `oi: 0`.
 
 **Angel One (added).**
 
@@ -1042,5 +1042,21 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
 - **Open interest** is the one exception to that rule. As in OpenAlgo, a refused open-interest call leaves the candles with `oi` 0, and a fixture shows it.
 - **Mutation check:** 12 more, HA1 to HA12, all red. `tg3-history.json` now holds 23.
 
-**Task Groups 5 (the Angular app) and 6 (deployment)** are Antigravity's and are not worked on here.
+**Upstox (added).**
 
+- **Candles:** v3 historical candles are cut into the day spans each resolution allows (30 days up to 15m, 90 for 30m and hours, 3650 daily).
+  - A rate-limit answer is retried up to three times.
+  - A daily candle is stamped at 00:00 UTC of its India date.
+  - When two candles share a time, the first one received is kept.
+- **Today:**
+  - A minute or hour request that ends today asks the intraday endpoint first and keeps only the requested days.
+  - A daily request that includes today builds today's candle from the quote, unless the quote only repeats the latest candle.
+  - These cannot be recorded, because a recording would depend on the day it runs. Two clock-controlled integration tests pin them.
+- **Contract tests:** 19 new fixtures, 417 in all. They include 3 deliberate differences:
+  - **Interval Upstox lacks:** 400 naming the choices, where OpenAlgo answers 500.
+  - **Expired token and a refused chunk:** the same silent-gap behaviour as Angel One in OpenAlgo; EP Trade bot stops and names the days.
+- **`/intervals` on Upstox** offers 1m, 2m, 3m, 5m, 10m, 15m, 30m, 1h to 4h, D, W and M. `60m` is left out because it is not in the supported list.
+- **Mutation check:** 12 more, HU1 to HU12, all red; `tg3-history.json` now holds 35.
+  - The first HU7 (leaving the instrument key unescaped) survived, because .NET escapes `|` in an address on its own. It was an equivalent mutation, not a test gap, and it was replaced by one that escapes the key twice.
+
+**Task Groups 5 (the Angular app) and 6 (deployment)** are Antigravity's and are not worked on here.

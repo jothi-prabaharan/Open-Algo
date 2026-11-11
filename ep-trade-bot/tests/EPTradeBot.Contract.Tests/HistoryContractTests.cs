@@ -67,3 +67,35 @@ public sealed class HistoryAngelContractTests(HistoryAngelHost host, ITestOutput
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+/// <summary>History and intervals on Upstox (tools/contract-fixtures/history_upstox.fixtures.json).</summary>
+public sealed class HistoryUpstoxHost : BrokerContractHost
+{
+    public override string BrokerName => "upstox";
+    public override string FixtureFile => "history_upstox.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+public sealed class HistoryUpstoxContractTests(HistoryUpstoxHost host, ITestOutputHelper output) : IClassFixture<HistoryUpstoxHost>
+{
+    private const string Gap = "OpenAlgo logs a chunk Upstox would not answer, carries on and answers success with the candles it has (none at all, here). EP Trade bot stops and says so, because a history with a missing stretch looks like a quiet market.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_interval_upstox_lacks"] = new(
+            "OpenAlgo answers 500 with \"Invalid interval: 20m\". EP Trade bot answers 400 and names what Upstox offers.",
+            Status: 400),
+        ["history_session_expired"] = new(Gap, f => ContractRunner.Expect(f, 403, ContractRunner.Error("Upstox says the access token is invalid or has expired. Log in to Upstox again."))),
+        ["history_chunk_refused"] = new(Gap, f => ContractRunner.Expect(f, 500,
+            ContractRunner.Error("Upstox could not send the candles for 2026-11-02 to 2026-11-02: UDAPI1021: Invalid Instrument key"))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_upstox.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

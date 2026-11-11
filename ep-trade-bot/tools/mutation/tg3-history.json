@@ -182,5 +182,101 @@
   "new": "if (!Truthy(reply?[\"status\"]) && false)\n            {\n                var message = Str(reply?[\"message\"]);",
   "filter": "FullyQualifiedName~HistoryAngelContractTests",
   "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HU1 five minute candles asked 31 days at a time",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "[\"5m\"] = (\"minutes\", 5, 30)",
+  "new": "[\"5m\"] = (\"minutes\", 5, 31)",
+  "filter": "FullyQualifiedName~HistoryUpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HU2 dates swapped in the historical address",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "/{to:yyyy-MM-dd}/{from:yyyy-MM-dd}\"",
+  "new": "/{from:yyyy-MM-dd}/{to:yyyy-MM-dd}\"",
+  "filter": "FullyQualifiedName~HistoryUpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HU3 daily candle stamped at the instant",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "if (!daily) return moment.ToUnixTimeSeconds();",
+  "new": "if (!daily || DateTime.MaxValue.Year > 0) return moment.ToUnixTimeSeconds();",
+  "filter": "FullyQualifiedName~HistoryUpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HU4 duplicate timestamp keeps the last candle",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "candles.TryAdd(stamp, new JsonObject",
+  "new": "candles[stamp] = (new JsonObject",
+  "filter": "FullyQualifiedName~HistoryUpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HU5 rate limit never retried",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "if (attempt < 3)\n                {\n                    await Task.Delay(TimeSpan.FromSeconds(1 << attempt)",
+  "new": "if (attempt < 0)\n                {\n                    await Task.Delay(TimeSpan.FromSeconds(1 << attempt)",
+  "filter": "FullyQualifiedName~HistoryUpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HU6 open interest dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "[\"oi\"] = c.Count > 6 ? Number(c[6]) : 0,",
+  "new": "[\"oi\"] = 0,",
+  "filter": "FullyQualifiedName~HistoryUpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HU7 instrument key escaped twice",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "var key = Uri.EscapeDataString(instrument.Token);",
+  "new": "var key = Uri.EscapeDataString(Uri.EscapeDataString(instrument.Token));",
+  "filter": "FullyQualifiedName~HistoryUpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HU8 refused chunk answered as no candles",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "throw new BrokerException($\"Upstox could not send the candles{days}",
+  "new": "return [];\n            throw new BrokerException($\"Upstox could not send the candles{days}",
+  "filter": "FullyQualifiedName~HistoryUpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HU9 intraday endpoint never asked for today",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "if (span.Unit is \"minutes\" or \"hours\" && to == today)",
+  "new": "if (span.Unit is \"minutes\" or \"hours\" && to == DateOnly.MinValue)",
+  "filter": "FullyQualifiedName~HistoryApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "HU10 intraday candles of other days kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "seconds * 1000 >= startMs && seconds * 1000 < endMs",
+  "new": "seconds * 1000 < endMs",
+  "filter": "FullyQualifiedName~HistoryApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "HU11 today's daily candle never built",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "if (interval == \"D\" && from <= today && today <= to &&",
+  "new": "if (interval == \"D\" && from <= today && today <= to && false &&",
+  "filter": "FullyQualifiedName~HistoryApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "HU12 a repeated quote added as a new candle",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "&& Float(last[4]) == ltp && Float(last[5]) == Float(q[\"volume\"]))",
+  "new": "&& Float(last[4]) == ltp && Float(last[5]) == -1)",
+  "filter": "FullyQualifiedName~HistoryApiTests",
+  "project": "EPTradeBot.IntegrationTests"
  }
 ]

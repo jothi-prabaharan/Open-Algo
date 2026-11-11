@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.Json.Nodes;
@@ -14,15 +15,15 @@ namespace EPTradeBot.Infrastructure.Brokers.Upstox;
 /// and refused rather than guessed: history, GTT, margin, login, global indicators and the feed.
 /// </summary>
 [BrokerPlugin]
-public sealed class UpstoxPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<UpstoxPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
+public sealed class UpstoxPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<UpstoxPlugin> logger)
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory
 {
     private const string Api = "https://api.upstox.com";
     private const string OrderApi = "https://api-hft.upstox.com";
 
     public string Name => "upstox";
     public string DisplayName => "Upstox";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     private static readonly HashSet<string> OpenStatuses =
@@ -397,6 +398,196 @@ public sealed class UpstoxPlugin(IHttpClientFactory http, BrokerSessionFactory s
     }
 
     // ---- plumbing --------------------------------------------------------------------------------------------
+
+    // ---- history ---------------------------------------------------------------------------------------------
+
+    // timeframe_map and chunk_limits of broker/upstox/api/data.py: the v3 unit and interval, and the most days one request may span.
+    private static readonly Dictionary<string, (string Unit, int Interval, int Days)> CandleSpans = new()
+    {
+        ["1m"] = ("minutes", 1, 30), ["2m"] = ("minutes", 2, 30), ["3m"] = ("minutes", 3, 30), ["5m"] = ("minutes", 5, 30),
+        ["10m"] = ("minutes", 10, 30), ["15m"] = ("minutes", 15, 30), ["30m"] = ("minutes", 30, 90), ["60m"] = ("minutes", 60, 90),
+        ["1h"] = ("hours", 1, 90), ["2h"] = ("hours", 2, 90), ["3h"] = ("hours", 3, 90), ["4h"] = ("hours", 4, 90),
+        ["D"] = ("days", 1, 3650), ["W"] = ("weeks", 1, 7300), ["M"] = ("months", 1, 7300),
+    };
+
+    public IReadOnlyList<string> HistoryTimeframes { get; } = [.. CandleSpans.Keys];
+
+    public async Task<JsonArray> GetHistoryAsync(BrokerSession session, SymbolRecord instrument, string interval, DateOnly start, DateOnly end, CancellationToken cancellationToken)
+    {
+        if (!CandleSpans.TryGetValue(interval, out var span))
+            throw new BrokerException($"Upstox does not offer {interval} candles. Choose one of: {string.Join(", ", CandleSpans.Keys)}.", 400);
+
+        var today = DateOnly.FromDateTime(clock.GetUtcNow().ToOffset(TimeSpan.FromHours(5.5)).DateTime);
+        var candles = new SortedDictionary<long, JsonObject>();
+        for (var from = start; from <= end;)
+        {
+            var to = from.AddDays(span.Days - 1) < end ? from.AddDays(span.Days - 1) : end;
+            foreach (var row in await ChunkAsync(session, instrument, interval, span, from, to, today, cancellationToken))
+            {
+                if (row is not JsonArray c || c.Count < 6) continue;
+                if (Stamp(c[0], interval == "D") is not { } stamp) continue;
+                // Two candles with one timestamp: the first one received is kept.
+                candles.TryAdd(stamp, new JsonObject
+                {
+                    ["close"] = Number(c[4]), ["high"] = Number(c[2]), ["low"] = Number(c[3]), ["open"] = Number(c[1]),
+                    ["timestamp"] = stamp, ["volume"] = Number(c[5]), ["oi"] = c.Count > 6 ? Number(c[6]) : 0,
+                });
+            }
+
+            from = to.AddDays(1);
+        }
+
+        return new JsonArray(candles.Values.Select(v => (JsonNode?)v).ToArray());
+    }
+
+    /// <summary>One request's worth of candles, as <c>[time, open, high, low, close, volume, oi]</c> rows.</summary>
+    private async Task<List<JsonNode?>> ChunkAsync(BrokerSession session, SymbolRecord instrument, string interval, (string Unit, int Interval, int Days) span,
+        DateOnly from, DateOnly to, DateOnly today, CancellationToken cancellationToken)
+    {
+        var key = Uri.EscapeDataString(instrument.Token);
+        var rows = new List<JsonNode?>();
+
+        // Today's candles are not in the historical endpoint until the day is over, so an intraday chunk that ends today asks for them first.
+        if (span.Unit is "minutes" or "hours" && to == today)
+        {
+            var intraday = await TryCandlesAsync(session, $"/v3/historical-candle/intraday/{key}/{span.Unit}/{span.Interval}", cancellationToken);
+            if (intraday is not null)
+            {
+                var startMs = IstMs(from);
+                var endMs = IstMs(to.AddDays(1));
+                foreach (var row in intraday)
+                {
+                    if (row is JsonArray c && c.Count > 0 && Stamp(c[0], false) is { } seconds && seconds * 1000 >= startMs && seconds * 1000 < endMs) rows.Add(row);
+                }
+            }
+        }
+
+        if (rows.Count == 0 || from < today)
+        {
+            var historical = await CandlesAsync(session, $"/v3/historical-candle/{key}/{span.Unit}/{span.Interval}/{to:yyyy-MM-dd}/{from:yyyy-MM-dd}", from, to, cancellationToken);
+            rows.AddRange(historical);
+        }
+
+        if (interval == "D" && from <= today && today <= to && !rows.Any(r => r is JsonArray c && c.Count > 0 && Stamp(c[0], true) is { } s && s == EpochOfDate(today)))
+        {
+            if (await TodaysDailyCandleAsync(session, instrument, today, rows, cancellationToken) is { } candle) rows.Add(candle);
+        }
+
+        return rows;
+    }
+
+    /// <summary>Candles of one endpoint, or null when it did not answer (used where OpenAlgo carries on without the endpoint).</summary>
+    private async Task<JsonArray?> TryCandlesAsync(BrokerSession session, string path, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await CandlesAsync(session, path, null, null, cancellationToken);
+        }
+        catch (BrokerException ex)
+        {
+            logger.LogWarning(ex, "Upstox intraday candles could not be read; the historical ones are used.");
+            return null;
+        }
+    }
+
+    /// <summary>GET a v3 candle endpoint, retrying a rate-limit answer up to three times (1, 2, 4 s). A refusal is an error naming the days.</summary>
+    private async Task<JsonArray> CandlesAsync(BrokerSession session, string path, DateOnly? from, DateOnly? to, CancellationToken cancellationToken)
+    {
+        for (var attempt = 0; ; attempt++)
+        {
+            using var request = Request(session, HttpMethod.Get, Api, path);
+            using var response = await SendAsync(request, cancellationToken);
+            var reply = await ReadAsync(response, cancellationToken) as JsonObject;
+            var limited = response.StatusCode == HttpStatusCode.TooManyRequests || reply?["errors"] is JsonArray errors && errors.OfType<JsonObject>().Any(e => Str(e["errorCode"]) == "UDAPI10005");
+            if (limited)
+            {
+                if (attempt < 3)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1 << attempt), cancellationToken);
+                    continue;
+                }
+
+                throw new BrokerException("Upstox is limiting requests. Wait a moment, then try again.", 429);
+            }
+
+            if (Str(reply?["status"]) == "success") return reply!["data"]?["candles"] as JsonArray ?? [];
+            if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+                throw new BrokerException("Upstox says the access token is invalid or has expired. Log in to Upstox again.", 403);
+            // OpenAlgo logs a chunk Upstox would not answer and carries on, which leaves a gap with nothing to show for it.
+            var days = from is { } f && to is { } t ? $" for {f:yyyy-MM-dd} to {t:yyyy-MM-dd}" : "";
+            throw new BrokerException($"Upstox could not send the candles{days}: {ErrorMessage(reply, "no reason given.")}");
+        }
+    }
+
+    /// <summary>
+    /// A daily request that includes today has no candle for today until the market closes, so one is built from the
+    /// quote, unless the quote repeats the latest candle exactly (then it would only be a duplicate).
+    /// </summary>
+    private async Task<JsonNode?> TodaysDailyCandleAsync(BrokerSession session, SymbolRecord instrument, DateOnly today, List<JsonNode?> rows, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var q = QuoteFields(await QuoteAsync(session, instrument.Symbol, instrument.Exchange, cancellationToken));
+            var ltp = Float(q["ltp"]);
+            if (ltp <= 0) return null;
+            double Q(string field) => q[field] is null ? ltp : Float(q[field]);
+            if (rows.OfType<JsonArray>().Where(r => r.Count > 5).MaxBy(r => Stamp(r[0], false) ?? 0) is { } last
+                && Float(last[1]) == Q("open") && Float(last[2]) == Q("high") && Float(last[3]) == Q("low") && Float(last[4]) == ltp && Float(last[5]) == Float(q["volume"]))
+                return null;
+            return new JsonArray($"{today:yyyy-MM-dd}T00:00:00+05:30", Q("open"), Q("high"), Q("low"), ltp, Float(q["volume"]), Float(q["oi"]));
+        }
+        catch (BrokerException ex)
+        {
+            logger.LogWarning(ex, "Today's daily candle could not be built from the quote.");
+            return null;
+        }
+    }
+
+    private static long IstMs(DateOnly date) => new DateTimeOffset(date.ToDateTime(TimeOnly.MinValue), TimeSpan.FromHours(5.5)).ToUnixTimeMilliseconds();
+
+    private static long EpochOfDate(DateOnly date) => new DateTimeOffset(date.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero).ToUnixTimeSeconds();
+
+    /// <summary>
+    /// Epoch seconds of a v3 candle time ("2026-11-02T09:15:00+05:30", or epoch milliseconds). A daily candle is
+    /// stamped at 00:00 UTC of its India date, as the other brokers' daily candles are. Null for a time that cannot be read.
+    /// </summary>
+    private static long? Stamp(JsonNode? node, bool daily)
+    {
+        DateTimeOffset moment;
+        if (node is JsonValue v && v.TryGetValue<string>(out var text))
+        {
+            if (!DateTimeOffset.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out moment)) return null;
+        }
+        else if (node is JsonValue n && n.TryGetValue<double>(out var number))
+        {
+            moment = DateTimeOffset.FromUnixTimeMilliseconds(number < 1e12 ? (long)(number * 1000) : (long)number);
+        }
+        else
+        {
+            return null;
+        }
+
+        if (!daily) return moment.ToUnixTimeSeconds();
+        var ist = moment.ToOffset(TimeSpan.FromHours(5.5));
+        return EpochOfDate(DateOnly.FromDateTime(ist.DateTime));
+    }
+
+    /// <summary>A candle figure as a number; text that is not one is 0, as OpenAlgo's to_numeric(errors="coerce") leaves it.</summary>
+    private static JsonNode Number(JsonNode? node)
+    {
+        if (node is JsonValue v)
+        {
+            if (v.TryGetValue<long>(out var whole)) return whole;
+            if (v.TryGetValue<double>(out var real)) return real;
+            if (v.TryGetValue<string>(out var text))
+            {
+                if (long.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out whole)) return whole;
+                if (double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out real)) return real;
+            }
+        }
+
+        return 0;
+    }
 
     private HttpClient Client() => http.CreateClient(Name);
 
