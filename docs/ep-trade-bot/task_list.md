@@ -80,7 +80,7 @@ Not started (30): fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, defin
 - [ ] Quartz.NET with IST schedules and weekday controls
 - [ ] Hosted strategy process supervisor
 - [ ] Flow engine and node types
-- [ ] 127 indicators with parity tests
+- [x] 127 indicators with parity tests (`Core/Indicators`; 255 recorded cases against `openalgo.ta`, 21 mutation checks)
 - [ ] Action Center Auto / Semi-Auto, re-check at approval
 - [ ] Agent on Microsoft.Extensions.AI, proposal-only order tools
 - [ ] MCP stdio + HTTP/OAuth

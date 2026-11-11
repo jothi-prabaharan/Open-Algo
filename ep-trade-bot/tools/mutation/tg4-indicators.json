@@ -1,0 +1,162 @@
+[
+ {
+  "name": "IK1 EMA seeded on the SMA instead of the first value",
+  "file": "src/EPTradeBot.Core/Indicators/Kernels.cs",
+  "old": "prev = double.IsNaN(prev) ? x : (alpha * x) + ((1.0 - alpha) * prev);",
+  "new": "prev = double.IsNaN(prev) ? x + 0.5 : (alpha * x) + ((1.0 - alpha) * prev);",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK2 Wilder smoothing divisor",
+  "file": "src/EPTradeBot.Core/Indicators/Kernels.cs",
+  "old": "o[i] = double.IsNaN(data[i]) ? o[i - 1] : ((o[i - 1] * (period - 1)) + data[i]) / period;",
+  "new": "o[i] = double.IsNaN(data[i]) ? o[i - 1] : ((o[i - 1] * period) + data[i]) / (period + 1);",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK3 RSI average loss",
+  "file": "src/EPTradeBot.Core/Indicators/Kernels.cs",
+  "old": "al = ((al * (period - 1)) + losses[i]) / period;",
+  "new": "al = ((al * (period - 1)) + gains[i]) / period;",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK4 SMA window leaks a NaN",
+  "file": "src/EPTradeBot.Core/Indicators/Kernels.cs",
+  "old": "o[period - 1 + i] = nans[i] == 0 ? s[i] / period : NaN;",
+  "new": "o[period - 1 + i] = s[i] / period;",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK5 stdev not floored at zero",
+  "file": "src/EPTradeBot.Core/Indicators/Kernels.cs",
+  "old": "Math.Sqrt(Math.Max(0.0, v))",
+  "new": "Math.Sqrt(Math.Abs(v))",
+  "filter": "FullyQualifiedName~Indicator",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK6 true range ignores the gap",
+  "file": "src/EPTradeBot.Core/Indicators/Kernels.cs",
+  "old": "tr[i] = double.IsNaN(hl) || double.IsNaN(hc) || double.IsNaN(lc) ? NaN : Math.Max(Math.Max(hl, hc), lc);",
+  "new": "tr[i] = double.IsNaN(hl) || double.IsNaN(hc) || double.IsNaN(lc) ? NaN : hl;",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK7 HMA root",
+  "file": "src/EPTradeBot.Core/Indicators/Kernels.cs",
+  "old": "var root = period > 0 ? (int)Math.Sqrt(period) : 0;",
+  "new": "var root = period > 0 ? (int)Math.Sqrt(period) + 1 : 0;",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK8 DEMA second average starts early",
+  "file": "src/EPTradeBot.Core/Indicators/IndicatorRegistry.cs",
+  "old": "var e2 = EmaFrom(e1, p - 1, p, 2 * (p - 1));\n        return Kernels.Zip",
+  "new": "var e2 = EmaFrom(e1, p - 1, p, 2 * (p - 1) - 1);\n        return Kernels.Zip",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK9 supertrend direction",
+  "file": "src/EPTradeBot.Core/Indicators/KernelsVolatility.cs",
+  "old": "if (st[i - 1] == fu[i - 1]) dr[i] = close[i] > fu[i] ? -1.0 : 1.0;",
+  "new": "if (st[i - 1] == fu[i - 1]) dr[i] = close[i] > fu[i] ? 1.0 : -1.0;",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK10 parabolic SAR acceleration",
+  "file": "src/EPTradeBot.Core/Indicators/KernelsVolatility.cs",
+  "old": "af = Math.Min(af + acceleration, maximum);\n                    }\n\n                    sar[i] = i >= 2 ? Math.Min",
+  "new": "af = Math.Min(af + (2 * acceleration), maximum);\n                    }\n\n                    sar[i] = i >= 2 ? Math.Min",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK11 MACD signal",
+  "file": "src/EPTradeBot.Core/Indicators/KernelsOscillators.cs",
+  "old": "var sig = Ema(line, signal);\n        return (line, sig, Sub(line, sig));",
+  "new": "var sig = Ema(line, signal + 1);\n        return (line, sig, Sub(line, sig));",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK12 CCI constant",
+  "file": "src/EPTradeBot.Core/Indicators/KernelsOscillators.cs",
+  "old": "(tp[i] - sma) / (0.015 * md)",
+  "new": "(tp[i] - sma) / (0.016 * md)",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK13 MFI first window",
+  "file": "src/EPTradeBot.Core/Indicators/KernelsOscillators.cs",
+  "old": "if (i >= period - 1) o[i] = ns == 0",
+  "new": "if (i >= period) o[i] = ns == 0",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK14 OBV NaN volume",
+  "file": "src/EPTradeBot.Core/Indicators/KernelsOscillators.cs",
+  "old": "(close[i] > close[i - 1] ? 1.0 : close[i] < close[i - 1] ? -1.0 : 0.0) * volume[i]",
+  "new": "(close[i] > close[i - 1] ? volume[i] : close[i] < close[i - 1] ? -volume[i] : 0.0)",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK15 linreg recovers after a NaN",
+  "file": "src/EPTradeBot.Core/Indicators/KernelsTrend.cs",
+  "old": "if (firstNaN >= 0) for (var i = firstNaN; i < o.Length; i++) o[i] = NaN;",
+  "new": "if (firstNaN >= 0) for (var i = firstNaN; i < firstNaN; i++) o[i] = NaN;",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK16 aroon lookback",
+  "file": "src/EPTradeBot.Core/Indicators/KernelsTrend.cs",
+  "old": "var lookback = period + 1;\n        for (var i = lookback - 1; i < n; i++)\n        {\n            var ws",
+  "new": "var lookback = period;\n        for (var i = lookback - 1; i < n; i++)\n        {\n            var ws",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK17 ADX smoothing",
+  "file": "src/EPTradeBot.Core/Indicators/KernelsTrend.cs",
+  "old": "return (dip, dim, EmaWilder(dx, period));",
+  "new": "return (dip, dim, EmaWilder(dx, period + 1));",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK18 Fisher clamp",
+  "file": "src/EPTradeBot.Core/Indicators/KernelsVolatility.cs",
+  "old": "value = v > 0.99 ? 0.999 : v < -0.99 ? -0.999 : v;",
+  "new": "value = v > 0.99 ? 0.99 : v < -0.99 ? -0.99 : v;",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK19 Ichimoku displacement",
+  "file": "src/EPTradeBot.Core/Indicators/KernelsVolatility.cs",
+  "old": "var off = disp - 1;",
+  "new": "var off = disp;",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "IK20 Bollinger width uses sample deviation",
+  "file": "src/EPTradeBot.Core/Indicators/KernelsVolatility.cs",
+  "old": "for (var j = i - period + 1; j <= i; j++)\n            {\n                mx = Math.Max(mx, high[j]);",
+  "new": "for (var j = i - period + 2; j <= i; j++)\n            {\n                mx = Math.Max(mx, high[j]);",
+  "filter": "FullyQualifiedName~IndicatorParity",
+  "project": "EPTradeBot.Core.Tests"
+ }
+]
