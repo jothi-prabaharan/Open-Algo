@@ -47,7 +47,7 @@ Per active broker (contract-verified means 100% of its recorded fixtures match O
 - [x] Zerodha: orders, books, funds, quotes, depth, multiquotes, history (24 fixtures), ticker (20), margin (23)
 - [x] Zerodha: MCX (units to contracts at the Kite boundary, lot from the master contract; 21 fixtures, 16 mutation checks)
 - [x] Zerodha: GTT (60 fixtures, single and two-leg triggers, MARKET protected into LIMIT, MCX in contracts)
-- [x] Zerodha: login (request token exchanged at /session/token; 5 fixtures)
+- [x] Zerodha: login (request token exchanged at /session/token, kept as api_key:access_token as Kite expects; 5 fixtures)
 - [ ] Zerodha: market-data feed onto the bus
 - [x] Angel One: orders, books, funds, quotes, depth, multiquotes, history (21 fixtures), margin (15)
 - [x] Angel One: GTT (51 fixtures; an OCO is two rules joined by a dash, rolled back if the pair fails)

@@ -218,7 +218,7 @@ for sc in SCENARIOS.SCENARIOS:
                 "request": sc["request"],
                 "broker": state["canned"],
                 "expected": {"status": 400 if error else 200, "body": {"status": "error", "message": error} if error else {"status": "success"}},
-                "stored": None if error else {"auth_token": token, "feed_token": feed},
+                "stored": None if error else {"auth_token": getattr(SCENARIOS, "stored", lambda t: t)(token), "feed_token": feed},
                 "sent": state["sent"],
                 "ignore": sc.get("ignore", []),
             }

@@ -4,6 +4,11 @@ BROKER = "zerodha"
 SYMBOLS = []
 ENV = {"BROKER_API_KEY": "kite-api-key", "BROKER_API_SECRET": "kite-api-secret"}
 
+def stored(token):
+    """What OpenAlgo keeps: Kite's Authorization header takes api_key:access_token (blueprints/brlogin.py)."""
+    return "kite-api-key:" + token
+
+
 URL = "POST /session/token"
 GOOD = {"body": {"status": "success", "data": {"user_id": "AB1234", "access_token": "kite-access-token-777", "public_token": "pub"}}}
 

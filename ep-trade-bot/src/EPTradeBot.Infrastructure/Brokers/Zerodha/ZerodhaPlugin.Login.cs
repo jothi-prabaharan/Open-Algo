@@ -37,7 +37,8 @@ public sealed partial class ZerodhaPlugin
         }
 
         return Str(body?["data"]?["access_token"]) is { Length: > 0 } token
-            ? BrokerLoginResult.Success(token, null)
+            // Kite's Authorization header takes api_key:access_token, so that pair is what the account keeps.
+            ? BrokerLoginResult.Success($"{apiKey}:{token}", null)
             : BrokerLoginResult.Refused("Zerodha accepted the sign-in but sent no access token. Start the sign-in again.", 502);
     }
 }
