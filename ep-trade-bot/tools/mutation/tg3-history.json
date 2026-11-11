@@ -470,5 +470,149 @@
   "new": "if (endTs >= startTs - 100000000)",
   "filter": "FullyQualifiedName~HistoryDeltaContractTests",
   "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH1 weekend start not moved to Monday",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "while (Weekend(start)) start = start.AddDays(1);",
+  "new": "while (start.Year < 0) start = start.AddDays(1);",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH2 weekend end not moved to Friday",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "while (Weekend(end)) end = end.AddDays(-1);",
+  "new": "while (end.Year < 0) end = end.AddDays(-1);",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH3 one day not stretched to the next",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "if (start == end) end = end.AddDays(1);",
+  "new": "if (start == end && start.Year < 0) end = end.AddDays(1);",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH4 daily request not made inclusive of the end",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "Body(Day(start), Day(end.AddDays(1)), false)",
+  "new": "Body(Day(start), Day(end), false)",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH5 live intraday chunks of 60 days",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "var span = Sandbox ? 5 : 90;",
+  "new": "var span = Sandbox ? 5 : 60;",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH6 sandbox intraday chunks of 90 days",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "var span = Sandbox ? 5 : 90;",
+  "new": "var span = Sandbox ? 90 : 90;",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH7 daily candle stamped at the instant",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "if (!daily) return epoch;",
+  "new": "if (epoch > 0) return epoch;",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH8 empty chunk accepted at once",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "(reply[\"timestamp\"] as JsonArray ?? []).Count == 0 && attempt < 2)",
+  "new": "(reply[\"timestamp\"] as JsonArray ?? []).Count == 0 && attempt < 0)",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH9 hole between chunks returned",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "if (holes.Count > 0)",
+  "new": "if (holes.Count > 100)",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH10 bar after the close kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "if (close is null || row[\"timestamp\"]!.GetValue<long>() * 1000 < close) kept.Add(row);",
+  "new": "kept.Add(row);",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH11 index bars trimmed against MCX hours",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "private static string SessionExchange(string exchange) => exchange switch { \"NSE_INDEX\" => \"NSE\",",
+  "new": "private static string SessionExchange(string exchange) => exchange switch { \"NSE_INDEX\" => \"MCX\",",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH12 rate limit never retried",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "if (code == \"805\" && attempt < 3)",
+  "new": "if (code == \"805\" && attempt < 0)",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH13 intraday expiry code sent by the sandbox",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "if (intraday ? !Sandbox : !Sandbox || chartInstrument == \"EQUITY\")",
+  "new": "if (!Sandbox || chartInstrument == \"EQUITY\")",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH14 daily expiry code sent for futures by the sandbox",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "if (intraday ? !Sandbox : !Sandbox || chartInstrument == \"EQUITY\")",
+  "new": "if (intraday ? !Sandbox : true)",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH15 duplicate timestamp keeps the last candle",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "candles.TryAdd(stamp, new JsonObject\n                {\n                    [\"timestamp\"] = stamp, [\"open\"] = At(",
+  "new": "candles[stamp] = (new JsonObject\n                {\n                    [\"timestamp\"] = stamp, [\"open\"] = At(",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH16 weekday chunk skipped on weekend ends only (live)",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "var trades = Sandbox ? !Weekend(chunkFrom) || !Weekend(to) :",
+  "new": "var trades = true ? !Weekend(chunkFrom) || !Weekend(to) :",
+  "filter": "FullyQualifiedName~HistoryDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HH17 today's daily candle never built",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "if (interval == \"D\" && Day(start).CompareTo(Day(today)) <= 0",
+  "new": "if (interval == \"D\" && false && Day(start).CompareTo(Day(today)) <= 0",
+  "filter": "FullyQualifiedName~HistoryApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "HH18 today's candle built from a quote with no price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "if (Float(q[\"ltp\"]) > 0)",
+  "new": "if (Float(q[\"ltp\"]) > -1)",
+  "filter": "FullyQualifiedName~HistoryApiTests",
+  "project": "EPTradeBot.IntegrationTests"
  }
 ]

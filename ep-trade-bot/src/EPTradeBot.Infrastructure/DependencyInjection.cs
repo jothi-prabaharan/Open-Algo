@@ -1,3 +1,4 @@
+using EPTradeBot.Core.Calendar;
 using EPTradeBot.Core.Brokers;
 using EPTradeBot.Core.Configuration;
 using EPTradeBot.Infrastructure.Brokers;
@@ -54,6 +55,7 @@ public static class DependencyInjection
         services.AddSingleton<BrokerSessionFactory>();
         services.AddSingleton<ISymbolMaster, EfSymbolMaster>();
         BrokerRegistry.RegisterPlugins(services);
+        services.AddSingleton<IMarketSessions, MarketSessionLookup>();
         services.AddSingleton<IBrokerRegistry, BrokerRegistry>();
         services.AddHttpClient();
         services.ConfigureHttpClientDefaults(http => http.ConfigureHttpClient((sp, client) =>

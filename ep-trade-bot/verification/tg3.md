@@ -1025,7 +1025,7 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
 
 **Mutation check:** 11 of 11 red (`tools/mutation/tg3-history.json`). H1 to H8 cover the Zerodha candle code and `/intervals` (the 90-day chunk and the daily IST shift among them); H9 to H11 cover the 350 ms spacing, the Historify refusal and the unknown-symbol answer.
 
-**Still to do in this pass:** history for Dhan and Dhan Sandbox. A broker that sends no open interest will also need its own check that the service adds `oi: 0`.
+**Pass 8 is complete:** history and intervals work on all seven reference brokers. A broker that sends no open interest will also need its own check that the service adds `oi: 0`.
 
 **Angel One (added).**
 
@@ -1088,5 +1088,28 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
 - **Today:** a request that ends today ends at that second, which a recording cannot hold, so a clock-controlled integration test pins it.
 - **Mutation check:** 12 more, HD1 to HD12, all red; `tg3-history.json` now holds 59.
   - HD12 first survived because the fixture meant to cover a window starting in the future had its two dates the wrong way round. It was fixed and re-recorded.
+
+**Dhan and Dhan Sandbox (added).**
+
+- **The window:** Dhan moves it to trading days (a start on a weekend to Monday, an end on one to Friday) and stretches one day to the next. A daily request asks to the day after the end, to include it.
+- **Chunks:** intraday requests go in 90-day chunks for Dhan and 5-day chunks for the sandbox, as OpenAlgo asks them. A chunk with no trading day is skipped.
+- **Dhan retries a chunk three times** (after 2 and 4 seconds), and an empty answer counts as suspect and is tried again. An empty chunk between chunks that had candles is refused as a history with a hole in it. The sandbox asks each chunk once.
+- **Dhan's rate-limit error (805)** is tried again three times (2, 4 and 8 seconds).
+- **Candles:**
+  - A daily candle is stamped at 00:00 UTC of its India date; an intraday one keeps its instant, as OpenAlgo gives them with its server in India.
+  - Bars that start at or after the close of their day are dropped from index series, against the market calendar. GIFT NIFTY trades its own hours and is left alone.
+  - The expiry code is sent on every Dhan request, on a sandbox daily request for equity only, and on no sandbox intraday request.
+- **Today:** a daily request that includes today gets today's candle from the quote, once the price is above zero. A one-day request is stretched to the next day first, so asking for yesterday alone also reaches today, as it does in OpenAlgo. A clock-controlled integration test pins this.
+- **Contract tests:** 46 new fixtures (29 Dhan, 17 Dhan Sandbox), 514 in all. The deliberate differences:
+  - **Failed requests:** OpenAlgo answers success with no candles for a failed one-day request and for a refused or expired token. EP Trade bot says why there are none.
+  - **Interval Dhan lacks:** 400, where OpenAlgo answers 500.
+  - **Wording:** the reasons are worded for the trader.
+  - **Dhan Sandbox intraday candles:** OpenAlgo invents the prices and the open interest. EP Trade bot returns the sandbox's candles as they are, as it does for quotes.
+  - **A refused sandbox chunk:** OpenAlgo carries on to the next chunk; EP Trade bot stops at the first.
+- **Market calendar:** `/market/timings` and history now read the calendar through one lookup, `IMarketSessions`.
+- **MCX instruments:** Dhan's chart instrument type now covers MCX, so MCX index futures are FUTIDX and OPTIDX and other MCX contracts are FUTCOM and OPTFUT.
+- **Mutation check:** 18 more, HH1 to HH18, all red; `tg3-history.json` now holds 77.
+  - HH11 first survived because NSE and BSE close together, so a wrong exchange for an index changed nothing. It now uses MCX hours.
+  - HH18 exposed that nothing tested a quote with no price. That case was added.
 
 **Task Groups 5 (the Angular app) and 6 (deployment)** are Antigravity's and are not worked on here.

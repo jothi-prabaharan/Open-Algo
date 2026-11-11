@@ -135,6 +135,60 @@ public sealed class HistoryApiTests
         Assert.Equal(now.ToUnixTimeSeconds().ToString(), query["end"]);
     }
 
+    [PostgresFact]
+    public async Task Dhan_builds_today_s_daily_candle_from_the_quote_and_keeps_the_candle_it_already_has()
+    {
+        var broker = new FakeBroker();
+        var now = new DateTimeOffset(2026, 11, 4, 10, 42, 30, TimeSpan.FromHours(5.5)); // a Wednesday
+        await using var host = new TestHost("Production", b =>
+        {
+            b.UseSetting("Brokers:Enabled:0", "dhan");
+            b.UseSetting("OpenAlgoApi:HistorySpacingMs", "0");
+            b.ConfigureServices(s =>
+            {
+                s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => broker));
+                s.AddSingleton<TimeProvider>(new StoppedClock(now));
+            });
+        });
+        var account = await host.CreateAccountAsync(AccountType.LIVE, "dhan", broker: "dhan", clientId: "1100000001");
+        (await host.Admin.PutAsJsonAsync($"/api/v1/accounts/{account}/broker-session", new { auth_token = "token" })).EnsureSuccessStatusCode();
+        var key = (await host.Get<ApiKeyService>().IssueAsync(account, "history")).Key;
+        await using (var db = host.NewDb())
+        {
+            db.Set<SymToken>().Add(new SymToken { Broker = "dhan", Symbol = "SBIN", Brsymbol = "SBIN", Exchange = "NSE", Brexchange = "NSE", Token = "3045", Lotsize = 1 });
+            await db.SaveChangesAsync();
+        }
+
+        var yesterday = new DateTimeOffset(2026, 11, 3, 0, 0, 0, TimeSpan.FromHours(5.5)).ToUnixTimeSeconds();
+        broker.Reset(new Dictionary<string, (int, string)>
+        {
+            ["POST /v2/charts/historical"] = (200, $$"""{"open":[790],"high":[801],"low":[788],"close":[799.95],"volume":[9000],"timestamp":[{{yesterday}}],"open_interest":[0]}"""),
+            ["POST /v2/marketfeed/quote"] = (200, """{"status":"success","data":{"NSE_EQ":{"3045":{"last_price":805.5,"ohlc":{"open":800,"high":806,"low":799,"close":799.95},"volume":1500,"oi":0,"depth":{"buy":[],"sell":[]}}}}}"""),
+        });
+        using var client = host.Anonymous();
+        var response = await client.PostAsJsonAsync("/api/v1/history", new { apikey = key, symbol = "SBIN", exchange = "NSE", interval = "D", start_date = "2026-11-03", end_date = "2026-11-04" });
+        var data = ((JsonObject)JsonNode.Parse(await response.Content.ReadAsStringAsync())!)["data"]!.AsArray();
+        Assert.Equal(2, data.Count);
+        Assert.Equal(new DateTimeOffset(2026, 11, 4, 0, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds(), data[1]!["timestamp"]!.GetValue<long>());
+        Assert.Equal(805.5, data[1]!["close"]!.GetValue<double>());
+        Assert.Equal(800.0, data[1]!["open"]!.GetValue<double>());
+        Assert.Equal(1500, data[1]!["volume"]!.GetValue<long>());
+        // A request that ends two days back (stretched to one day back) has no use for the quote. A request for yesterday alone would reach today, as OpenAlgo's does.
+        broker.ClearSent();
+        response = await client.PostAsJsonAsync("/api/v1/history", new { apikey = key, symbol = "SBIN", exchange = "NSE", interval = "D", start_date = "2026-11-02", end_date = "2026-11-02" });
+        Assert.Single(((JsonObject)JsonNode.Parse(await response.Content.ReadAsStringAsync())!)["data"]!.AsArray());
+        Assert.DoesNotContain(broker.Sent, s => s.Path == "/v2/marketfeed/quote");
+
+        // A quote with no price (before the market has traded) builds no candle.
+        broker.Reset(new Dictionary<string, (int, string)>
+        {
+            ["POST /v2/charts/historical"] = (200, $$"""{"open":[790],"high":[801],"low":[788],"close":[799.95],"volume":[9000],"timestamp":[{{yesterday}}],"open_interest":[0]}"""),
+            ["POST /v2/marketfeed/quote"] = (200, """{"status":"success","data":{"NSE_EQ":{"3045":{"last_price":0,"ohlc":{"open":0,"high":0,"low":0,"close":799.95},"volume":0,"oi":0,"depth":{"buy":[],"sell":[]}}}}}"""),
+        });
+        response = await client.PostAsJsonAsync("/api/v1/history", new { apikey = key, symbol = "SBIN", exchange = "NSE", interval = "D", start_date = "2026-11-03", end_date = "2026-11-04" });
+        Assert.Single(((JsonObject)JsonNode.Parse(await response.Content.ReadAsStringAsync())!)["data"]!.AsArray());
+    }
+
     private static async Task<(TestHost Host, FakeBroker Broker, string Key)> UpstoxHostAsync(StoppedClock clock)
     {
         var broker = new FakeBroker();

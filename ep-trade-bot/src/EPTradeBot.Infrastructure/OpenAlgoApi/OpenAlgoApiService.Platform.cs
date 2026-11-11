@@ -27,7 +27,7 @@ public sealed partial class OpenAlgoApiService
         if (year is < 2020 or > 2050) return V1Result.Error(400, "Year must be between 2020 and 2050");
 
         await using var db = await contexts.CreateDbContextAsync(ct);
-        var entries = await CalendarAsync(db, h => h.Year == year, ct);
+        var entries = await MarketSessionLookup.CalendarAsync(db, h => h.Year == year, ct);
         var rows = new JsonArray();
         foreach (var e in entries)
         {
@@ -54,28 +54,10 @@ public sealed partial class OpenAlgoApiService
         if (date < MarketCalendar.FirstDate || date > MarketCalendar.LastDate)
             return V1Result.Error(400, "Date must be between 2020-01-01 and 2050-12-31");
 
-        await using var db = await contexts.CreateDbContextAsync(ct);
-        var offsets = (await db.Set<MarketTiming>().AsNoTracking().ToListAsync(ct))
-            .GroupBy(t => t.ExchangeCode)
-            .ToDictionary(g => g.Key, g => (g.First().StartOffset, g.First().EndOffset));
-        // The first entry stored for the date, as OpenAlgo's .first() reads it.
-        var entry = (await CalendarAsync(db, h => h.HolidayDate == date, ct)).FirstOrDefault();
-
         var rows = new JsonArray();
-        foreach (var s in MarketCalendar.Sessions(date, entry, offsets))
+        foreach (var s in await marketSessions.SessionsAsync(date, ct))
             rows.Add(new JsonObject { ["exchange"] = s.Exchange, ["start_time"] = s.StartTime, ["end_time"] = s.EndTime });
         return Success(rows);
-    }
-
-    /// <summary>Calendar entries with their exchange rows, by date and then in stored order.</summary>
-    private static async Task<List<CalendarDay>> CalendarAsync(EpTradeDbContext db, System.Linq.Expressions.Expression<Func<MarketHoliday, bool>> filter, CancellationToken ct)
-    {
-        var holidays = await db.Set<MarketHoliday>().AsNoTracking().Where(filter).OrderBy(h => h.HolidayDate).ThenBy(h => h.Id).ToListAsync(ct);
-        var ids = holidays.Select(h => h.Id).ToList();
-        var exchanges = (await db.Set<MarketHolidayExchange>().AsNoTracking().Where(x => ids.Contains(x.HolidayId)).OrderBy(x => x.Id).ToListAsync(ct))
-            .ToLookup(x => x.HolidayId);
-        return holidays.Select(h => new CalendarDay(h.HolidayDate, h.Description, h.HolidayType,
-            exchanges[h.Id].Select(x => new CalendarExchange(x.ExchangeCode, x.IsOpen, x.StartTime, x.EndTime)).ToList())).ToList();
     }
 
     // ---- chart preferences -----------------------------------------------------------------------------------

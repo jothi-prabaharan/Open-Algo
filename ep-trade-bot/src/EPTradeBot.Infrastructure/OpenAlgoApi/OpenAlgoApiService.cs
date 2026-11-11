@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using EPTradeBot.Core.Brokers;
+using EPTradeBot.Core.Calendar;
 using EPTradeBot.Core.Contracts.V1;
 using EPTradeBot.Core.Entities.Audit;
 using EPTradeBot.Core.Entities.Core;
@@ -38,6 +39,7 @@ public sealed partial class OpenAlgoApiService(
     ISymbolMaster symbols,
     IDbContextFactory<EpTradeDbContext> contexts,
     IFreezeQuantityLookup freeze,
+    IMarketSessions marketSessions,
     TimeProvider clock,
     IConfiguration configuration,
     ILogger<OpenAlgoApiService> logger)

@@ -177,3 +177,101 @@ public sealed class HistoryDeltaContractTests(HistoryDeltaHost host, ITestOutput
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+/// <summary>History and intervals on Dhan (tools/contract-fixtures/history_dhan.fixtures.json), run with the clock stopped at the recording.</summary>
+public sealed class HistoryDhanHost : DhanFamilyHost
+{
+    public override string BrokerName => "dhan";
+    public override string FixtureFile => "history_dhan.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string>
+    {
+        ["OpenAlgoApi:HistorySpacingMs"] = "0", ["Brokers:RetryBackoffMs:dhan"] = "0",
+    };
+}
+
+public sealed class HistoryDhanContractTests(HistoryDhanHost host, ITestOutputHelper output) : IClassFixture<HistoryDhanHost>
+{
+    private const string Silent = "OpenAlgo logs a failed one-day request and answers success with no candles. EP Trade bot says why there are none.";
+
+    private static Action<JsonObject> Refusal(int status, string message) => f => ContractRunner.Expect(f, status, ContractRunner.Error(message));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_unsupported_interval"] = new("OpenAlgo answers 500 with \"Unsupported interval '2m'\" and a list. EP Trade bot answers 400 and names what Dhan offers.", Status: 400),
+        ["history_hole_between_chunks"] = new("Same status; the reason is worded for the trader and names the days Dhan sent nothing for.", Status: 500),
+        ["history_chunk_refused_three_times"] = new("Same status; the reason is worded for the trader.", Status: 500),
+        ["history_one_day_refused"] = new(Silent, Refusal(500, "Dhan needs its market data service. Subscribe to it in your Dhan account.")),
+        ["history_token_expired"] = new("OpenAlgo reads Dhan's refusal of the token as a day with no candles. EP Trade bot says the token has expired.",
+            Refusal(403, "Dhan says the access token is invalid or has expired. Log in to Dhan again.")),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_dhan.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
+
+/// <summary>History and intervals on Dhan Sandbox (tools/contract-fixtures/history_dhan_sandbox.fixtures.json), run with the clock stopped at the recording.</summary>
+public sealed class HistoryDhanSandboxHost : DhanFamilyHost
+{
+    public override string BrokerName => "dhan_sandbox";
+    public override string FixtureFile => "history_dhan_sandbox.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string>
+    {
+        ["OpenAlgoApi:HistorySpacingMs"] = "0", ["Brokers:RetryBackoffMs:dhan_sandbox"] = "0",
+    };
+}
+
+public sealed class HistoryDhanSandboxContractTests(HistoryDhanSandboxHost host, ITestOutputHelper output) : IClassFixture<HistoryDhanSandboxHost>
+{
+    private const string Invented = "OpenAlgo passes every intraday candle through a mock-realism step that invents the prices and the open interest. EP Trade bot returns the sandbox's candles as they are, because a price nobody traded at looks like a real one to a chart or a backtest.";
+    private const string Silent = "OpenAlgo logs a failed request and answers success with no candles. EP Trade bot says why there are none.";
+
+    private static Action<JsonObject> Refusal(int status, string message) => f => ContractRunner.Expect(f, status, ContractRunner.Error(message));
+
+    /// <summary>The candles the sandbox sent, as they are: sorted, one to a timestamp (the first kept), open interest from the reply.</summary>
+    private static void RawCandles(JsonObject f)
+    {
+        var rows = new SortedDictionary<long, JsonObject>();
+        var replies = f["broker"]!["POST /v2/charts/intraday"]!;
+        foreach (var reply in replies is JsonArray list ? list.OfType<JsonObject>() : [(JsonObject)replies])
+        {
+            var body = reply["body"]!;
+            var times = body["timestamp"]!.AsArray();
+            for (var i = 0; i < times.Count; i++)
+            {
+                double At(string field) => body[field]!.AsArray()[i]!.GetValue<double>();
+                rows.TryAdd(times[i]!.GetValue<long>(), new JsonObject
+                {
+                    ["timestamp"] = times[i]!.GetValue<long>(), ["open"] = At("open"), ["high"] = At("high"), ["low"] = At("low"), ["close"] = At("close"),
+                    ["volume"] = (long)At("volume"), ["oi"] = (long)At("open_interest"),
+                });
+            }
+        }
+
+        f["expected"]!["body"]!["data"] = new JsonArray(rows.Values.Select(r => (JsonNode?)r).ToArray());
+    }
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_unsupported_interval"] = new("OpenAlgo answers 500 with \"Unsupported interval '2m'\" and a list. EP Trade bot answers 400 and names what Dhan Sandbox offers.", Status: 400),
+        ["history_5m_one_day"] = new(Invented, RawCandles),
+        ["history_5m_futures_with_open_interest"] = new(Invented, RawCandles),
+        ["history_week_one_request"] = new(Invented, RawCandles),
+        ["history_chunked_90_days"] = new(Invented, RawCandles),
+        ["history_one_day_refused"] = new(Silent, Refusal(500, "Dhan Sandbox needs its market data service. Subscribe to it in your Dhan Sandbox account.")),
+        ["history_week_refused"] = new(Silent + " It also asks for the next chunk of days after the first one failed; EP Trade bot stops at the first.", f =>
+        {
+            ContractRunner.Expect(f, 500, ContractRunner.Error("Dhan Sandbox needs its market data service. Subscribe to it in your Dhan Sandbox account."));
+            var sent = f["sent"]!.AsArray();
+            while (sent.Count > 1) sent.RemoveAt(sent.Count - 1);
+        }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_dhan_sandbox.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

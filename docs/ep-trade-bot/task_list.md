@@ -41,7 +41,8 @@ Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 7 verified). Evi
 - [x] history and intervals contract-verified on Upstox (19 fixtures)
 - [x] history and intervals contract-verified on Fyers (26 fixtures)
 - [x] history and intervals contract-verified on Delta Exchange (25 fixtures)
-- [ ] history for Dhan and Dhan Sandbox
+- [x] history and intervals contract-verified on Dhan (29 fixtures) and Dhan Sandbox (17 fixtures)
+- [x] Pass 8 complete: history and intervals on all seven reference brokers
 - [ ] Remaining 6 broker and market-data pairs (ticker, margin, 4 GTT)
 - [x] Zerodha (contract-verified; MCX, history, GTT, margin, login and ticker feed not yet)
 - [x] Dhan, Dhan Sandbox (contract-verified; history, GTT, margin, login and feed not yet)

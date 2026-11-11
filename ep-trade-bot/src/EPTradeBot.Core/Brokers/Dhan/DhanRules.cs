@@ -100,6 +100,10 @@ public static class DhanRules
                 ? indices.Any(symbol.Contains) ? "OPTIDX" : "OPTSTK"
                 : indices.Any(symbol.Contains) ? "FUTIDX" : "FUTSTK",
             "NCO" => option ? "OPTFUT" : "FUTCOM",
+            // MCX index derivatives are FUTIDX and OPTIDX; every other MCX contract is a future or option on a commodity future.
+            "MCX" => symbol.StartsWith("MCXBULLDEX", StringComparison.Ordinal) || symbol.StartsWith("MCXMETLDEX", StringComparison.Ordinal) || symbol.StartsWith("MCXENRGDEX", StringComparison.Ordinal)
+                ? option ? "OPTIDX" : "FUTIDX"
+                : option ? "OPTFUT" : "FUTCOM",
             "CDS" or "BCD" => option ? "OPTCUR" : "FUTCUR",
             _ => "EQUITY",
         };

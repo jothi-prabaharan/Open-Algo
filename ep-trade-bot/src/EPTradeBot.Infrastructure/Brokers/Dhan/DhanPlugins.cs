@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using EPTradeBot.Core.Brokers;
 using EPTradeBot.Core.Brokers.Dhan;
+using EPTradeBot.Core.Calendar;
 using EPTradeBot.Core.Time;
 using Microsoft.Extensions.Logging;
 using static EPTradeBot.Infrastructure.Brokers.JsonRead;
@@ -12,8 +13,8 @@ namespace EPTradeBot.Infrastructure.Brokers.Dhan;
 
 /// <summary>Dhan v2 (broker/dhan). Request and response mapping held to tools/contract-fixtures/dhan.fixtures.json.</summary>
 [BrokerPlugin]
-public sealed class DhanPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<DhanPlugin> logger)
-    : DhanPluginBase(http, sessions, symbols, logger)
+public sealed class DhanPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, IMarketSessions calendar, TimeProvider clock, ILogger<DhanPlugin> logger)
+    : DhanPluginBase(http, sessions, symbols, calendar, clock, logger)
 {
     public override string Name => "dhan";
     public override string DisplayName => "Dhan";
@@ -27,8 +28,8 @@ public sealed class DhanPlugin(IHttpClientFactory http, BrokerSessionFactory ses
 /// Python plugin, no price, depth or open interest is ever invented when the sandbox has none.
 /// </summary>
 [BrokerPlugin]
-public sealed class DhanSandboxPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<DhanSandboxPlugin> logger)
-    : DhanPluginBase(http, sessions, symbols, logger)
+public sealed class DhanSandboxPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, IMarketSessions calendar, TimeProvider clock, ILogger<DhanSandboxPlugin> logger)
+    : DhanPluginBase(http, sessions, symbols, calendar, clock, logger)
 {
     public override string Name => "dhan_sandbox";
     public override string DisplayName => "Dhan Sandbox";
@@ -39,10 +40,10 @@ public sealed class DhanSandboxPlugin(IHttpClientFactory http, BrokerSessionFact
 /// <summary>
 /// The Dhan family. Port of broker/dhan and broker/dhan_sandbox: order_api.py, funds.py,
 /// data.py (quotes, depth), mapping/transform_data.py and mapping/order_data.py.
-/// Not ported yet, and refused rather than guessed: history, GTT, margin, login and the feed.
+/// Not ported yet, and refused rather than guessed: GTT, margin, login and the feed.
 /// </summary>
-public abstract class DhanPluginBase(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
+public abstract class DhanPluginBase(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, IMarketSessions calendar, TimeProvider clock, ILogger logger)
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory
 {
     public abstract string Name { get; }
     public abstract string DisplayName { get; }
@@ -51,7 +52,7 @@ public abstract class DhanPluginBase(IHttpClientFactory http, BrokerSessionFacto
     /// <summary>The sandbox variant: client-id on every call, fuller order payloads, more order states, UTC times, quotes from candles.</summary>
     protected abstract bool Sandbox { get; }
 
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ClientId"];
 
     // ---- orders ----------------------------------------------------------------------------------------------
@@ -685,6 +686,219 @@ public abstract class DhanPluginBase(IHttpClientFactory http, BrokerSessionFacto
             highs.Count > 0 ? highs.Max() : 0,
             lows.Count > 0 ? lows.Min() : 0,
             (reply["volume"] as JsonArray ?? []).Where(Truthy).Sum(n => Int(n)));
+    }
+
+    // ---- history ---------------------------------------------------------------------------------------------
+
+    // timeframe_map of broker/dhan/api/data.py (the sandbox's is the same): Dhan's minutes, "D" for daily.
+    private static readonly Dictionary<string, string> Resolutions = new() { ["1m"] = "1", ["5m"] = "5", ["15m"] = "15", ["25m"] = "25", ["1h"] = "60", ["D"] = "D" };
+
+    public IReadOnlyList<string> HistoryTimeframes { get; } = [.. Resolutions.Keys];
+
+    // Index series share the session of their cash exchange; GIFT NIFTY trades its own hours and is left alone.
+    private static string SessionExchange(string exchange) => exchange switch { "NSE_INDEX" => "NSE", "BSE_INDEX" => "BSE", "MCX_INDEX" => "MCX", _ => exchange };
+
+    private static bool Weekend(DateOnly d) => d.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
+
+    public async Task<JsonArray> GetHistoryAsync(BrokerSession session, SymbolRecord instrument, string interval, DateOnly start, DateOnly end, CancellationToken cancellationToken)
+    {
+        if (!Resolutions.TryGetValue(interval, out var resolution))
+            throw new BrokerException($"{DisplayName} does not offer {interval} candles. Choose one of: {string.Join(", ", Resolutions.Keys)}.", 400);
+        var segment = DhanRules.DataSegment(instrument.Exchange) ?? throw new BrokerException($"{DisplayName} has no candles for {instrument.Exchange}.", 400);
+        var chartInstrument = DhanRules.ChartInstrument(instrument.Exchange, instrument.Symbol);
+
+        // The window moves to trading days: a start on a weekend to the Monday after, an end on one to the Friday before.
+        while (Weekend(start)) start = start.AddDays(1);
+        while (Weekend(end)) end = end.AddDays(-1);
+        // One day is asked as that day to the next.
+        if (start == end) end = end.AddDays(1);
+
+        var today = DateOnly.FromDateTime(Ist.FromUtc(clock.GetUtcNow().UtcDateTime));
+        var candles = new SortedDictionary<long, JsonObject>();
+        void Add(JsonObject reply, bool daily)
+        {
+            var times = reply["timestamp"] as JsonArray ?? [];
+            for (var i = 0; i < times.Count; i++)
+            {
+                double At(string field) => reply[field] is JsonArray a && i < a.Count && Truthy(a[i]) ? Float(a[i]) : 0;
+                var stamp = DhanStamp((long)Float(times[i]), daily);
+                // Two candles with one timestamp: the first one received is kept.
+                candles.TryAdd(stamp, new JsonObject
+                {
+                    ["timestamp"] = stamp, ["open"] = At("open"), ["high"] = At("high"), ["low"] = At("low"), ["close"] = At("close"),
+                    ["volume"] = (long)At("volume"), ["oi"] = (long)At("open_interest"),
+                });
+            }
+        }
+
+        JsonObject Body(string from, string to, bool intraday)
+        {
+            var body = new JsonObject { ["securityId"] = instrument.Token, ["exchangeSegment"] = segment, ["instrument"] = chartInstrument };
+            if (intraday) body["interval"] = resolution;
+            body["fromDate"] = from;
+            body["toDate"] = to;
+            body["oi"] = true;
+            // Dhan itself sends the expiry code on every call. The sandbox sends it on a daily request for equity only, and never on an intraday one.
+            if (intraday ? !Sandbox : !Sandbox || chartInstrument == "EQUITY") body["expiryCode"] = 0;
+            return body;
+        }
+
+        string Day(DateOnly d) => d.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        if (interval == "D")
+        {
+            // The end is made inclusive by asking to the day after it.
+            Add(await ChartsAsync(session, "/v2/charts/historical", Body(Day(start), Day(end.AddDays(1)), false), cancellationToken), daily: true);
+        }
+        else if (start == end.AddDays(-1))
+        {
+            Add(await ChartsAsync(session, "/v2/charts/intraday", Body(Day(start), Day(end), true), cancellationToken), daily: false);
+        }
+        else
+        {
+            var fetched = new List<(DateOnly From, DateOnly To, int Count)>();
+            // Dhan answers 90 days of intraday candles a request; its sandbox, as OpenAlgo asks it, 5.
+            var span = Sandbox ? 5 : 90;
+            for (var from = start; from < end;)
+            {
+                var to = from.AddDays(span) < end ? from.AddDays(span) : end;
+                var chunkFrom = from;
+                from = to;
+                // A chunk is skipped when it holds no trading day (the sandbox: when neither of its ends is one).
+                var trades = Sandbox ? !Weekend(chunkFrom) || !Weekend(to) : Enumerable.Range(0, to.DayNumber - chunkFrom.DayNumber + 1).Any(n => !Weekend(chunkFrom.AddDays(n)));
+                if (!trades) continue;
+
+                // Dhan tries a chunk three times; an empty answer is suspect and tried again too. The sandbox asks once.
+                JsonObject? reply = null;
+                for (var attempt = 0; ; attempt++)
+                {
+                    try
+                    {
+                        reply = await ChartsAsync(session, "/v2/charts/intraday", Body(Day(chunkFrom), Day(to), true), cancellationToken);
+                        if (!Sandbox && (reply["timestamp"] as JsonArray ?? []).Count == 0 && attempt < 2)
+                        {
+                            await Task.Delay(sessions.RetryBackoff(Name, TimeSpan.FromSeconds(2 * (1 << attempt))), cancellationToken);
+                            continue;
+                        }
+
+                        break;
+                    }
+                    catch (BrokerException ex) when (!Sandbox && attempt < 2 && ex.HttpStatus != 403)
+                    {
+                        await Task.Delay(sessions.RetryBackoff(Name, TimeSpan.FromSeconds(2 * (1 << attempt))), cancellationToken);
+                    }
+                }
+
+                Add(reply, daily: false);
+                fetched.Add((chunkFrom, to, (reply["timestamp"] as JsonArray ?? []).Count));
+            }
+
+            // An empty chunk between chunks that had candles is a bad answer, not a quiet market: a history with a hole is not returned.
+            if (!Sandbox && fetched.FindIndex(f => f.Count > 0) is var first and >= 0)
+            {
+                var last = fetched.FindLastIndex(f => f.Count > 0);
+                var holes = fetched.Where((f, i) => f.Count == 0 && i > first && i < last).ToList();
+                if (holes.Count > 0)
+                    throw new BrokerException($"Dhan sent no candles for {string.Join(", ", holes.Select(h => $"{Day(h.From)} to {Day(h.To)}"))} while the days around them had some, so no history is returned with a gap in it. Try again.");
+            }
+        }
+
+        // A daily request that includes today has no candle for today until the close: it is built from the quote.
+        if (interval == "D" && Day(start).CompareTo(Day(today)) <= 0 && Day(today).CompareTo(Day(end)) <= 0)
+        {
+            try
+            {
+                var q = await GetQuoteAsync(session, instrument.Symbol, instrument.Exchange, cancellationToken);
+                if (Float(q["ltp"]) > 0)
+                {
+                    var stamp = (long)(new DateTimeOffset(today.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero).ToUnixTimeSeconds());
+                    candles.TryAdd(stamp, new JsonObject
+                    {
+                        ["timestamp"] = stamp, ["open"] = Float(q["open"]), ["high"] = Float(q["high"]), ["low"] = Float(q["low"]), ["close"] = Float(q["ltp"]),
+                        ["volume"] = (long)Float(q["volume"]), ["oi"] = (long)Float(q["oi"]),
+                    });
+                }
+            }
+            catch (BrokerException ex)
+            {
+                logger.LogWarning(ex, "Today's daily candle could not be built from the quote.");
+            }
+        }
+
+        var rows = candles.Values.ToList();
+        if (interval != "D" && !Sandbox && !(instrument.Exchange == "NSE_INDEX" && instrument.Symbol == "GIFTNIFTY"))
+            rows = await WithoutBarsAfterCloseAsync(rows, SessionExchange(instrument.Exchange), cancellationToken);
+        return new JsonArray(rows.Select(r => (JsonNode?)r).ToArray());
+    }
+
+    /// <summary>
+    /// After the close Dhan appends one flat, zero-volume bar stamped at the request time to NSE and BSE index series.
+    /// No session contains it, so a bar that starts at or after the close of its day is dropped. A day with no session in the calendar is left as it is.
+    /// </summary>
+    private async Task<List<JsonObject>> WithoutBarsAfterCloseAsync(List<JsonObject> rows, string exchange, CancellationToken cancellationToken)
+    {
+        var closes = new Dictionary<DateOnly, long?>();
+        var kept = new List<JsonObject>();
+        foreach (var row in rows)
+        {
+            var day = DateOnly.FromDateTime(Ist.FromUtc(DateTimeOffset.FromUnixTimeSeconds(row["timestamp"]!.GetValue<long>()).UtcDateTime));
+            if (!closes.TryGetValue(day, out var close))
+            {
+                var ends = (await calendar.SessionsAsync(day, cancellationToken)).Where(s => s.Exchange == exchange && s.EndTime is not null).Select(s => s.EndTime!.Value).ToList();
+                closes[day] = close = ends.Count > 0 ? ends.Max() : null;
+            }
+
+            if (close is null || row["timestamp"]!.GetValue<long>() * 1000 < close) kept.Add(row);
+        }
+
+        return kept;
+    }
+
+    /// <summary>
+    /// Dhan's epoch seconds as OpenAlgo stamps them with its server in India: an intraday candle keeps its instant, and a daily
+    /// candle is stamped at 00:00 UTC of its India date, like every other broker's daily candle.
+    /// </summary>
+    private static long DhanStamp(long epoch, bool daily)
+    {
+        if (!daily) return epoch;
+        var istDate = DateOnly.FromDateTime(Ist.FromUtc(DateTimeOffset.FromUnixTimeSeconds(epoch).UtcDateTime));
+        return new DateTimeOffset(istDate.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero).ToUnixTimeSeconds();
+    }
+
+    /// <summary>
+    /// POST a /v2/charts endpoint. Dhan's rate-limit error (805) is tried again three times (2, 4 and 8 seconds); every other
+    /// failed answer is an error with the reason OpenAlgo gives for it.
+    /// </summary>
+    private async Task<JsonObject> ChartsAsync(BrokerSession session, string path, JsonObject body, CancellationToken cancellationToken)
+    {
+        for (var attempt = 0; ; attempt++)
+        {
+            using var message = Request(session, HttpMethod.Post, path, body, clientHeader: true, dataClientId: true);
+            using var response = await SendAsync(message, cancellationToken);
+            var reply = await ReadAsync(response, cancellationToken) as JsonObject;
+            if (Str(reply?["status"]) == "failed")
+            {
+                var data = reply!["data"] as JsonObject;
+                var code = data?.FirstOrDefault().Key ?? "unknown";
+                if (code == "805" && attempt < 3)
+                {
+                    await Task.Delay(sessions.RetryBackoff(Name, TimeSpan.FromSeconds(2 * (1 << attempt))), cancellationToken);
+                    continue;
+                }
+
+                throw new BrokerException(code switch
+                {
+                    "805" => $"{DisplayName} is limiting requests. Wait a moment, then try again.",
+                    "806" or "820" or "821" => $"{DisplayName} needs its market data service. Subscribe to it in your {DisplayName} account.",
+                    "810" => $"{DisplayName} says the client id is wrong. Check the account's client id.",
+                    "401" => $"{DisplayName} says the access token is invalid or has expired. Log in to {DisplayName} again.",
+                    _ => $"{DisplayName} could not send the candles: {Str(data?[code]) ?? "no reason given."}",
+                }, code is "401" or "810" ? 403 : code == "805" ? 429 : 500);
+            }
+
+            if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+                throw new BrokerException($"{DisplayName} says the access token is invalid or has expired. Log in to {DisplayName} again.", 403);
+            return reply ?? throw new BrokerException($"{DisplayName} sent a reply EP Trade bot could not read. Try again in a moment.");
+        }
     }
 
     // ---- plumbing --------------------------------------------------------------------------------------------
