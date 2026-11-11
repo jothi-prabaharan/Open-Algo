@@ -70,10 +70,13 @@ public static class DependencyInjection
         services.AddSingleton<SandboxTickMatcher>();
         services.AddSingleton<IMarketTickSink>(sp => sp.GetRequiredService<SandboxTickMatcher>());
         services.AddSingleton<MarketDataBus>();
+        services.AddSingleton<FeedHost>();
+        services.AddSingleton<EPTradeBot.Core.Streaming.IFeedSubscriptions>(sp => sp.GetRequiredService<FeedHost>());
         if (configuration.GetValue(StreamingOptions.Section + ":Enabled", true))
         {
             services.AddHostedService(sp => sp.GetRequiredService<SandboxTickMatcher>());
             services.AddHostedService(sp => sp.GetRequiredService<MarketDataBus>());
+            services.AddHostedService(sp => sp.GetRequiredService<FeedHost>());
         }
         services.AddSingleton<KeyedAsyncLock<Guid>>();
         services.AddSingleton<SandboxEngine>();

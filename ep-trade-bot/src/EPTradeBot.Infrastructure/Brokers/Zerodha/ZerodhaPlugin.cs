@@ -26,14 +26,14 @@ public sealed partial class ZerodhaPlugin(
     IHttpClientFactory httpClients,
     BrokerSessionFactory sessions,
     ISymbolMaster symbols,
-    ILogger<ZerodhaPlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin, IBrokerGtt, IBrokerLogin
+    ILogger<ZerodhaPlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin, IBrokerGtt, IBrokerLogin, IBrokerFeed
 {
     public const string BrokerName = "zerodha";
     private const string DefaultBaseUrl = "https://api.kite.trade";
 
     public string Name => BrokerName;
     public string DisplayName => "Zerodha";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin | BrokerCapability.Gtt;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin | BrokerCapability.Gtt | BrokerCapability.Streaming;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     private static readonly Dictionary<string, string> StatusMap = new(StringComparer.Ordinal)

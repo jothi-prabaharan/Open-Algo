@@ -22,6 +22,7 @@ SYMBOLS = [
     row("NIFTY", "NIFTY", "NSE_INDEX", "NSE", "13", "INDEX"),
     row("SENSEX", "SENSEX", "BSE_INDEX", "BSE", "51", "INDEX"),
     row("TCS", "TCS", "BSE", "BSE", "532540"),
+    row("GOLDETF", "GOLDETF", "NSE", "NSE", "9999", "ETF"),
 ]
 
 
@@ -114,7 +115,7 @@ def frame(data):
 SCENARIOS = [
     {"name": "subscribe_in_each_mode_and_each_kind_of_scrip", "steps": [
         {"subscribe": [sub("SBIN", "NSE", 1), sub("INFY", "NSE", 2), sub("NIFTY25NOV26FUT", "NFO", 3), sub("NIFTY25NOV2624000CE", "NFO", 2),
-                       sub("NIFTY", "NSE_INDEX", 1), sub("SENSEX", "BSE_INDEX", 2), sub("NIFTYBEES", "NSE", 1), sub("TCS", "BSE", 1)]},
+                       sub("NIFTY", "NSE_INDEX", 1), sub("SENSEX", "BSE_INDEX", 2), sub("NIFTYBEES", "NSE", 1), sub("TCS", "BSE", 1), sub("GOLDETF", "NSE", 1)]},
     ]},
     {"name": "subscribe_one_at_a_time", "steps": [
         {"subscribe": [sub("SBIN", "NSE", 1)]},

@@ -19,13 +19,13 @@ namespace EPTradeBot.Infrastructure.Brokers.Angel;
 /// </summary>
 [BrokerPlugin]
 public sealed partial class AngelPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<AngelPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin, IBrokerGtt, IBrokerLogin
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin, IBrokerGtt, IBrokerLogin, IBrokerFeed
 {
     private const string BaseUrl = "https://apiconnect.angelone.in";
 
     public string Name => "angel";
     public string DisplayName => "Angel One";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin | BrokerCapability.Gtt;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin | BrokerCapability.Gtt | BrokerCapability.Streaming;
 
     /// <summary>ApiKey: the SmartAPI private key, sent as X-PrivateKey.</summary>
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey"];

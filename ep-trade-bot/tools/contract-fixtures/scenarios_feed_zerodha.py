@@ -219,6 +219,10 @@ SCENARIOS = [
         {"subscribe": [sub("SBIN", "NSE", 1)]},
         {"frame": message(ltp(T["SBIN"], 805.45), ltp(T["SBIN"], 805.5)).hex()[:-6]},
     ]},
+    {"name": "a_quote_sized_packet_is_a_quote_whatever_was_asked", "steps": [
+        {"subscribe": [sub("SBIN", "NSE", 1)]},
+        frame(quote(T["SBIN"], 805.45)),
+    ]},
     {"name": "packet_of_an_odd_length_takes_the_mode_asked_of_kite", "steps": [
         {"subscribe": [sub("SBIN", "NSE", 2)]},
         frame(quote(T["SBIN"], 805.45)[:20]),

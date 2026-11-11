@@ -105,6 +105,19 @@
       "lotsize": 1,
       "instrumenttype": "",
       "tick_size": 0.05
+    },
+    {
+      "symbol": "ODD",
+      "brsymbol": "ODD-EQ",
+      "name": "ODD",
+      "exchange": "NSE",
+      "brexchange": "XYZ",
+      "token": "777",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "",
+      "tick_size": 0.05
     }
   ],
   "scenarios": [
@@ -314,6 +327,63 @@
               }
             ],
             "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "an_exchange_the_table_does_not_know_is_taken_as_nse_cash",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "ODD",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "correlationID": "batch_1793700000123_1",
+                "action": 1,
+                "params": {
+                  "mode": 1,
+                  "tokenList": [
+                    {
+                      "exchangeType": 1,
+                      "tokens": [
+                        "777"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "01013737370000000000000000000000000000000000000000000017209a000000000018edd9a0a10100001a04000000000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_ODD_LTP",
+                "data": {
+                  "ltp": 10.5,
+                  "ltt": 1793699999000,
+                  "symbol": "ODD",
+                  "exchange": "NSE",
+                  "mode": 1,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
           }
         }
       ]

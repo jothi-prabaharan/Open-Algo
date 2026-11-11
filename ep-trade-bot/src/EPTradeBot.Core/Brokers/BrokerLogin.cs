@@ -31,3 +31,21 @@ public interface IBrokerLogin : IBrokerPlugin
     /// <summary>Exchanges what the trader returned with (a <c>request_token</c>, or the typed details) for tokens.</summary>
     Task<BrokerLoginResult> LoginAsync(IReadOnlyDictionary<string, string> keys, IReadOnlyDictionary<string, string> input, CancellationToken cancellationToken);
 }
+
+/// <summary>Where and how to connect to a broker's market-data stream.</summary>
+public sealed record FeedEndpoint(Uri Url, IReadOnlyDictionary<string, string> Headers);
+
+/// <summary>A broker's market-data stream: where to connect, what to say to keep it alive, and the codec that speaks its protocol.</summary>
+public interface IBrokerFeed : IBrokerPlugin
+{
+    /// <summary>A codec of its own for one connection (it holds that connection's subscriptions).</summary>
+    EPTradeBot.Core.Streaming.Feeds.IFeedCodec CreateFeedCodec();
+
+    /// <summary>The address and headers for this session, or null when the session lacks what the stream needs (a feed token, a client id).</summary>
+    FeedEndpoint? FeedEndpoint(BrokerSession session, string? overrideUrl);
+
+    /// <summary>A text frame to send on an interval to keep the stream open, or null when the broker does not need one.</summary>
+    string? FeedKeepAliveText { get; }
+
+    TimeSpan FeedKeepAliveEvery { get; }
+}

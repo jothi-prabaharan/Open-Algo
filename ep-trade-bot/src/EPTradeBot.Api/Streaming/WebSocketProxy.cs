@@ -18,7 +18,7 @@ namespace EPTradeBot.Api.Streaming;
 /// today, every tick is forwarded (no server-side throttling); a slow client's
 /// outbound queue is bounded and drops its oldest messages, so it never holds up the bus.
 /// </summary>
-public sealed class WebSocketProxy(ApiKeyService keys, ILogger<WebSocketProxy> logger) : IMarketTickSink, IOrderUpdateSink
+public sealed class WebSocketProxy(ApiKeyService keys, IFeedSubscriptions feeds, ILogger<WebSocketProxy> logger) : IMarketTickSink, IOrderUpdateSink
 {
     private readonly ConcurrentDictionary<Guid, Client> clients = new();
 
@@ -71,6 +71,12 @@ public sealed class WebSocketProxy(ApiKeyService keys, ILogger<WebSocketProxy> l
         finally
         {
             clients.TryRemove(client.Id, out _);
+            // The client's holds on broker feeds go with it.
+            foreach (var key in client.Subscriptions.Keys.ToList())
+            {
+                if (client.Account is { AccountType: AccountType.LIVE } held) await feeds.UnsubscribeAsync(held.Id, key.Exchange, key.Symbol, key.Mode, CancellationToken.None);
+            }
+
             client.Complete();
             await writer.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
         }
@@ -122,10 +128,10 @@ public sealed class WebSocketProxy(ApiKeyService keys, ILogger<WebSocketProxy> l
         switch (action)
         {
             case "subscribe":
-                Subscribe(client, acc, message, requestId);
+                await SubscribeAsync(client, acc, message, requestId, cancellationToken);
                 return;
             case "unsubscribe" or "unsubscribe_all":
-                Unsubscribe(client, acc, message, action == "unsubscribe_all", requestId);
+                await UnsubscribeAsync(client, acc, message, action == "unsubscribe_all", requestId);
                 return;
             case "subscribe_orders":
                 client.Orders = true;
@@ -144,7 +150,7 @@ public sealed class WebSocketProxy(ApiKeyService keys, ILogger<WebSocketProxy> l
         }
     }
 
-    private static void Subscribe(Client client, BrokerAccount account, JsonObject message, JsonNode? requestId)
+    private async Task SubscribeAsync(Client client, BrokerAccount account, JsonObject message, JsonNode? requestId, CancellationToken cancellationToken)
     {
         if (ModeOf(message["mode"] ?? "Quote") is not { } mode)
         {
@@ -163,12 +169,14 @@ public sealed class WebSocketProxy(ApiKeyService keys, ILogger<WebSocketProxy> l
         var results = new JsonArray();
         foreach (var (symbol, exchange) in symbols)
         {
-            client.Subscriptions[(exchange, symbol, mode)] = 0;
-            results.Add(new JsonObject
-            {
-                ["symbol"] = symbol, ["exchange"] = exchange, ["status"] = "success", ["mode"] = MarketTopics.Label(mode),
-                ["depth"] = depth, ["broker"] = account.Broker,
-            });
+            // A live account's subscription is also asked of its broker; a sandbox account listens to the prices live accounts bring in.
+            var answer = FeedAnswer.Taken;
+            if (account.AccountType == AccountType.LIVE && !client.Subscriptions.ContainsKey((exchange, symbol, mode)))
+                answer = await feeds.SubscribeAsync(account.Id, account.Broker, exchange, symbol, mode, cancellationToken);
+            if (answer.Ok) client.Subscriptions[(exchange, symbol, mode)] = 0;
+            results.Add(answer.Ok
+                ? new JsonObject { ["symbol"] = symbol, ["exchange"] = exchange, ["status"] = "success", ["mode"] = MarketTopics.Label(mode), ["depth"] = depth, ["broker"] = account.Broker }
+                : new JsonObject { ["symbol"] = symbol, ["exchange"] = exchange, ["status"] = "error", ["message"] = answer.Message, ["mode"] = MarketTopics.Label(mode), ["broker"] = account.Broker });
         }
 
         var response = new JsonObject
@@ -180,7 +188,7 @@ public sealed class WebSocketProxy(ApiKeyService keys, ILogger<WebSocketProxy> l
         client.Send(response);
     }
 
-    private static void Unsubscribe(Client client, BrokerAccount account, JsonObject message, bool all, JsonNode? requestId)
+    private async Task UnsubscribeAsync(Client client, BrokerAccount account, JsonObject message, bool all, JsonNode? requestId)
     {
         var done = new JsonArray();
         var failed = new JsonArray();
@@ -188,7 +196,7 @@ public sealed class WebSocketProxy(ApiKeyService keys, ILogger<WebSocketProxy> l
         {
             foreach (var key in client.Subscriptions.Keys.ToList())
             {
-                client.Subscriptions.TryRemove(key, out _);
+                if (client.Subscriptions.TryRemove(key, out _) && account.AccountType == AccountType.LIVE) await feeds.UnsubscribeAsync(account.Id, key.Exchange, key.Symbol, key.Mode, CancellationToken.None);
                 done.Add(new JsonObject { ["symbol"] = key.Symbol, ["exchange"] = key.Exchange, ["mode"] = MarketTopics.Label(key.Mode), ["status"] = "success", ["broker"] = account.Broker });
             }
         }
@@ -206,7 +214,7 @@ public sealed class WebSocketProxy(ApiKeyService keys, ILogger<WebSocketProxy> l
 
                 foreach (var key in keys)
                 {
-                    client.Subscriptions.TryRemove(key, out _);
+                    if (client.Subscriptions.TryRemove(key, out _) && account.AccountType == AccountType.LIVE) await feeds.UnsubscribeAsync(account.Id, key.Exchange, key.Symbol, key.Mode, CancellationToken.None);
                     done.Add(new JsonObject { ["symbol"] = symbol, ["exchange"] = exchange, ["mode"] = MarketTopics.Label(key.Mode), ["status"] = "success", ["broker"] = account.Broker });
                 }
             }

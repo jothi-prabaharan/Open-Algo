@@ -1236,3 +1236,51 @@ A new capability, `IBrokerLogin`, and two admin endpoints that replace pasting a
 - **Other tests:** 6 integration tests: the state is issued, carried, and accepted once; an answer without a state started here, or with another account's, reaches no broker; ten minutes; Angel One asks for its fields and a sandbox account has nothing to sign in to; missing application keys are named; the admin token is required.
 
 **Not done.** Daily token rollover (a sign-in is needed each morning, as the brokers require; the web app will show when the token has expired). Angel One's refresh token is not kept. Paytm Money's read-only token is not kept.
+
+
+## 22. Market-data feeds for Zerodha, Angel One and Paytm Money
+
+Three pieces, each held to the Python code it replaces.
+
+- **Codecs** (`Core/Streaming/Feeds`): what to send a broker to subscribe and unsubscribe, how to read its binary frames, and the OpenAlgo-shaped tick that comes out. No sockets, so each is checked by replay. `tools/contract-fixtures/record_feed.py` drives the real Python adapter and its real client with a fake socket and records, for each step of a scenario, the messages sent and the ticks published. The .NET codec replays the same steps. **70 scenarios** (Zerodha 25, Angel One 24, Paytm Money 21): every subscription mode, index and MCX and options, batching past 200 tokens, one token in two modes, unsubscribe of one mode of two, repeating subscriptions after a reconnect, short and cut-off frames, unknown tokens and unknown packet codes.
+- **Feed host** (`Infrastructure/Streaming/FeedHost.cs`): one broker connection per account, on demand. The WebSocket proxy tells it what each client wants. An instrument is subscribed at the broker while any client of the account holds it, and the broker is told to stop only when the last holder lets go. A client that disconnects lets go of everything it held. A dropped feed reconnects with a growing wait (2 s, then half again each time, to a minute) and repeats its subscriptions. A stream silent for 90 s is reconnected. A token the broker refuses is re-read from the account and tried once more; a token that has not changed ends the feed with a plain log line, because it would only be refused again. Reconnecting reads the account's token fresh each time, so the 3 AM rollover is picked up.
+- **Refusals the client can read.** A subscription the feed cannot take comes back as an error entry naming the cause: the account is not signed in, the sign-in gave no feed token, the symbol is not in the master contract, or the account's feed is full (3000 instruments).
+
+**Tests.** 70 codec scenarios, 10 end-to-end integration tests against a fake broker stream on a real loopback port (a subscription reaches the broker and its tick comes back through the bus and the proxy; reconnect repeats the subscriptions; holds are counted; a disconnecting client lets go; a refused token is tried twice and stops; a silent stream is reconnected; refusals by name; Angel One's four credentials; a full feed), and **32 mutation checks** in `tools/mutation/tg3-feed.json`, all red. Six survived at first and were answered with scenarios (a quote-sized packet for a token asked of Kite in LTP mode, an exchange Angel One's table does not know, an ETF on Paytm Money) or a rewritten mutant (the first forms did not compile).
+
+**A flaky test, fixed rather than rerun.** `The_broker_is_told_to_stop_only_when_the_last_client_lets_go` failed in every full-suite run while passing alone. The last holder's unsubscribe was queued for the broker and the connection was cancelled in the same moment, so under load the message never left. The host now lets what is queued go out (for up to a second) before cancelling, and closes the socket properly. Three full runs in a row are green.
+
+**Deliberate differences, each recorded from the Python adapters.**
+
+| Where | OpenAlgo | EP Trade bot |
+| --- | --- | --- |
+| Angel One, depth ticks | Reads open, high, low and close under names the stream parser never sets, so every depth subscriber gets zeros. | Reads the right fields: the same values a quote tick carries. |
+| Paytm Money, unsubscribe | Drops the token's whole entry when any one mode is unsubscribed, so unsubscribing LTP stops the Quote ticks of the same instrument. | Keeps the token known while any mode of it is subscribed. |
+| Angel One, reconnect | Repeats subscriptions from the client library's own list, which any unsubscribe corrupts (the next reconnect then fails). | Repeats the subscriptions it holds. |
+
+**Not done.** Sandbox accounts do not start a feed of their own; they listen to prices a live account brings in. The order-update streams (`broker/*/streaming/*_order_adapter.py`) are not ported; order updates reach clients from the order paths. Kite's 3000-instrument limit and Angel One's 50-token depth limit are the only per-connection limits applied.
+
+## 23. Gate 3: status
+
+**Scope.** Zerodha, Angel One and Paytm Money, plus the pieces they share. Every other broker is in Task Group 7.
+
+| Capability | Zerodha | Angel One | Paytm Money |
+| --- | --- | --- | --- |
+| Orders, books, funds, quotes, depth, multi-quotes, smart orders, close-all, cancel-all | yes | yes | yes |
+| History and intervals | yes | yes | not offered by the broker |
+| Margin calculator | yes | yes | not offered by the broker |
+| GTT (place, modify, cancel, book) | yes | yes | not offered by the broker |
+| MCX in contracts | yes | not needed | not needed |
+| Sign-in | yes | yes | yes |
+| Market-data feed | yes | yes | yes |
+
+**Shared pieces.** Symbol and composite endpoints, option chain and multi-quotes, market calendar and chart preferences, sandbox P&L by symbol, ticker, the bus, the proxy, the 31 `/api/v1` endpoints the reference serves that do not sit on Task Group 4 features.
+
+**Verification.** 198 Core, 892 Contract, 35 Architecture and 63 Integration tests, 1188 in all, green in three consecutive full runs. 363 mutation checks across sections 1 to 22 (`tools/mutation/`), all red.
+
+**Known and carried forward.**
+
+- Sandbox GTT, CNC holdings and T+1, catch-up after a restart, and the auto square-off timers are Task Group 4.
+- The admin token stands in for the web app's login until Task Group 5 (Antigravity's).
+- Task Group 6 (deployment) is Antigravity's.
+- The 30 brokers not started, and GTT, sign-in and feeds for the five reference brokers already built, are Task Group 7.

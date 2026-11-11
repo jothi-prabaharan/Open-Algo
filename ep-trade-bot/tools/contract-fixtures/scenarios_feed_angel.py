@@ -22,6 +22,7 @@ SYMBOLS = [
     row("SENSEX", "SENSEX", "BSE_INDEX", "BSE", "99919000", "AMXIDX"),
     row("CRUDEOIL18DEC30FUT", "CRUDEOIL18DEC30FUT", "MCX", "MCX", "234230", "FUTCOM"),
     row("TCS", "TCS-EQ", "BSE", "BSE", "532540"),
+    row("ODD", "ODD-EQ", "NSE", "XYZ", "777"),
 ]
 
 
@@ -120,6 +121,10 @@ SCENARIOS = [
     {"name": "several_symbols_are_grouped_by_mode_then_exchange_type", "steps": [
         {"subscribe": [sub("SBIN", "NSE", 1), sub("NIFTY25NOV26FUT", "NFO", 1), sub("INFY", "NSE", 2), sub("CRUDEOIL18DEC30FUT", "MCX", 1),
                        sub("RELIANCE", "NSE", 1), sub("NIFTY", "NSE_INDEX", 2), sub("TCS", "BSE", 2), sub("SENSEX", "BSE_INDEX", 1)]},
+    ]},
+    {"name": "an_exchange_the_table_does_not_know_is_taken_as_nse_cash", "steps": [
+        {"subscribe": [sub("ODD", "NSE", 1)]},
+        frame(ltp_frame(1, "777", 10.5)),
     ]},
     {"name": "the_same_token_in_two_modes", "steps": [
         {"subscribe": [sub("SBIN", "NSE", 1), sub("SBIN", "NSE", 2)]},

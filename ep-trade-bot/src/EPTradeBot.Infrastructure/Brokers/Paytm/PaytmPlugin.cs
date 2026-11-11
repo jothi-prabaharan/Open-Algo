@@ -17,13 +17,13 @@ namespace EPTradeBot.Infrastructure.Brokers.Paytm;
 /// </summary>
 [BrokerPlugin]
 public sealed partial class PaytmPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<PaytmPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerLogin
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerLogin, IBrokerFeed
 {
     private const string DefaultBaseUrl = "https://developer.paytmmoney.com";
 
     public string Name => "paytm";
     public string DisplayName => "Paytm Money";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.Streaming;
 
     /// <summary>ApiKey and ApiSecret exchange the login's request token for the access token.</summary>
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];

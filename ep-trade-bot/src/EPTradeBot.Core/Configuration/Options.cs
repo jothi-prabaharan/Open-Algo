@@ -69,6 +69,25 @@ public sealed class StreamingOptions
 
     /// <summary>Starts the bus and the proxy. Off only in tests that do not need them.</summary>
     public bool Enabled { get; set; } = true;
+
+    /// <summary>Connects broker market-data feeds on demand. Off only in tests that publish to the bus themselves.</summary>
+    public bool FeedsEnabled { get; set; } = true;
+
+    /// <summary>The first wait before a feed reconnects; it grows by half again after every failure up to a minute.</summary>
+    [Range(1, 60_000)]
+    public int FeedReconnectBaseMs { get; set; } = 2000;
+
+    /// <summary>A feed that hears nothing for this long is treated as dead and reconnected.</summary>
+    [Range(1, 3600)]
+    public int FeedStallSeconds { get; set; } = 90;
+
+    /// <summary>A feed that does not connect in this long is retried.</summary>
+    [Range(1, 120)]
+    public int FeedConnectSeconds { get; set; } = 15;
+
+    /// <summary>Instruments one account may hold on a broker feed (Kite allows 3000 on a connection).</summary>
+    [Range(1, 10_000)]
+    public int FeedMaxInstruments { get; set; } = 3000;
 }
 
 /// <summary>
@@ -97,6 +116,9 @@ public sealed class BrokerOptions
 
     /// <summary>Optional per-broker base address override, for a broker's own test environment.</summary>
     public Dictionary<string, string> BaseUrls { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Optional per-broker market-data feed address override, for a broker's own test environment.</summary>
+    public Dictionary<string, string> FeedUrls { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Optional per-broker pause, in milliseconds, between that broker's history calls. Absent means the broker's own limit, as OpenAlgo paces it.</summary>
     public Dictionary<string, int> HistoryGapMs { get; set; } = new(StringComparer.OrdinalIgnoreCase);

@@ -1,0 +1,258 @@
+[
+ {
+  "name": "FK1 Kite batch of 201 tokens",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/KiteFeedCodec.cs",
+  "old": "private const int MaxTokensPerMessage = 200;",
+  "new": "private const int MaxTokensPerMessage = 201;",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FK2 Kite asks for the lowest mode",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/KiteFeedCodec.cs",
+  "old": "subscribed.Where(s => s.Value == token).Max(s => (int)s.Key.Mode)",
+  "new": "subscribed.Where(s => s.Value == token).Min(s => (int)s.Key.Mode)",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FK3 Kite drops the stream while a mode remains",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/KiteFeedCodec.cs",
+  "old": "if (subscribed.Values.Contains(token)) return [];",
+  "new": "if (false && subscribed.Values.Contains(token)) return [];",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FK4 Kite quote not fed to LTP",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/KiteFeedCodec.cs",
+  "old": "if (mode == \"quote\" && modes.Contains(1))",
+  "new": "if (mode == \"quote\" && modes.Contains(9))",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FK5 Kite depth read from the wrong offset",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/KiteFeedCodec.cs",
+  "old": "Side(64), [\"sell\"] = Side(124)",
+  "new": "Side(65), [\"sell\"] = Side(124)",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FK6 Kite quote length",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/KiteFeedCodec.cs",
+  "old": "else if (packet.Length == 44) mode = \"quote\";",
+  "new": "else if (packet.Length == 45) mode = \"quote\";",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FK7 Kite BSE index treated as a stock",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/KiteFeedCodec.cs",
+  "old": "[\"NSE_INDEX\", \"BSE_INDEX\", \"MCX_INDEX\", \"GLOBAL_INDEX\"]",
+  "new": "[\"NSE_INDEX\", \"MCX_INDEX\", \"GLOBAL_INDEX\"]",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FK8 Kite full tick without the LTP fan-out",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/KiteFeedCodec.cs",
+  "old": "if (modes.Contains(1)) published.Add(new FeedPublish(Topic(\"LTP\"), LtpTick()));\n            return;",
+  "new": "return;",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FA1 SmartAPI exchange types not grouped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SmartApiFeedCodec.cs",
+  "old": "mode.Groups.Find(g => g.ExchangeType == e.ExchangeType)",
+  "new": "mode.Groups.Find(g => true)",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FA2 SmartAPI price scale",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SmartApiFeedCodec.cs",
+  "old": "var ltp = Long(d, 43) / 100.0;",
+  "new": "var ltp = Long(d, 43) / 10.0;",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FA3 SmartAPI depth sides swapped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SmartApiFeedCodec.cs",
+  "old": "[\"buy\"] = Side(flagged), [\"sell\"] = Side(flagZero)",
+  "new": "[\"buy\"] = Side(flagZero), [\"sell\"] = Side(flagged)",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FA4 SmartAPI unknown exchange fallback",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SmartApiFeedCodec.cs",
+  "old": "ExchangeTypes.GetValueOrDefault(brokerExchange, 1)",
+  "new": "ExchangeTypes.GetValueOrDefault(brokerExchange, 2)",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FA5 SmartAPI mode taken from the frame",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SmartApiFeedCodec.cs",
+  "old": "body[\"mode\"] = entry.Mode;",
+  "new": "body[\"mode\"] = (int)mode;",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FA6 SmartAPI empty depth is four levels",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SmartApiFeedCodec.cs",
+  "old": "Enumerable.Range(0, 5)",
+  "new": "Enumerable.Range(0, 4)",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FA7 SmartAPI tick index kept after the last unsubscribe",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SmartApiFeedCodec.cs",
+  "old": "else tokenIndex.Remove((target.Token, exchangeType));",
+  "new": "else if (tokenIndex.Count < 0) tokenIndex.Remove((target.Token, exchangeType));",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FA8 SmartAPI resubscribe correlation",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SmartApiFeedCodec.cs",
+  "old": "return Messages(all, \"resub\", nowMs);",
+  "new": "return Messages(all, \"batch\", nowMs);",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FP1 Paytm futures read as options",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PaytmFeedCodec.cs",
+  "old": "? \"OPTION\" : \"FUTURE\"",
+  "new": "? \"FUTURE\" : \"OPTION\"",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FP2 Paytm rounding",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PaytmFeedCodec.cs",
+  "old": "BookFormatting.RoundPy(m[key]?.GetValue<double>() ?? 0, 2)",
+  "new": "BookFormatting.RoundPy(m[key]?.GetValue<double>() ?? 0, 3)",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FP3 Paytm token forgotten while a mode remains",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PaytmFeedCodec.cs",
+  "old": "if (found.Count > 0 && !subscriptions.Any(s => s.Token == target.Token)) tokenMap.Remove(target.Token);",
+  "new": "if (found.Count > 0) tokenMap.Remove(target.Token);",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FP4 Paytm depth sell side read as buy",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PaytmFeedCodec.cs",
+  "old": "sell.Add(new JsonObject { [\"quantity\"] = I(d, o + 4)",
+  "new": "sell.Add(new JsonObject { [\"quantity\"] = I(d, o)",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FP5 Paytm ETF not recognised",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PaytmFeedCodec.cs",
+  "old": "symbol.Contains(\"ETF\", StringComparison.OrdinalIgnoreCase)",
+  "new": "symbol.Contains(\"ETX\", StringComparison.OrdinalIgnoreCase)",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FP6 Paytm resubscribe sends nothing",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PaytmFeedCodec.cs",
+  "old": "lock (gate) return subscriptions.Count == 0 ? [] : [new JsonArray(",
+  "new": "lock (gate) return true ? [] : [new JsonArray(",
+  "filter": "FullyQualifiedName~FeedContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "FH1 two clients count as one hold",
+  "file": "src/EPTradeBot.Infrastructure/Streaming/FeedHost.cs",
+  "old": "held[key] = (existing.Request, existing.Holders + 1);",
+  "new": "held[key] = (existing.Request, existing.Holders);",
+  "filter": "FullyQualifiedName~FeedHostTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "FH2 reconnect does not repeat subscriptions",
+  "file": "src/EPTradeBot.Infrastructure/Streaming/FeedHost.cs",
+  "old": "resubscribe = codec.Resubscribe(Now);",
+  "new": "resubscribe = [];",
+  "filter": "FullyQualifiedName~FeedHostTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "FH3 a silent stream is never reconnected",
+  "file": "src/EPTradeBot.Infrastructure/Streaming/FeedHost.cs",
+  "old": "heard.CancelAfter(TimeSpan.FromSeconds(o.FeedStallSeconds));",
+  "new": "heard.CancelAfter(TimeSpan.FromHours(10));",
+  "filter": "FullyQualifiedName~FeedHostTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "FH4 a refused token is retried without end",
+  "file": "src/EPTradeBot.Infrastructure/Streaming/FeedHost.cs",
+  "old": "if (lastRefusedToken == session.AuthToken)",
+  "new": "if (lastRefusedToken == \"never\")",
+  "filter": "FullyQualifiedName~FeedHostTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "FH5 a disconnecting client keeps its holds",
+  "file": "src/EPTradeBot.Api/Streaming/WebSocketProxy.cs",
+  "old": "if (client.Account is { AccountType: AccountType.LIVE } held) await feeds.UnsubscribeAsync(held.Id,",
+  "new": "if (false && client.Account is { AccountType: AccountType.LIVE } held) await feeds.UnsubscribeAsync(held.Id,",
+  "filter": "FullyQualifiedName~FeedHostTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "FH6 the feed has no limit",
+  "file": "src/EPTradeBot.Infrastructure/Streaming/FeedHost.cs",
+  "old": "if (held.Count >= host.options.Value.FeedMaxInstruments)",
+  "new": "if (held.Count >= int.MaxValue)",
+  "filter": "FullyQualifiedName~FeedHostTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "FH7 an account not signed in connects anyway",
+  "file": "src/EPTradeBot.Infrastructure/Streaming/FeedHost.cs",
+  "old": "is not signed in, so there are no live prices.",
+  "new": "is ready, so there are no live prices.",
+  "filter": "FullyQualifiedName~FeedHostTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "FH8 Kite token not split from the api key",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Feed.cs",
+  "old": "parts.Length == 2 ? parts[1] : session.AuthToken",
+  "new": "session.AuthToken",
+  "filter": "FullyQualifiedName~FeedHostTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "FH9 Angel client code header dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Feed.cs",
+  "old": "[\"x-client-code\"] = session.ClientId",
+  "new": "[\"x-client-code\"] = \"x\"",
+  "filter": "FullyQualifiedName~FeedHostTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "FH10 the last release keeps the connection",
+  "file": "src/EPTradeBot.Infrastructure/Streaming/FeedHost.cs",
+  "old": "if (connection.Release(exchange, symbol, mode) == 0)",
+  "new": "if (connection.Release(exchange, symbol, mode) < 0)",
+  "filter": "FullyQualifiedName~FeedHostTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

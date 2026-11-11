@@ -48,18 +48,18 @@ Per active broker (contract-verified means 100% of its recorded fixtures match O
 - [x] Zerodha: MCX (units to contracts at the Kite boundary, lot from the master contract; 21 fixtures, 16 mutation checks)
 - [x] Zerodha: GTT (60 fixtures, single and two-leg triggers, MARKET protected into LIMIT, MCX in contracts)
 - [x] Zerodha: login (request token exchanged at /session/token, kept as api_key:access_token as Kite expects; 5 fixtures)
-- [ ] Zerodha: market-data feed onto the bus
+- [x] Zerodha: market-data feed (Kite ticker; 25 scenarios against the Python adapter) onto the bus
 - [x] Angel One: orders, books, funds, quotes, depth, multiquotes, history (21 fixtures), margin (15)
 - [x] Angel One: GTT (51 fixtures; an OCO is two rules joined by a dash, rolled back if the pair fails)
 - [x] Angel One: login (client code, PIN and one-time code; token and feed token; 5 fixtures)
-- [ ] Angel One: market-data feed onto the bus
+- [x] Angel One: market-data feed (SmartAPI stream v2; 24 scenarios against the Python adapter) onto the bus
 - [x] Paytm Money: orders, books, funds, quotes, depth, multiquotes, smart orders, close-all, cancel-all (41 fixtures); the broker has no history, margin calculator or GTT
 - [x] Paytm Money: login (request token exchanged for the access and public tokens; 5 fixtures)
-- [ ] Paytm Money: market-data feed onto the bus
+- [x] Paytm Money: market-data feed (broadcast stream; 21 scenarios against the Python adapter) onto the bus
 
 Shared endpoints still open:
 - [x] The 4 GTT endpoints (place, modify, cancel, order book), for Zerodha and Angel One; sandbox accounts are told GTT is not there yet (TG4)
-- [ ] Gate 3 artifact, final (covers the three active brokers and the shared pieces; passes 1 to 9 are written up)
+- [x] Gate 3 artifact, final (covers the three active brokers and the shared pieces; `verification/tg3.md` sections 1 to 23)
 
 ## TG7: Remaining brokers (deferred out of TG3)
 
