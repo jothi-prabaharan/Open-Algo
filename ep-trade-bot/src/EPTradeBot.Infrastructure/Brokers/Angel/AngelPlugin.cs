@@ -18,13 +18,13 @@ namespace EPTradeBot.Infrastructure.Brokers.Angel;
 /// </summary>
 [BrokerPlugin]
 public sealed class AngelPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<AngelPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin
 {
     private const string BaseUrl = "https://apiconnect.angelone.in";
 
     public string Name => "angel";
     public string DisplayName => "Angel One";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin;
 
     /// <summary>ApiKey: the SmartAPI private key, sent as X-PrivateKey.</summary>
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey"];
@@ -565,6 +565,41 @@ public sealed class AngelPlugin(IHttpClientFactory http, BrokerSessionFactory se
     }
 
     private static bool HasOffset(string text) => text.EndsWith('Z') || System.Text.RegularExpressions.Regex.IsMatch(text, @"[+-]\d{2}:?\d{2}$");
+
+    // ---- margin ----------------------------------------------------------------------------------------------
+
+    /// <summary>SmartAPI's batch margin calculator. It answers a total and the SPAN part; the exposure part is not broken out.</summary>
+    public async Task<JsonObject> CalculateMarginAsync(BrokerSession session, IReadOnlyList<MarginLeg> legs, CancellationToken cancellationToken)
+    {
+        var positions = new JsonArray();
+        foreach (var l in legs)
+        {
+            // The token must be a number: anything else is not an Angel One instrument.
+            if (l.Instrument.Token.Trim().Replace(".", "").Replace("-", "") is not { Length: > 0 } digits || !digits.All(char.IsDigit))
+                throw new BrokerException($"{l.Instrument.Symbol} on {l.Instrument.Exchange} has no usable Angel One token, so the margin cannot be worked out. Download the master contract again.", 400);
+            positions.Add(new JsonObject
+            {
+                ["exchange"] = l.Instrument.Exchange, ["qty"] = l.Quantity, ["price"] = (double)l.Price, ["productType"] = Product(l.Product),
+                ["token"] = l.Instrument.Token.Trim(), ["tradeType"] = l.Action, ["orderType"] = OrderType(l.PriceType),
+            });
+        }
+
+        using var request = Request(session, HttpMethod.Post, "/rest/secure/angelbroking/margin/v1/batch", new JsonObject { ["positions"] = positions });
+        using var response = await SendAsync(request, cancellationToken);
+        var reply = await ReadAsync(response, cancellationToken) as JsonObject
+            ?? throw new BrokerException("Angel One sent a reply EP Trade bot could not read. Try again in a moment.");
+        // OpenAlgo answers success when Angel One refuses with a 200 and "status": false; a refusal is an error here.
+        if (reply["status"] is JsonValue st && st.TryGetValue<bool>(out var ok) && !ok)
+            throw new BrokerException($"Angel One could not work out the margin: {Str(reply["message"]) ?? "Failed to calculate margin"}", response.IsSuccessStatusCode ? 400 : (int)response.StatusCode);
+        if (!response.IsSuccessStatusCode)
+            throw new BrokerException($"Angel One could not work out the margin: {Str(reply["message"]) ?? "Failed to calculate margin"}", (int)response.StatusCode);
+
+        var data = reply["data"] as JsonObject;
+        return new JsonObject
+        {
+            ["total_margin_required"] = data?["totalMarginRequired"]?.DeepClone() ?? 0, ["span_margin"] = data?["marginComponents"]?["spanMargin"]?.DeepClone() ?? 0, ["exposure_margin"] = 0,
+        };
+    }
 
     // ---- plumbing --------------------------------------------------------------------------------------------
 

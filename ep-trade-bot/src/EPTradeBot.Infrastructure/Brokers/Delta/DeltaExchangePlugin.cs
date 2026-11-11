@@ -26,14 +26,14 @@ public sealed class DeltaExchangePlugin(
     BrokerSessionFactory sessions,
     ISymbolMaster symbols,
     TimeProvider clock,
-    ILogger<DeltaExchangePlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerQuotes, IBrokerHistory
+    ILogger<DeltaExchangePlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerQuotes, IBrokerHistory, IBrokerMargin
 {
     private const string BaseUrl = "https://api.india.delta.exchange";
     private const string Crypto = "CRYPTO";
 
     public string Name => "deltaexchange";
     public string DisplayName => "Delta Exchange";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin;
 
     /// <summary>The session token is the Delta API key (as OpenAlgo stores it); ApiSecret signs every request.</summary>
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiSecret"];
@@ -447,6 +447,39 @@ public sealed class DeltaExchangePlugin(
     // ---- plumbing --------------------------------------------------------------------------------------------
 
     private HttpClient Client() => http.CreateClient(Name);
+
+    // ---- margin ----------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Delta Exchange has no basket calculator, so each position asks <c>/v2/products/{id}/margin_required</c> and the initial margins
+    /// are added. Delta has no SPAN part, so OpenAlgo reports the initial margin as both the total and the SPAN part.
+    /// </summary>
+    public async Task<JsonObject> CalculateMarginAsync(BrokerSession session, IReadOnlyList<MarginLeg> legs, CancellationToken cancellationToken)
+    {
+        double total = 0;
+        var failed = new List<string>();
+        foreach (var l in legs)
+        {
+            var limit = l.PriceType is "LIMIT" or "SL" && l.Price > 0;
+            // A limit order with no price is asked about as a market order.
+            var parameters = new SortedDictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["size"] = l.Quantity.ToString(CultureInfo.InvariantCulture), ["side"] = l.Action.ToLowerInvariant(), ["order_type"] = limit ? "limit_order" : "market_order",
+            };
+            if (limit) parameters["limit_price"] = ((double)l.Price).ToString("R", CultureInfo.InvariantCulture) is var text && !text.Contains('.') ? text + ".0" : ((double)l.Price).ToString("R", CultureInfo.InvariantCulture);
+            var query = "?" + string.Join("&", parameters.Select(kv => $"{kv.Key}={kv.Value}"));
+            using var request = Signed(session, HttpMethod.Get, $"/v2/products/{l.Instrument.Token}/margin_required", query, null);
+            using var response = await SendAsync(request, cancellationToken);
+            var reply = await ReadAsync(response, cancellationToken) as JsonObject;
+            if (Truthy(reply?["success"]) && reply!["result"] is JsonObject result) total += Float(result["initial_margin"]);
+            else failed.Add(l.Instrument.Token);
+        }
+
+        // OpenAlgo adds up the positions Delta answered and leaves the others out, which understates the margin.
+        if (failed.Count > 0)
+            throw new BrokerException($"Delta Exchange could not work out the margin for {string.Join(", ", failed.Select(id => legs.First(l => l.Instrument.Token == id).Instrument.Symbol).Distinct())}, so no total is given.", 500);
+        return new JsonObject { ["total_margin_required"] = total, ["span_margin"] = total, ["exposure_margin"] = 0.0 };
+    }
 
     private HttpRequestMessage Signed(BrokerSession session, HttpMethod method, string path, string query, JsonObject? body)
     {

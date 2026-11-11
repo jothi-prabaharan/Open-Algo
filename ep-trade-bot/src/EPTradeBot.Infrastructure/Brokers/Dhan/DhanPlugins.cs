@@ -43,7 +43,7 @@ public sealed class DhanSandboxPlugin(IHttpClientFactory http, BrokerSessionFact
 /// Not ported yet, and refused rather than guessed: GTT, margin, login and the feed.
 /// </summary>
 public abstract class DhanPluginBase(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, IMarketSessions calendar, TimeProvider clock, ILogger logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin
 {
     public abstract string Name { get; }
     public abstract string DisplayName { get; }
@@ -52,7 +52,7 @@ public abstract class DhanPluginBase(IHttpClientFactory http, BrokerSessionFacto
     /// <summary>The sandbox variant: client-id on every call, fuller order payloads, more order states, UTC times, quotes from candles.</summary>
     protected abstract bool Sandbox { get; }
 
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ClientId"];
 
     // ---- orders ----------------------------------------------------------------------------------------------
@@ -899,6 +899,52 @@ public abstract class DhanPluginBase(IHttpClientFactory http, BrokerSessionFacto
                 throw new BrokerException($"{DisplayName} says the access token is invalid or has expired. Log in to {DisplayName} again.", 403);
             return reply ?? throw new BrokerException($"{DisplayName} sent a reply EP Trade bot could not read. Try again in a moment.");
         }
+    }
+
+    // ---- margin ----------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// One position goes to Dhan's single-order calculator; two or more go to its multi-order calculator, which includes open positions
+    /// and orders and takes the benefit of hedged legs. The sandbox calculator is a different flow, not ported yet.
+    /// </summary>
+    public async Task<JsonObject> CalculateMarginAsync(BrokerSession session, IReadOnlyList<MarginLeg> legs, CancellationToken cancellationToken)
+    {
+        if (Sandbox) throw new BrokerException("Margin calculation on Dhan Sandbox is not supported in EP Trade bot yet.", 501);
+        var client = ClientId(session) ?? throw new BrokerException("Could not determine the Dhan client id. Set the client id on the account, then try again.", 400);
+        var scripts = new List<JsonObject>();
+        foreach (var l in legs)
+        {
+            if (DhanRules.Segment(l.Instrument.Exchange) is not { } segment) throw new BrokerException($"{DisplayName} has no margin calculation for {l.Instrument.Exchange}.", 400);
+            var script = new JsonObject
+            {
+                ["dhanClientId"] = client, ["exchangeSegment"] = segment, ["transactionType"] = l.Action, ["quantity"] = l.Quantity,
+                ["productType"] = l.Product switch { "CNC" => "CNC", "NRML" => "MARGIN", _ => "INTRADAY" }, ["securityId"] = l.Instrument.Token, ["price"] = (double)l.Price,
+            };
+            if (l.TriggerPrice > 0) script["triggerPrice"] = (double)l.TriggerPrice;
+            scripts.Add(script);
+        }
+
+        var multi = scripts.Count > 1;
+        var body = multi
+            ? new JsonObject { ["dhanClientId"] = client, ["includePosition"] = true, ["includeOrder"] = true, ["scripList"] = new JsonArray(scripts.Select(x => (JsonNode?)x).ToArray()) }
+            : scripts[0];
+        using var request = Request(session, HttpMethod.Post, multi ? "/v2/margincalculator/multi" : "/v2/margincalculator", body, clientHeader: true);
+        using var response = await SendAsync(request, cancellationToken);
+        var reply = await ReadAsync(response, cancellationToken) as JsonObject
+            ?? throw new BrokerException($"{DisplayName} sent a reply EP Trade bot could not read. Try again in a moment.", 502);
+        var status = (Str(reply["status"]) ?? "").ToLowerInvariant();
+        if (Truthy(reply["errorType"]) || status is "error" or "failed" or "failure")
+        {
+            if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+                throw new BrokerException($"{DisplayName} says the access token is invalid or has expired. Log in to {DisplayName} again.", 403);
+            var reason = Str(reply["errorMessage"]) ?? Str(reply["message"]) ?? Str(reply["errors"]) ?? Str(reply["error"]) ?? (multi ? "Dhan margin API returned an error" : "Failed to calculate margin");
+            throw new BrokerException($"{DisplayName} could not work out the margin: {reason}", response.IsSuccessStatusCode ? 400 : (int)response.StatusCode);
+        }
+
+        double Pick(params string[] names) => names.Select(n => reply[n]).FirstOrDefault(v => v is not null && Str(v) is { Length: > 0 }) is { } v ? Float(v) : 0;
+        return multi
+            ? new JsonObject { ["total_margin_required"] = Pick("total_margin", "totalMargin"), ["span_margin"] = Pick("span_margin", "spanMargin"), ["exposure_margin"] = Pick("exposure_margin", "exposureMargin", "exposure") }
+            : new JsonObject { ["total_margin_required"] = Float(reply["totalMargin"]), ["span_margin"] = Float(reply["spanMargin"]), ["exposure_margin"] = Float(reply["exposureMargin"]) };
     }
 
     // ---- plumbing --------------------------------------------------------------------------------------------

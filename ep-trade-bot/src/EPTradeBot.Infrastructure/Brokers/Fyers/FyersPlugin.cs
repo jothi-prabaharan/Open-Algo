@@ -17,13 +17,13 @@ namespace EPTradeBot.Infrastructure.Brokers.Fyers;
 /// </summary>
 [BrokerPlugin]
 public sealed class FyersPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<FyersPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerOptionChain, IBrokerHistory
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerOptionChain, IBrokerHistory, IBrokerMargin
 {
     private const string BaseUrl = "https://api-t1.fyers.in";
 
     public string Name => "fyers";
     public string DisplayName => "Fyers";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin;
 
     /// <summary>ApiKey: the Fyers app id, sent with the token as "app_id:token".</summary>
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
@@ -490,6 +490,31 @@ public sealed class FyersPlugin(IHttpClientFactory http, BrokerSessionFactory se
         }
 
         throw new BrokerException($"Fyers could not send the candles for {from:yyyy-MM-dd} to {to:yyyy-MM-dd}: {message ?? "no reason given."}");
+    }
+
+    // ---- margin ----------------------------------------------------------------------------------------------
+
+    /// <summary>Fyers' multi-order margin: one figure, the margin the new orders need. It breaks out neither SPAN nor exposure.</summary>
+    public async Task<JsonObject> CalculateMarginAsync(BrokerSession session, IReadOnlyList<MarginLeg> legs, CancellationToken cancellationToken)
+    {
+        var data = new JsonArray(legs.Select(l => (JsonNode?)new JsonObject
+        {
+            ["symbol"] = l.Instrument.BrokerSymbol, ["qty"] = l.Quantity, ["side"] = l.Action == "BUY" ? 1 : -1, ["type"] = OrderType(l.PriceType), ["productType"] = Product(l.Product),
+            ["limitPrice"] = (double)l.Price, ["stopLoss"] = 0.0, ["stopPrice"] = (double)l.TriggerPrice, ["takeProfit"] = 0.0,
+        }).ToArray());
+        using var request = Request(session, HttpMethod.Post, "/api/v3/multiorder/margin", new JsonObject { ["data"] = data });
+        using var response = await SendAsync(request, cancellationToken);
+        var reply = await ReadAsync(response, cancellationToken) as JsonObject
+            ?? throw new BrokerException("Fyers sent a reply EP Trade bot could not read. Try again in a moment.");
+        if (Str(reply["s"]) != "ok")
+        {
+            if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+                throw new BrokerException("Fyers says the session has expired. Log in to Fyers again.", 403);
+            // OpenAlgo answers success when Fyers refuses with a 200; a refusal is an error here.
+            throw new BrokerException($"Fyers could not work out the margin (code {Str(reply["code"]) ?? "unknown"}): {Str(reply["message"]) ?? "Failed to calculate margin"}", response.IsSuccessStatusCode ? 400 : (int)response.StatusCode);
+        }
+
+        return new JsonObject { ["total_margin_required"] = reply["data"]?["margin_new_order"]?.DeepClone() ?? 0, ["span_margin"] = 0, ["exposure_margin"] = 0 };
     }
 
     // ---- plumbing --------------------------------------------------------------------------------------------

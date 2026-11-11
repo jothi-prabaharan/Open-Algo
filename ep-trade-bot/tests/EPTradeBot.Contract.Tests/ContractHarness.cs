@@ -61,6 +61,9 @@ public abstract class BrokerContractHost : IAsyncLifetime
     /// <summary>Further configuration for the host (a spacing between calls that a fixture run does not wait for).</summary>
     public virtual IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string>();
 
+    /// <summary>Paths of reads the Python plugin makes only to log something (Delta's margin mode), which EP Trade bot does not make.</summary>
+    public virtual IReadOnlySet<string> IgnoredReads { get; } = new HashSet<string>();
+
     /// <summary>A check of every request the broker would see (a signature, say), beyond the comparison with the recording.</summary>
     public virtual void Verify(SentRequest request)
     {
@@ -170,6 +173,12 @@ public static class ContractRunner
         host.Broker.Reset(replies);
 
         await host.PrepareAsync(f);
+        if (host.IgnoredReads.Count > 0)
+        {
+            var recorded = f["sent"]!.AsArray();
+            foreach (var read in recorded.OfType<JsonObject>().Where(r => host.IgnoredReads.Contains(r["path"]!.GetValue<string>())).ToList()) recorded.Remove(read);
+        }
+
         var apiKey = f["analyze"] is JsonValue analyze && analyze.GetValue<bool>() ? host.PaperApiKey : host.ApiKey;
         var request = (JsonObject)f["request"]!.DeepClone();
         if (request["apikey"] is JsonValue k && k.GetValue<string>() == recordedKey) request["apikey"] = apiKey;

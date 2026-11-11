@@ -1,7 +1,7 @@
 # EP Trade bot: Implementation Plan (OpenAlgo to .NET 10 / PostgreSQL / Angular)
 
 Status: **approved 2026-11-02, defaults accepted for D1 to D8.** Task Groups 1 and 2 complete
-([TG1](../../ep-trade-bot/verification/tg1.md), [TG2](../../ep-trade-bot/verification/tg2.md)); Task Group 3 in progress, passes 1 to 7 verified
+([TG1](../../ep-trade-bot/verification/tg1.md), [TG2](../../ep-trade-bot/verification/tg2.md)); Task Group 3 in progress, passes 1 to 9 verified (scope narrowed to Zerodha, Angel One and Paytm Money; other brokers moved to Task Group 7)
 ([TG3](../../ep-trade-bot/verification/tg3.md)). Each Task Group below
 ends at a verification gate and a review stop; nothing in the next group starts
 until the previous group's verification artifact is approved.
@@ -239,7 +239,7 @@ run on PostgreSQL 17 proving:
    application endpoints; 31 of those belong with TG4 features.
 3. Contract fixtures: recorded request/response pairs from the Python
    implementation, replayed against the .NET endpoints.
-4. Six reference broker adapters (D4), then the remaining ones in batches.
+4. Three broker adapters: Zerodha, Angel One and Paytm Money. *Scope change (TG3):* every other broker is deferred to Task Group 7. The five other reference brokers built before the change (Dhan, Dhan Sandbox, Upstox, Fyers, Delta Exchange) are kept and listed there.
 5. NetMQ bus: the proxy's SUB socket binds `ZmqPort`, and every publisher
    connects. There is no port fallback. A WebSocket proxy on 8765 keeps the same
    client protocol (auth, subscribe and unsubscribe, LTP/Quote/Depth modes,
@@ -349,3 +349,8 @@ on the Caddyfile, and the final migration walkthrough.
 - **Verification artifacts** are produced with this session's tools: build logs,
   test logs, and Playwright screenshots and video. They are not Antigravity
   browser recordings.
+
+### Task Group 7: Remaining brokers
+
+Added when Task Group 3 was narrowed to Zerodha, Angel One and Paytm Money. It holds every other broker: the five reference brokers already built (Dhan, Dhan Sandbox, Upstox, Fyers, Delta Exchange; still missing GTT, login, feeds, the sandbox margin calculator) and the 30 not started. It follows the same recipe as Task Group 3 for each broker, and ends at its own verification gate with a per-broker status table. Nothing in it starts until the groups now ahead of it are done.
+

@@ -1,0 +1,98 @@
+[
+ {
+  "name": "MA1 CNC sent as intraday",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "[\"token\"] = l.Instrument.Token.Trim(), [\"tradeType\"] = l.Action, [\"orderType\"] = OrderType(l.PriceType),",
+  "new": "[\"token\"] = l.Instrument.Token.Trim(), [\"tradeType\"] = l.Action, [\"orderType\"] = \"MARKET\",",
+  "filter": "FullyQualifiedName~MarginAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MA2 span read from the wrong field",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "[\"span_margin\"] = data?[\"marginComponents\"]?[\"spanMargin\"]",
+  "new": "[\"span_margin\"] = data?[\"marginComponents\"]?[\"marginBenefit\"]",
+  "filter": "FullyQualifiedName~MarginAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MA3 refusal with an ok status answered as success",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "if (reply[\"status\"] is JsonValue st && st.TryGetValue<bool>(out var ok) && !ok)",
+  "new": "if (reply[\"status\"] is JsonValue st && st.TryGetValue<bool>(out var ok) && !ok && false)",
+  "filter": "FullyQualifiedName~MarginAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MA4 positions sent with the wrong side",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "[\"tradeType\"] = l.Action,",
+  "new": "[\"tradeType\"] = \"BUY\",",
+  "filter": "FullyQualifiedName~MarginAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MU1 twenty-one positions accepted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "if (legs.Count > 20) throw",
+  "new": "if (legs.Count > 21) throw",
+  "filter": "FullyQualifiedName~MarginUpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MU2 price sent when zero",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "if (l.Price > 0) instrument[",
+  "new": "if (l.Price >= 0) instrument[",
+  "filter": "FullyQualifiedName~MarginUpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MU3 intraday sent as delivery",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "l.Product == \"MIS\" ? \"I\" : l.Product is \"CNC\" or \"NRML\" ? \"D\" : \"I\"",
+  "new": "l.Product == \"MIS\" ? \"D\" : \"D\"",
+  "filter": "FullyQualifiedName~MarginUpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MU4 exposure left out",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.cs",
+  "old": "exposure += Float(m[\"exposure_margin\"]);",
+  "new": "exposure += 0;",
+  "filter": "FullyQualifiedName~MarginUpstoxContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MF1 sell sent as buy",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "[\"side\"] = l.Action == \"BUY\" ? 1 : -1, [\"type\"] = OrderType(l.PriceType), [\"productType\"] = Product(l.Product),\n            [\"limitPrice\"]",
+  "new": "[\"side\"] = 1, [\"type\"] = OrderType(l.PriceType), [\"productType\"] = Product(l.Product),\n            [\"limitPrice\"]",
+  "filter": "FullyQualifiedName~MarginFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MF2 trigger price left out",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "[\"stopPrice\"] = (double)l.TriggerPrice,",
+  "new": "[\"stopPrice\"] = 0.0,",
+  "filter": "FullyQualifiedName~MarginFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MF3 total taken from the existing positions",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "reply[\"data\"]?[\"margin_new_order\"]?",
+  "new": "reply[\"data\"]?[\"margin_total\"]?",
+  "filter": "FullyQualifiedName~MarginFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MF4 NRML sent as intraday",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.cs",
+  "old": "[\"productType\"] = Product(l.Product),\n            [\"limitPrice\"]",
+  "new": "[\"productType\"] = \"INTRADAY\",\n            [\"limitPrice\"]",
+  "filter": "FullyQualifiedName~MarginFyersContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

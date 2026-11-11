@@ -1,7 +1,7 @@
 # EP Trade bot: Task List
 
 Status: plan approved 2026-11-02 with the default for every decision (D1 to D8).
-Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 7 verified). Evidence in [`tg1.md`](../../ep-trade-bot/verification/tg1.md), [`tg2.md`](../../ep-trade-bot/verification/tg2.md) and [`tg3.md`](../../ep-trade-bot/verification/tg3.md).
+Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 9 verified; active brokers Zerodha, Angel One, Paytm Money; the rest deferred to TG7). Evidence in [`tg1.md`](../../ep-trade-bot/verification/tg1.md), [`tg2.md`](../../ep-trade-bot/verification/tg2.md) and [`tg3.md`](../../ep-trade-bot/verification/tg3.md).
 
 ## Pre-flight
 - [x] Decisions D1 to D8 answered (defaults accepted)
@@ -27,36 +27,53 @@ Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 7 verified). Evi
 - [x] Gate 2 artifact (xUnit on PostgreSQL 17, 14 mutation checks)
 - [ ] Deferred to later groups: sandbox GTT, CNC holdings and T+1, catch-up after restart, auto square-off timers (TG4); admin token replaced by login (TG5)
 
-## TG3: Brokers, /api/v1, streaming
+## TG3: Brokers, /api/v1, streaming (active brokers: Zerodha, Angel One, Paytm Money)
+
+Scope change: only Zerodha, Angel One and Paytm Money are finished inside this group. Every other broker is deferred to TG7, including the five reference brokers already built (their work so far is kept and listed there).
+
+Shared pieces, done:
 - [x] Enumerate Flask `/api/v1` URL map; reconcile count (76 pairs, 74 application endpoints; the brief's 57 is out of date)
 - [x] `IBrokerPlugin` contract, discovery gated by `Brokers:Enabled`, keys read when called, recorded-fixture harness
 - [x] Per-account API keys (hashed), encrypted broker tokens bound to their account
-- [x] 35 of 74 `/api/v1` pairs with contract tests against the Python implementation (353 fixtures: 32 Zerodha, 36 Dhan, 36 Dhan Sandbox, 32 Angel One, 33 Upstox, 33 Fyers, 30 Delta Exchange, 76 composite, 45 platform)
 - [x] Symbol master and multi-order pairs: symbol, search, expiry, instruments, optionsymbol, basketorder, splitorder, optionsorder, optionsmultiorder (pass 5)
 - [x] Freeze limits seeded from NSE's list at startup (empty table only)
-- [x] multiquotes (batched per broker), syntheticfuture, optionchain (Fyers' own chain call; Greeks not yet) (pass 6)
-- [x] market/holidays and market/timings (calendar seeded from OpenAlgo's fresh install), chart GET and POST, pnl/symbols (pass 7)
-- [x] history and intervals contract-verified on Zerodha (24 fixtures); `IBrokerHistory` contract and the 350 ms spacing in place
-- [x] history and intervals contract-verified on Angel One (21 fixtures)
-- [x] history and intervals contract-verified on Upstox (19 fixtures)
-- [x] history and intervals contract-verified on Fyers (26 fixtures)
-- [x] history and intervals contract-verified on Delta Exchange (25 fixtures)
-- [x] history and intervals contract-verified on Dhan (29 fixtures) and Dhan Sandbox (17 fixtures)
-- [x] Pass 8 complete: history and intervals on all seven reference brokers
-- [x] ticker contract-verified on Zerodha (20 fixtures), JSON and plain text
-- [x] margin contract-verified on Zerodha (23 fixtures); the other six reference brokers' margin is still to do
-- [ ] Remaining 4 GTT endpoints, and margin for six brokers
-- [x] Zerodha (contract-verified; MCX, history, GTT, margin, login and ticker feed not yet)
-- [x] Dhan, Dhan Sandbox (contract-verified; history, GTT, margin, login and feed not yet)
-- [x] Angel One, Upstox (contract-verified; history, GTT, margin, login and feeds not yet)
-- [x] Fyers, Delta Exchange (contract-verified; history, GTT, margin, login, feeds, Delta leverage and fractional quantities not yet)
-- [x] Paytm Money (contract-verified: orders, books, funds, quotes, depth, multiquotes, smart orders, close-all, cancel-all; no history or margin calculator at the broker; login and feed not yet)
-- [ ] Remaining adapters in batches (tracked per broker: contract-verified / live-verified): 30 left
+- [x] multiquotes (batched per broker), syntheticfuture, optionchain (Greeks not yet; they arrive with TG4) (pass 6)
+- [x] market/holidays and market/timings, chart GET and POST, pnl/symbols (pass 7)
+- [x] history, intervals, ticker (JSON and plain text) and margin endpoints (passes 8 and 9)
 - [x] NetMQ bus (SUB binds, PUBs connect, startup fails on a taken port) and 8765 WebSocket proxy (OpenAlgo protocol)
-- [ ] Broker market-data feed adapters onto the bus
 - [x] SignalR order-update stream (and WebSocket `subscribe_orders`)
-- [x] Gate 3 artifact, passes 1 to 7 (135 mutation checks)
-- [ ] Gate 3 artifact, final
+
+Per active broker (contract-verified means 100% of its recorded fixtures match OpenAlgo, apart from recorded deliberate differences):
+- [x] Zerodha: orders, books, funds, quotes, depth, multiquotes, history (24 fixtures), ticker (20), margin (23)
+- [ ] Zerodha: MCX (Kite counts MCX in contracts, OpenAlgo in units; `mcx_contract_size.py` not ported)
+- [ ] Zerodha: GTT
+- [ ] Zerodha: login
+- [ ] Zerodha: market-data feed onto the bus
+- [x] Angel One: orders, books, funds, quotes, depth, multiquotes, history (21 fixtures), margin (15)
+- [ ] Angel One: GTT
+- [ ] Angel One: login
+- [ ] Angel One: market-data feed onto the bus
+- [x] Paytm Money: orders, books, funds, quotes, depth, multiquotes, smart orders, close-all, cancel-all (41 fixtures); the broker has no history, margin calculator or GTT
+- [ ] Paytm Money: login
+- [ ] Paytm Money: market-data feed onto the bus
+
+Shared endpoints still open:
+- [ ] The 4 GTT endpoints (place, modify, cancel, order book), for Zerodha and Angel One
+- [ ] Gate 3 artifact, final (covers the three active brokers and the shared pieces; passes 1 to 9 are written up)
+
+## TG7: Remaining brokers (deferred out of TG3)
+
+Not worked on until Zerodha, Angel One and Paytm Money are finished and the next pending groups are done. Each broker follows the same recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT, login, feed, with recorded fixtures and mutation checks.
+
+Built already during TG3, kept as they are (contract-verified for the pieces listed):
+- [x] Dhan (orders, books, funds, quotes, history, margin), Dhan Sandbox (orders, books, funds, quotes, history; its margin calculator is not ported)
+- [x] Upstox (orders, books, funds, quotes, history, margin)
+- [x] Fyers (orders, books, funds, quotes, history, margin, option chain call)
+- [x] Delta Exchange (orders, books, funds, quotes, history, margin)
+- [ ] For those five: GTT, login, market-data feeds, Dhan Sandbox margin, Delta leverage and fractional quantities
+
+Not started (30): fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, ibulls, iifl, iiflcapital, indmoney, jainamxts, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, wisdom, zebu
+- [ ] Gate 7 artifact (per-broker verification status for all of the above)
 
 ## TG4: Strategy host, Flow, Action Center, agent, MCP, tools
 - [ ] The 31 /api/v1 pairs that sit on TG4 features (option greeks, portfolio, SIP, sector rotation, strategy, Telegram, WhatsApp)

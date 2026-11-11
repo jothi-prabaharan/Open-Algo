@@ -1,0 +1,1077 @@
+{
+  "broker": "dhan",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "dhan-access-token",
+  "client_id": "1100000001",
+  "recorded_at": null,
+  "read_posts": [
+    "/v2/margincalculator",
+    "/v2/margincalculator/multi"
+  ],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500209",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY-Nov2026-FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE_FNO",
+      "token": "35001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY-Nov2026-24000-CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE_FNO",
+      "token": "40001",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "OPTIDX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "BSEONLY",
+      "brsymbol": "BSEONLY",
+      "name": "LISTED ON BSE ONLY",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500325",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NOTICK",
+      "brsymbol": "NOTICK",
+      "name": "NO TICK SIZE",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "9999",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.0
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "margin_one_position_uses_the_single_calculator",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/margincalculator": {
+          "body": {
+            "totalMargin": 1608.05,
+            "spanMargin": 100.5,
+            "exposureMargin": 20.25,
+            "availableBalance": 99999.0,
+            "variableMargin": 1487.3,
+            "insufficientBalance": 0.0,
+            "brokerage": 20.0,
+            "leverage": "5.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20.25,
+            "span_margin": 100.5,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/margincalculator",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "exchangeSegment": "NSE_EQ",
+            "transactionType": "BUY",
+            "quantity": 10,
+            "productType": "INTRADAY",
+            "securityId": "3045",
+            "price": 0.0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_limit_order_with_price",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/margincalculator": {
+          "body": {
+            "totalMargin": 1608.05,
+            "spanMargin": 100.5,
+            "exposureMargin": 20.25,
+            "availableBalance": 99999.0,
+            "variableMargin": 1487.3,
+            "insufficientBalance": 0.0,
+            "brokerage": 20.0,
+            "leverage": "5.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20.25,
+            "span_margin": 100.5,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/margincalculator",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "exchangeSegment": "NSE_EQ",
+            "transactionType": "BUY",
+            "quantity": 10,
+            "productType": "INTRADAY",
+            "securityId": "3045",
+            "price": 805.5
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_stop_loss_with_trigger",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "sell",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "SL",
+            "price": "800",
+            "trigger_price": "801.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/margincalculator": {
+          "body": {
+            "totalMargin": 1608.05,
+            "spanMargin": 100.5,
+            "exposureMargin": 20.25,
+            "availableBalance": 99999.0,
+            "variableMargin": 1487.3,
+            "insufficientBalance": 0.0,
+            "brokerage": 20.0,
+            "leverage": "5.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20.25,
+            "span_margin": 100.5,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/margincalculator",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "exchangeSegment": "NSE_EQ",
+            "transactionType": "SELL",
+            "quantity": 10,
+            "productType": "INTRADAY",
+            "securityId": "3045",
+            "price": 800.0,
+            "triggerPrice": 801.5
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_futures_nrml",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/margincalculator": {
+          "body": {
+            "totalMargin": 1608.05,
+            "spanMargin": 100.5,
+            "exposureMargin": 20.25,
+            "availableBalance": 99999.0,
+            "variableMargin": 1487.3,
+            "insufficientBalance": 0.0,
+            "brokerage": 20.0,
+            "leverage": "5.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20.25,
+            "span_margin": 100.5,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/margincalculator",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "exchangeSegment": "NSE_FNO",
+            "transactionType": "SELL",
+            "quantity": 75,
+            "productType": "MARGIN",
+            "securityId": "35001",
+            "price": 0.0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_cnc_equity",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "CNC",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/margincalculator": {
+          "body": {
+            "totalMargin": 1608.05,
+            "spanMargin": 100.5,
+            "exposureMargin": 20.25,
+            "availableBalance": 99999.0,
+            "variableMargin": 1487.3,
+            "insufficientBalance": 0.0,
+            "brokerage": 20.0,
+            "leverage": "5.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20.25,
+            "span_margin": 100.5,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/margincalculator",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "exchangeSegment": "NSE_EQ",
+            "transactionType": "BUY",
+            "quantity": 10,
+            "productType": "CNC",
+            "securityId": "3045",
+            "price": 0.0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_two_positions_use_the_multi_calculator",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/margincalculator/multi": {
+          "body": {
+            "total_margin": "191119.00",
+            "span_margin": "179780.00",
+            "exposure_margin": "11339.00",
+            "equity_margin": "0.00",
+            "fo_margin": "191119.00",
+            "commodity_margin": "0.00",
+            "currency": "INR",
+            "hedge_benefit": "67020.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 11339.0,
+            "span_margin": 179780.0,
+            "total_margin_required": 191119.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/margincalculator/multi",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "includePosition": true,
+            "includeOrder": true,
+            "scripList": [
+              {
+                "dhanClientId": "1100000001",
+                "exchangeSegment": "NSE_FNO",
+                "transactionType": "SELL",
+                "quantity": 75,
+                "productType": "MARGIN",
+                "securityId": "35001",
+                "price": 0.0
+              },
+              {
+                "dhanClientId": "1100000001",
+                "exchangeSegment": "NSE_EQ",
+                "transactionType": "BUY",
+                "quantity": 10,
+                "productType": "INTRADAY",
+                "securityId": "3045",
+                "price": 0.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_multi_with_camel_case_answer",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/margincalculator/multi": {
+          "body": {
+            "totalMargin": 5000.5,
+            "spanMargin": "",
+            "exposure": 120.0
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 120.0,
+            "span_margin": 0.0,
+            "total_margin_required": 5000.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/margincalculator/multi",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "includePosition": true,
+            "includeOrder": true,
+            "scripList": [
+              {
+                "dhanClientId": "1100000001",
+                "exchangeSegment": "NSE_EQ",
+                "transactionType": "BUY",
+                "quantity": 10,
+                "productType": "INTRADAY",
+                "securityId": "3045",
+                "price": 0.0
+              },
+              {
+                "dhanClientId": "1100000001",
+                "exchangeSegment": "NSE_EQ",
+                "transactionType": "BUY",
+                "quantity": 10,
+                "productType": "INTRADAY",
+                "securityId": "1594",
+                "price": 0.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_broker_refuses_with_an_error_status",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/margincalculator": {
+          "status": 400,
+          "body": {
+            "errorType": "Margin_Error",
+            "errorCode": "DH-905",
+            "errorMessage": "Missing required fields, bad values for parameters etc."
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Missing required fields, bad values for parameters etc.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/margincalculator",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "exchangeSegment": "NSE_EQ",
+            "transactionType": "BUY",
+            "quantity": 10,
+            "productType": "INTRADAY",
+            "securityId": "3045",
+            "price": 0.0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_broker_refuses_with_ok_status",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/margincalculator": {
+          "body": {
+            "status": "failed",
+            "data": {
+              "810": "Invalid Client ID"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to calculate margin",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/margincalculator",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "exchangeSegment": "NSE_EQ",
+            "transactionType": "BUY",
+            "quantity": 10,
+            "productType": "INTRADAY",
+            "securityId": "3045",
+            "price": 0.0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_multi_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/margincalculator/multi": {
+          "status": 400,
+          "body": {
+            "errorType": "Margin_Error",
+            "errorCode": "DH-905",
+            "errorMessage": "Missing required fields, bad values for parameters etc."
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Missing required fields, bad values for parameters etc.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/margincalculator/multi",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "includePosition": true,
+            "includeOrder": true,
+            "scripList": [
+              {
+                "dhanClientId": "1100000001",
+                "exchangeSegment": "NSE_EQ",
+                "transactionType": "BUY",
+                "quantity": 10,
+                "productType": "INTRADAY",
+                "securityId": "3045",
+                "price": 0.0
+              },
+              {
+                "dhanClientId": "1100000001",
+                "exchangeSegment": "NSE_EQ",
+                "transactionType": "BUY",
+                "quantity": 10,
+                "productType": "INTRADAY",
+                "securityId": "1594",
+                "price": 0.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_token_expired",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/margincalculator": {
+          "status": 401,
+          "body": {
+            "errorType": "Invalid_Authentication",
+            "errorCode": "DH-901",
+            "errorMessage": "Client ID or user generated access token is invalid or expired."
+          }
+        }
+      },
+      "expected": {
+        "status": 401,
+        "body": {
+          "message": "Client ID or user generated access token is invalid or expired.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/margincalculator",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "exchangeSegment": "NSE_EQ",
+            "transactionType": "BUY",
+            "quantity": 10,
+            "productType": "INTRADAY",
+            "securityId": "3045",
+            "price": 0.0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_alone",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "No valid positions to calculate margin. Check if symbols are valid.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_among_others",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/margincalculator": {
+          "body": {
+            "totalMargin": 1608.05,
+            "spanMargin": 100.5,
+            "exposureMargin": 20.25,
+            "availableBalance": 99999.0,
+            "variableMargin": 1487.3,
+            "insufficientBalance": 0.0,
+            "brokerage": 20.0,
+            "leverage": "5.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20.25,
+            "span_margin": 100.5,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/margincalculator",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "exchangeSegment": "NSE_EQ",
+            "transactionType": "BUY",
+            "quantity": 10,
+            "productType": "INTRADAY",
+            "securityId": "3045",
+            "price": 0.0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_quantity_not_a_number",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "ten",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Position 1: Invalid quantity format",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_no_positions",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'positions': ['Positions must contain 1 to 50 items.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_invalid_apikey",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "none",
+      "request": {
+        "apikey": "not-a-key",
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ]
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}

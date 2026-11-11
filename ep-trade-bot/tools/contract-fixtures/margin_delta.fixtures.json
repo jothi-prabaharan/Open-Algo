@@ -1,0 +1,1071 @@
+{
+  "broker": "deltaexchange",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "delta-api-key",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "BTCUSD",
+      "brsymbol": "BTCUSD",
+      "name": "Bitcoin perpetual",
+      "exchange": "CRYPTO",
+      "brexchange": "CRYPTO",
+      "token": "27",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "PERPFUT",
+      "tick_size": 0.5,
+      "contract_value": 0.001
+    },
+    {
+      "symbol": "ETHUSD",
+      "brsymbol": "ETHUSD",
+      "name": "Ether perpetual",
+      "exchange": "CRYPTO",
+      "brexchange": "CRYPTO",
+      "token": "3136",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "PERPFUT",
+      "tick_size": 0.05,
+      "contract_value": 0.01
+    },
+    {
+      "symbol": "SOL_INR",
+      "brsymbol": "SOL_INR",
+      "name": "Solana spot",
+      "exchange": "CRYPTO",
+      "brexchange": "CRYPTO",
+      "token": "1001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "SPOT",
+      "tick_size": 0.01,
+      "contract_value": 1.0
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "margin_one_position_market",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "BTCUSD",
+            "exchange": "CRYPTO",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/products/27/margin_required": {
+          "body": {
+            "success": true,
+            "result": {
+              "initial_margin": "500.25",
+              "maintenance_margin": "250.0",
+              "order_size": 10
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 500.25,
+            "total_margin_required": 500.25
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/users/trading_preferences",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/margin_required",
+          "query": [
+            [
+              "order_type",
+              "market_order"
+            ],
+            [
+              "side",
+              "buy"
+            ],
+            [
+              "size",
+              "10"
+            ]
+          ],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_limit_order_with_price",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "BTCUSD",
+            "exchange": "CRYPTO",
+            "action": "SELL",
+            "quantity": "10",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "67000.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/products/27/margin_required": {
+          "body": {
+            "success": true,
+            "result": {
+              "initial_margin": "500.25",
+              "maintenance_margin": "250.0",
+              "order_size": 10
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 500.25,
+            "total_margin_required": 500.25
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/users/trading_preferences",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/margin_required",
+          "query": [
+            [
+              "limit_price",
+              "67000.5"
+            ],
+            [
+              "order_type",
+              "limit_order"
+            ],
+            [
+              "side",
+              "sell"
+            ],
+            [
+              "size",
+              "10"
+            ]
+          ],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_limit_order_with_a_whole_price",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "BTCUSD",
+            "exchange": "CRYPTO",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "67000"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/products/27/margin_required": {
+          "body": {
+            "success": true,
+            "result": {
+              "initial_margin": "500.25",
+              "maintenance_margin": "250.0",
+              "order_size": 10
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 500.25,
+            "total_margin_required": 500.25
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/users/trading_preferences",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/margin_required",
+          "query": [
+            [
+              "limit_price",
+              "67000.0"
+            ],
+            [
+              "order_type",
+              "limit_order"
+            ],
+            [
+              "side",
+              "buy"
+            ],
+            [
+              "size",
+              "10"
+            ]
+          ],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_limit_order_without_a_price_is_asked_as_market",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "BTCUSD",
+            "exchange": "CRYPTO",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "NRML",
+            "pricetype": "LIMIT"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/products/27/margin_required": {
+          "body": {
+            "success": true,
+            "result": {
+              "initial_margin": "500.25",
+              "maintenance_margin": "250.0",
+              "order_size": 10
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 500.25,
+            "total_margin_required": 500.25
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/users/trading_preferences",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/margin_required",
+          "query": [
+            [
+              "order_type",
+              "market_order"
+            ],
+            [
+              "side",
+              "buy"
+            ],
+            [
+              "size",
+              "10"
+            ]
+          ],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_stop_loss_is_asked_as_a_limit_order",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "BTCUSD",
+            "exchange": "CRYPTO",
+            "action": "SELL",
+            "quantity": "10",
+            "product": "NRML",
+            "pricetype": "SL",
+            "price": "66000",
+            "trigger_price": "66100"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/products/27/margin_required": {
+          "body": {
+            "success": true,
+            "result": {
+              "initial_margin": "500.25",
+              "maintenance_margin": "250.0",
+              "order_size": 10
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 500.25,
+            "total_margin_required": 500.25
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/users/trading_preferences",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/margin_required",
+          "query": [
+            [
+              "limit_price",
+              "66000.0"
+            ],
+            [
+              "order_type",
+              "limit_order"
+            ],
+            [
+              "side",
+              "sell"
+            ],
+            [
+              "size",
+              "10"
+            ]
+          ],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_two_positions_added",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "BTCUSD",
+            "exchange": "CRYPTO",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "ETHUSD",
+            "exchange": "CRYPTO",
+            "action": "SELL",
+            "quantity": "5",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/products/27/margin_required": {
+          "body": {
+            "success": true,
+            "result": {
+              "initial_margin": "500.25",
+              "maintenance_margin": "250.0",
+              "order_size": 10
+            }
+          }
+        },
+        "GET /v2/products/3136/margin_required": {
+          "body": {
+            "success": true,
+            "result": {
+              "initial_margin": "120.5",
+              "maintenance_margin": "60.0",
+              "order_size": 5
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 620.75,
+            "total_margin_required": 620.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/users/trading_preferences",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/margin_required",
+          "query": [
+            [
+              "order_type",
+              "market_order"
+            ],
+            [
+              "side",
+              "buy"
+            ],
+            [
+              "size",
+              "10"
+            ]
+          ],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/3136/margin_required",
+          "query": [
+            [
+              "order_type",
+              "market_order"
+            ],
+            [
+              "side",
+              "sell"
+            ],
+            [
+              "size",
+              "5"
+            ]
+          ],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_one_position_refused",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "BTCUSD",
+            "exchange": "CRYPTO",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/products/27/margin_required": {
+          "body": {
+            "success": false,
+            "error": {
+              "code": "invalid_product",
+              "message": "Product not found"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Margin calculation failed for all positions. Failed product_ids: 27",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/users/trading_preferences",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/margin_required",
+          "query": [
+            [
+              "order_type",
+              "market_order"
+            ],
+            [
+              "side",
+              "buy"
+            ],
+            [
+              "size",
+              "10"
+            ]
+          ],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_one_of_two_refused",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "BTCUSD",
+            "exchange": "CRYPTO",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "ETHUSD",
+            "exchange": "CRYPTO",
+            "action": "SELL",
+            "quantity": "5",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/products/27/margin_required": {
+          "body": {
+            "success": true,
+            "result": {
+              "initial_margin": "500.25",
+              "maintenance_margin": "250.0",
+              "order_size": 10
+            }
+          }
+        },
+        "GET /v2/products/3136/margin_required": {
+          "body": {
+            "success": false,
+            "error": {
+              "code": "invalid_product",
+              "message": "Product not found"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 500.25,
+            "total_margin_required": 500.25
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/users/trading_preferences",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/margin_required",
+          "query": [
+            [
+              "order_type",
+              "market_order"
+            ],
+            [
+              "side",
+              "buy"
+            ],
+            [
+              "size",
+              "10"
+            ]
+          ],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/3136/margin_required",
+          "query": [
+            [
+              "order_type",
+              "market_order"
+            ],
+            [
+              "side",
+              "sell"
+            ],
+            [
+              "size",
+              "5"
+            ]
+          ],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_server_error",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "BTCUSD",
+            "exchange": "CRYPTO",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/products/27/margin_required": {
+          "status": 500,
+          "body": {
+            "success": false,
+            "error": {
+              "code": "internal_error"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Margin calculation failed for all positions. Failed product_ids: 27",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/users/trading_preferences",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/margin_required",
+          "query": [
+            [
+              "order_type",
+              "market_order"
+            ],
+            [
+              "side",
+              "buy"
+            ],
+            [
+              "size",
+              "10"
+            ]
+          ],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_alone",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "CRYPTO",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "No valid positions to calculate margin \u2014 check symbols are in master contract DB",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/users/trading_preferences",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_among_others",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "CRYPTO",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "BTCUSD",
+            "exchange": "CRYPTO",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/products/27/margin_required": {
+          "body": {
+            "success": true,
+            "result": {
+              "initial_margin": "500.25",
+              "maintenance_margin": "250.0",
+              "order_size": 10
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 500.25,
+            "total_margin_required": 500.25
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/users/trading_preferences",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/margin_required",
+          "query": [
+            [
+              "order_type",
+              "market_order"
+            ],
+            [
+              "side",
+              "buy"
+            ],
+            [
+              "size",
+              "10"
+            ]
+          ],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_quantity_not_a_number",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "BTCUSD",
+            "exchange": "CRYPTO",
+            "action": "BUY",
+            "quantity": "ten",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Position 1: Invalid quantity format",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_no_positions",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'positions': ['Positions must contain 1 to 50 items.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_invalid_apikey",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "none",
+      "request": {
+        "apikey": "not-a-key",
+        "positions": [
+          {
+            "symbol": "BTCUSD",
+            "exchange": "CRYPTO",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ]
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}

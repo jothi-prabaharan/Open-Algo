@@ -16,14 +16,14 @@ namespace EPTradeBot.Infrastructure.Brokers.Upstox;
 /// </summary>
 [BrokerPlugin]
 public sealed class UpstoxPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<UpstoxPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin
 {
     private const string Api = "https://api.upstox.com";
     private const string OrderApi = "https://api-hft.upstox.com";
 
     public string Name => "upstox";
     public string DisplayName => "Upstox";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     private static readonly HashSet<string> OpenStatuses =
@@ -587,6 +587,47 @@ public sealed class UpstoxPlugin(IHttpClientFactory http, BrokerSessionFactory s
         }
 
         return 0;
+    }
+
+    // ---- margin ----------------------------------------------------------------------------------------------
+
+    /// <summary>Upstox's margin calculator: at most 20 instruments a request. The figures are the required margin and the SPAN and exposure parts summed.</summary>
+    public async Task<JsonObject> CalculateMarginAsync(BrokerSession session, IReadOnlyList<MarginLeg> legs, CancellationToken cancellationToken)
+    {
+        if (legs.Count > 20) throw new BrokerException("Upstox supports maximum 20 instruments per margin request. Please reduce the number of positions.", 400);
+        var instruments = new JsonArray();
+        foreach (var l in legs)
+        {
+            if (!l.Instrument.Token.Contains('|', StringComparison.Ordinal))
+                throw new BrokerException($"{l.Instrument.Symbol} on {l.Instrument.Exchange} has no usable Upstox instrument key, so the margin cannot be worked out. Download the master contract again.", 400);
+            var instrument = new JsonObject
+            {
+                ["instrument_key"] = l.Instrument.Token.Trim(), ["quantity"] = l.Quantity, ["transaction_type"] = l.Action, ["product"] = l.Product == "MIS" ? "I" : l.Product is "CNC" or "NRML" ? "D" : "I",
+            };
+            if (l.Price > 0) instrument["price"] = (double)l.Price;
+            instruments.Add(instrument);
+        }
+
+        using var request = Request(session, HttpMethod.Post, Api, "/v2/charges/margin", new JsonObject { ["instruments"] = instruments });
+        using var response = await SendAsync(request, cancellationToken);
+        var reply = await ReadAsync(response, cancellationToken) as JsonObject
+            ?? throw new BrokerException("Upstox sent a reply EP Trade bot could not read. Try again in a moment.");
+        if (Str(reply["status"]) != "success")
+        {
+            if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+                throw new BrokerException("Upstox says the access token is invalid or has expired. Log in to Upstox again.", 403);
+            throw new BrokerException($"Upstox could not work out the margin: {ErrorMessage(reply, Str(reply["message"]) ?? "Failed to calculate margin")}", response.IsSuccessStatusCode ? 400 : (int)response.StatusCode);
+        }
+
+        var data = reply["data"] as JsonObject;
+        double span = 0, exposure = 0;
+        foreach (var m in (data?["margins"] as JsonArray ?? []).OfType<JsonObject>())
+        {
+            span += Float(m["span_margin"]);
+            exposure += Float(m["exposure_margin"]);
+        }
+
+        return new JsonObject { ["total_margin_required"] = data?["required_margin"]?.DeepClone() ?? 0, ["span_margin"] = span, ["exposure_margin"] = exposure };
     }
 
     private HttpClient Client() => http.CreateClient(Name);

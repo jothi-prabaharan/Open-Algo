@@ -1171,4 +1171,18 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
 - **Mutation check:** 20 new ones, PY1 to PY20, all red (`tools/mutation/tg3-paytm.json`).
 - **Not done for Paytm Money:** login, the Paytm Money market-data feed, GTT, and a batch size check for multi-quotes (a test needs more than 100 symbols).
 
+
+## 18. Scope change and margin on the other reference brokers
+
+**Scope change.** Task Group 3 now finishes three brokers: Zerodha, Angel One and Paytm Money. Every other broker is deferred to a new Task Group 7. Nothing already built for the deferred ones was removed.
+
+**Margin was also built on Angel One (15 fixtures), Upstox (17), Fyers (15), Dhan (16) and Delta Exchange (14), 77 in all, before the change.** All 77 match OpenAlgo apart from recorded differences:
+
+- **A refusal with a success status:** Angel One, Upstox, Fyers and Dhan can refuse with a 200 and an error in the body, and OpenAlgo passes that on as a success status with an error message. EP Trade bot answers an error status.
+- **A symbol missing from the master contract:** OpenAlgo leaves that position out of the basket and calculates the rest. Delta Exchange also adds up only the positions it answered. Both understate the margin, so EP Trade bot refuses and names the symbol.
+- **Delta Exchange** reads the account's margin mode first, only to log it. EP Trade bot does not make that call.
+- **Mutation checks:** 12 for Angel One, Upstox and Fyers (`tools/mutation/tg3-margin.json`), all red. Dhan's and Delta Exchange's margin has fixtures but no mutation checks yet; they belong to Task Group 7.
+- **Dhan Sandbox margin** is not ported; its calculator is a different flow.
+- **Contract tests in all: 675.**
+
 **Task Groups 5 (the Angular app) and 6 (deployment)** are Antigravity's and are not worked on here.

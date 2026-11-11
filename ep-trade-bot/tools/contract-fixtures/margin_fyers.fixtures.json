@@ -1,0 +1,1017 @@
+{
+  "broker": "fyers",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "fyers-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [
+    "/api/v3/multiorder/margin"
+  ],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "NSE:SBIN-EQ",
+      "name": "SBIN",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "10100000003045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "NSE:INFY-EQ",
+      "name": "INFY",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "10100000001594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NSE:NIFTY26NOVFUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "101126112535001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "NSE:NIFTY50-INDEX",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE",
+      "token": "101000000026000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY30DEC3023900CE",
+      "brsymbol": "NSE:NIFTY30DEC23900CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "1011239001",
+      "expiry": "30-DEC-30",
+      "strike": 23900.0,
+      "lotsize": 75,
+      "instrumenttype": "CE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY30DEC3023900PE",
+      "brsymbol": "NSE:NIFTY30DEC23900PE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "1011239002",
+      "expiry": "30-DEC-30",
+      "strike": 23900.0,
+      "lotsize": 75,
+      "instrumenttype": "PE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY30DEC3024000CE",
+      "brsymbol": "NSE:NIFTY30DEC24000CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "1011240001",
+      "expiry": "30-DEC-30",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "CE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY30DEC3024000PE",
+      "brsymbol": "NSE:NIFTY30DEC24000PE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "1011240002",
+      "expiry": "30-DEC-30",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "PE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY30DEC3024100CE",
+      "brsymbol": "NSE:NIFTY30DEC24100CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "1011241001",
+      "expiry": "30-DEC-30",
+      "strike": 24100.0,
+      "lotsize": 75,
+      "instrumenttype": "CE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY30DEC3024100PE",
+      "brsymbol": "NSE:NIFTY30DEC24100PE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "1011241002",
+      "expiry": "30-DEC-30",
+      "strike": 24100.0,
+      "lotsize": 75,
+      "instrumenttype": "PE",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "margin_one_position",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/multiorder/margin": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "data": {
+              "margin_avail": 99999.9,
+              "margin_total": 1700.0,
+              "margin_new_order": 1608.05
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/multiorder/margin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "symbol": "NSE:SBIN-EQ",
+                "qty": 10,
+                "side": 1,
+                "type": 2,
+                "productType": "INTRADAY",
+                "limitPrice": 0.0,
+                "stopLoss": 0.0,
+                "stopPrice": 0.0,
+                "takeProfit": 0.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_limit_order_with_price",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/multiorder/margin": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "data": {
+              "margin_avail": 99999.9,
+              "margin_total": 1700.0,
+              "margin_new_order": 1608.05
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/multiorder/margin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "symbol": "NSE:SBIN-EQ",
+                "qty": 10,
+                "side": 1,
+                "type": 1,
+                "productType": "INTRADAY",
+                "limitPrice": 805.5,
+                "stopLoss": 0.0,
+                "stopPrice": 0.0,
+                "takeProfit": 0.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_stop_loss_with_trigger",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "sell",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "SL",
+            "price": "800",
+            "trigger_price": "801.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/multiorder/margin": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "data": {
+              "margin_avail": 99999.9,
+              "margin_total": 1700.0,
+              "margin_new_order": 1608.05
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/multiorder/margin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "symbol": "NSE:SBIN-EQ",
+                "qty": 10,
+                "side": -1,
+                "type": 4,
+                "productType": "INTRADAY",
+                "limitPrice": 800.0,
+                "stopLoss": 0.0,
+                "stopPrice": 801.5,
+                "takeProfit": 0.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_futures_nrml",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/multiorder/margin": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "data": {
+              "margin_avail": 99999.9,
+              "margin_total": 1700.0,
+              "margin_new_order": 1608.05
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/multiorder/margin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "symbol": "NSE:NIFTY26NOVFUT",
+                "qty": 75,
+                "side": -1,
+                "type": 2,
+                "productType": "MARGIN",
+                "limitPrice": 0.0,
+                "stopLoss": 0.0,
+                "stopPrice": 0.0,
+                "takeProfit": 0.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_cnc_equity",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "CNC",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/multiorder/margin": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "data": {
+              "margin_avail": 99999.9,
+              "margin_total": 1700.0,
+              "margin_new_order": 1608.05
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/multiorder/margin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "symbol": "NSE:SBIN-EQ",
+                "qty": 10,
+                "side": 1,
+                "type": 2,
+                "productType": "CNC",
+                "limitPrice": 0.0,
+                "stopLoss": 0.0,
+                "stopPrice": 0.0,
+                "takeProfit": 0.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_two_positions",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/multiorder/margin": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "data": {
+              "margin_avail": 99999.9,
+              "margin_total": 200000.0,
+              "margin_new_order": 191119.0
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 191119.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/multiorder/margin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "symbol": "NSE:NIFTY26NOVFUT",
+                "qty": 75,
+                "side": -1,
+                "type": 2,
+                "productType": "MARGIN",
+                "limitPrice": 0.0,
+                "stopLoss": 0.0,
+                "stopPrice": 0.0,
+                "takeProfit": 0.0
+              },
+              {
+                "symbol": "NSE:SBIN-EQ",
+                "qty": 10,
+                "side": 1,
+                "type": 2,
+                "productType": "INTRADAY",
+                "limitPrice": 0.0,
+                "stopLoss": 0.0,
+                "stopPrice": 0.0,
+                "takeProfit": 0.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_broker_refuses_with_an_error_status",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/multiorder/margin": {
+          "status": 400,
+          "body": {
+            "s": "error",
+            "code": -50,
+            "message": "Invalid input"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Fyers API Error (Code -50): Invalid input",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/multiorder/margin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "symbol": "NSE:SBIN-EQ",
+                "qty": 10,
+                "side": 1,
+                "type": 2,
+                "productType": "INTRADAY",
+                "limitPrice": 0.0,
+                "stopLoss": 0.0,
+                "stopPrice": 0.0,
+                "takeProfit": 0.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_broker_refuses_with_ok_status",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/multiorder/margin": {
+          "body": {
+            "s": "error",
+            "code": -99,
+            "message": "Margin cannot be calculated for this instrument"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "Fyers API Error (Code -99): Margin cannot be calculated for this instrument",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/multiorder/margin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "symbol": "NSE:SBIN-EQ",
+                "qty": 10,
+                "side": 1,
+                "type": 2,
+                "productType": "INTRADAY",
+                "limitPrice": 0.0,
+                "stopLoss": 0.0,
+                "stopPrice": 0.0,
+                "takeProfit": 0.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_token_expired",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/multiorder/margin": {
+          "status": 401,
+          "body": {
+            "s": "error",
+            "code": -16,
+            "message": "Could not authenticate the user"
+          }
+        }
+      },
+      "expected": {
+        "status": 401,
+        "body": {
+          "message": "Fyers API Error (Code -16): Could not authenticate the user",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/multiorder/margin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "symbol": "NSE:SBIN-EQ",
+                "qty": 10,
+                "side": 1,
+                "type": 2,
+                "productType": "INTRADAY",
+                "limitPrice": 0.0,
+                "stopLoss": 0.0,
+                "stopPrice": 0.0,
+                "takeProfit": 0.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_alone",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "No valid positions to calculate margin. Check if symbols are valid.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_among_others",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /api/v3/multiorder/margin": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "data": {
+              "margin_avail": 99999.9,
+              "margin_total": 1700.0,
+              "margin_new_order": 1608.05
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/multiorder/margin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "symbol": "NSE:SBIN-EQ",
+                "qty": 10,
+                "side": 1,
+                "type": 2,
+                "productType": "INTRADAY",
+                "limitPrice": 0.0,
+                "stopLoss": 0.0,
+                "stopPrice": 0.0,
+                "takeProfit": 0.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_quantity_not_a_number",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "ten",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Position 1: Invalid quantity format",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_price_negative",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET",
+            "price": "-1"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Position 1: Price cannot be negative",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_no_positions",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'positions': ['Positions must contain 1 to 50 items.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_invalid_apikey",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "none",
+      "request": {
+        "apikey": "not-a-key",
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ]
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}
