@@ -55,6 +55,7 @@ internal static class OpenAlgoV1Endpoints
         Post<SplitOrderRequest>(v1, "/splitorder", (s, a, r, ct) => s.SplitOrderAsync(a, r, ct));
         Post<OptionsOrderRequest>(v1, "/optionsorder", (s, a, r, ct) => s.OptionsOrderAsync(a, r, ct), ValidationShape.Errors);
         Post<OptionsMultiOrderRequest>(v1, "/optionsmultiorder", (s, a, r, ct) => s.OptionsMultiOrderAsync(a, r, ct), ValidationShape.Errors);
+        Post<MarginCalculatorRequest>(v1, "/margin", (s, a, r, ct) => s.MarginAsync(a, r, ct), beforeKey: OpenAlgoApiService.ValidateMargin);
         Post<HistoryRequest>(v1, "/history", (s, a, r, ct) => s.HistoryAsync(a, r, ct));
         Post<IntervalsRequest>(v1, "/intervals", (s, a, _, _) => Task.FromResult(s.Intervals(a)));
         Post<MarketHolidaysRequest>(v1, "/market/holidays", (s, a, r, ct) => s.MarketHolidaysAsync(a, r, ct));
@@ -74,7 +75,7 @@ internal static class OpenAlgoV1Endpoints
         "/placeorder", "/placesmartorder", "/modifyorder", "/cancelorder", "/cancelallorder", "/closeposition", "/orderbook", "/tradebook",
         "/positionbook", "/holdings", "/funds", "/orderstatus", "/openposition", "/quotes", "/depth", "/ping", "/analyzer", "/analyzer/toggle",
         "/symbol", "/search", "/expiry", "/optionsymbol", "/basketorder", "/splitorder", "/optionsorder", "/optionsmultiorder", "/instruments",
-        "/multiquotes", "/syntheticfuture", "/optionchain", "/market/holidays", "/market/timings", "/pnl/symbols", "/chart", "/history", "/intervals", "/ticker/{symbol}",
+        "/multiquotes", "/syntheticfuture", "/optionchain", "/market/holidays", "/market/timings", "/pnl/symbols", "/chart", "/history", "/intervals", "/ticker/{symbol}", "/margin",
     ];
 
     /// <summary>
@@ -89,10 +90,10 @@ internal static class OpenAlgoV1Endpoints
     }
 
     private static void Post<T>(RouteGroupBuilder v1, string path, Func<OpenAlgoApiService, BrokerAccount, T, CancellationToken, Task<V1Result>> handler,
-        ValidationShape shape = ValidationShape.Message)
+        ValidationShape shape = ValidationShape.Message, Func<T, V1Result?>? beforeKey = null)
         where T : ApiKeyRequest
     {
-        RequestDelegate run = async context => await Handle(context, handler, shape);
+        RequestDelegate run = async context => await Handle(context, handler, shape, beforeKey: beforeKey);
         // ASP.NET Core routing ignores a trailing slash, as Flask's strict_slashes=False does.
         v1.MapPost(path, run).WithName("v1" + path.Replace('/', '_'));
     }

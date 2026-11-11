@@ -508,6 +508,7 @@ public sealed partial class OpenAlgoApiService(
                 nameof(IBrokerFunds) => "funds",
                 nameof(IBrokerQuotes) => "quotes and depth",
                 nameof(IBrokerHistory) => "historical candles",
+                nameof(IBrokerMargin) => "margin calculation",
                 _ => "this request",
             });
             return false;

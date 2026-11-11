@@ -198,12 +198,12 @@ public sealed class MarginPosition
     [Required, StringLength(50, MinimumLength = 1, ErrorMessage = "Symbol must be between 1 and 50 characters.")] [JsonPropertyName("symbol")] public string Symbol { get; set; } = "";
     [Required, RegularExpression(ApiPatterns.Exchange)] [JsonPropertyName("exchange")] public string Exchange { get; set; } = "";
     [Required, RegularExpression(ApiPatterns.Action)] [JsonPropertyName("action")] public string Action { get; set; } = "";
-    /// <summary>A string, matching OpenAlgo's API contract.</summary>
-    [Required, RegularExpression(@"^\d+(\.\d+)?$")] [JsonPropertyName("quantity")] public string Quantity { get; set; } = "";
+    /// <summary>Any text, as in OpenAlgo: the service names a bad quantity or price by position ("Position 2: Invalid quantity format").</summary>
+    [Required] [JsonPropertyName("quantity")] public string Quantity { get; set; } = "";
     [Required, RegularExpression(ApiPatterns.Product)] [JsonPropertyName("product")] public string Product { get; set; } = "";
     [Required, RegularExpression(ApiPatterns.PriceType)] [JsonPropertyName("pricetype")] public string PriceType { get; set; } = "";
-    [RegularExpression(@"^\d+(\.\d+)?$")] [JsonPropertyName("price")] public string Price { get; set; } = "0";
-    [RegularExpression(@"^\d+(\.\d+)?$")] [JsonPropertyName("trigger_price")] public string TriggerPrice { get; set; } = "0";
+    [JsonPropertyName("price")] public string Price { get; set; } = "0";
+    [JsonPropertyName("trigger_price")] public string TriggerPrice { get; set; } = "0";
 }
 
 /// <summary>POST /api/v1/margin</summary>

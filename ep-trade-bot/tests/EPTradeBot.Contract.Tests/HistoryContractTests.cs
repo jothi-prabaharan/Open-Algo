@@ -305,3 +305,38 @@ public sealed class TickerContractTests(TickerHost host, ITestOutputHelper outpu
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+/// <summary>/margin on Zerodha (tools/contract-fixtures/margin.fixtures.json).</summary>
+public sealed class MarginHost : BrokerContractHost
+{
+    public override string BrokerName => "zerodha";
+    public override string FixtureFile => "margin.fixtures.json";
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class MarginContractTests(MarginHost host, ITestOutputHelper output) : IClassFixture<MarginHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["margin_broker_refuses"] = new("Same status; the reason is worded for the trader.",
+            f => ContractRunner.Expect(f, 400, ContractRunner.Error("Zerodha could not work out the margin: InputException: Invalid tradingsymbol."))),
+        ["margin_token_expired"] = new("Same status; the reason is worded for the trader.",
+            f => ContractRunner.Expect(f, 403, ContractRunner.Error("Zerodha could not work out the margin: TokenException: Incorrect `api_key` or `access_token`."))),
+        ["margin_unknown_symbol_alone"] = new("Same status; EP Trade bot names the symbol, where OpenAlgo says no symbol was valid.",
+            f => ContractRunner.Expect(f, 400, ContractRunner.Error("NOSUCH on NSE is not in the Zerodha master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again."))),
+        ["margin_unknown_symbol_among_others"] = new(
+            "OpenAlgo leaves the position whose symbol it cannot find out of the basket and calculates the rest, which understates the margin. EP Trade bot refuses and names the symbol.",
+            f =>
+            {
+                ContractRunner.Expect(f, 400, ContractRunner.Error("NOSUCH on NSE is not in the Zerodha master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again."));
+                f["sent"]!.AsArray().Clear();
+            }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

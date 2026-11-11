@@ -24,14 +24,14 @@ public sealed class ZerodhaPlugin(
     IHttpClientFactory httpClients,
     BrokerSessionFactory sessions,
     ISymbolMaster symbols,
-    ILogger<ZerodhaPlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory
+    ILogger<ZerodhaPlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin
 {
     public const string BrokerName = "zerodha";
     private const string DefaultBaseUrl = "https://api.kite.trade";
 
     public string Name => BrokerName;
     public string DisplayName => "Zerodha";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     private static readonly Dictionary<string, string> StatusMap = new(StringComparer.Ordinal)
@@ -518,6 +518,55 @@ public sealed class ZerodhaPlugin(
         var sign = text.Length > 19 && text[19] == '-' ? -1 : 1;
         var offset = text.Length >= 24 ? TimeSpan.FromHours(int.Parse(text[20..22], CultureInfo.InvariantCulture)) + TimeSpan.FromMinutes(int.Parse(text[22..24], CultureInfo.InvariantCulture)) : TimeSpan.Zero;
         return new DateTimeOffset(local, sign * offset).ToUnixTimeSeconds();
+    }
+
+    // ---- margin ----------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Kite's margin calculation: one position goes to /margins/orders, several to /margins/basket (which takes the benefit of
+    /// hedged legs, with open positions considered). Answers the basket's final figures, or the sum of the orders'.
+    /// </summary>
+    public async Task<JsonObject> CalculateMarginAsync(BrokerSession session, IReadOnlyList<MarginLeg> legs, CancellationToken cancellationToken)
+    {
+        if (legs.Any(l => l.Instrument.Exchange == "MCX")) throw new BrokerException(McxRefusal.Replace("orders", "margin calculations"), 400);
+
+        var payload = new JsonArray(legs.Select(l => (JsonNode?)new JsonObject
+        {
+            ["exchange"] = l.Instrument.Exchange, ["tradingsymbol"] = l.Instrument.BrokerSymbol, ["transaction_type"] = l.Action, ["variety"] = "regular",
+            ["product"] = l.Product, ["order_type"] = l.PriceType, ["quantity"] = l.Quantity, ["price"] = (double)l.Price, ["trigger_price"] = (double)l.TriggerPrice,
+        }).ToArray());
+
+        using var request = Request(session, HttpMethod.Post, legs.Count > 1 ? "/margins/basket?consider_positions=true" : "/margins/orders");
+        request.Content = new StringContent(payload.ToJsonString(), System.Text.Encoding.UTF8);
+        request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+        using var response = await SendAsync(request, cancellationToken);
+        var reply = await ReadJsonAsync(response, cancellationToken)
+            ?? throw new BrokerException("Zerodha sent a reply EP Trade bot could not read. Try again in a moment.");
+        if (Str(reply["status"]) != "success")
+        {
+            var type = Str(reply["error_type"]);
+            var message = Str(reply["message"]) ?? "Failed to calculate margin";
+            throw new BrokerException($"Zerodha could not work out the margin: {(type is null ? "" : type + ": ")}{message}", (int)response.StatusCode is >= 400 and < 600 ? (int)response.StatusCode : 500);
+        }
+
+        double total = 0, span = 0, exposure = 0;
+        if (reply["data"] is JsonObject data && data["final"] is JsonObject final)
+        {
+            total = Float(final["total"]);
+            span = Float(final["span"]);
+            exposure = Float(final["exposure"]);
+        }
+        else if (reply["data"] is JsonArray orders)
+        {
+            foreach (var order in orders.OfType<JsonObject>())
+            {
+                total += Float(order["total"]);
+                span += Float(order["span"]);
+                exposure += Float(order["exposure"]);
+            }
+        }
+
+        return new JsonObject { ["total_margin_required"] = total, ["span_margin"] = span, ["exposure_margin"] = exposure };
     }
 
     // ---- plumbing --------------------------------------------------------------------------------------------

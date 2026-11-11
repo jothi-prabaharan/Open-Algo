@@ -710,5 +710,85 @@
   "new": "foreach (var candle in candles.OfType<JsonObject>().Reverse())",
   "filter": "FullyQualifiedName~TickerContractTests",
   "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MG1 two positions sent to the orders endpoint",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "legs.Count > 1 ? \"/margins/basket",
+  "new": "legs.Count > 2 ? \"/margins/basket",
+  "filter": "FullyQualifiedName~MarginContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MG2 basket asked without open positions considered",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "/margins/basket?consider_positions=true",
+  "new": "/margins/basket",
+  "filter": "FullyQualifiedName~MarginContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MG3 basket answers its initial figures",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "data[\"final\"] is JsonObject final)",
+  "new": "data[\"initial\"] is JsonObject final)",
+  "filter": "FullyQualifiedName~MarginContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MG4 order exposure left out of the sum",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "exposure += Float(order[\"exposure\"]);",
+  "new": "exposure += 0;",
+  "filter": "FullyQualifiedName~MarginContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MG5 action sent in lower case",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Margin.cs",
+  "old": "p.Action.ToUpperInvariant(), int.Parse",
+  "new": "p.Action, int.Parse",
+  "filter": "FullyQualifiedName~MarginContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MG6 zero quantity accepted",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Margin.cs",
+  "old": "if (quantity <= 0)",
+  "new": "if (quantity < 0)",
+  "filter": "FullyQualifiedName~MarginContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MG7 negative price accepted",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Margin.cs",
+  "old": "if (price < 0)",
+  "new": "if (price < -1000000)",
+  "filter": "FullyQualifiedName~MarginContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MG8 positions checked after the key",
+  "file": "src/EPTradeBot.Api/Endpoints/OpenAlgoV1Endpoints.cs",
+  "old": ", beforeKey: OpenAlgoApiService.ValidateMargin);",
+  "new": ");",
+  "filter": "FullyQualifiedName~MarginContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MG9 variety left out of the order",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "[\"transaction_type\"] = l.Action, [\"variety\"] = \"regular\",",
+  "new": "[\"transaction_type\"] = l.Action,",
+  "filter": "FullyQualifiedName~MarginContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MG10 decimal quantity accepted",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Margin.cs",
+  "old": "NumberStyles.Integer, CultureInfo.InvariantCulture, out var quantity)",
+  "new": "NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var quantity)",
+  "filter": "FullyQualifiedName~MarginContractTests",
+  "project": "EPTradeBot.Contract.Tests"
  }
 ]

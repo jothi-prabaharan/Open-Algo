@@ -163,6 +163,18 @@ public interface IBrokerHistory : IBrokerPlugin
     Task<JsonArray> GetHistoryAsync(BrokerSession session, SymbolRecord instrument, string interval, DateOnly start, DateOnly end, CancellationToken cancellationToken);
 }
 
+/// <summary>One position of a margin basket, with the instrument already found in the broker's master contract.</summary>
+public sealed record MarginLeg(SymbolRecord Instrument, string Action, int Quantity, string Product, string PriceType, decimal Price, decimal TriggerPrice);
+
+/// <summary>
+/// The margin a basket of positions needs (OpenAlgo's calculate_margin_api). The answer is the <c>data</c> object
+/// OpenAlgo returns, for example <c>total_margin_required</c>, <c>span_margin</c> and <c>exposure_margin</c>.
+/// </summary>
+public interface IBrokerMargin : IBrokerPlugin
+{
+    Task<JsonObject> CalculateMarginAsync(BrokerSession session, IReadOnlyList<MarginLeg> legs, CancellationToken cancellationToken);
+}
+
 /// <summary>Resolves symbols between OpenAlgo's format and a broker's. Backed by that broker's master contract.</summary>
 public interface ISymbolMaster
 {

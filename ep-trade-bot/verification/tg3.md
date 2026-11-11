@@ -1134,4 +1134,15 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
   - TK9 (the default interval) needed a fixture without an interval; one was recorded.
   - TK11 as first written was equivalent, since a whole volume prints the same either way. It now reads the volume from the open interest.
 
+
+**Margin (`POST /api/v1/margin`), Zerodha first.**
+
+- **How it works:** a basket of up to 50 positions is checked in OpenAlgo's order (quantity, then price, per position, before the API key is looked at) and sent to Kite. One position goes to `/margins/orders` and several to `/margins/basket` with open positions considered. The answer is the basket's final figures, or the sum of the orders'.
+- **Contract tests: 23 fixtures on Zerodha, 557 in all.** The deliberate differences:
+  - **A symbol missing from the master contract:** OpenAlgo leaves that position out of the basket and calculates the rest, which understates the margin. EP Trade bot refuses and names the symbol.
+  - **A refused call:** same status, worded for the trader.
+- **MCX on Zerodha:** refused, as MCX orders are, because Kite counts MCX in contracts and OpenAlgo in units and that conversion is not ported.
+- **Mutation check:** 10 more, MG1 to MG10, all red; `tg3-history.json` now holds 99.
+- **Still to do:** margin on Dhan, Dhan Sandbox, Angel One, Upstox, Fyers and Delta Exchange, and the four GTT endpoints.
+
 **Task Groups 5 (the Angular app) and 6 (deployment)** are Antigravity's and are not worked on here.

@@ -1,0 +1,1679 @@
+{
+  "broker": "zerodha",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [
+    "/margins/orders",
+    "/margins/basket"
+  ],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "779521::::3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY26NOVFUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "13238786::::51714",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "NIFTY 50",
+      "name": "NIFTY 50",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE",
+      "token": "256265::::1001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "408065::::1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "margin_one_position_uses_the_orders_endpoint",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /margins/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "type": "equity",
+                "tradingsymbol": "SBIN",
+                "exchange": "NSE",
+                "span": 0,
+                "exposure": 0,
+                "option_premium": 0,
+                "additional": 0,
+                "bo": 0,
+                "cash": 0,
+                "var": 1608.05,
+                "total": 1608.05,
+                "leverage": 5
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/margins/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "exchange": "NSE",
+              "tradingsymbol": "SBIN",
+              "transaction_type": "BUY",
+              "variety": "regular",
+              "product": "MIS",
+              "order_type": "MARKET",
+              "quantity": 10,
+              "price": 0.0,
+              "trigger_price": 0.0
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_limit_order_with_prices",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5",
+            "trigger_price": "0"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /margins/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "type": "equity",
+                "tradingsymbol": "SBIN",
+                "exchange": "NSE",
+                "span": 0,
+                "exposure": 0,
+                "option_premium": 0,
+                "additional": 0,
+                "bo": 0,
+                "cash": 0,
+                "var": 1608.05,
+                "total": 1608.05,
+                "leverage": 5
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/margins/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "exchange": "NSE",
+              "tradingsymbol": "SBIN",
+              "transaction_type": "BUY",
+              "variety": "regular",
+              "product": "MIS",
+              "order_type": "LIMIT",
+              "quantity": 10,
+              "price": 805.5,
+              "trigger_price": 0.0
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_stop_loss_with_trigger",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "sell",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "SL",
+            "price": "800",
+            "trigger_price": "801.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /margins/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "type": "equity",
+                "tradingsymbol": "SBIN",
+                "exchange": "NSE",
+                "span": 0,
+                "exposure": 0,
+                "option_premium": 0,
+                "additional": 0,
+                "bo": 0,
+                "cash": 0,
+                "var": 1608.05,
+                "total": 1608.05,
+                "leverage": 5
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/margins/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "exchange": "NSE",
+              "tradingsymbol": "SBIN",
+              "transaction_type": "SELL",
+              "variety": "regular",
+              "product": "MIS",
+              "order_type": "SL",
+              "quantity": 10,
+              "price": 800.0,
+              "trigger_price": 801.5
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_futures",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /margins/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "type": "equity",
+                "tradingsymbol": "SBIN",
+                "exchange": "NSE",
+                "span": 0,
+                "exposure": 0,
+                "option_premium": 0,
+                "additional": 0,
+                "bo": 0,
+                "cash": 0,
+                "var": 1608.05,
+                "total": 1608.05,
+                "leverage": 5
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/margins/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "exchange": "NFO",
+              "tradingsymbol": "NIFTY26NOVFUT",
+              "transaction_type": "SELL",
+              "variety": "regular",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "quantity": 75,
+              "price": 0.0,
+              "trigger_price": 0.0
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_two_positions_use_the_basket_endpoint",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /margins/basket": {
+          "body": {
+            "status": "success",
+            "data": {
+              "initial": {
+                "type": "",
+                "span": 0,
+                "exposure": 0,
+                "option_premium": 0,
+                "total": 258139.0
+              },
+              "final": {
+                "type": "",
+                "span": 179780.0,
+                "exposure": 11339.0,
+                "option_premium": 0,
+                "additional": 0,
+                "bo": 0,
+                "cash": 0,
+                "var": 0,
+                "total": 191119.0
+              },
+              "orders": [
+                {
+                  "tradingsymbol": "NIFTY25NOV26FUT",
+                  "span": 179780.0,
+                  "exposure": 11339.0,
+                  "total": 191119.0
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 11339.0,
+            "span_margin": 179780.0,
+            "total_margin_required": 191119.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/margins/basket",
+          "query": [
+            [
+              "consider_positions",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "exchange": "NFO",
+              "tradingsymbol": "NIFTY26NOVFUT",
+              "transaction_type": "SELL",
+              "variety": "regular",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "quantity": 75,
+              "price": 0.0,
+              "trigger_price": 0.0
+            },
+            {
+              "exchange": "NSE",
+              "tradingsymbol": "SBIN",
+              "transaction_type": "BUY",
+              "variety": "regular",
+              "product": "MIS",
+              "order_type": "MARKET",
+              "quantity": 10,
+              "price": 0.0,
+              "trigger_price": 0.0
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_basket_with_no_figures",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /margins/basket": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/margins/basket",
+          "query": [
+            [
+              "consider_positions",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "exchange": "NSE",
+              "tradingsymbol": "SBIN",
+              "transaction_type": "BUY",
+              "variety": "regular",
+              "product": "MIS",
+              "order_type": "MARKET",
+              "quantity": 10,
+              "price": 0.0,
+              "trigger_price": 0.0
+            },
+            {
+              "exchange": "NSE",
+              "tradingsymbol": "INFY",
+              "transaction_type": "BUY",
+              "variety": "regular",
+              "product": "MIS",
+              "order_type": "MARKET",
+              "quantity": 10,
+              "price": 0.0,
+              "trigger_price": 0.0
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_orders_summed",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /margins/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "type": "equity",
+                "tradingsymbol": "SBIN",
+                "span": 100.5,
+                "exposure": 20.25,
+                "total": 1608.05
+              },
+              {
+                "type": "equity",
+                "tradingsymbol": "INFY",
+                "span": 50,
+                "exposure": 10,
+                "total": 3000
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 30.25,
+            "span_margin": 150.5,
+            "total_margin_required": 4608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/margins/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "exchange": "NSE",
+              "tradingsymbol": "SBIN",
+              "transaction_type": "BUY",
+              "variety": "regular",
+              "product": "MIS",
+              "order_type": "MARKET",
+              "quantity": 10,
+              "price": 0.0,
+              "trigger_price": 0.0
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /margins/orders": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "message": "Invalid tradingsymbol.",
+            "error_type": "InputException"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "InputException: Invalid tradingsymbol.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/margins/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "exchange": "NSE",
+              "tradingsymbol": "SBIN",
+              "transaction_type": "BUY",
+              "variety": "regular",
+              "product": "MIS",
+              "order_type": "MARKET",
+              "quantity": 10,
+              "price": 0.0,
+              "trigger_price": 0.0
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_token_expired",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /margins/orders": {
+          "status": 403,
+          "body": {
+            "status": "error",
+            "message": "Incorrect `api_key` or `access_token`.",
+            "error_type": "TokenException"
+          }
+        }
+      },
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "TokenException: Incorrect `api_key` or `access_token`.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/margins/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "exchange": "NSE",
+              "tradingsymbol": "SBIN",
+              "transaction_type": "BUY",
+              "variety": "regular",
+              "product": "MIS",
+              "order_type": "MARKET",
+              "quantity": 10,
+              "price": 0.0,
+              "trigger_price": 0.0
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_alone",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "No valid positions to calculate margin. Check if symbols are valid.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_among_others",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /margins/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "type": "equity",
+                "tradingsymbol": "SBIN",
+                "exchange": "NSE",
+                "span": 0,
+                "exposure": 0,
+                "option_premium": 0,
+                "additional": 0,
+                "bo": 0,
+                "cash": 0,
+                "var": 1608.05,
+                "total": 1608.05,
+                "leverage": 5
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/margins/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "exchange": "NSE",
+              "tradingsymbol": "SBIN",
+              "transaction_type": "BUY",
+              "variety": "regular",
+              "product": "MIS",
+              "order_type": "MARKET",
+              "quantity": 10,
+              "price": 0.0,
+              "trigger_price": 0.0
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_quantity_not_a_number",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "ten",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Position 1: Invalid quantity format",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_quantity_with_decimals",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10.5",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Position 1: Invalid quantity format",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_quantity_zero",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "0",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Position 1: Quantity must be a positive number",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_second_position_bad",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "-3",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Position 2: Quantity must be a positive number",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_price_not_a_number",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET",
+            "price": "abc"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Position 1: Invalid price format",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_price_negative",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET",
+            "price": "-1"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Position 1: Price cannot be negative",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_no_positions",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'positions': ['Positions must contain 1 to 50 items.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_fifty_one_positions",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'positions': ['Positions must contain 1 to 50 items.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_bad_action",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "HOLD",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'positions': {0: {'action': ['Must be one of: BUY, SELL, buy, sell.']}}}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_bad_product",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "XYZ",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'positions': {0: {'product': ['Must be one of: MIS, NRML, CNC.']}}}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_invalid_apikey",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "none",
+      "request": {
+        "apikey": "not-a-key",
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ]
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_bad_position_with_invalid_apikey",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "none",
+      "request": {
+        "apikey": "not-a-key",
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "ten",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ]
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Position 1: Invalid quantity format",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}

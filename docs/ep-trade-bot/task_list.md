@@ -44,7 +44,8 @@ Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 7 verified). Evi
 - [x] history and intervals contract-verified on Dhan (29 fixtures) and Dhan Sandbox (17 fixtures)
 - [x] Pass 8 complete: history and intervals on all seven reference brokers
 - [x] ticker contract-verified on Zerodha (20 fixtures), JSON and plain text
-- [ ] Remaining 5 broker and market-data pairs (margin, 4 GTT)
+- [x] margin contract-verified on Zerodha (23 fixtures); the other six reference brokers' margin is still to do
+- [ ] Remaining 4 GTT endpoints, and margin for six brokers
 - [x] Zerodha (contract-verified; MCX, history, GTT, margin, login and ticker feed not yet)
 - [x] Dhan, Dhan Sandbox (contract-verified; history, GTT, margin, login and feed not yet)
 - [x] Angel One, Upstox (contract-verified; history, GTT, margin, login and feeds not yet)
