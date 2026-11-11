@@ -26,7 +26,7 @@ public sealed partial class ZerodhaPlugin(
     IHttpClientFactory httpClients,
     BrokerSessionFactory sessions,
     ISymbolMaster symbols,
-    ILogger<ZerodhaPlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin, IBrokerGtt
+    ILogger<ZerodhaPlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin, IBrokerGtt, IBrokerLogin
 {
     public const string BrokerName = "zerodha";
     private const string DefaultBaseUrl = "https://api.kite.trade";

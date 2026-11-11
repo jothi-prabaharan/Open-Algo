@@ -16,8 +16,8 @@ namespace EPTradeBot.Infrastructure.Brokers.Paytm;
 /// GTT and the Paytm Money feed.
 /// </summary>
 [BrokerPlugin]
-public sealed class PaytmPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<PaytmPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
+public sealed partial class PaytmPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<PaytmPlugin> logger)
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerLogin
 {
     private const string DefaultBaseUrl = "https://developer.paytmmoney.com";
 

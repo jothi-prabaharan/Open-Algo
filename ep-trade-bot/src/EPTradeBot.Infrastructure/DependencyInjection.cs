@@ -51,6 +51,7 @@ public static class DependencyInjection
         // One clock for code that asks what day it is (a broker's "today's orders"), replaceable in tests.
         services.TryAddSingleton(TimeProvider.System);
         services.AddSingleton<TokenProtector>();
+        services.AddSingleton<LoginStates>();
         services.AddSingleton<ApiKeyService>();
         services.AddSingleton<BrokerSessionFactory>();
         services.AddSingleton<ISymbolMaster, EfSymbolMaster>();

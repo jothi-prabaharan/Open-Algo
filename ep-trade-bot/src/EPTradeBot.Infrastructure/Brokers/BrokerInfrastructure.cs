@@ -63,6 +63,10 @@ public sealed class BrokerSessionFactory(TokenProtector protector, IOptionsMonit
         return new BrokerSession(account.Id, account.Broker, token, feed, account.ClientId, keys);
     }
 
+    /// <summary>The broker's application keys from configuration, as a session carries them.</summary>
+    public IReadOnlyDictionary<string, string> KeysFor(string broker) =>
+        options.CurrentValue.Keys.TryGetValue(broker, out var k) ? new Dictionary<string, string>(k, StringComparer.OrdinalIgnoreCase) : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
     /// <summary>The pause between a broker's history calls: the configured one, else the broker's own limit.</summary>
     public TimeSpan HistoryGap(string broker, TimeSpan fallback) =>
         options.CurrentValue.HistoryGapMs.TryGetValue(broker, out var ms) ? TimeSpan.FromMilliseconds(ms) : fallback;

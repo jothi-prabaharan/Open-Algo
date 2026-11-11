@@ -1221,3 +1221,18 @@ Four endpoints: `/placegttorder`, `/modifygttorder`, `/cancelgttorder` and `/gtt
 **Rules EP Trade bot adds, with no OpenAlgo equivalent.** Placing and changing a trigger go through the environment guard and the kill switch like any order, because the trigger becomes a real order when it fires. Cancelling goes through the guard (Development never reaches a live broker) but not the kill switch, since it only reduces what is live. The book is never checked.
 
 **Not done.** Sandbox GTT (TG4): a sandbox account is told plainly it is not available. The semi-auto queue and the GTT events on the bus. Paytm Money has no GTT.
+
+
+## 21. Broker sign-in for Zerodha, Angel One and Paytm Money
+
+A new capability, `IBrokerLogin`, and two admin endpoints that replace pasting a token into `PUT /accounts/{id}/broker-session` (which stays as the stopgap). The web app (TG5) drives them.
+
+- `POST /api/v1/accounts/{id}/broker-login/start` says how the broker signs in. For Zerodha and Paytm Money it returns the broker's page with a `state` on it (`method: redirect`, `login_url`, `state`); for Angel One it returns the fields to ask for (`method: credentials`, `fields`: `clientcode`, `password`, `totp`). Nothing is sent to the broker.
+- `POST /api/v1/accounts/{id}/broker-login/complete` exchanges what came back (`request_token` and `state`, or the typed details) for tokens and stores them on the account, encrypted. A refusal changes nothing; the account keeps the tokens it had.
+- **The state.** A redirect sign-in completes only if it carries a state this server issued for this account in the last ten minutes, and only once. The state is the expiry sealed with the account-bound token protector, so nothing is stored and a restart mid-sign-in loses nothing. This is the same protection OpenAlgo's `utils/broker_login.py` gives (a pending login that is single-use, ten minutes, and tied to who started it), without a table.
+- **Fixtures:** 15, recorded by calling each plugin's `authenticate_broker` under canned broker replies (`login_zerodha`, `login_angel`, `login_paytm`). What the broker is sent (the SHA-256 checksum, the JSON body, the headers) and the tokens stored match OpenAlgo's exactly. The harness learned an admin kind of fixture for this.
+- **Deliberate difference:** the words of a refusal. OpenAlgo shows the broker's raw text, sometimes prefixed "API error". EP Trade bot says in a sentence which broker refused and what to do next. Seven fixtures carry it.
+- **Mutation check:** 14 in `tools/mutation/tg3-login.json`, all red.
+- **Other tests:** 6 integration tests: the state is issued, carried, and accepted once; an answer without a state started here, or with another account's, reaches no broker; ten minutes; Angel One asks for its fields and a sandbox account has nothing to sign in to; missing application keys are named; the admin token is required.
+
+**Not done.** Daily token rollover (a sign-in is needed each morning, as the brokers require; the web app will show when the token has expired). Angel One's refresh token is not kept. Paytm Money's read-only token is not kept.

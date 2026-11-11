@@ -1,0 +1,114 @@
+[
+ {
+  "name": "LZ1 checksum parts in the wrong order",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Login.cs",
+  "old": "apiKey + requestToken + secret",
+  "new": "apiKey + secret + requestToken",
+  "filter": "FullyQualifiedName~Login",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "LZ2 request token sent under another name",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Login.cs",
+  "old": "new(\"request_token\", requestToken)",
+  "new": "new(\"requesttoken\", requestToken)",
+  "filter": "FullyQualifiedName~Login",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "LZ3 refusal read as success",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Login.cs",
+  "old": "if (!response.IsSuccessStatusCode)",
+  "new": "if (false && !response.IsSuccessStatusCode)",
+  "filter": "FullyQualifiedName~Login",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "LZ4 sign-in page without the state",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Login.cs",
+  "old": "Uri.EscapeDataString(\"state=\" + state)",
+  "new": "Uri.EscapeDataString(\"state=\")",
+  "filter": "FullyQualifiedName~LoginApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "LA1 one-time code sent as the PIN",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Login.cs",
+  "old": "[\"totp\"] = input[\"totp\"]",
+  "new": "[\"totp\"] = input[\"password\"]",
+  "filter": "FullyQualifiedName~Login",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "LA2 feed token dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Login.cs",
+  "old": "Str(reply?[\"data\"]?[\"feedToken\"])",
+  "new": "null",
+  "filter": "FullyQualifiedName~Login",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "LP1 secret sent under another name",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.Login.cs",
+  "old": "[\"api_secret_key\"] = secret",
+  "new": "[\"api_secret\"] = secret",
+  "filter": "FullyQualifiedName~Login",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "LP2 no feed token when the public one is missing",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.Login.cs",
+  "old": "Str(body?[\"public_access_token\"]) is { Length: > 0 } feed ? feed : token",
+  "new": "Str(body?[\"public_access_token\"]) is { Length: > 0 } feed ? feed : \"\"",
+  "filter": "FullyQualifiedName~Login",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "LP3 reasons joined another way",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.Login.cs",
+  "old": "string.Join(\"; \"",
+  "new": "string.Join(\", \"",
+  "filter": "FullyQualifiedName~Login",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "LS1 state not required to complete",
+  "file": "src/EPTradeBot.Api/Endpoints/CredentialEndpoints.cs",
+  "old": "login!.LoginMethod == LoginMethod.Redirect && !states.Consume",
+  "new": "login!.LoginMethod == LoginMethod.Redirect && false && !states.Consume",
+  "filter": "FullyQualifiedName~LoginApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "LS2 state usable again",
+  "file": "src/EPTradeBot.Infrastructure/Security/LoginStates.cs",
+  "old": "return used.TryAdd(state, expiry);",
+  "new": "return true;",
+  "filter": "FullyQualifiedName~LoginApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "LS3 state never expires",
+  "file": "src/EPTradeBot.Infrastructure/Security/LoginStates.cs",
+  "old": "if (expiry < now) return false;",
+  "new": "if (expiry < now - 100000) return false;",
+  "filter": "FullyQualifiedName~LoginApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "LS4 sandbox account may sign in",
+  "file": "src/EPTradeBot.Api/Endpoints/CredentialEndpoints.cs",
+  "old": "if (account.AccountType != AccountType.LIVE) return Failed(400",
+  "new": "if (account.AccountType != AccountType.LIVE && account.Id == Guid.Empty) return Failed(400",
+  "filter": "FullyQualifiedName~LoginApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "LS5 keys not checked on start",
+  "file": "src/EPTradeBot.Api/Endpoints/CredentialEndpoints.cs",
+  "old": "return login.LoginUrl(sessions.KeysFor(account.Broker), state) is { } url",
+  "new": "return login.LoginUrl(new Dictionary<string, string> { [\"ApiKey\"] = \"x\" }, state) is { } url",
+  "filter": "FullyQualifiedName~LoginApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

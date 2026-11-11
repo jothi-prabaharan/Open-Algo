@@ -204,6 +204,27 @@ for sc in SCENARIOS.SCENARIOS:
     state["calls"] = {}
     state["analyze"] = sc.get("analyze", False)
     _seed(sc)
+    if "login" in sc:
+        # A broker sign-in is not an /api/v1 route: call the plugin's authenticate_broker directly and record what it returns.
+        auth_api = importlib.import_module(f"broker.{BROKER}.api.auth_api")
+        result = tuple(auth_api.authenticate_broker(*sc["login"]))
+        token, feed, error = (result[0], None, result[1]) if len(result) == 2 else result
+        out.append(
+            {
+                "name": sc["name"],
+                "method": "POST",
+                "path": "/api/v1/accounts/{account}/broker-login/complete",
+                "auth": "admin",
+                "request": sc["request"],
+                "broker": state["canned"],
+                "expected": {"status": 400 if error else 200, "body": {"status": "error", "message": error} if error else {"status": "success"}},
+                "stored": None if error else {"auth_token": token, "feed_token": feed},
+                "sent": state["sent"],
+                "ignore": sc.get("ignore", []),
+            }
+        )
+        print(f"{400 if error else 200} {sc['name']}")
+        continue
     body = dict(sc["request"])
     if sc.get("auth", "body") == "body":
         body.setdefault("apikey", API_KEY)

@@ -1,0 +1,242 @@
+{
+  "broker": "paytm",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_request_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /accounts/v2/gettoken": {
+          "body": {
+            "access_token": "paytm-access-777",
+            "public_access_token": "paytm-public-888",
+            "read_access_token": "paytm-read-999"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "paytm-access-777",
+        "feed_token": "paytm-public-888"
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/accounts/v2/gettoken",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "api_key": "paytm-api-key",
+            "api_secret_key": "paytm-api-secret",
+            "request_token": "req-token-abc"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_without_a_public_token_uses_the_access_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /accounts/v2/gettoken": {
+          "body": {
+            "access_token": "paytm-access-777"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "paytm-access-777",
+        "feed_token": "paytm-access-777"
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/accounts/v2/gettoken",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "api_key": "paytm-api-key",
+            "api_secret_key": "paytm-api-secret",
+            "request_token": "req-token-abc"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_reasons",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /accounts/v2/gettoken": {
+          "status": 400,
+          "body": {
+            "errors": [
+              {
+                "message": "Request token is invalid."
+              },
+              {
+                "message": "Request token has expired."
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Request token is invalid.; Request token has expired."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/accounts/v2/gettoken",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "api_key": "paytm-api-key",
+            "api_secret_key": "paytm-api-secret",
+            "request_token": "req-token-abc"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_without_reasons",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /accounts/v2/gettoken": {
+          "status": 500,
+          "body": {
+            "error": "x"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed with response: {\"error\":\"x\"}"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/accounts/v2/gettoken",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "api_key": "paytm-api-key",
+            "api_secret_key": "paytm-api-secret",
+            "request_token": "req-token-abc"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_no_access_token_in_the_answer",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /accounts/v2/gettoken": {
+          "body": {
+            "read_access_token": "paytm-read-999"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication succeeded but no access token was returned."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/accounts/v2/gettoken",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "api_key": "paytm-api-key",
+            "api_secret_key": "paytm-api-secret",
+            "request_token": "req-token-abc"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

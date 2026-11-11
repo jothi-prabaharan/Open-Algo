@@ -7,6 +7,7 @@ using EPTradeBot.Core.Entities.Legacy.Core;
 using EPTradeBot.Infrastructure.Security;
 using EPTradeBot.IntegrationTests;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
@@ -182,13 +183,28 @@ public static class ContractRunner
         var apiKey = f["analyze"] is JsonValue analyze && analyze.GetValue<bool>() ? host.PaperApiKey : host.ApiKey;
         var request = (JsonObject)f["request"]!.DeepClone();
         if (request["apikey"] is JsonValue k && k.GetValue<string>() == recordedKey) request["apikey"] = apiKey;
-        using var client = host.Host!.Anonymous();
+        // A broker sign-in is an admin call on an account. The state it must carry comes from starting the sign-in, which sends nothing to the broker.
+        var admin = f["auth"]!.GetValue<string>() == "admin";
+        var path = f["path"]!.GetValue<string>().Replace("{account}", host.AccountId.ToString());
+        var recordedToken = host.Fixtures["auth_token"]!.GetValue<string>();
+        if (admin)
+        {
+            (await host.Host!.Admin.PutAsJsonAsync($"/api/v1/accounts/{host.AccountId}/broker-session", new { auth_token = recordedToken })).EnsureSuccessStatusCode();
+            if (request["state"] is JsonValue issued && issued.GetValue<string>() == "<issued>")
+            {
+                using var started = await host.Host.Admin.PostAsync($"/api/v1/accounts/{host.AccountId}/broker-login/start", null);
+                request["state"] = JsonNode.Parse(await started.Content.ReadAsStringAsync())!["state"]!.GetValue<string>();
+            }
+        }
+
+        using var anonymous = admin ? null : host.Host!.Anonymous();
+        var client = admin ? host.Host!.Admin : anonymous!;
         var isGet = f["method"]?.GetValue<string>() == "GET";
         // Without auth the request carries no key of the install's (a key it does carry is a wrong one, sent as recorded).
         if (f["auth"]!.GetValue<string>() == "none" && request["apikey"] is JsonValue own && own.GetValue<string>() == apiKey) request.Remove("apikey");
         using var message = isGet
-            ? new HttpRequestMessage(HttpMethod.Get, f["path"]!.GetValue<string>() + "?" + string.Join("&", request.Where(kv => kv.Value is not null).Select(kv => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value!.ToString())}")))
-            : new HttpRequestMessage(HttpMethod.Post, f["path"]!.GetValue<string>())
+            ? new HttpRequestMessage(HttpMethod.Get, path + "?" + string.Join("&", request.Where(kv => kv.Value is not null).Select(kv => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value!.ToString())}")))
+            : new HttpRequestMessage(HttpMethod.Post, path)
             {
                 Content = new StringContent(request.ToJsonString(), Encoding.UTF8, "application/json"),
             };
@@ -218,6 +234,7 @@ public static class ContractRunner
 
         var expected = f["expected"]!;
         Assert.Equal(expected["status"]!.GetValue<int>(), (int)response.StatusCode);
+        if (f.ContainsKey("stored")) await AssertStoredSessionAsync(host, f, expected["status"]!.GetValue<int>() == 200, recordedToken);
         if (expected["text"] is JsonValue expectedText)
         {
             Assert.Equal(expectedText.GetValue<string>(), answerText);
@@ -256,6 +273,24 @@ public static class ContractRunner
         var diffs = JsonCompare.Differences(expected["body"], actual);
         Assert.True(diffs.Count == 0, "Response differs from OpenAlgo:\n" + string.Join("\n", diffs));
         CompareTraffic(host, f, sent, IsRead, readPosts, replies.Keys);
+    }
+
+    /// <summary>After a sign-in, the account holds the tokens the broker issued; after a refused one, the tokens it had.</summary>
+    private static async Task AssertStoredSessionAsync(BrokerContractHost host, JsonObject f, bool signedIn, string previousToken)
+    {
+        await using var db = host.Host!.NewDb();
+        var account = await db.BrokerAccounts.AsNoTracking().SingleAsync(a => a.Id == host.AccountId);
+        var session = host.Host.Get<EPTradeBot.Infrastructure.Brokers.BrokerSessionFactory>().Create(account);
+        Assert.NotNull(session);
+        if (signedIn)
+        {
+            Assert.Equal(f["stored"]!["auth_token"]!.GetValue<string>(), session!.AuthToken);
+            Assert.Equal(f["stored"]!["feed_token"]?.GetValue<string>(), session.FeedToken);
+        }
+        else
+        {
+            Assert.Equal(previousToken, session!.AuthToken);
+        }
     }
 
     private static bool IsSchemaMessage(JsonNode expected) =>

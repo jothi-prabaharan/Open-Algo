@@ -1,0 +1,253 @@
+{
+  "broker": "zerodha",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_request_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /session/token": {
+          "body": {
+            "status": "success",
+            "data": {
+              "user_id": "AB1234",
+              "access_token": "kite-access-token-777",
+              "public_token": "pub"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "kite-access-token-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "api_key": "kite-api-key",
+            "request_token": "req-token-abc",
+            "checksum": "e90f5157ee0fc8ea64f8218bb2f5e3503eedb356264ab803926300cdc8fc40de"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_token_with_special_characters",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req+token/with=chars&more",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /session/token": {
+          "body": {
+            "status": "success",
+            "data": {
+              "user_id": "AB1234",
+              "access_token": "kite-access-token-777",
+              "public_token": "pub"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "kite-access-token-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "api_key": "kite-api-key",
+            "request_token": "req+token/with=chars&more",
+            "checksum": "505de49bc3f83f80b2b22545fcfad5776edbd0cfbfd832ecc9b84f500c56258a"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_kite_refuses_the_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "stale-token",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /session/token": {
+          "status": 403,
+          "body": {
+            "status": "error",
+            "message": "Token is invalid or has expired.",
+            "error_type": "TokenException"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Token is invalid or has expired."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "api_key": "kite-api-key",
+            "request_token": "stale-token",
+            "checksum": "40a28deadea9848afe2010833c4976496136f63a8ea4802a812ee13e4852be61"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_kite_refuses_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "stale-token",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /session/token": {
+          "status": 500,
+          "body": {
+            "status": "error"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Server error '500 Internal Server Error' for url 'https://api.kite.trade/session/token'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "api_key": "kite-api-key",
+            "request_token": "stale-token",
+            "checksum": "40a28deadea9848afe2010833c4976496136f63a8ea4802a812ee13e4852be61"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_no_access_token_in_the_answer",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /session/token": {
+          "body": {
+            "status": "success",
+            "data": {
+              "user_id": "AB1234"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication succeeded but no access token was returned. Please check the response."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "api_key": "kite-api-key",
+            "request_token": "req-token-abc",
+            "checksum": "e90f5157ee0fc8ea64f8218bb2f5e3503eedb356264ab803926300cdc8fc40de"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

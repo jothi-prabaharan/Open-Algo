@@ -47,14 +47,14 @@ Per active broker (contract-verified means 100% of its recorded fixtures match O
 - [x] Zerodha: orders, books, funds, quotes, depth, multiquotes, history (24 fixtures), ticker (20), margin (23)
 - [x] Zerodha: MCX (units to contracts at the Kite boundary, lot from the master contract; 21 fixtures, 16 mutation checks)
 - [x] Zerodha: GTT (60 fixtures, single and two-leg triggers, MARKET protected into LIMIT, MCX in contracts)
-- [ ] Zerodha: login
+- [x] Zerodha: login (request token exchanged at /session/token; 5 fixtures)
 - [ ] Zerodha: market-data feed onto the bus
 - [x] Angel One: orders, books, funds, quotes, depth, multiquotes, history (21 fixtures), margin (15)
 - [x] Angel One: GTT (51 fixtures; an OCO is two rules joined by a dash, rolled back if the pair fails)
-- [ ] Angel One: login
+- [x] Angel One: login (client code, PIN and one-time code; token and feed token; 5 fixtures)
 - [ ] Angel One: market-data feed onto the bus
 - [x] Paytm Money: orders, books, funds, quotes, depth, multiquotes, smart orders, close-all, cancel-all (41 fixtures); the broker has no history, margin calculator or GTT
-- [ ] Paytm Money: login
+- [x] Paytm Money: login (request token exchanged for the access and public tokens; 5 fixtures)
 - [ ] Paytm Money: market-data feed onto the bus
 
 Shared endpoints still open:

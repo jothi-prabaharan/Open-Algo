@@ -1,0 +1,259 @@
+{
+  "broker": "angel",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_returns_token_and_feed_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "A12345",
+        "password": "1234",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /rest/auth/angelbroking/user/v1/loginByPassword": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "jwtToken": "angel-jwt-777",
+              "refreshToken": "r",
+              "feedToken": "angel-feed-888"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "angel-jwt-777",
+        "feed_token": "angel-feed-888"
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/auth/angelbroking/user/v1/loginByPassword",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "clientcode": "A12345",
+            "password": "1234",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_without_a_feed_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "A12345",
+        "password": "1234",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /rest/auth/angelbroking/user/v1/loginByPassword": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "jwtToken": "angel-jwt-777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "angel-jwt-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/auth/angelbroking/user/v1/loginByPassword",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "clientcode": "A12345",
+            "password": "1234",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_wrong_one_time_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "A12345",
+        "password": "1234",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /rest/auth/angelbroking/user/v1/loginByPassword": {
+          "body": {
+            "status": false,
+            "message": "Invalid totp",
+            "errorcode": "AB1050",
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "argument of type 'NoneType' is not iterable"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/auth/angelbroking/user/v1/loginByPassword",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "clientcode": "A12345",
+            "password": "1234",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_wrong_pin",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "A12345",
+        "password": "1234",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /rest/auth/angelbroking/user/v1/loginByPassword": {
+          "body": {
+            "status": false,
+            "message": "Invalid Password",
+            "errorcode": "AB1007",
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "argument of type 'NoneType' is not iterable"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/auth/angelbroking/user/v1/loginByPassword",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "clientcode": "A12345",
+            "password": "1234",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "A12345",
+        "password": "1234",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /rest/auth/angelbroking/user/v1/loginByPassword": {
+          "body": {
+            "status": false
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed. Please try again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/auth/angelbroking/user/v1/loginByPassword",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "clientcode": "A12345",
+            "password": "1234",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
