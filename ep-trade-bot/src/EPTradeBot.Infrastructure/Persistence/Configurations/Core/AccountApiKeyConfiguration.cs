@@ -13,6 +13,8 @@ internal sealed class AccountApiKeyConfiguration : IEntityTypeConfiguration<Acco
         b.Property(x => x.Id).ValueGeneratedNever();
         b.Property(x => x.KeyHash).HasMaxLength(64).IsFixedLength().IsRequired();
         b.Property(x => x.Label).HasMaxLength(64).IsRequired();
+        b.Property(x => x.OrderMode).HasMaxLength(10).HasDefaultValue("auto").IsRequired();
+        b.ToTable(t => t.HasCheckConstraint("ck_account_api_keys_order_mode", "order_mode in ('auto', 'semi_auto')"));
         b.Property(x => x.Version).HasColumnName("xmin").HasColumnType("xid").IsRowVersion();
         b.HasIndex(x => x.KeyHash).IsUnique().HasDatabaseName("ux_account_api_keys_key_hash");
         b.HasIndex(x => x.AccountId).HasDatabaseName("ix_account_api_keys_account_id");

@@ -181,15 +181,16 @@ internal static class OpenAlgoV1Endpoints
         }
 
         var keys = context.RequestServices.GetRequiredService<ApiKeyService>();
-        var account = await keys.ResolveAsync(request.ApiKey, ct);
-        if (account is null)
+        var call = await keys.ResolveCallAsync(request.ApiKey, ct);
+        if (call is null)
         {
             result = V1Result.Error(403, "Invalid openalgo apikey");
         }
         else
         {
             var service = context.RequestServices.GetRequiredService<OpenAlgoApiService>();
-            result = await handler(service, account, request, ct);
+            using var _ = ApiCallContext.Begin(new ApiCall(call.Value.KeyId, call.Value.OrderMode));
+            result = await handler(service, call.Value.Account, request, ct);
         }
 
         await Write(context, result);

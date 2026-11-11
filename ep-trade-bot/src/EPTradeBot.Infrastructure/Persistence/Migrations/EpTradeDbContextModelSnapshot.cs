@@ -296,6 +296,14 @@ namespace EPTradeBot.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(64)")
                         .HasColumnName("label");
 
+                    b.Property<string>("OrderMode")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasDefaultValue("auto")
+                        .HasColumnName("order_mode");
+
                     b.Property<DateTime?>("RevokedAtUtc")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("revoked_at_utc");
@@ -316,7 +324,10 @@ namespace EPTradeBot.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("ux_account_api_keys_key_hash");
 
-                    b.ToTable("account_api_keys", "core");
+                    b.ToTable("account_api_keys", "core", t =>
+                        {
+                            t.HasCheckConstraint("ck_account_api_keys_order_mode", "order_mode in ('auto', 'semi_auto')");
+                        });
                 });
 
             modelBuilder.Entity("EPTradeBot.Core.Entities.Core.AccountRiskSetting", b =>

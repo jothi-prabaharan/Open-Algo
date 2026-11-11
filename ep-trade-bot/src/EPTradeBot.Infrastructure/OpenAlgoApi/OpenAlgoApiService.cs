@@ -41,6 +41,7 @@ public sealed partial class OpenAlgoApiService(
     IDbContextFactory<EpTradeDbContext> contexts,
     IFreezeQuantityLookup freeze,
     IMarketSessions marketSessions,
+    ActionCenterStore actionCenter,
     TimeProvider clock,
     IConfiguration configuration,
     ILogger<OpenAlgoApiService> logger)
@@ -68,6 +69,7 @@ public sealed partial class OpenAlgoApiService(
 
     public async Task<V1Result> PlaceOrderAsync(BrokerAccount account, PlaceOrderRequest r, CancellationToken ct)
     {
+        if (await QueueIfSemiAutoAsync(account, "placeorder", r, ct) is { } queued) return queued;
         if (Fractional(account, r.Quantity) is { } fractional) return fractional;
         if (await UnknownSymbolAsync(account, r.Symbol, r.Exchange, ct) is { } unknown) return unknown;
         var result = await dispatcher.DispatchAsync(Intent(account, r.Strategy, r.Symbol, r.Exchange, r.Action, r.Quantity, r.PriceType, r.Product, r.Price, r.TriggerPrice, r.DisclosedQuantity), ct);
@@ -76,6 +78,7 @@ public sealed partial class OpenAlgoApiService(
 
     public async Task<V1Result> PlaceSmartOrderAsync(BrokerAccount account, PlaceSmartOrderRequest r, CancellationToken ct)
     {
+        if (await QueueIfSemiAutoAsync(account, "placesmartorder", r, ct) is { } queued) return queued;
         if ((Fractional(account, r.Quantity) ?? Fractional(account, r.PositionSize ?? 0)) is { } fractional) return fractional;
         if (await UnknownSymbolAsync(account, r.Symbol, r.Exchange, ct) is { } unknown) return unknown;
         // One smart order per instrument at a time, so each one reads the position the previous one left.
@@ -113,6 +116,7 @@ public sealed partial class OpenAlgoApiService(
 
     public async Task<V1Result> ModifyOrderAsync(BrokerAccount account, ModifyOrderRequest r, CancellationToken ct)
     {
+        if (SemiAutoBlocked("Modify order", "modify orders") is { } blocked) return blocked;
         if (Fractional(account, r.Quantity ?? 0) is { } fractional) return fractional;
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
         if (account.KillSwitchEngaged) return Refusal(account, new Refusal("kill_switch_engaged", $"The kill switch is on for {account.DisplayName}, so orders cannot be changed. Release it first."));
@@ -133,6 +137,7 @@ public sealed partial class OpenAlgoApiService(
 
     public async Task<V1Result> CancelOrderAsync(BrokerAccount account, CancelOrderRequest r, CancellationToken ct)
     {
+        if (SemiAutoBlocked("Cancel order", "cancel orders") is { } blocked) return blocked;
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
         if (account.AccountType == AccountType.PAPER)
         {
@@ -153,6 +158,7 @@ public sealed partial class OpenAlgoApiService(
 
     public async Task<V1Result> CancelAllOrdersAsync(BrokerAccount account, CancelAllOrderRequest r, CancellationToken ct)
     {
+        if (SemiAutoBlocked("Cancel all orders", "cancel all orders") is { } blocked) return blocked;
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
         var cancelled = new JsonArray();
         var failed = new JsonArray();
@@ -190,6 +196,7 @@ public sealed partial class OpenAlgoApiService(
 
     public async Task<V1Result> ClosePositionsAsync(BrokerAccount account, ClosePositionRequest r, CancellationToken ct)
     {
+        if (SemiAutoBlocked("Close position", "close positions") is { } blocked) return blocked;
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
         IReadOnlyList<OpenPosition> open;
         var failures = new List<string>();
@@ -460,9 +467,9 @@ public sealed partial class OpenAlgoApiService(
     private static OrderIntent Intent(BrokerAccount account, string strategy, string symbol, string exchange, string action, decimal quantity,
         string priceType, string product, decimal price, decimal trigger, int disclosed) => new()
     {
-        AccountId = account.Id, Source = OrderSource.Api, Symbol = symbol, Exchange = exchange, Action = action.ToUpperInvariant(),
+        AccountId = account.Id, Source = ApiCallContext.Get().ApprovedBy is null ? OrderSource.Api : OrderSource.ActionCenter, Symbol = symbol, Exchange = exchange, Action = action.ToUpperInvariant(),
         Quantity = (int)quantity, PriceType = priceType, Product = product, Price = price, TriggerPrice = trigger,
-        DisclosedQuantity = disclosed, Strategy = strategy, Actor = "api",
+        DisclosedQuantity = disclosed, Strategy = strategy, Actor = ApiCallContext.Get().ApprovedBy ?? "api",
     };
 
     private static V1Result OrderAnswer(BrokerAccount account, DispatchResult result) => result.Status switch

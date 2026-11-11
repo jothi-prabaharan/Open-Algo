@@ -82,3 +82,24 @@ public sealed class BrokerLoginCompleteRequest
 
     [StringLength(64)] [JsonPropertyName("totp")] public string? Totp { get; set; }
 }
+
+/// <summary>PUT /api/v1/accounts/{id}/apikeys/{keyId}/order-mode: <c>auto</c> sends this key's orders, <c>semi_auto</c> holds them in the Action Center.</summary>
+public sealed class SetOrderModeRequest
+{
+    [Required, RegularExpression("^(auto|semi_auto)$", ErrorMessage = "Use auto or semi_auto.")]
+    [JsonPropertyName("mode")] public string Mode { get; set; } = "";
+}
+
+/// <summary>POST /api/v1/action-center/orders/{id}/reject, and reject-all.</summary>
+public sealed class RejectOrderRequest
+{
+    [StringLength(500)] [JsonPropertyName("reason")] public string? Reason { get; set; }
+
+    [JsonPropertyName("account_id")] public Guid? AccountId { get; set; }
+}
+
+/// <summary>POST /api/v1/action-center/approve-all: every waiting order, or those of one account.</summary>
+public sealed class ApproveAllRequest
+{
+    [JsonPropertyName("account_id")] public Guid? AccountId { get; set; }
+}

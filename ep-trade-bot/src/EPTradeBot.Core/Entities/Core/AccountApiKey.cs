@@ -24,5 +24,12 @@ public sealed class AccountApiKey
 
     public DateTime? RevokedAtUtc { get; set; }
 
+    /// <summary>
+    /// How orders that arrive with this key are handled: <c>auto</c> sends them (after the guard and the risk check), <c>semi_auto</c> holds them
+    /// in the Action Center until somebody approves them. A key is a webhook's or a strategy's credential, so this is the per-webhook setting.
+    /// </summary>
+    [Required, RegularExpression("^(auto|semi_auto)$")]
+    public string OrderMode { get; set; } = "auto";
+
     public uint Version { get; set; }
 }

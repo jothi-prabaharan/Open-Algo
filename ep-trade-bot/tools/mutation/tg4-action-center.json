@@ -1,0 +1,98 @@
+[
+ {
+  "name": "AC1 a semi-auto key sends its orders",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.ActionCenter.cs",
+  "old": "if (!ApiCallContext.Get().IsSemiAuto) return null;",
+  "new": "if (!ApiCallContext.Get().IsSemiAuto || true) return null;",
+  "filter": "FullyQualifiedName~ActionCenterTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "AC2 approval does not claim the order",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.ActionCenter.cs",
+  "old": "if (!await actionCenter.ClaimAsync(id, ct))",
+  "new": "if (false && !await actionCenter.ClaimAsync(id, ct))",
+  "filter": "FullyQualifiedName~ActionCenterTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "AC3 the replay is not marked as the Action Center's",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.ActionCenter.cs",
+  "old": "ApiCallContext.Begin(new ApiCall(null, \"auto\", actor))",
+  "new": "ApiCallContext.Begin(new ApiCall(null, \"auto\", null))",
+  "filter": "FullyQualifiedName~ActionCenterTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "AC4 semi-auto does not block a cancel",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.ActionCenter.cs",
+  "old": "ApiCallContext.Get().IsSemiAuto ? V1Result.Error(403,",
+  "new": "ApiCallContext.Get().IsSemiAuto && false ? V1Result.Error(403,",
+  "filter": "FullyQualifiedName~ActionCenterTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "AC5 an order the environment refuses is queued",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.ActionCenter.cs",
+  "old": "if (guard.Check(account) is { } refused) return Refusal(account, refused);\n        var body",
+  "new": "if (guard.Check(account) is { } refused && false) return Refusal(account, refused);\n        var body",
+  "filter": "FullyQualifiedName~ActionCenterTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "AC6 orders never expire",
+  "file": "src/EPTradeBot.Infrastructure/Trading/ActionCenterStore.cs",
+  "old": "o.CreatedAt < boundary)",
+  "new": "o.CreatedAt < boundary.AddDays(-30))",
+  "filter": "FullyQualifiedName~ActionCenterTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "AC7 a rejection may overwrite any status",
+  "file": "src/EPTradeBot.Infrastructure/Trading/ActionCenterStore.cs",
+  "old": "Where(o => o.Id == id && o.Status == Pending)\n            .ExecuteUpdateAsync(s => s.SetProperty(o => o.Status, Rejected)",
+  "new": "Where(o => o.Id == id)\n            .ExecuteUpdateAsync(s => s.SetProperty(o => o.Status, Rejected)",
+  "filter": "FullyQualifiedName~ActionCenterTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "AC8 bulk approvals not marked bulk",
+  "file": "src/EPTradeBot.Api/Endpoints/ActionCenterEndpoints.cs",
+  "old": "var d = await service.ApprovePendingAsync(row.Id, Actor, bulk: true, ct);",
+  "new": "var d = await service.ApprovePendingAsync(row.Id, Actor, bulk: false, ct);",
+  "filter": "FullyQualifiedName~ActionCenterTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "AC9 a refusal at approval is not recorded",
+  "file": "src/EPTradeBot.Infrastructure/Trading/ActionCenterStore.cs",
+  "old": "sent ? null : message, bulk, now));",
+  "new": "null, bulk, now));",
+  "filter": "FullyQualifiedName~ActionCenterTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "AC10 approve-all newest first",
+  "file": "src/EPTradeBot.Api/Endpoints/ActionCenterEndpoints.cs",
+  "old": "(await store.ListAsync(request.AccountId, ActionCenterStore.Pending, ct)).OrderBy(r => r.Id))\n            {\n                var d = await service.ApprovePendingAsync",
+  "new": "(await store.ListAsync(request.AccountId, ActionCenterStore.Pending, ct)).OrderByDescending(r => r.Id))\n            {\n                var d = await service.ApprovePendingAsync",
+  "filter": "FullyQualifiedName~ActionCenterTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "AC11 a refused approval marked approved",
+  "file": "src/EPTradeBot.Infrastructure/Trading/ActionCenterStore.cs",
+  "old": "row.Status = sent ? Approved : Refused;",
+  "new": "row.Status = Approved;",
+  "filter": "FullyQualifiedName~ActionCenterTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "AC12 the key is stored with the order",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.ActionCenter.cs",
+  "old": "body.Remove(\"apikey\");",
+  "new": "_ = body;",
+  "filter": "FullyQualifiedName~ActionCenterTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

@@ -38,6 +38,7 @@ public sealed partial class OpenAlgoApiService
 
     public async Task<V1Result> BasketOrderAsync(BrokerAccount account, BasketOrderRequest r, CancellationToken ct)
     {
+        if (await QueueIfSemiAutoAsync(account, "basketorder", r, ct) is { } queued) return queued;
         if (r.Orders.FirstOrDefault(o => Fractional(account, o.Quantity) is not null) is { } fractionalItem) return Fractional(account, fractionalItem.Quantity)!;
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
 
@@ -79,6 +80,7 @@ public sealed partial class OpenAlgoApiService
 
     public async Task<V1Result> SplitOrderAsync(BrokerAccount account, SplitOrderRequest r, CancellationToken ct)
     {
+        if (await QueueIfSemiAutoAsync(account, "splitorder", r, ct) is { } queued) return queued;
         if (Fractional(account, r.Quantity) is { } fractional) return fractional;
         var total = (int)r.Quantity;
         var size = r.SplitSize;
@@ -131,6 +133,7 @@ public sealed partial class OpenAlgoApiService
 
     public async Task<V1Result> OptionsOrderAsync(BrokerAccount account, OptionsOrderRequest r, CancellationToken ct)
     {
+        if (await QueueIfSemiAutoAsync(account, "optionsorder", r, ct) is { } queued) return queued;
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
         var (option, error) = await ResolveOptionAsync(account, r.Underlying, r.Exchange, r.ExpiryDate, r.StrikeInterval, r.Offset, r.OptionType, null, ct);
         if (error is not null) return Mark(account, error);
@@ -163,6 +166,7 @@ public sealed partial class OpenAlgoApiService
 
     public async Task<V1Result> OptionsMultiOrderAsync(BrokerAccount account, OptionsMultiOrderRequest r, CancellationToken ct)
     {
+        if (await QueueIfSemiAutoAsync(account, "optionsmultiorder", r, ct) is { } queued) return queued;
         if (r.Legs.Count == 0) return Mark(account, V1Result.Error(400, "No legs provided in the request"));
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
 

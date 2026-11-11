@@ -76,6 +76,7 @@ v1.MapGet("/environment", async (ITradingGuardService guard, EpTradeDbContext db
 }));
 v1.MapManagement();
 v1.MapCredentials();
+v1.MapActionCenter();
 v1.MapOpenAlgoV1();
 if (app.Environment.IsDevelopment()) v1.MapDevelopmentQuotes();
 

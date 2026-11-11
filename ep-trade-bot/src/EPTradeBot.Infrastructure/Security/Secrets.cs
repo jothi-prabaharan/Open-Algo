@@ -88,6 +88,18 @@ public sealed class ApiKeyService(IDbContextFactory<EpTradeDbContext> contexts, 
         return accountId is null ? null : await db.BrokerAccounts.AsNoTracking().SingleOrDefaultAsync(a => a.Id == accountId, cancellationToken);
     }
 
+    /// <summary>The account, the key's id and the key's order mode, or null for an unknown or revoked key.</summary>
+    public async Task<(BrokerAccount Account, Guid KeyId, string OrderMode)?> ResolveCallAsync(string? apiKey, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(apiKey) || apiKey.Length > 256) return null;
+        var hash = Hash(apiKey);
+        await using var db = await contexts.CreateDbContextAsync(cancellationToken);
+        var key = await db.AccountApiKeys.AsNoTracking().Where(k => k.KeyHash == hash && k.RevokedAtUtc == null).SingleOrDefaultAsync(cancellationToken);
+        if (key is null) return null;
+        var account = await db.BrokerAccounts.AsNoTracking().SingleOrDefaultAsync(a => a.Id == key.AccountId, cancellationToken);
+        return account is null ? null : (account, key.Id, key.OrderMode);
+    }
+
     public async Task<bool> RevokeAsync(Guid accountId, Guid keyId, CancellationToken cancellationToken = default)
     {
         await using var db = await contexts.CreateDbContextAsync(cancellationToken);

@@ -34,3 +34,30 @@ leaves a variance a hair below zero. `IndicatorKernelTests` now pins it at level
 - VWAP takes its sessions from an optional `session_starts` series; with none it is one session. OpenAlgo derives them from the index timestamps.
 
 **Not done.** Sessions from timestamps for VWAP anchors other than the day, and the pandas-style Series input/outputs (arrays only here).
+
+## Action Center (Auto / Semi-Auto)
+
+**What was built.** Each API key has an order mode, `auto` (the default) or `semi_auto`, set per key with
+`PUT /api/v1/accounts/{id}/apikeys/{keyId}/order-mode`. A key in Semi-Auto does not send entry orders (place, smart, basket, split, options,
+options multi, place GTT): the request is stored in `audit.pending_orders`, minus the API key, and the caller is told "Order queued for approval in
+Action Center" with a `pending_order_id`. Modify, cancel, cancel-all, close-positions and the two GTT changes are refused with 403 on such a key, as
+in OpenAlgo.
+
+The admin lists and decides through `/api/v1/action-center/orders` (filter by status or account), `.../{id}/approve`, `.../{id}/reject`,
+`/approve-all` and `/reject-all` (bulk runs one order at a time, oldest first). Approval claims the row (pending to submitting, one winner), then
+replays the stored request through the same service as an Auto order, so the guard, the kill switches and the account's risk limits are decided again
+at that moment, not at the time it was queued. The order is recorded with source `ActionCenter` and the approver as its actor. Every decision is
+written to the immutable `ActionCenterDecision` log with its reason.
+
+An order not decided by 03:00 IST expires. A LIVE account in Development is never queued (the 403 comes first, as for any live order).
+
+**How it is held.** `ActionCenterTests` (10): Semi-Auto holds and Auto sends; approval sends once and records source and decision; the guard and
+risk are re-decided at approval (kill switch on, max quantity lowered, each with a stated reason); a rejected order is never sent and cannot then be
+approved, and an approved one cannot then be rejected, leaving one decision each; six concurrent approvals send once; approve-all and reject-all
+run in order; blocked operations answer 403; expiry at the 03:00 IST boundary using the test clock; mode validation.
+
+**Mutation check.** 12 mutants in `tools/mutation/tg4-action-center.json` (mode ignored, claim not exclusive, no re-decision at approval, decision
+not logged, expiry boundary, bulk order, reject over any status, and others), all red. AC7 (a rejection may overwrite any status) survived at first:
+no test rejected an order that was already decided. The test above now does, and AC7 is red.
+
+**Not done.** A web screen (Task Group 5, Antigravity). Notifying the trader that an order is waiting (Telegram, TG4 later).
