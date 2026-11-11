@@ -1274,7 +1274,7 @@ Three pieces, each held to the Python code it replaces.
 | Sign-in | yes | yes | yes |
 | Market-data feed | yes | yes | yes |
 
-**Shared pieces.** Symbol and composite endpoints, option chain and multi-quotes, market calendar and chart preferences, sandbox P&L by symbol, ticker, the bus, the proxy, the 31 `/api/v1` endpoints the reference serves that do not sit on Task Group 4 features.
+**Shared pieces.** Symbol and composite endpoints, option chain and multi-quotes, market calendar and chart preferences, sandbox P&L by symbol, ticker, the bus, the proxy, the `/api/v1` endpoints that do not depend on Task Group 4 features (the 31 pairs that do are listed there).
 
 **Verification.** 198 Core, 892 Contract, 35 Architecture and 63 Integration tests, 1188 in all, green in three consecutive full runs. 363 mutation checks across sections 1 to 22 (`tools/mutation/`), all red.
 
