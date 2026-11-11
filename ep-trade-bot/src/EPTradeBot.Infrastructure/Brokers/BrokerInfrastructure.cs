@@ -63,6 +63,10 @@ public sealed class BrokerSessionFactory(TokenProtector protector, IOptionsMonit
         return new BrokerSession(account.Id, account.Broker, token, feed, account.ClientId, keys);
     }
 
+    /// <summary>The pause between a broker's history calls: the configured one, else the broker's own limit.</summary>
+    public TimeSpan HistoryGap(string broker, TimeSpan fallback) =>
+        options.CurrentValue.HistoryGapMs.TryGetValue(broker, out var ms) ? TimeSpan.FromMilliseconds(ms) : fallback;
+
     public string BaseUrl(string broker, string fallback) =>
         options.CurrentValue.BaseUrls.TryGetValue(broker, out var url) && !string.IsNullOrWhiteSpace(url) ? url.TrimEnd('/') : fallback;
 }

@@ -37,7 +37,8 @@ Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 7 verified). Evi
 - [x] multiquotes (batched per broker), syntheticfuture, optionchain (Fyers' own chain call; Greeks not yet) (pass 6)
 - [x] market/holidays and market/timings (calendar seeded from OpenAlgo's fresh install), chart GET and POST, pnl/symbols (pass 7)
 - [x] history and intervals contract-verified on Zerodha (24 fixtures); `IBrokerHistory` contract and the 350 ms spacing in place
-- [ ] history for Dhan, Dhan Sandbox, Angel One, Upstox, Fyers and Delta Exchange
+- [x] history and intervals contract-verified on Angel One (21 fixtures)
+- [ ] history for Dhan, Dhan Sandbox, Upstox, Fyers and Delta Exchange
 - [ ] Remaining 6 broker and market-data pairs (ticker, margin, 4 GTT)
 - [x] Zerodha (contract-verified; MCX, history, GTT, margin, login and ticker feed not yet)
 - [x] Dhan, Dhan Sandbox (contract-verified; history, GTT, margin, login and feed not yet)
@@ -62,7 +63,7 @@ Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 7 verified). Evi
 - [ ] 20 tool back ends with numeric parity tests
 - [ ] Gate 4 artifact
 
-## TG5: Angular PWA
+## TG5: Angular PWA (owned by Antigravity; not worked on in this session)
 - [ ] Angular 22 zoneless workspace, Tailwind 4, SignalStore
 - [ ] PWA manifest, service worker, icons from logo
 - [ ] Dashboard: environment banner, account cards, risk settings, kill switches, Action Center
@@ -70,7 +71,7 @@ Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 7 verified). Evi
 - [ ] 20 tool views
 - [ ] Gate 5 artifact (prod build, Lighthouse, Playwright walkthrough)
 
-## TG6: Deployment
+## TG6: Deployment (owned by Antigravity; not worked on in this session)
 - [ ] systemd dev and prod units
 - [ ] Caddyfile
 - [ ] Optional legacy data importer

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Globalization;
 using System.Net;
 using System.Text;
@@ -16,14 +17,14 @@ namespace EPTradeBot.Infrastructure.Brokers.Angel;
 /// history, GTT, margin, login and the SmartAPI feed.
 /// </summary>
 [BrokerPlugin]
-public sealed class AngelPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<AngelPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
+public sealed class AngelPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<AngelPlugin> logger)
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory
 {
     private const string BaseUrl = "https://apiconnect.angelone.in";
 
     public string Name => "angel";
     public string DisplayName => "Angel One";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
 
     /// <summary>ApiKey: the SmartAPI private key, sent as X-PrivateKey.</summary>
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey"];
@@ -396,6 +397,174 @@ public sealed class AngelPlugin(IHttpClientFactory http, BrokerSessionFactory se
             ["oi"] = Get(q, "opnInterest", 0), ["totalbuyqty"] = Get(q, "totBuyQuan", 0), ["totalsellqty"] = Get(q, "totSellQuan", 0),
         };
     }
+
+    // ---- history ---------------------------------------------------------------------------------------------
+
+    // timeframe_map and interval_limits of broker/angel/api/data.py: SmartAPI's resolution and the most days one request may span.
+    private static readonly Dictionary<string, (string Resolution, int Days)> CandleSpans = new()
+    {
+        ["1m"] = ("ONE_MINUTE", 30), ["3m"] = ("THREE_MINUTE", 60), ["5m"] = ("FIVE_MINUTE", 100), ["10m"] = ("TEN_MINUTE", 100),
+        ["15m"] = ("FIFTEEN_MINUTE", 200), ["30m"] = ("THIRTY_MINUTE", 200), ["1h"] = ("ONE_HOUR", 400), ["D"] = ("ONE_DAY", 2000),
+    };
+
+    public IReadOnlyList<string> HistoryTimeframes { get; } = [.. CandleSpans.Keys];
+
+    private static readonly TimeSpan HistoryGap = TimeSpan.FromMilliseconds(500);
+    private DateTimeOffset _lastHistoryCall = DateTimeOffset.MinValue;
+    private readonly object _historyLock = new();
+
+    /// <summary>SmartAPI allows about 2 history calls a second; every call (a retry too) waits for its turn.</summary>
+    private async Task HistoryTurnAsync(BrokerSession session, CancellationToken cancellationToken)
+    {
+        var gap = sessions.HistoryGap(Name, HistoryGap);
+        TimeSpan wait;
+        lock (_historyLock)
+        {
+            var now = clock.GetUtcNow();
+            var slot = now > _lastHistoryCall + gap ? now : _lastHistoryCall + gap;
+            wait = slot - now;
+            _lastHistoryCall = slot;
+        }
+
+        if (wait > TimeSpan.Zero) await Task.Delay(wait, cancellationToken);
+    }
+
+    public async Task<JsonArray> GetHistoryAsync(BrokerSession session, SymbolRecord instrument, string interval, DateOnly start, DateOnly end, CancellationToken cancellationToken)
+    {
+        if (!CandleSpans.TryGetValue(interval, out var span))
+            throw new BrokerException($"Angel One does not offer {interval} candles. Choose one of: {string.Join(", ", CandleSpans.Keys)}.", 400);
+
+        var exchange = AngelExchange(instrument.Exchange);
+        // The window is date-only in India's time: today's request ends at the current minute, any other day at 23:59.
+        var nowIst = clock.GetUtcNow().ToOffset(TimeSpan.FromHours(5.5)).DateTime;
+        var from = start.ToDateTime(TimeOnly.MinValue);
+        var to = end == DateOnly.FromDateTime(nowIst)
+            ? new DateTime(nowIst.Year, nowIst.Month, nowIst.Day, nowIst.Hour, nowIst.Minute, 0)
+            : end.ToDateTime(new TimeOnly(23, 59));
+
+        var candles = new SortedDictionary<long, JsonObject>();
+        foreach (var row in await ChunkedAsync(session, "getCandleData", exchange, instrument.Token, span, from, to, "candles", cancellationToken))
+        {
+            if (row is not JsonArray c || c.Count < 6) continue;
+            var stamp = AngelEpoch(Str(c[0]) ?? "", interval == "D");
+            candles.TryAdd(stamp, new JsonObject
+            {
+                ["close"] = Numeric(c[4]), ["high"] = Numeric(c[2]), ["low"] = Numeric(c[3]), ["open"] = Numeric(c[1]),
+                ["timestamp"] = stamp, ["volume"] = Numeric(c[5]), ["oi"] = 0,
+            });
+        }
+
+        // Open interest has its own call. It is a side figure: when it cannot be had the candles still go out, with 0.
+        if (candles.Count > 0 && exchange is "NFO" or "BFO" or "CDS" or "MCX")
+        {
+            try
+            {
+                foreach (var row in await ChunkedAsync(session, "getOIData", exchange, instrument.Token, span, from, to, "open interest", cancellationToken))
+                {
+                    if (row is not JsonObject o) continue;
+                    var stamp = AngelEpoch(Str(o["time"]) ?? "", interval == "D");
+                    if (candles.TryGetValue(stamp, out var candle)) candle["oi"] = (long)Float(o["oi"]);
+                }
+            }
+            catch (BrokerException ex)
+            {
+                logger.LogWarning(ex, "Open interest for {Symbol} could not be read; the candles carry 0.", instrument.Symbol);
+            }
+        }
+
+        return new JsonArray(candles.Values.Select(v => (JsonNode?)v).ToArray());
+    }
+
+    /// <summary>One SmartAPI history endpoint over the whole window, cut into the days a request may span.</summary>
+    private async Task<List<JsonNode?>> ChunkedAsync(BrokerSession session, string endpoint, string exchange, string token, (string Resolution, int Days) span,
+        DateTime from, DateTime to, string what, CancellationToken cancellationToken)
+    {
+        var rows = new List<JsonNode?>();
+        for (var chunkStart = from; chunkStart <= to;)
+        {
+            var chunkEnd = chunkStart.AddDays(span.Days - 1) < to ? chunkStart.AddDays(span.Days - 1) : to;
+            var body = new JsonObject
+            {
+                ["exchange"] = exchange, ["symboltoken"] = token, ["interval"] = span.Resolution,
+                ["fromdate"] = chunkStart.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture),
+                ["todate"] = chunkEnd.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture),
+            };
+
+            JsonObject? reply = null;
+            for (var attempt = 0; attempt < 4; attempt++)
+            {
+                await HistoryTurnAsync(session, cancellationToken);
+                using var request = Request(session, HttpMethod.Post, "/rest/secure/angelbroking/historical/v1/" + endpoint, body);
+                using var response = await SendAsync(request, cancellationToken);
+                var text = await response.Content.ReadAsStringAsync(cancellationToken);
+                var limited = response.StatusCode == HttpStatusCode.TooManyRequests
+                    || (response.StatusCode == HttpStatusCode.Forbidden && (text.Contains("exceeding", StringComparison.OrdinalIgnoreCase) || text.Contains("access rate", StringComparison.OrdinalIgnoreCase) || text.Contains("rate limit", StringComparison.OrdinalIgnoreCase)));
+                if (response.StatusCode == HttpStatusCode.Forbidden && !limited)
+                    throw new BrokerException("Angel One refused the request. Check the private key, or log in to Angel One again.", 403);
+                reply = ParseObject(text);
+                var message = Str(reply?["message"]) ?? "";
+                if (limited || (!Truthy(reply?["status"]) && (message.Contains("exceed", StringComparison.OrdinalIgnoreCase) || message.Contains("rate", StringComparison.OrdinalIgnoreCase))))
+                {
+                    if (attempt < 3)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(0.5 * (1 << attempt)), cancellationToken);
+                        continue;
+                    }
+
+                    throw new BrokerException("Angel One is limiting requests. Wait a moment, then try again.", 429);
+                }
+
+                break;
+            }
+
+            // OpenAlgo logs a chunk Angel One would not answer and carries on, which leaves a gap in the candles
+            // with nothing to show for it. EP Trade bot stops and says which days are missing.
+            if (!Truthy(reply?["status"]))
+            {
+                var message = Str(reply?["message"]);
+                throw new BrokerException(message == "Invalid Token"
+                    ? "Angel One says the session has expired. Log in to Angel One again."
+                    : $"Angel One could not send the {what} for {chunkStart:yyyy-MM-dd} to {chunkEnd:yyyy-MM-dd}: {message ?? "no reason given."}", message == "Invalid Token" ? 403 : 500);
+            }
+
+            rows.AddRange(reply!["data"] as JsonArray ?? []);
+            chunkStart = chunkEnd.AddDays(1);
+        }
+
+        return rows;
+    }
+
+    /// <summary>Epoch seconds of SmartAPI's "2026-11-02T09:15:00+05:30"; a time without an offset is India's. A daily candle is shifted to 00:00 UTC of its date.</summary>
+    private static long AngelEpoch(string text, bool daily)
+    {
+        var stamp = DateTimeOffset.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var parsed) && HasOffset(text)
+            ? parsed
+            : new DateTimeOffset(DateTime.Parse(text, CultureInfo.InvariantCulture), TimeSpan.FromHours(5.5));
+        return stamp.ToUnixTimeSeconds() + (daily ? 19_800 : 0);
+    }
+
+    /// <summary>SmartAPI sometimes sends numbers as text; a candle carries numbers (a whole one stays whole).</summary>
+    private static JsonNode? Numeric(JsonNode? node)
+    {
+        var text = node is JsonValue v && v.TryGetValue<string>(out var s) ? s : null;
+        if (text is null) return node?.DeepClone();
+        if (long.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var whole)) return whole;
+        return double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var number) ? number : 0;
+    }
+
+    private static JsonObject? ParseObject(string text)
+    {
+        try
+        {
+            return string.IsNullOrWhiteSpace(text) ? null : JsonNode.Parse(text) as JsonObject;
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    private static bool HasOffset(string text) => text.EndsWith('Z') || System.Text.RegularExpressions.Regex.IsMatch(text, @"[+-]\d{2}:?\d{2}$");
 
     // ---- plumbing --------------------------------------------------------------------------------------------
 

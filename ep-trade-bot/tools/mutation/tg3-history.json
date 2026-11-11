@@ -86,5 +86,101 @@
   "new": "return V1Result.Error(400, $\"Instrument '{r.Symbol}' not found for exchange",
   "filter": "FullyQualifiedName~HistoryContractTests",
   "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HA1 one minute candles asked 31 days at a time",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "[\"1m\"] = (\"ONE_MINUTE\", 30)",
+  "new": "[\"1m\"] = (\"ONE_MINUTE\", 31)",
+  "filter": "FullyQualifiedName~HistoryAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HA2 daily candles not shifted to IST",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "ToUnixTimeSeconds() + (daily ? 19_800 : 0)",
+  "new": "ToUnixTimeSeconds()",
+  "filter": "FullyQualifiedName~HistoryAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HA3 no open interest for NFO",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "exchange is \"NFO\" or \"BFO\" or \"CDS\" or \"MCX\"",
+  "new": "exchange is \"BFO\" or \"CDS\" or \"MCX\"",
+  "filter": "FullyQualifiedName~HistoryAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HA4 time without offset read as UTC",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "new DateTimeOffset(DateTime.Parse(text, CultureInfo.InvariantCulture), TimeSpan.FromHours(5.5))",
+  "new": "new DateTimeOffset(DateTime.Parse(text, CultureInfo.InvariantCulture), TimeSpan.Zero)",
+  "filter": "FullyQualifiedName~HistoryAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HA5 duplicate timestamp keeps the last candle",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "candles.TryAdd(stamp, new JsonObject",
+  "new": "candles[stamp] = (new JsonObject",
+  "filter": "FullyQualifiedName~HistoryAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HA6 text prices passed through as text",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "[\"close\"] = Numeric(c[4])",
+  "new": "[\"close\"] = c[4]?.DeepClone()",
+  "filter": "FullyQualifiedName~HistoryAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HA7 open interest refusal fails the candles",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "catch (BrokerException ex)\n            {\n                logger.LogWarning(ex, \"Open interest",
+  "new": "catch (BrokerException ex) when (ex.Message.Length < 0)\n            {\n                logger.LogWarning(ex, \"Open interest",
+  "filter": "FullyQualifiedName~HistoryAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HA8 rate limit never retried",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "if (attempt < 3)\n                    {",
+  "new": "if (attempt < 0)\n                    {",
+  "filter": "FullyQualifiedName~HistoryAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HA9 today treated as any other day",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "end == DateOnly.FromDateTime(nowIst)",
+  "new": "end == DateOnly.MinValue",
+  "filter": "FullyQualifiedName~HistoryApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "HA10 other days end at 23:58",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "end.ToDateTime(new TimeOnly(23, 59))",
+  "new": "end.ToDateTime(new TimeOnly(23, 58))",
+  "filter": "FullyQualifiedName~HistoryAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HA11 index asked on its index exchange",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "var exchange = AngelExchange(instrument.Exchange);\n        // The window",
+  "new": "var exchange = instrument.Exchange;\n        // The window",
+  "filter": "FullyQualifiedName~HistoryAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HA12 a refused chunk answered as no candles",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.cs",
+  "old": "if (!Truthy(reply?[\"status\"]))\n            {\n                var message = Str(reply?[\"message\"]);",
+  "new": "if (!Truthy(reply?[\"status\"]) && false)\n            {\n                var message = Str(reply?[\"message\"]);",
+  "filter": "FullyQualifiedName~HistoryAngelContractTests",
+  "project": "EPTradeBot.Contract.Tests"
  }
 ]

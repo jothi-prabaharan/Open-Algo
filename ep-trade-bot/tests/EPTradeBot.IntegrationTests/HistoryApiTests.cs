@@ -63,4 +63,46 @@ public sealed class HistoryApiTests
         Assert.Equal(501, status);
         Assert.Contains("Historify", body["message"]!.GetValue<string>());
     }
+
+    [PostgresFact]
+    public async Task Angel_One_asks_for_today_up_to_the_current_minute_in_india_and_other_days_to_2359()
+    {
+        var broker = new FakeBroker();
+        var clock = new StoppedClock(new DateTimeOffset(2026, 11, 3, 10, 42, 30, TimeSpan.FromHours(5.5)));
+        await using var host = new TestHost("Production", b =>
+        {
+            b.UseSetting("Brokers:Enabled:0", "angel");
+            b.UseSetting("Brokers:Keys:angel:ApiKey", "key");
+            b.UseSetting("Brokers:HistoryGapMs:angel", "0");
+            b.UseSetting("OpenAlgoApi:HistorySpacingMs", "0");
+            b.ConfigureServices(s =>
+            {
+                s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => broker));
+                s.AddSingleton<TimeProvider>(clock);
+            });
+        });
+        var account = await host.CreateAccountAsync(AccountType.LIVE, "angel", broker: "angel");
+        (await host.Admin.PutAsJsonAsync($"/api/v1/accounts/{account}/broker-session", new { auth_token = "jwt" })).EnsureSuccessStatusCode();
+        var key = (await host.Get<ApiKeyService>().IssueAsync(account, "history")).Key;
+        await using (var db = host.NewDb())
+        {
+            db.Set<SymToken>().Add(new SymToken { Broker = "angel", Symbol = "SBIN", Brsymbol = "SBIN-EQ", Exchange = "NSE", Brexchange = "NSE", Token = "3045", Lotsize = 1 });
+            await db.SaveChangesAsync();
+        }
+
+        broker.Reset(new Dictionary<string, (int, string)> { ["POST /rest/secure/angelbroking/historical/v1/getCandleData"] = (200, """{"status":true,"data":[]}""") });
+        using var client = host.Anonymous();
+        foreach (var end in new[] { "2026-11-03", "2026-11-02" })
+        {
+            broker.ClearSent();
+            var response = await client.PostAsJsonAsync("/api/v1/history", new { apikey = key, symbol = "SBIN", exchange = "NSE", interval = "5m", start_date = "2026-11-02", end_date = end });
+            Assert.Equal(200, (int)response.StatusCode);
+            Assert.Equal(end == "2026-11-03" ? "2026-11-03 10:42" : "2026-11-02 23:59", broker.Sent.Single().Json!["todate"]!.GetValue<string>());
+        }
+    }
+
+    private sealed class StoppedClock(DateTimeOffset at) : TimeProvider
+    {
+        public override DateTimeOffset GetUtcNow() => at;
+    }
 }

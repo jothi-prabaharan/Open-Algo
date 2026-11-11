@@ -1025,5 +1025,22 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
 
 **Mutation check:** 11 of 11 red (`tools/mutation/tg3-history.json`). H1 to H8 cover the Zerodha candle code and `/intervals` (the 90-day chunk and the daily IST shift among them); H9 to H11 cover the 350 ms spacing, the Historify refusal and the unknown-symbol answer.
 
-**Still to do in this pass:** history for Dhan, Dhan Sandbox, Angel One, Upstox, Fyers and Delta Exchange. A broker that sends no open interest will also need its own check that the service adds `oi: 0`.
+**Still to do in this pass:** history for Dhan, Dhan Sandbox, Upstox, Fyers and Delta Exchange. A broker that sends no open interest will also need its own check that the service adds `oi: 0`.
+
+**Angel One (added).**
+
+- **Candles:** SmartAPI candles are cut into the day spans each resolution allows (30 days for 1m up to 2000 for daily).
+  - A rate-limit answer is retried up to three more times.
+  - Open interest comes from its own call, for NFO, BFO, CDS and MCX.
+  - Prices sent as text become numbers, as OpenAlgo does.
+  - A time without an offset is India time, and daily candles are stamped at 00:00 UTC of their date.
+- **Pacing:** each of Angel One's history calls, retries included, waits 500 ms for its turn (`Brokers:HistoryGapMs:<broker>` overrides it).
+- **Today's window:** a request ending today goes to the current minute in India; any other end date goes to 23:59. That cannot be recorded, because a recording would depend on the day it runs, so a clock-controlled integration test pins it.
+- **Contract tests:** 21 new fixtures, 398 in all; the 21 include 3 deliberate differences.
+  - **Unsupported interval:** 400 with the choices named, where OpenAlgo answers 500.
+  - **Expired session and a refused chunk:** OpenAlgo logs a chunk Angel One would not answer, carries on and answers success with the candles it has, which is none at all in these two recordings. EP Trade bot stops and names the days, because a history with a missing stretch looks like a quiet market.
+- **Open interest** is the one exception to that rule. As in OpenAlgo, a refused open-interest call leaves the candles with `oi` 0, and a fixture shows it.
+- **Mutation check:** 12 more, HA1 to HA12, all red. `tg3-history.json` now holds 23.
+
+**Task Groups 5 (the Angular app) and 6 (deployment)** are Antigravity's and are not worked on here.
 
