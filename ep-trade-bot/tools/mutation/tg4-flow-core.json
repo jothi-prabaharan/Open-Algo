@@ -1,0 +1,338 @@
+[
+ {
+  "name": "F1 no depth bound",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "if (depth > MaxDepth)",
+  "new": "if (depth > MaxDepth + 1000)",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "F2 no visit bound",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "visits.Values.Sum() >= MaxVisits",
+  "new": "visits.Values.Sum() >= MaxVisits * 100",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "F3 a condition answers once per path",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "if (BranchingTypes.Contains(type) && run.Context.GetCondition(nodeId) is not null) return;",
+  "new": "if (BranchingTypes.Contains(type) && run.Context.GetCondition(nodeId) is not null && type.Length < 0) return;",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "F4 an order with an unresolved field is sent",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "var blocked = OrderTypes.Contains(type) ? UnresolvedOrderFields(node, run.Context) : [];",
+  "new": "var blocked = OrderTypes.Contains(type) && type.Length < 0 ? UnresolvedOrderFields(node, run.Context) : [];",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "F5 a gate fires before every input is in",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "if (pending > 0)",
+  "new": "if (pending > 100)",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "F6 a gate fires once per path",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "if (run.Context.GetCondition(nodeId) is not null) return;\n            var incoming",
+  "new": "var incoming",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "F7 a gate ignores its declared input count",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "declared > incoming.Count",
+  "new": "declared > incoming.Count + 10",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "F8 a failed node does not stop its branch",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "if (result.Condition is null)\n            {\n                run.Log($\"Stopping",
+  "new": "if (result.Condition is null && run.Errors.Count < 0)\n            {\n                run.Log($\"Stopping",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "F9 an errored condition is recorded as settled",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "if (!errored) run.Context.SetCondition(nodeId, met);",
+  "new": "run.Context.SetCondition(nodeId, met);",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "F10 an errored condition takes a branch",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "if (errored) { if (!isBranch) followed.Add(edge); }",
+  "new": "if (errored) { followed.Add(edge); }",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "F11 wires into a gate are branch-filtered",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "else if (gateIds.Contains(edge.Target)) followed.Add(edge);",
+  "new": "else if (gateIds.Contains(edge.Target) && met && !met) followed.Add(edge);",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "F12 true and false branches swapped",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "else if (met && TrueHandles.Contains(edge.SourceHandle)) followed.Add(edge);",
+  "new": "else if (!met && TrueHandles.Contains(edge.SourceHandle)) followed.Add(edge);",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "F13 pass-through edges dropped",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "else if (!isBranch) followed.Add(edge);\n            }\n\n            edges = followed;",
+  "new": "\n            }\n\n            edges = followed;",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "F14 yes is not a true handle",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "TrueHandles = [\"yes\", \"true\"]",
+  "new": "TrueHandles = [\"true\"]",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "F15 an unresolved order field is not detected",
+  "file": "src/EPTradeBot.Core/Flow/FlowRunner.cs",
+  "old": "FlowContext.HasUnresolved(text)) found.Add",
+  "new": "FlowContext.HasUnresolved(text) && text.Length < 0) found.Add",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C1 an unknown reference becomes empty",
+  "file": "src/EPTradeBot.Core/Flow/FlowContext.cs",
+  "old": ": m.Value;",
+  "new": ": \"\";",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C2 the session date does not roll over at 03:00",
+  "file": "src/EPTradeBot.Core/Flow/FlowContext.cs",
+  "old": "now.TimeOfDay < TimeSpan.FromHours(3)",
+  "new": "now.TimeOfDay < TimeSpan.Zero",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C3 Sunday is weekday 0",
+  "file": "src/EPTradeBot.Core/Flow/FlowContext.cs",
+  "old": "(int)now.DayOfWeek == 0 ? 7 :",
+  "new": "(int)now.DayOfWeek == 0 ? 0 :",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C4 floats go to exponent form too late",
+  "file": "src/EPTradeBot.Core/Flow/FlowContext.cs",
+  "old": "sci >= 16",
+  "new": "sci >= 17",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C5 small floats go to exponent form too late",
+  "file": "src/EPTradeBot.Core/Flow/FlowContext.cs",
+  "old": "sci < -4",
+  "new": "sci < -5",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C6 a whole-token reference is stringified",
+  "file": "src/EPTradeBot.Core/Flow/FlowContext.cs",
+  "old": "if (Builtin(path) is null && WalkPath(path) is JsonNode found) return found;",
+  "new": "if (Builtin(path) is null && WalkPath(path) is JsonNode found && path.Length < 0) return found;",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C8 a list index past the end is read",
+  "file": "src/EPTradeBot.Core/Flow/FlowContext.cs",
+  "old": "if (value is not JsonArray a || i >= a.Count)",
+  "new": "if (value is not JsonArray a || i >= a.Count + 100)",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M1 modulo takes the dividend's sign",
+  "file": "src/EPTradeBot.Core/Flow/MathEvaluator.cs",
+  "old": "(r < 0) != (b < 0)",
+  "new": "(r < 0) == (b < 0)",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M2 exponent cap raised",
+  "file": "src/EPTradeBot.Core/Flow/MathEvaluator.cs",
+  "old": "Math.Abs(right) > 100",
+  "new": "Math.Abs(right) > 1000",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M3 a negative exponent is not read",
+  "file": "src/EPTradeBot.Core/Flow/MathEvaluator.cs",
+  "old": "var right = ParseUnary();\n                if (Math.Abs(right)",
+  "new": "var right = ParseAtom();\n                if (Math.Abs(right)",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M4 dividing by zero is allowed",
+  "file": "src/EPTradeBot.Core/Flow/MathEvaluator.cs",
+  "old": "if (right == 0) throw new DivideByZeroException(\"float division by zero\");",
+  "new": "",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M5 floor rounds",
+  "file": "src/EPTradeBot.Core/Flow/MathEvaluator.cs",
+  "old": "return Math.Floor(v);",
+  "new": "return Math.Round(v);",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N1 a delay is not capped",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "if (seconds > MaxSeconds)\n        {\n            run.Log($\"Delay",
+  "new": "if (seconds > MaxSeconds * 100)\n        {\n            run.Log($\"Delay",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N2 an hour is sixty seconds",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "\"hours\" => value * 3600",
+  "new": "\"hours\" => value * 60",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N3 a long wait is allowed",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "if (wait > MaxSeconds)",
+  "new": "if (wait > MaxSeconds * 100)",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N4 a target time that is now counts as ahead",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "if (nowSeconds >= target)",
+  "new": "if (nowSeconds > target)",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N5 an empty operand is read as zero",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "if (text.Length == 0) message",
+  "new": "if (text.Length < 0) message",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N6 an overnight window needs both halves",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "now >= start || now <= end",
+  "new": "now >= start && now <= end",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N7 the window is not inverted",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "var met = invert ? !inWindow : inWindow;",
+  "new": "var met = inWindow;",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N8 time equality is second-exact",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "now.Hours == th && now.Minutes == tm;",
+  "new": "now.Hours == th && now.Minutes == tm && now.Seconds == tsec;",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N9 a time condition drops the seconds",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "var target = th * 3600 + tm * 60 + tsec;",
+  "new": "var target = th * 3600 + tm * 60;",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N10 dividing a variable by zero is allowed",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "operation == \"divide\" && operand == 0",
+  "new": "operation == \"divide\" && operand == 1",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N11 increment adds two",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "FlowData.ToDouble(ctx.Get(name) ?? JsonValue.Create(0)) + 1);\n                    break;\n                case \"decrement\"",
+  "new": "FlowData.ToDouble(ctx.Get(name) ?? JsonValue.Create(0)) + 2);\n                    break;\n                case \"decrement\"",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N12 a list is not parsed as JSON",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "(text.StartsWith('{') || text.StartsWith('['))",
+  "new": "text.StartsWith('{')",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N13 the math output name defaults wrongly",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "os.Length > 0 ? os : \"result\"",
+  "new": "os.Length > 0 ? os : \"value\"",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N14 an unknown operator is accepted",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "if (!Operators.Contains(op))",
+  "new": "if (!Operators.Contains(op) && op.Length < 0)",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N15 a variable value is not substituted",
+  "file": "src/EPTradeBot.Core/Flow/FlowNodes.cs",
+  "old": "JsonValue.Create(ctx.Interpolate(raw))",
+  "new": "JsonValue.Create(raw)",
+  "filter": "FullyQualifiedName~FlowParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ }
+]

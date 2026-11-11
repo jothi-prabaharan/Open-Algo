@@ -126,3 +126,33 @@ account is gone now needs the global path.
 the platform's own limits until a cgroup or `prlimit` wrapper is added in deployment, which is Task Group 6). A strategy that starts its own child
 processes: only the strategy's own process is stopped. A live log stream (the tail endpoint is polled). Restart catch-up of a start missed while the
 platform was down is the deferred Task Group 2 item.
+
+## Flow engine core
+
+**What was built.** `Core/Flow` is the workflow graph walker of OpenAlgo's Flow (`services/flow_executor_service.py`), with no I/O: the graph model
+(`FlowGraph`, nodes and edges as the editor writes them), the run's variables and `{{path}}` substitution (`FlowContext`: dotted and bracketed paths, the
+built-in variables from the India clock including the 03:00 `session_date`, values written as Python writes them), the arithmetic evaluator
+(`MathEvaluator`: `+ - * / % **`, brackets, `floor()`, Python's modulo sign and the cap of 100 on an exponent), and the node types that need nothing from
+outside: triggers and group, log, variable (set, get with a JSON path, add, subtract, multiply, divide, increment, decrement, append, parse and
+stringify), math, delay and wait-until (bounded at 300 s and 1800 s, the clock and the wait are supplied), variable condition, time window (overnight
+windows included) and time condition. `FlowRunner` keeps the protections that OpenAlgo added after real incidents:
+
+- depth bound 100 and visit bound 500;
+- a condition or gate answers once per run however many paths reach it, so a diamond cannot place two orders from one trigger;
+- a gate waits until every wired input has a result, and refuses to evaluate when fewer inputs are wired than it was configured for;
+- a condition that cannot be evaluated takes neither branch and is never recorded as settled, so a typo cannot fire the else path or feed a gate;
+- a failed node stops its branch and fails the run; plain pass-through wires (logging) still run;
+- an order node with an unresolved `{{reference}}` in a field that decides what is sent (symbol, quantity, price type, ...) is refused, never sent with a default;
+- true/false and yes/no handles are synonyms.
+
+**How it is held.** `tools/contract-fixtures/record_flow.py` runs OpenAlgo's own `WorkflowContext`, `NodeExecutor` and `execute_node_chain` (frozen clock,
+no broker) on 32 substitution cases, 39 arithmetic cases, 13 time strings and 168 graphs, recorded in `flow.fixtures.json`. `FlowParityTests` replays all
+of it: substituted text and value, arithmetic result or refusal, final variables, the log lines in order, errors (node, type, and the wording wherever this
+engine writes it), the waits requested and the bound errors. 254 cases agree. 42 mutants in `tools/mutation/tg4-flow-core.json`, all red; one more
+(a null value counted as found) is equivalent, since the pattern match after it treats null as unresolved, and was dropped. Four mutants first survived or
+could not be killed until a scenario existed for them (the visit bound, yes/no handles, a list set through a variable, a gate met twice).
+
+**Deliberate differences.** Python exception text (a missing key, a bad float) is not reproduced; the node and type of the failure are. A list or dict
+substituted into text is written as Python writes it; a value printed by `stringify` is written as `json.dumps` does.
+
+**Not done here.** The order, data, alert and streaming node types, persistence, triggers and the HTTP surface: next item.
