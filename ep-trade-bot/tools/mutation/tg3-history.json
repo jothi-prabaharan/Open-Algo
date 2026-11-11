@@ -374,5 +374,101 @@
   "new": "if (start > end.AddYears(9)) throw new BrokerException",
   "filter": "FullyQualifiedName~HistoryFyersContractTests",
   "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HD1 one minute candles asked two days at a time",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "[\"1m\"] = (\"1m\", 1)",
+  "new": "[\"1m\"] = (\"1m\", 2)",
+  "filter": "FullyQualifiedName~HistoryDeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HD2 five minute candles asked 13 days at a time",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "[\"5m\"] = (\"5m\", 12)",
+  "new": "[\"5m\"] = (\"5m\", 13)",
+  "filter": "FullyQualifiedName~HistoryDeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HD3 daily candles cut into chunks",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "[\"1d\"] = (\"1d\", 0), [\"D\"] = (\"1d\", 0)",
+  "new": "[\"1d\"] = (\"1d\", 0), [\"D\"] = (\"1d\", 90)",
+  "filter": "FullyQualifiedName~HistoryDeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HD4 day read in UTC, not India time",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "TimeSpan.FromHours(5.5)).ToUnixTimeSeconds();\n",
+  "new": "TimeSpan.Zero).ToUnixTimeSeconds();\n",
+  "filter": "FullyQualifiedName~HistoryDeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HD5 day ends at 00:00 instead of 23:59:59",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "endOfDay ? new TimeOnly(23, 59, 59) : TimeOnly.MinValue",
+  "new": "endOfDay ? new TimeOnly(0, 0, 0) : TimeOnly.MinValue",
+  "filter": "FullyQualifiedName~HistoryDeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HD6 request for today not ended at now",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "Math.Min(IstEpoch(to, endOfDay: true), now)",
+  "new": "IstEpoch(to, endOfDay: true)",
+  "filter": "FullyQualifiedName~HistoryApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "HD7 candle after now kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "if (candle.Timestamp <= now) candles.TryAdd",
+  "new": "if (candle.Timestamp <= now + 10000000) candles.TryAdd",
+  "filter": "FullyQualifiedName~HistoryDeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HD8 duplicate timestamp keeps the last candle",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "candles.TryAdd(candle.Timestamp, candle.Row)",
+  "new": "candles[candle.Timestamp] = candle.Row",
+  "filter": "FullyQualifiedName~HistoryDeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HD9 open interest dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "[\"oi\"] = c.Count > 6 ? (long)Float(c[6]) : 0,",
+  "new": "[\"oi\"] = 0,",
+  "filter": "FullyQualifiedName~HistoryDeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HD10 named candles not read",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "if (node is JsonObject o)",
+  "new": "if (node is JsonObject o && false)",
+  "filter": "FullyQualifiedName~HistoryDeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HD11 rate limit never retried",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "if (attempt < 2)\n                {\n                    await Task.Delay(sessions.RetryBackoff",
+  "new": "if (attempt < 0)\n                {\n                    await Task.Delay(sessions.RetryBackoff",
+  "filter": "FullyQualifiedName~HistoryDeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HD12 request with end before start sent",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "if (endTs >= startTs)",
+  "new": "if (endTs >= startTs - 100000000)",
+  "filter": "FullyQualifiedName~HistoryDeltaContractTests",
+  "project": "EPTradeBot.Contract.Tests"
  }
 ]

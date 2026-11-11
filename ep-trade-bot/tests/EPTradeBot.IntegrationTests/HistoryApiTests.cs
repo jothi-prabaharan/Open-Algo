@@ -101,6 +101,40 @@ public sealed class HistoryApiTests
         }
     }
 
+    [PostgresFact]
+    public async Task Delta_Exchange_asks_for_a_day_in_india_time_and_a_request_for_today_ends_now()
+    {
+        var broker = new FakeBroker();
+        var now = new DateTimeOffset(2026, 11, 3, 10, 42, 30, TimeSpan.FromHours(5.5));
+        await using var host = new TestHost("Production", b =>
+        {
+            b.UseSetting("Brokers:Enabled:0", "deltaexchange");
+            b.UseSetting("OpenAlgoApi:HistorySpacingMs", "0");
+            b.ConfigureServices(s =>
+            {
+                s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => broker));
+                s.AddSingleton<TimeProvider>(new StoppedClock(now));
+            });
+        });
+        var account = await host.CreateAccountAsync(AccountType.LIVE, "delta", broker: "deltaexchange");
+        (await host.Admin.PutAsJsonAsync($"/api/v1/accounts/{account}/broker-session", new { auth_token = "key" })).EnsureSuccessStatusCode();
+        var key = (await host.Get<ApiKeyService>().IssueAsync(account, "history")).Key;
+        await using (var db = host.NewDb())
+        {
+            db.Set<SymToken>().Add(new SymToken { Broker = "deltaexchange", Symbol = "BTCUSD", Brsymbol = "BTCUSD", Exchange = "CRYPTO", Brexchange = "CRYPTO", Token = "27", Lotsize = 1 });
+            await db.SaveChangesAsync();
+        }
+
+        broker.Reset(new Dictionary<string, (int, string)> { ["GET /v2/history/candles"] = (200, """{"success":true,"result":[]}""") });
+        using var client = host.Anonymous();
+        var response = await client.PostAsJsonAsync("/api/v1/history", new { apikey = key, symbol = "BTCUSD", exchange = "CRYPTO", interval = "D", start_date = "2026-11-02", end_date = "2026-11-03" });
+        Assert.Equal(200, (int)response.StatusCode);
+        var query = broker.Sent.Single().Query.ToDictionary(q => q.Key, q => q.Value);
+        // 2 November 00:00:00 IST, and the stopped clock's second rather than 3 November 23:59:59 IST.
+        Assert.Equal(new DateTimeOffset(2026, 11, 2, 0, 0, 0, TimeSpan.FromHours(5.5)).ToUnixTimeSeconds().ToString(), query["start"]);
+        Assert.Equal(now.ToUnixTimeSeconds().ToString(), query["end"]);
+    }
+
     private static async Task<(TestHost Host, FakeBroker Broker, string Key)> UpstoxHostAsync(StoppedClock clock)
     {
         var broker = new FakeBroker();

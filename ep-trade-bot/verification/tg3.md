@@ -1025,7 +1025,7 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
 
 **Mutation check:** 11 of 11 red (`tools/mutation/tg3-history.json`). H1 to H8 cover the Zerodha candle code and `/intervals` (the 90-day chunk and the daily IST shift among them); H9 to H11 cover the 350 ms spacing, the Historify refusal and the unknown-symbol answer.
 
-**Still to do in this pass:** history for Dhan, Dhan Sandbox and Delta Exchange. A broker that sends no open interest will also need its own check that the service adds `oi: 0`.
+**Still to do in this pass:** history for Dhan and Dhan Sandbox. A broker that sends no open interest will also need its own check that the service adds `oi: 0`.
 
 **Angel One (added).**
 
@@ -1074,5 +1074,19 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
 - **Retry backoff:** `Brokers:RetryBackoffMs:<broker>` overrides the waits between retries, so a run does not sit through them.
 - **Mutation check:** 12 more, HF1 to HF12, all red; `tg3-history.json` now holds 47.
   - HF9 (rate limit never retried) first survived: Fyers history has two retry layers, and the refused-call retry covered for a single 429. A fixture with five 429s in a row needs both layers, and HF9 is red with it.
+
+**Delta Exchange (added).**
+
+- **Candles:** public `/v2/history/candles`, no signature.
+  - The days one request may span follow Delta's cap of about 4000 candles: 1 day for 1m, 7 for 3m, 12 for 5m, 30 for 15m, 60 for 30m and 90 for hours. Daily and weekly candles are asked in one request.
+  - A date is an India calendar day, 00:00:00 to 23:59:59 IST, and a request never ends after now.
+  - Candles stamped after now are dropped.
+  - Candles come as a list or as named fields. A 429 is retried twice.
+- **Errors:** Delta's history, unlike the other brokers', never hides a failed request. OpenAlgo answers 500 for a refused or failed call, and EP Trade bot does too, with a sentence for the trader.
+- **Quota accounting not ported:** OpenAlgo weighs every public call against a quota of 9000 units per 300 seconds. EP Trade bot does not keep that account and relies on Delta's own 429. The recording turned the accounting off, because it ran the recording process dry, and said so in the scenario file.
+- **Contract tests:** 25 new fixtures, 468 in all. They include 4 deliberate differences, all in the wording of an error: an interval Delta lacks (400), a 429 on every try (429), a server error (500) and a refused symbol (500).
+- **Today:** a request that ends today ends at that second, which a recording cannot hold, so a clock-controlled integration test pins it.
+- **Mutation check:** 12 more, HD1 to HD12, all red; `tg3-history.json` now holds 59.
+  - HD12 first survived because the fixture meant to cover a window starting in the future had its two dates the wrong way round. It was fixed and re-recorded.
 
 **Task Groups 5 (the Angular app) and 6 (deployment)** are Antigravity's and are not worked on here.

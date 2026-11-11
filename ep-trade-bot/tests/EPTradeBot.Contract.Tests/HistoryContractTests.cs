@@ -140,3 +140,40 @@ public sealed class HistoryFyersContractTests(HistoryFyersHost host, ITestOutput
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+/// <summary>History and intervals on Delta Exchange (tools/contract-fixtures/history_delta.fixtures.json), run with the clock stopped at the recording.</summary>
+public sealed class HistoryDeltaHost : BrokerContractHost
+{
+    public override string BrokerName => "deltaexchange";
+    public override string FixtureFile => "history_delta.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiSecret"] = "delta-api-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string>
+    {
+        ["OpenAlgoApi:HistorySpacingMs"] = "0", ["Brokers:RetryBackoffMs:deltaexchange"] = "0",
+    };
+}
+
+public sealed class HistoryDeltaContractTests(HistoryDeltaHost host, ITestOutputHelper output) : IClassFixture<HistoryDeltaHost>
+{
+    private static Action<JsonObject> Refusal(int status, string message) => f => ContractRunner.Expect(f, status, ContractRunner.Error(message));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_interval_delta_lacks"] = new("OpenAlgo answers 500 with \"Unsupported interval '2m'\" and its whole map. EP Trade bot answers 400 and names the intervals Delta Exchange offers.", Status: 400),
+        ["history_rate_limited_every_time"] = new("OpenAlgo answers 500 with \"History HTTP 429\" and the raw reply. EP Trade bot answers 429 and says to wait.",
+            Refusal(429, "Delta Exchange is limiting requests. Wait a moment, then try again.")),
+        ["history_server_error"] = new("OpenAlgo answers 500 with \"History HTTP 500\" and the raw reply. EP Trade bot answers 500 with a sentence for the trader.",
+            Refusal(500, "Delta Exchange could not send the candles for BTCUSD right now. Try again in a moment.")),
+        ["history_symbol_refused"] = new("OpenAlgo answers 500 with the error as a Python dict. EP Trade bot names the reason.",
+            Refusal(500, "Delta Exchange refused the candles for BTCUSD: invalid_symbol")),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_delta.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

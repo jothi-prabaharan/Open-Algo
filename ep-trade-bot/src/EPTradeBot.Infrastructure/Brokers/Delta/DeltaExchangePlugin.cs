@@ -26,14 +26,14 @@ public sealed class DeltaExchangePlugin(
     BrokerSessionFactory sessions,
     ISymbolMaster symbols,
     TimeProvider clock,
-    ILogger<DeltaExchangePlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerQuotes
+    ILogger<DeltaExchangePlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerQuotes, IBrokerHistory
 {
     private const string BaseUrl = "https://api.india.delta.exchange";
     private const string Crypto = "CRYPTO";
 
     public string Name => "deltaexchange";
     public string DisplayName => "Delta Exchange";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
 
     /// <summary>The session token is the Delta API key (as OpenAlgo stores it); ApiSecret signs every request.</summary>
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiSecret"];
@@ -277,6 +277,107 @@ public sealed class DeltaExchangePlugin(
             ["utiliseddebits"] = BookFormatting.Fixed2(blocked),
         };
     }
+
+    // ---- history ---------------------------------------------------------------------------------------------
+
+    // TIMEFRAME_MAP and CHUNK_DAYS of broker/deltaexchange/api/data.py: Delta's resolution, and the days one request may span
+    // (its answer is capped near 4000 candles); 0 means the whole range in one request.
+    private static readonly Dictionary<string, (string Resolution, int Days)> CandleSpans = new()
+    {
+        ["1m"] = ("1m", 1), ["3m"] = ("3m", 7), ["5m"] = ("5m", 12), ["15m"] = ("15m", 30), ["30m"] = ("30m", 60),
+        ["1h"] = ("1h", 90), ["2h"] = ("2h", 90), ["4h"] = ("4h", 90), ["6h"] = ("6h", 90),
+        ["1d"] = ("1d", 0), ["D"] = ("1d", 0), ["1w"] = ("1w", 0), ["W"] = ("1w", 0),
+    };
+
+    public IReadOnlyList<string> HistoryTimeframes { get; } = [.. CandleSpans.Keys];
+
+    public async Task<JsonArray> GetHistoryAsync(BrokerSession session, SymbolRecord instrument, string interval, DateOnly start, DateOnly end, CancellationToken cancellationToken)
+    {
+        if (!CandleSpans.TryGetValue(interval, out var span))
+            throw new BrokerException($"Delta Exchange does not offer {interval} candles. Choose one of: {string.Join(", ", CandleSpans.Keys)}.", 400);
+
+        var now = clock.GetUtcNow().ToUnixTimeSeconds();
+        var candles = new SortedDictionary<long, JsonObject>();
+        for (var from = start; from <= end;)
+        {
+            var to = span.Days == 0 ? end : from.AddDays(span.Days - 1) < end ? from.AddDays(span.Days - 1) : end;
+            // A date is an India calendar day: 00:00:00 IST to 23:59:59 IST, and never later than now.
+            var startTs = IstEpoch(from, endOfDay: false);
+            var endTs = Math.Min(IstEpoch(to, endOfDay: true), now);
+            if (endTs >= startTs)
+            {
+                var query = $"symbol={Uri.EscapeDataString(instrument.BrokerSymbol)}&resolution={span.Resolution}&start={startTs}&end={endTs}";
+                foreach (var row in await CandlesAsync(instrument.BrokerSymbol, query, cancellationToken))
+                {
+                    if (Candle(row) is not { } candle) continue;
+                    // Candles stamped after now are dropped; two with one timestamp keep the first one received.
+                    if (candle.Timestamp <= now) candles.TryAdd(candle.Timestamp, candle.Row);
+                }
+            }
+
+            if (span.Days == 0) break;
+            from = to.AddDays(1);
+        }
+
+        return new JsonArray(candles.Values.Select(v => (JsonNode?)v).ToArray());
+    }
+
+    /// <summary>GET /v2/history/candles, public. A 429 is tried again twice (0.5 s, then 1 s).</summary>
+    private async Task<JsonArray> CandlesAsync(string brokerSymbol, string query, CancellationToken cancellationToken)
+    {
+        for (var attempt = 0; ; attempt++)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, sessions.BaseUrl(Name, BaseUrl) + "/v2/history/candles?" + query);
+            request.Headers.TryAddWithoutValidation("Accept", "application/json");
+            using var response = await SendAsync(request, cancellationToken);
+            if (response.StatusCode == HttpStatusCode.TooManyRequests)
+            {
+                if (attempt < 2)
+                {
+                    await Task.Delay(sessions.RetryBackoff(Name, TimeSpan.FromSeconds(0.5 * (1 << attempt))), cancellationToken);
+                    continue;
+                }
+
+                throw new BrokerException("Delta Exchange is limiting requests. Wait a moment, then try again.", 429);
+            }
+
+            var reply = await ReadAsync(response, cancellationToken) as JsonObject;
+            if (!response.IsSuccessStatusCode)
+                throw new BrokerException($"Delta Exchange could not send the candles for {brokerSymbol} right now. Try again in a moment.");
+            if (!Truthy(reply?["success"]))
+                throw new BrokerException($"Delta Exchange refused the candles for {brokerSymbol}: {Str(reply?["error"]?["code"]) ?? Str(reply?["error"]) ?? "no reason given."}");
+            return reply!["result"] as JsonArray ?? throw new BrokerException($"Delta Exchange sent candles for {brokerSymbol} that EP Trade bot could not read.");
+        }
+    }
+
+    /// <summary>A candle as a list (time, open, high, low, close, volume, optional open interest) or as named fields; null for anything else.</summary>
+    private static (long Timestamp, JsonObject Row)? Candle(JsonNode? node)
+    {
+        if (node is JsonArray c && c.Count >= 6)
+        {
+            return ((long)Float(c[0]), new JsonObject
+            {
+                ["timestamp"] = (long)Float(c[0]), ["open"] = Float(c[1]), ["high"] = Float(c[2]), ["low"] = Float(c[3]), ["close"] = Float(c[4]),
+                ["volume"] = (long)Float(c[5]), ["oi"] = c.Count > 6 ? (long)Float(c[6]) : 0,
+            });
+        }
+
+        if (node is JsonObject o)
+        {
+            JsonNode? Pick(params string[] names) => names.Select(n => o[n]).FirstOrDefault(v => v is not null);
+            var time = (long)Float(Pick("time", "timestamp", "t"));
+            return (time, new JsonObject
+            {
+                ["timestamp"] = time, ["open"] = Float(Pick("open", "o")), ["high"] = Float(Pick("high", "h")), ["low"] = Float(Pick("low", "l")),
+                ["close"] = Float(Pick("close", "c")), ["volume"] = (long)Float(Pick("volume", "v")), ["oi"] = (long)Float(o["oi"]),
+            });
+        }
+
+        return null;
+    }
+
+    private static long IstEpoch(DateOnly date, bool endOfDay) =>
+        new DateTimeOffset(date.ToDateTime(endOfDay ? new TimeOnly(23, 59, 59) : TimeOnly.MinValue), TimeSpan.FromHours(5.5)).ToUnixTimeSeconds();
 
     // ---- market data (public, unsigned) ----------------------------------------------------------------------
 
