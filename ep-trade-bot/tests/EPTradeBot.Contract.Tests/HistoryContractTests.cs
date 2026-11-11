@@ -275,3 +275,33 @@ public sealed class HistoryDhanSandboxContractTests(HistoryDhanSandboxHost host,
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+/// <summary>/ticker on Zerodha (tools/contract-fixtures/ticker.fixtures.json).</summary>
+public sealed class TickerHost : BrokerContractHost
+{
+    public override string BrokerName => "zerodha";
+    public override string FixtureFile => "ticker.fixtures.json";
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class TickerContractTests(TickerHost host, ITestOutputHelper output) : IClassFixture<TickerHost>
+{
+    private const string Refused = "Same status; the reason is worded as EP Trade bot's Zerodha plugin words every refusal.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["ticker_symbol_without_exchange"] = new(
+            "OpenAlgo reads a symbol written without an exchange as NSE:RELIANCE, whatever it was, and answers for that instrument (here it fails, because RELIANCE is not in the recording's master contract). EP Trade bot asks for EXCHANGE:SYMBOL.",
+            Status: 400),
+        ["ticker_unknown_symbol"] = new("OpenAlgo answers 500 with the plugin's text, because the ticker skips the master contract check. EP Trade bot names the symbol, as /history does.", Status: 400),
+        ["ticker_interval_zerodha_lacks"] = new("OpenAlgo answers 500 with \"Unsupported timeframe: W\". EP Trade bot answers 400 and names what Zerodha offers.", Status: 400),
+        ["ticker_broker_refused"] = new(Refused, f => ContractRunner.Expect(f, 500, ContractRunner.Error("Zerodha refused the request: Incorrect `api_key` or `access_token`."))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("ticker.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

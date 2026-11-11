@@ -1112,4 +1112,26 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
   - HH11 first survived because NSE and BSE close together, so a wrong exchange for an index changed nothing. It now uses MCX hours.
   - HH18 exposed that nothing tested a quote with no price. That case was added.
 
+
+## 16. Pass 9 (in progress): ticker, margin and GTT
+
+**The ticker (`GET /api/v1/ticker/EXCHANGE:SYMBOL`).**
+
+- **What it does:** candles as JSON, or as plain text lines with `format=txt` (`Ticker,Date,Time,Open,High,Low,Close,Volume`, and without the time for daily candles).
+  - Times are India time.
+  - Prices print as Python prints a float.
+  - A window is held to 30 days for intraday intervals and ten years for D, W and M, moving the start up.
+  - The request is checked as a history request, as OpenAlgo checks it, before the API key.
+  - The key may also come in the `X-API-KEY` header.
+- **Contract tests: 20 fixtures on Zerodha, 534 in all.** The deliberate differences:
+  - **A symbol without an exchange:** OpenAlgo reads it as NSE:RELIANCE, whatever it was, and answers for that instrument. EP Trade bot asks for EXCHANGE:SYMBOL (400).
+  - **An unknown symbol or an interval the broker lacks:** 400, where OpenAlgo answers 500 with the plugin's text.
+  - **A refused broker call:** same status, worded for the trader.
+- **OpenAlgo's txt errors crash:** its plain-text error answers (a bad key, a refused broker call) return a response object together with a status, which its REST layer then tries to turn into JSON, so the caller gets an internal server error. That cannot be recorded. EP Trade bot answers those errors as plain text (a line for the key, bare for the rest), pinned by an integration test.
+- **Recorder and runner:** they now keep and compare plain-text answers, and the runner leaves a null query value out, as the recorder's test client does.
+- **Mutation check:** 12 new ones, TK1 to TK12, all red; `tg3-history.json` now holds 89.
+  - TK3, TK9 and TK11 first survived. TK3 (the weekly window) needed a broker that offers weekly candles, so an Upstox test now pins it.
+  - TK9 (the default interval) needed a fixture without an interval; one was recorded.
+  - TK11 as first written was equivalent, since a whole volume prints the same either way. It now reads the volume from the open interest.
+
 **Task Groups 5 (the Angular app) and 6 (deployment)** are Antigravity's and are not worked on here.

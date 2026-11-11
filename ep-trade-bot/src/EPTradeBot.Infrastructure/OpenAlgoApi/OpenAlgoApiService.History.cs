@@ -89,4 +89,48 @@ public sealed partial class OpenAlgoApiService
             ["months"] = Group(i => i == "M", false),
         });
     }
+
+    // ---- ticker ----------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// GET /ticker/{EXCHANGE:SYMBOL}: candles for a spreadsheet or a charting add-in, as JSON or as plain text lines
+    /// (<c>format=txt</c>). The window is held to 30 days for intraday intervals and ten years for D, W and M, moving the start up.
+    /// </summary>
+    public async Task<V1Result> TickerAsync(BrokerAccount account, HistoryRequest r, bool text, CancellationToken ct)
+    {
+        if (!Broker<IBrokerHistory>(account, out var history, out var session, out var missing)) return missing!;
+        var exchange = r.Exchange.ToUpperInvariant();
+        if (await symbols.FindAsync(history!.Name, r.Symbol, exchange, ct) is not { } instrument)
+            return V1Result.Error(400, $"Symbol '{r.Symbol}' not found for exchange '{r.Exchange}'. Please verify the symbol name and ensure master contracts are downloaded.");
+
+        var end = DateOnly.ParseExact(r.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var start = DateOnly.ParseExact(r.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var longest = r.Interval is "D" or "W" or "M" ? 10 * 365 : 30;
+        if (start < end.AddDays(-longest)) start = end.AddDays(-longest);
+
+        return await Guarded(async () =>
+        {
+            var candles = await history.GetHistoryAsync(session!, instrument, r.Interval, start, end, ct);
+            if (!text) return Success(candles);
+
+            var daily = r.Interval == "D";
+            var lines = new List<string>();
+            foreach (var candle in candles.OfType<JsonObject>())
+            {
+                var moment = Core.Time.Ist.FromUtc(DateTimeOffset.FromUnixTimeSeconds(candle["timestamp"]!.GetValue<long>()).UtcDateTime);
+                var when = daily ? moment.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : moment.ToString("yyyy-MM-dd,HH:mm:ss", CultureInfo.InvariantCulture);
+                lines.Add($"{exchange}:{r.Symbol},{when},{PyFloat(candle["open"])},{PyFloat(candle["high"])},{PyFloat(candle["low"])},{PyFloat(candle["close"])},{(long)BookFormatting.Number(candle["volume"])!}");
+            }
+
+            return new V1Result(200, new JsonObject { ["text"] = string.Join("\n", lines) });
+        });
+    }
+
+    /// <summary>A price as Python prints a float: the shortest text that reads back, with ".0" on a whole number.</summary>
+    private static string PyFloat(JsonNode? node)
+    {
+        var value = BookFormatting.Number(node) ?? 0;
+        var text = value.ToString("R", CultureInfo.InvariantCulture);
+        return text.Contains('.') || text.Contains('E') ? text : text + ".0";
+    }
 }

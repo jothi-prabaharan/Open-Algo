@@ -614,5 +614,101 @@
   "new": "if (Float(q[\"ltp\"]) > -1)",
   "filter": "FullyQualifiedName~HistoryApiTests",
   "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "TK1 intraday window held to 31 days",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.History.cs",
+  "old": "var longest = r.Interval is \"D\" or \"W\" or \"M\" ? 10 * 365 : 30;",
+  "new": "var longest = r.Interval is \"D\" or \"W\" or \"M\" ? 10 * 365 : 31;",
+  "filter": "FullyQualifiedName~TickerContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "TK2 daily window held to 11 years",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.History.cs",
+  "old": "? 10 * 365 : 30;",
+  "new": "? 11 * 365 : 30;",
+  "filter": "FullyQualifiedName~TickerContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "TK3 weekly window held to 30 days",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.History.cs",
+  "old": "r.Interval is \"D\" or \"W\" or \"M\" ? 10 * 365",
+  "new": "r.Interval is \"D\" or \"M\" ? 10 * 365",
+  "filter": "FullyQualifiedName~HistoryApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "TK4 daily txt line carries a time",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.History.cs",
+  "old": "var when = daily ?",
+  "new": "var when = daily && false ?",
+  "filter": "FullyQualifiedName~TickerContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "TK5 prices without the decimal point",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.History.cs",
+  "old": "return text.Contains('.') || text.Contains('E') ? text : text + \".0\";",
+  "new": "return text;",
+  "filter": "FullyQualifiedName~TickerContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "TK6 time in UTC, not India time",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.History.cs",
+  "old": "var moment = Core.Time.Ist.FromUtc(DateTimeOffset.FromUnixTimeSeconds(candle[\"timestamp\"]!.GetValue<long>()).UtcDateTime);",
+  "new": "var moment = DateTimeOffset.FromUnixTimeSeconds(candle[\"timestamp\"]!.GetValue<long>()).UtcDateTime;",
+  "filter": "FullyQualifiedName~TickerContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "TK7 format read case sensitively",
+  "file": "src/EPTradeBot.Api/Endpoints/OpenAlgoV1Endpoints.cs",
+  "old": "string.Equals(context.Request.Query[\"format\"], \"txt\", StringComparison.OrdinalIgnoreCase)",
+  "new": "string.Equals(context.Request.Query[\"format\"], \"txt\", StringComparison.Ordinal)",
+  "filter": "FullyQualifiedName~TickerContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "TK8 exchange and symbol swapped",
+  "file": "src/EPTradeBot.Api/Endpoints/OpenAlgoV1Endpoints.cs",
+  "old": "[\"symbol\"] = parts.Length == 2 ? parts[1] : \"\", [\"exchange\"] = parts.Length == 2 ? parts[0] : \"\"",
+  "new": "[\"symbol\"] = parts.Length == 2 ? parts[0] : \"\", [\"exchange\"] = parts.Length == 2 ? parts[1] : \"\"",
+  "filter": "FullyQualifiedName~TickerContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "TK9 interval defaults to a minute",
+  "file": "src/EPTradeBot.Api/Endpoints/OpenAlgoV1Endpoints.cs",
+  "old": "?? \"D\" };",
+  "new": "?? \"1m\" };",
+  "filter": "FullyQualifiedName~TickerContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "TK10 txt errors answered as JSON",
+  "file": "src/EPTradeBot.Api/Endpoints/OpenAlgoV1Endpoints.cs",
+  "old": "if (text) context.Items[\"text-errors\"] = true;",
+  "new": "",
+  "filter": "FullyQualifiedName~HistoryApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "TK11 volume read from the open interest",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.History.cs",
+  "old": "{(long)BookFormatting.Number(candle[\"volume\"])!}",
+  "new": "{(long)BookFormatting.Number(candle[\"oi\"])!}",
+  "filter": "FullyQualifiedName~TickerContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "TK12 candles unsorted by hand",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.History.cs",
+  "old": "foreach (var candle in candles.OfType<JsonObject>())",
+  "new": "foreach (var candle in candles.OfType<JsonObject>().Reverse())",
+  "filter": "FullyQualifiedName~TickerContractTests",
+  "project": "EPTradeBot.Contract.Tests"
  }
 ]

@@ -55,6 +55,53 @@ public sealed class HistoryApiTests
     }
 
     [PostgresFact]
+    public async Task Ticker_answers_a_txt_request_s_errors_as_plain_text()
+    {
+        var (host, key) = await HostAsync();
+        await using var _ = host;
+        using var client = host.Anonymous();
+        const string Window = "interval=5m&from=2026-11-02&to=2026-11-02&format=txt";
+
+        var response = await client.GetAsync($"/api/v1/ticker/NSE:SBIN?{Window}&apikey=wrong");
+        Assert.Equal(403, (int)response.StatusCode);
+        Assert.Equal("text/plain", response.Content.Headers.ContentType?.MediaType);
+        Assert.Equal("Invalid openalgo apikey\n", await response.Content.ReadAsStringAsync());
+
+        response = await client.GetAsync($"/api/v1/ticker/NSE:NOSUCH?{Window}&apikey={key}");
+        Assert.Equal(400, (int)response.StatusCode);
+        Assert.StartsWith("Symbol 'NOSUCH' not found", await response.Content.ReadAsStringAsync());
+
+        // The key may also come in the header, and the format stays JSON when it is not txt.
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/api/v1/ticker/NSE:SBIN?interval=5m&from=2026-11-02&to=2026-11-02");
+        request.Headers.Add("X-API-KEY", key);
+        response = await client.SendAsync(request);
+        Assert.Equal(200, (int)response.StatusCode);
+        Assert.Equal("application/json", response.Content.Headers.ContentType?.MediaType);
+    }
+
+    [PostgresFact]
+    public async Task Ticker_holds_a_weekly_request_to_ten_years_and_an_intraday_one_to_thirty_days()
+    {
+        var clock = new StoppedClock(new DateTimeOffset(2026, 11, 3, 10, 42, 30, TimeSpan.FromHours(5.5)));
+        var (host, broker, key) = await UpstoxHostAsync(clock);
+        await using var _ = host;
+        broker.Reset(new Dictionary<string, (int, string)>
+        {
+            ["GET /v3/historical-candle/NSE_EQ%7CINE062A01020/weeks/1/2026-10-30/2016-11-01"] = (200, """{"status":"success","data":{"candles":[]}}"""),
+            ["GET /v3/historical-candle/NSE_EQ%7CINE062A01020/minutes/5/2026-10-29/2026-09-30"] = (200, """{"status":"success","data":{"candles":[]}}"""),
+            ["GET /v3/historical-candle/NSE_EQ%7CINE062A01020/minutes/5/2026-10-30/2026-10-30"] = (200, """{"status":"success","data":{"candles":[]}}"""),
+        });
+        using var client = host.Anonymous();
+        // Ten years back from 30 October 2026 is 3650 days: 1 November 2016.
+        var response = await client.GetAsync($"/api/v1/ticker/NSE:SBIN?interval=W&from=2010-01-01&to=2026-10-30&apikey={key}");
+        Assert.True(response.IsSuccessStatusCode, await response.Content.ReadAsStringAsync());
+        Assert.Contains(broker.Sent, s => s.Path.EndsWith("/weeks/1/2026-10-30/2016-11-01", StringComparison.Ordinal));
+        response = await client.GetAsync($"/api/v1/ticker/NSE:SBIN?interval=5m&from=2026-01-01&to=2026-10-30&apikey={key}");
+        Assert.Equal(200, (int)response.StatusCode);
+        Assert.Contains(broker.Sent, s => s.Path.EndsWith("/minutes/5/2026-10-29/2026-09-30", StringComparison.Ordinal));
+    }
+
+    [PostgresFact]
     public async Task Local_history_is_refused_plainly_and_asks_nothing_of_the_broker()
     {
         var (host, key) = await HostAsync();

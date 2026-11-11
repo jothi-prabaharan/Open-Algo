@@ -178,15 +178,18 @@ public static class ContractRunner
         // Without auth the request carries no key of the install's (a key it does carry is a wrong one, sent as recorded).
         if (f["auth"]!.GetValue<string>() == "none" && request["apikey"] is JsonValue own && own.GetValue<string>() == apiKey) request.Remove("apikey");
         using var message = isGet
-            ? new HttpRequestMessage(HttpMethod.Get, f["path"]!.GetValue<string>() + "?" + string.Join("&", request.Select(kv => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value!.ToString())}")))
+            ? new HttpRequestMessage(HttpMethod.Get, f["path"]!.GetValue<string>() + "?" + string.Join("&", request.Where(kv => kv.Value is not null).Select(kv => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value!.ToString())}")))
             : new HttpRequestMessage(HttpMethod.Post, f["path"]!.GetValue<string>())
             {
                 Content = new StringContent(request.ToJsonString(), Encoding.UTF8, "application/json"),
             };
         if (f["auth"]!.GetValue<string>() == "header") message.Headers.Add("X-API-KEY", apiKey);
         using var response = await client.SendAsync(message);
-        var actual = JsonNode.Parse(await response.Content.ReadAsStringAsync());
-        output.WriteLine($"EP Trade bot answered {(int)response.StatusCode}: {actual?.ToJsonString()}");
+        var answerText = await response.Content.ReadAsStringAsync();
+        // A plain-text answer (the ticker's txt format) is compared as text; every other answer is JSON.
+        var textAnswer = f["expected"]!["text"] is not null;
+        var actual = textAnswer ? null : JsonNode.Parse(answerText);
+        output.WriteLine($"EP Trade bot answered {(int)response.StatusCode}: {(textAnswer ? answerText : actual?.ToJsonString())}");
         var sent = host.Broker.Sent;
         foreach (var request1 in sent) host.Verify(request1);
         bool IsRead(SentRequest s) => s.Method == "GET" || readPosts.Contains(s.Path);
@@ -206,6 +209,14 @@ public static class ContractRunner
 
         var expected = f["expected"]!;
         Assert.Equal(expected["status"]!.GetValue<int>(), (int)response.StatusCode);
+        if (expected["text"] is JsonValue expectedText)
+        {
+            Assert.Equal(expectedText.GetValue<string>(), answerText);
+            Assert.StartsWith("text/plain", response.Content.Headers.ContentType?.MediaType ?? "", StringComparison.OrdinalIgnoreCase);
+            CompareTraffic(host, f, sent, IsRead, readPosts, replies.Keys);
+            return;
+        }
+
         if (IsSchemaMessage(expected))
         {
             // Validation wording comes from marshmallow; the contract is the status and the error shape.

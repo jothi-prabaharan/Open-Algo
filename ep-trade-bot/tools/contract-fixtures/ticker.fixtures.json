@@ -1,0 +1,1346 @@
+{
+  "broker": "zerodha",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "779521::::3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY26NOVFUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "13238786::::51714",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "NIFTY 50",
+      "name": "NIFTY 50",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE",
+      "token": "256265::::1001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "ticker_json_5m",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "body",
+      "request": {
+        "interval": "5m",
+        "from": "2026-11-02",
+        "to": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /instruments/historical/779521/5minute": {
+          "body": {
+            "status": "success",
+            "data": {
+              "candles": [
+                [
+                  "2026-11-02T09:15:00+0530",
+                  800.0,
+                  802.5,
+                  799.0,
+                  801.25,
+                  120000,
+                  0
+                ],
+                [
+                  "2026-11-02T09:20:00+0530",
+                  801.25,
+                  803.0,
+                  800.5,
+                  802.75,
+                  98000,
+                  0
+                ],
+                [
+                  "2026-11-02T09:25:00+0530",
+                  802.75,
+                  804.1,
+                  802.0,
+                  803.9,
+                  76500,
+                  0
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.25,
+              "high": 802.5,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793591100,
+              "volume": 120000
+            },
+            {
+              "close": 802.75,
+              "high": 803.0,
+              "low": 800.5,
+              "oi": 0,
+              "open": 801.25,
+              "timestamp": 1793591400,
+              "volume": 98000
+            },
+            {
+              "close": 803.9,
+              "high": 804.1,
+              "low": 802.0,
+              "oi": 0,
+              "open": 802.75,
+              "timestamp": 1793591700,
+              "volume": 76500
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/instruments/historical/779521/5minute",
+          "query": [
+            [
+              "from",
+              "2026-11-02 00:00:00"
+            ],
+            [
+              "to",
+              "2026-11-02 23:59:59"
+            ],
+            [
+              "oi",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ticker_text_intraday",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "body",
+      "request": {
+        "interval": "5m",
+        "from": "2026-11-02",
+        "to": "2026-11-02",
+        "format": "txt",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /instruments/historical/779521/5minute": {
+          "body": {
+            "status": "success",
+            "data": {
+              "candles": [
+                [
+                  "2026-11-02T09:15:00+0530",
+                  800.0,
+                  802.5,
+                  799.0,
+                  801.25,
+                  120000,
+                  0
+                ],
+                [
+                  "2026-11-02T09:20:00+0530",
+                  801.25,
+                  803.0,
+                  800.5,
+                  802.75,
+                  98000,
+                  0
+                ],
+                [
+                  "2026-11-02T09:25:00+0530",
+                  802.75,
+                  804.1,
+                  802.0,
+                  803.9,
+                  76500,
+                  0
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": null,
+        "text": "NSE:SBIN,2026-11-02,09:15:00,800.0,802.5,799.0,801.25,120000\nNSE:SBIN,2026-11-02,09:20:00,801.25,803.0,800.5,802.75,98000\nNSE:SBIN,2026-11-02,09:25:00,802.75,804.1,802.0,803.9,76500",
+        "content_type": "text/plain"
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/instruments/historical/779521/5minute",
+          "query": [
+            [
+              "from",
+              "2026-11-02 00:00:00"
+            ],
+            [
+              "to",
+              "2026-11-02 23:59:59"
+            ],
+            [
+              "oi",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ticker_text_daily",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "body",
+      "request": {
+        "interval": "D",
+        "from": "2026-10-29",
+        "to": "2026-10-30",
+        "format": "txt",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /instruments/historical/779521/day": {
+          "body": {
+            "status": "success",
+            "data": {
+              "candles": [
+                [
+                  "2026-10-29T00:00:00+0530",
+                  790.0,
+                  801.0,
+                  788.5,
+                  799.95,
+                  9100000,
+                  0
+                ],
+                [
+                  "2026-10-30T00:00:00+0530",
+                  800.0,
+                  806.0,
+                  797.0,
+                  805.45,
+                  8300000,
+                  0
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": null,
+        "text": "NSE:SBIN,2026-10-29,790.0,801.0,788.5,799.95,9100000\nNSE:SBIN,2026-10-30,800.0,806.0,797.0,805.45,8300000",
+        "content_type": "text/plain"
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/instruments/historical/779521/day",
+          "query": [
+            [
+              "from",
+              "2026-10-29 00:00:00"
+            ],
+            [
+              "to",
+              "2026-10-30 23:59:59"
+            ],
+            [
+              "oi",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ticker_json_daily",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "body",
+      "request": {
+        "interval": "D",
+        "from": "2026-10-29",
+        "to": "2026-10-30",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /instruments/historical/779521/day": {
+          "body": {
+            "status": "success",
+            "data": {
+              "candles": [
+                [
+                  "2026-10-29T00:00:00+0530",
+                  790.0,
+                  801.0,
+                  788.5,
+                  799.95,
+                  9100000,
+                  0
+                ],
+                [
+                  "2026-10-30T00:00:00+0530",
+                  800.0,
+                  806.0,
+                  797.0,
+                  805.45,
+                  8300000,
+                  0
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 799.95,
+              "high": 801.0,
+              "low": 788.5,
+              "oi": 0,
+              "open": 790.0,
+              "timestamp": 1793232000,
+              "volume": 9100000
+            },
+            {
+              "close": 805.45,
+              "high": 806.0,
+              "low": 797.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793318400,
+              "volume": 8300000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/instruments/historical/779521/day",
+          "query": [
+            [
+              "from",
+              "2026-10-29 00:00:00"
+            ],
+            [
+              "to",
+              "2026-10-30 23:59:59"
+            ],
+            [
+              "oi",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ticker_text_nothing_traded",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "body",
+      "request": {
+        "interval": "5m",
+        "from": "2026-11-02",
+        "to": "2026-11-02",
+        "format": "txt",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /instruments/historical/779521/5minute": {
+          "body": {
+            "status": "success",
+            "data": {
+              "candles": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": null,
+        "text": "",
+        "content_type": "text/plain"
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/instruments/historical/779521/5minute",
+          "query": [
+            [
+              "from",
+              "2026-11-02 00:00:00"
+            ],
+            [
+              "to",
+              "2026-11-02 23:59:59"
+            ],
+            [
+              "oi",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ticker_text_upper_case_format",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "body",
+      "request": {
+        "interval": "5m",
+        "from": "2026-11-02",
+        "to": "2026-11-02",
+        "format": "TXT",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /instruments/historical/779521/5minute": {
+          "body": {
+            "status": "success",
+            "data": {
+              "candles": [
+                [
+                  "2026-11-02T09:15:00+0530",
+                  800.0,
+                  802.5,
+                  799.0,
+                  801.25,
+                  120000,
+                  0
+                ],
+                [
+                  "2026-11-02T09:20:00+0530",
+                  801.25,
+                  803.0,
+                  800.5,
+                  802.75,
+                  98000,
+                  0
+                ],
+                [
+                  "2026-11-02T09:25:00+0530",
+                  802.75,
+                  804.1,
+                  802.0,
+                  803.9,
+                  76500,
+                  0
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": null,
+        "text": "NSE:SBIN,2026-11-02,09:15:00,800.0,802.5,799.0,801.25,120000\nNSE:SBIN,2026-11-02,09:20:00,801.25,803.0,800.5,802.75,98000\nNSE:SBIN,2026-11-02,09:25:00,802.75,804.1,802.0,803.9,76500",
+        "content_type": "text/plain"
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/instruments/historical/779521/5minute",
+          "query": [
+            [
+              "from",
+              "2026-11-02 00:00:00"
+            ],
+            [
+              "to",
+              "2026-11-02 23:59:59"
+            ],
+            [
+              "oi",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ticker_interval_defaults_to_daily",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "body",
+      "request": {
+        "from": "2026-10-29",
+        "to": "2026-10-30",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /instruments/historical/779521/day": {
+          "body": {
+            "status": "success",
+            "data": {
+              "candles": [
+                [
+                  "2026-10-29T00:00:00+0530",
+                  790.0,
+                  801.0,
+                  788.5,
+                  799.95,
+                  9100000,
+                  0
+                ],
+                [
+                  "2026-10-30T00:00:00+0530",
+                  800.0,
+                  806.0,
+                  797.0,
+                  805.45,
+                  8300000,
+                  0
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 799.95,
+              "high": 801.0,
+              "low": 788.5,
+              "oi": 0,
+              "open": 790.0,
+              "timestamp": 1793232000,
+              "volume": 9100000
+            },
+            {
+              "close": 805.45,
+              "high": 806.0,
+              "low": 797.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793318400,
+              "volume": 8300000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/instruments/historical/779521/day",
+          "query": [
+            [
+              "from",
+              "2026-10-29 00:00:00"
+            ],
+            [
+              "to",
+              "2026-10-30 23:59:59"
+            ],
+            [
+              "oi",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ticker_text_futures_volume_and_open_interest",
+      "method": "GET",
+      "path": "/api/v1/ticker/NFO:NIFTY25NOV26FUT",
+      "auth": "body",
+      "request": {
+        "interval": "1m",
+        "from": "2026-11-02",
+        "to": "2026-11-02",
+        "format": "txt",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /instruments/historical/13238786/minute": {
+          "body": {
+            "status": "success",
+            "data": {
+              "candles": [
+                [
+                  "2026-11-02T09:15:00+0530",
+                  24000.0,
+                  24020.5,
+                  23990.0,
+                  24010.0,
+                  450000,
+                  12900000
+                ],
+                [
+                  "2026-11-02T09:16:00+0530",
+                  24010.0,
+                  24015.0,
+                  24001.5,
+                  24003.5,
+                  380000,
+                  12915000
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": null,
+        "text": "NFO:NIFTY25NOV26FUT,2026-11-02,09:15:00,24000.0,24020.5,23990.0,24010.0,450000\nNFO:NIFTY25NOV26FUT,2026-11-02,09:16:00,24010.0,24015.0,24001.5,24003.5,380000",
+        "content_type": "text/plain"
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/instruments/historical/13238786/minute",
+          "query": [
+            [
+              "from",
+              "2026-11-02 00:00:00"
+            ],
+            [
+              "to",
+              "2026-11-02 23:59:59"
+            ],
+            [
+              "oi",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ticker_futures",
+      "method": "GET",
+      "path": "/api/v1/ticker/NFO:NIFTY25NOV26FUT",
+      "auth": "body",
+      "request": {
+        "interval": "1m",
+        "from": "2026-11-02",
+        "to": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /instruments/historical/13238786/minute": {
+          "body": {
+            "status": "success",
+            "data": {
+              "candles": [
+                [
+                  "2026-11-02T09:15:00+0530",
+                  24000.0,
+                  24020.5,
+                  23990.0,
+                  24010.0,
+                  450000,
+                  12900000
+                ],
+                [
+                  "2026-11-02T09:16:00+0530",
+                  24010.0,
+                  24015.0,
+                  24001.5,
+                  24003.5,
+                  380000,
+                  12915000
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 24010.0,
+              "high": 24020.5,
+              "low": 23990.0,
+              "oi": 12900000,
+              "open": 24000.0,
+              "timestamp": 1793591100,
+              "volume": 450000
+            },
+            {
+              "close": 24003.5,
+              "high": 24015.0,
+              "low": 24001.5,
+              "oi": 12915000,
+              "open": 24010.0,
+              "timestamp": 1793591160,
+              "volume": 380000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/instruments/historical/13238786/minute",
+          "query": [
+            [
+              "from",
+              "2026-11-02 00:00:00"
+            ],
+            [
+              "to",
+              "2026-11-02 23:59:59"
+            ],
+            [
+              "oi",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ticker_intraday_window_held_to_30_days",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "body",
+      "request": {
+        "interval": "5m",
+        "from": "2026-09-03",
+        "to": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /instruments/historical/779521/5minute": {
+          "body": {
+            "status": "success",
+            "data": {
+              "candles": [
+                [
+                  "2026-11-02T09:15:00+0530",
+                  800.0,
+                  802.5,
+                  799.0,
+                  801.25,
+                  120000,
+                  0
+                ],
+                [
+                  "2026-11-02T09:20:00+0530",
+                  801.25,
+                  803.0,
+                  800.5,
+                  802.75,
+                  98000,
+                  0
+                ],
+                [
+                  "2026-11-02T09:25:00+0530",
+                  802.75,
+                  804.1,
+                  802.0,
+                  803.9,
+                  76500,
+                  0
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.25,
+              "high": 802.5,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793591100,
+              "volume": 120000
+            },
+            {
+              "close": 802.75,
+              "high": 803.0,
+              "low": 800.5,
+              "oi": 0,
+              "open": 801.25,
+              "timestamp": 1793591400,
+              "volume": 98000
+            },
+            {
+              "close": 803.9,
+              "high": 804.1,
+              "low": 802.0,
+              "oi": 0,
+              "open": 802.75,
+              "timestamp": 1793591700,
+              "volume": 76500
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/instruments/historical/779521/5minute",
+          "query": [
+            [
+              "from",
+              "2026-10-03 00:00:00"
+            ],
+            [
+              "to",
+              "2026-11-02 23:59:59"
+            ],
+            [
+              "oi",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ticker_daily_window_held_to_10_years",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "body",
+      "request": {
+        "interval": "D",
+        "from": "2015-11-02",
+        "to": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /instruments/historical/779521/day": {
+          "body": {
+            "status": "success",
+            "data": {
+              "candles": [
+                [
+                  "2026-10-29T00:00:00+0530",
+                  790.0,
+                  801.0,
+                  788.5,
+                  799.95,
+                  9100000,
+                  0
+                ],
+                [
+                  "2026-10-30T00:00:00+0530",
+                  800.0,
+                  806.0,
+                  797.0,
+                  805.45,
+                  8300000,
+                  0
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 799.95,
+              "high": 801.0,
+              "low": 788.5,
+              "oi": 0,
+              "open": 790.0,
+              "timestamp": 1793232000,
+              "volume": 9100000
+            },
+            {
+              "close": 805.45,
+              "high": 806.0,
+              "low": 797.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793318400,
+              "volume": 8300000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/instruments/historical/779521/day",
+          "query": [
+            [
+              "from",
+              "2016-11-04 00:00:00"
+            ],
+            [
+              "to",
+              "2022-04-26 23:59:59"
+            ],
+            [
+              "oi",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/instruments/historical/779521/day",
+          "query": [
+            [
+              "from",
+              "2022-04-27 00:00:00"
+            ],
+            [
+              "to",
+              "2026-11-02 23:59:59"
+            ],
+            [
+              "oi",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ticker_missing_from",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "body",
+      "request": {
+        "interval": "5m",
+        "from": null,
+        "to": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": {
+            "start_date": [
+              "Field may not be null."
+            ]
+          },
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "ticker_bad_exchange",
+      "method": "GET",
+      "path": "/api/v1/ticker/XYZ:SBIN",
+      "auth": "body",
+      "request": {
+        "interval": "5m",
+        "from": "2026-11-02",
+        "to": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": {
+            "exchange": [
+              "Must be one of: NSE, NFO, CDS, BSE, BFO, BCD, MCX, NCDEX, NCO, NSE_INDEX, BSE_INDEX, MCX_INDEX, GLOBAL_INDEX, CRYPTO."
+            ]
+          },
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "ticker_bad_interval",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "body",
+      "request": {
+        "interval": "7m",
+        "from": "2026-11-02",
+        "to": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": {
+            "interval": [
+              "Must be one of: 1s, 5s, 10s, 15s, 30s, 45s, 1m, 2m, 3m, 5m, 10m, 15m, 20m, 30m, 1h, 2h, 3h, 4h, D, W, M, Q, Y."
+            ]
+          },
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "ticker_symbol_without_exchange",
+      "method": "GET",
+      "path": "/api/v1/ticker/SBIN",
+      "auth": "body",
+      "request": {
+        "interval": "5m",
+        "from": "2026-11-02",
+        "to": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /instruments/historical/779521/5minute": {
+          "body": {
+            "status": "success",
+            "data": {
+              "candles": [
+                [
+                  "2026-11-02T09:15:00+0530",
+                  800.0,
+                  802.5,
+                  799.0,
+                  801.25,
+                  120000,
+                  0
+                ],
+                [
+                  "2026-11-02T09:20:00+0530",
+                  801.25,
+                  803.0,
+                  800.5,
+                  802.75,
+                  98000,
+                  0
+                ],
+                [
+                  "2026-11-02T09:25:00+0530",
+                  802.75,
+                  804.1,
+                  802.0,
+                  803.9,
+                  76500,
+                  0
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching historical data: Could not find instrument token for NSE:RELIANCE",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "ticker_unknown_symbol",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:NOSUCH",
+      "auth": "body",
+      "request": {
+        "interval": "5m",
+        "from": "2026-11-02",
+        "to": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching historical data: Could not find instrument token for NSE:NOSUCH",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "ticker_interval_zerodha_lacks",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "body",
+      "request": {
+        "interval": "W",
+        "from": "2026-11-02",
+        "to": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching historical data: Unsupported timeframe: W",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "ticker_broker_refused",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "body",
+      "request": {
+        "interval": "5m",
+        "from": "2026-11-02",
+        "to": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /instruments/historical/779521/5minute": {
+          "status": 403,
+          "body": {
+            "status": "error",
+            "message": "Incorrect `api_key` or `access_token`.",
+            "error_type": "TokenException"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching historical data: API Error: Incorrect `api_key` or `access_token`.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/instruments/historical/779521/5minute",
+          "query": [
+            [
+              "from",
+              "2026-11-02 00:00:00"
+            ],
+            [
+              "to",
+              "2026-11-02 23:59:59"
+            ],
+            [
+              "oi",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ticker_invalid_apikey",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "none",
+      "request": {
+        "apikey": "not-a-key",
+        "interval": "5m",
+        "from": "2026-11-02",
+        "to": "2026-11-02"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "ticker_missing_apikey",
+      "method": "GET",
+      "path": "/api/v1/ticker/NSE:SBIN",
+      "auth": "none",
+      "request": {
+        "interval": "5m",
+        "from": "2026-11-02",
+        "to": "2026-11-02"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": {
+            "apikey": [
+              "Field may not be null."
+            ]
+          },
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}
