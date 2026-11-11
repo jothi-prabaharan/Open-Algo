@@ -4,6 +4,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json.Nodes;
 using EPTradeBot.Core.Brokers;
+using EPTradeBot.Core.Brokers.Gtt;
 using Microsoft.Extensions.Logging;
 using static EPTradeBot.Infrastructure.Brokers.JsonRead;
 
@@ -14,17 +15,17 @@ namespace EPTradeBot.Infrastructure.Brokers.Angel;
 /// and depth, mapping/transform_data.py, mapping/order_data.py), held to
 /// tools/contract-fixtures/angel.fixtures.json. SmartAPI sends many numbers as strings; they
 /// are passed through as the books show them. Not ported yet, and refused rather than guessed:
-/// history, GTT, margin, login and the SmartAPI feed.
+/// login and the SmartAPI feed.
 /// </summary>
 [BrokerPlugin]
-public sealed class AngelPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<AngelPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin
+public sealed partial class AngelPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<AngelPlugin> logger)
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin, IBrokerGtt
 {
     private const string BaseUrl = "https://apiconnect.angelone.in";
 
     public string Name => "angel";
     public string DisplayName => "Angel One";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin | BrokerCapability.Gtt;
 
     /// <summary>ApiKey: the SmartAPI private key, sent as X-PrivateKey.</summary>
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey"];

@@ -81,5 +81,20 @@ public static class JsonCompare
     public static bool SameValue(string expected, string actual) =>
         expected == actual
         || (decimal.TryParse(expected, NumberStyles.Float, CultureInfo.InvariantCulture, out var e)
-            && decimal.TryParse(actual, NumberStyles.Float, CultureInfo.InvariantCulture, out var a) && e == a);
+            && decimal.TryParse(actual, NumberStyles.Float, CultureInfo.InvariantCulture, out var a) && e == a)
+        || SameJsonText(expected, actual);
+
+    /// <summary>A form field that holds JSON (Kite's GTT condition and orders) agrees when the JSON does, whatever the spacing or number spelling.</summary>
+    private static bool SameJsonText(string expected, string actual)
+    {
+        if (!(expected.StartsWith('{') || expected.StartsWith('['))) return false;
+        try
+        {
+            return Differences(JsonNode.Parse(expected), JsonNode.Parse(actual)).Count == 0;
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
 }

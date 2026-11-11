@@ -1,0 +1,274 @@
+[
+ {
+  "name": "GZ1 OCO sent as a single trigger",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Gtt.cs",
+  "old": "order.IsOco ? \"two-leg\" : \"single\"",
+  "new": "\"single\"",
+  "filter": "FullyQualifiedName~ZerodhaGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GZ2 OCO stoploss protected around the target trigger",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Gtt.cs",
+  "old": "MarketPriceProtection.ProtectedPrice((double)order.TriggerSl, order.Action",
+  "new": "MarketPriceProtection.ProtectedPrice((double)order.TriggerTg, order.Action",
+  "filter": "FullyQualifiedName~ZerodhaGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GZ3 MARKET never protected",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Gtt.cs",
+  "old": "if (order.PriceType == \"MARKET\")",
+  "new": "if (order.PriceType == \"NEVER\")",
+  "filter": "FullyQualifiedName~ZerodhaGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GZ4 SINGLE protected around the entered price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Gtt.cs",
+  "old": "price = MarketPriceProtection.ProtectedPrice(lastPrice, order.Action",
+  "new": "price = MarketPriceProtection.ProtectedPrice((double)order.Price, order.Action",
+  "filter": "FullyQualifiedName~ZerodhaGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GZ5 MARKET order type sent on",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Gtt.cs",
+  "old": "[\"order_type\"] = \"LIMIT\"",
+  "new": "[\"order_type\"] = order.PriceType",
+  "filter": "FullyQualifiedName~ZerodhaGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GZ6 MCX quantity left in units",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Gtt.cs",
+  "old": "instrument.Exchange == \"MCX\" ? McxContracts.ToKite(order.Quantity, instrument.BrokerSymbol, instrument.LotSize) : order.Quantity",
+  "new": "order.Quantity",
+  "filter": "FullyQualifiedName~ZerodhaGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GZ7 zero last price accepted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Gtt.cs",
+  "old": "if (lastPrice == 0) return null;",
+  "new": "if (lastPrice < 0) return null;",
+  "filter": "FullyQualifiedName~ZerodhaGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GZ9 write error in an OK answer reported with its status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Gtt.cs",
+  "old": "return GttResult.Refused(status == 200 ? 500 : status, Str(body[\"message\"]) ?? failure);",
+  "new": "return GttResult.Refused(status, Str(body[\"message\"]) ?? failure);",
+  "filter": "FullyQualifiedName~ZerodhaGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GZ10 history never listed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Gtt.cs",
+  "old": "if (!includeHistory && !string.Equals(",
+  "new": "if (!string.Equals(",
+  "filter": "FullyQualifiedName~ZerodhaGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GZ11 book MCX quantity left in contracts",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Gtt.cs",
+  "old": "exchange == \"MCX\" ? record?.LotSize ?? 0 : 1",
+  "new": "1",
+  "filter": "FullyQualifiedName~ZerodhaGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GZ12 book symbol not falling back to the broker's",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Gtt.cs",
+  "old": "record?.Symbol is { Length: > 0 } oa ? oa : brokerSymbol",
+  "new": "record?.Symbol ?? \"\"",
+  "filter": "FullyQualifiedName~ZerodhaGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GZ13 modify trigger id lost",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.Gtt.cs",
+  "old": "\"/gtt/triggers/\" + Uri.EscapeDataString(triggerId));\n        request.Content",
+  "new": "\"/gtt/triggers/x\");\n        request.Content",
+  "filter": "FullyQualifiedName~ZerodhaGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA1 OCO legs in the wrong order",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "[(\"SL\", order.TriggerSl, order.StopLoss), (\"TG\", order.TriggerTg, order.Target)]",
+  "new": "[(\"TG\", order.TriggerTg, order.Target), (\"SL\", order.TriggerSl, order.StopLoss)]",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA2 NRML sent as delivery",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "product == \"CNC\" ? \"DELIVERY\" : \"MARGIN\"",
+  "new": "\"DELIVERY\"",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA3 half-built OCO not rolled back",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "foreach (var id in created)\n        {\n            logger.LogWarning",
+  "new": "foreach (var id in created.Take(0))\n        {\n            logger.LogWarning",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA4 missing last price accepted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "if (lastPrice == 0) return new ProtectedOrder(null",
+  "new": "if (lastPrice < 0) return new ProtectedOrder(null",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA5 SINGLE/OCO id count not checked",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "if (ruleIds.Count != expected)",
+  "new": "if (ruleIds.Count < 0)",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA6 leg not named in a modify failure",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "$\"{label} leg: {GttMessage(reply, $\"Failed to modify GTT rule ({label})\")}\"",
+  "new": "GttMessage(reply, $\"Failed to modify GTT rule ({label})\")",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA7 cancelled rules not named in a cancel failure",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "string Done() => cancelled.Count > 0 ?",
+  "new": "string Done() => false ?",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA8 unknown rule on cancel answered 400",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "GttResult.Refused(404, $\"Could not fetch Angel GTT rule",
+  "new": "GttResult.Refused(400, $\"Could not fetch Angel GTT rule",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA9 book lists finished rules",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "if (!ActiveGttStatuses.Contains(status)) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA10 book stops paging never",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "if (rows.Count < RuleListPageSize) break;",
+  "new": "if (rows.Count < 0) break;",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA11 first page kept no more",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "if (page > 1 && rules.Count > 0) break;",
+  "new": "if (page > 99 && rules.Count > 0) break;",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA12 expired session answered 400",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "[\"AB9005\"] = 401",
+  "new": "[\"AB9005\"] = 400",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA13 rule validity changed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "private const int GttDays = 365;",
+  "new": "private const int GttDays = 364;",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA14 margin product listed as intraday",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "\"MARGIN\" or \"CARRYFORWARD\" => \"NRML\"",
+  "new": "\"MARGIN\" or \"CARRYFORWARD\" => \"MIS\"",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GA15 OCO market protected around the entered price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Angel/AngelPlugin.Gtt.cs",
+  "old": "MarketPriceProtection.ProtectedPrice((double)order.TriggerSl, order.Action, type, instrument.TickSize) : order.StopLoss",
+  "new": "MarketPriceProtection.ProtectedPrice((double)order.TriggerTg, order.Action, type, instrument.TickSize) : order.StopLoss",
+  "filter": "FullyQualifiedName~AngelGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GS1 kill switch ignored on place",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Gtt.cs",
+  "old": "if (account.KillSwitchEngaged) return Refusal(account, new Refusal(\"kill_switch_engaged\", $\"The kill switch is on for {account.DisplayName}, so GTT orders cannot be placed.",
+  "new": "if (account.KillSwitchEngaged && account.Id == Guid.Empty) return Refusal(account, new Refusal(\"kill_switch_engaged\", $\"The kill switch is on for {account.DisplayName}, so GTT orders cannot be placed.",
+  "filter": "FullyQualifiedName~GttApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "GS2 kill switch ignored on modify",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Gtt.cs",
+  "old": "if (account.KillSwitchEngaged) return Refusal(account, new Refusal(\"kill_switch_engaged\", $\"The kill switch is on for {account.DisplayName}, so GTT orders cannot be changed.",
+  "new": "if (account.KillSwitchEngaged && account.Id == Guid.Empty) return Refusal(account, new Refusal(\"kill_switch_engaged\", $\"The kill switch is on for {account.DisplayName}, so GTT orders cannot be changed.",
+  "filter": "FullyQualifiedName~GttApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "GS3 environment guard ignored on cancel",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Gtt.cs",
+  "old": "so the environment guard applies (Development never reaches one). The kill switch does not stop a cancel: it only reduces what is live.\n        if (guard.Check(account) is { } refused)",
+  "new": "so the environment guard applies (Development never reaches one). The kill switch does not stop a cancel: it only reduces what is live.\n        if (false && guard.Check(account) is { } refused)",
+  "filter": "FullyQualifiedName~Every_write",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "GS4 book not active first",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Gtt.cs",
+  "old": ".OrderBy(x => !string.Equals(Text(x.row[\"status\"]), \"active\", StringComparison.OrdinalIgnoreCase))",
+  "new": ".OrderBy(x => 0)",
+  "filter": "FullyQualifiedName~ZerodhaGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "GS5 sandbox account told something else",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Gtt.cs",
+  "old": "GTT orders are not available on sandbox accounts yet.",
+  "new": "GTT orders are not available yet.",
+  "filter": "FullyQualifiedName~GttApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "GM1 protection slab edge moved",
+  "file": "src/EPTradeBot.Core/Brokers/Gtt/MarketPriceProtection.cs",
+  "old": "price < 100 ? 2.0 : price < 500 ? 1.0 : 0.5",
+  "new": "price <= 100 ? 2.0 : price < 500 ? 1.0 : 0.5",
+  "filter": "FullyQualifiedName~MarketPriceProtectionTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "GS6 place error in an OK answer reported with its status",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Gtt.cs",
+  "old": "V1Result.Error(result.HttpStatus == 200 ? 500 : result.HttpStatus, result.Message);",
+  "new": "V1Result.Error(result.HttpStatus, result.Message);",
+  "filter": "FullyQualifiedName~ZerodhaGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

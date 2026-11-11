@@ -55,6 +55,10 @@ internal static class OpenAlgoV1Endpoints
         Post<SplitOrderRequest>(v1, "/splitorder", (s, a, r, ct) => s.SplitOrderAsync(a, r, ct));
         Post<OptionsOrderRequest>(v1, "/optionsorder", (s, a, r, ct) => s.OptionsOrderAsync(a, r, ct), ValidationShape.Errors);
         Post<OptionsMultiOrderRequest>(v1, "/optionsmultiorder", (s, a, r, ct) => s.OptionsMultiOrderAsync(a, r, ct), ValidationShape.Errors);
+        Post<PlaceGttOrderRequest>(v1, "/placegttorder", (s, a, r, ct) => s.PlaceGttOrderAsync(a, r, ct));
+        Post<ModifyGttOrderRequest>(v1, "/modifygttorder", (s, a, r, ct) => s.ModifyGttOrderAsync(a, r, ct));
+        Post<CancelGttOrderRequest>(v1, "/cancelgttorder", (s, a, r, ct) => s.CancelGttOrderAsync(a, r, ct));
+        Post<GttOrderBookRequest>(v1, "/gttorderbook", (s, a, r, ct) => s.GttOrderBookAsync(a, r, ct));
         Post<MarginCalculatorRequest>(v1, "/margin", (s, a, r, ct) => s.MarginAsync(a, r, ct), beforeKey: OpenAlgoApiService.ValidateMargin);
         Post<HistoryRequest>(v1, "/history", (s, a, r, ct) => s.HistoryAsync(a, r, ct));
         Post<IntervalsRequest>(v1, "/intervals", (s, a, _, _) => Task.FromResult(s.Intervals(a)));
@@ -76,6 +80,7 @@ internal static class OpenAlgoV1Endpoints
         "/positionbook", "/holdings", "/funds", "/orderstatus", "/openposition", "/quotes", "/depth", "/ping", "/analyzer", "/analyzer/toggle",
         "/symbol", "/search", "/expiry", "/optionsymbol", "/basketorder", "/splitorder", "/optionsorder", "/optionsmultiorder", "/instruments",
         "/multiquotes", "/syntheticfuture", "/optionchain", "/market/holidays", "/market/timings", "/pnl/symbols", "/chart", "/history", "/intervals", "/ticker/{symbol}", "/margin",
+        "/placegttorder", "/modifygttorder", "/cancelgttorder", "/gttorderbook",
     ];
 
     /// <summary>

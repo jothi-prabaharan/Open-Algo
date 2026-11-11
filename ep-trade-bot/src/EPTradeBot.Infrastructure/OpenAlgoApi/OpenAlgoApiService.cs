@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using EPTradeBot.Core.Brokers;
+using EPTradeBot.Core.Brokers.Gtt;
 using EPTradeBot.Core.Calendar;
 using EPTradeBot.Core.Contracts.V1;
 using EPTradeBot.Core.Entities.Audit;
@@ -509,6 +510,7 @@ public sealed partial class OpenAlgoApiService(
                 nameof(IBrokerQuotes) => "quotes and depth",
                 nameof(IBrokerHistory) => "historical candles",
                 nameof(IBrokerMargin) => "margin calculation",
+                nameof(IBrokerGtt) => "GTT orders",
                 _ => "this request",
             });
             return false;

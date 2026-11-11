@@ -1,0 +1,4869 @@
+{
+  "broker": "angel",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "angel-jwt-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [
+    "/rest/secure/angelbroking/market/v1/quote/",
+    "/rest/secure/angelbroking/gtt/v1/ruleDetails",
+    "/rest/secure/angelbroking/gtt/v1/ruleList"
+  ],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN-EQ",
+      "name": "SBIN",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY-EQ",
+      "name": "INFY",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY25NOV26FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "35001",
+      "expiry": "25NOV2026",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "Nifty 50",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE",
+      "token": "99926000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "AMXIDX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY25NOV2624000CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "35100",
+      "expiry": "25NOV2026",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "CE",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "place_single_stoploss_trigger",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "producttype": "DELIVERY",
+            "price": "790",
+            "qty": "10",
+            "triggerprice": "795",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_target_trigger",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "819",
+        "triggerprice_sl": "0",
+        "triggerprice_tg": "820",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "producttype": "DELIVERY",
+            "price": "819",
+            "qty": "10",
+            "triggerprice": "820",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_both_triggers_stoploss_wins",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "triggerprice_tg": "830",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "producttype": "DELIVERY",
+            "price": "790",
+            "qty": "10",
+            "triggerprice": "795",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_nrml_sent_as_margin",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "NRML",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "producttype": "MARGIN",
+            "price": "790",
+            "qty": "10",
+            "triggerprice": "795",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_decimal_prices",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790.55",
+        "triggerprice_sl": "795.25",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "producttype": "DELIVERY",
+            "price": "790.55",
+            "qty": "10",
+            "triggerprice": "795.25",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_market_buy_protected",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        },
+        "POST /rest/secure/angelbroking/market/v1/quote/": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "fetched": [
+                {
+                  "exchange": "NSE",
+                  "tradingSymbol": "SBIN-EQ",
+                  "symbolToken": "3045",
+                  "ltp": 805.45,
+                  "open": 799.95,
+                  "high": 813.5,
+                  "low": 797.4,
+                  "close": 799.95,
+                  "lastTradeQty": 5,
+                  "tradeVolume": 1234567,
+                  "opnInterest": 0,
+                  "totBuyQuan": 170,
+                  "totSellQuan": 97,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              ],
+              "unfetched": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/market/v1/quote/",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "mode": "FULL",
+            "exchangeTokens": {
+              "NSE": [
+                "3045"
+              ]
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "producttype": "DELIVERY",
+            "price": "809.5",
+            "qty": "10",
+            "triggerprice": "795",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_market_sell_protected",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "0",
+        "triggerprice_tg": "820",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        },
+        "POST /rest/secure/angelbroking/market/v1/quote/": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "fetched": [
+                {
+                  "exchange": "NSE",
+                  "tradingSymbol": "SBIN-EQ",
+                  "symbolToken": "3045",
+                  "ltp": 805.45,
+                  "open": 799.95,
+                  "high": 813.5,
+                  "low": 797.4,
+                  "close": 799.95,
+                  "lastTradeQty": 5,
+                  "tradeVolume": 1234567,
+                  "opnInterest": 0,
+                  "totBuyQuan": 170,
+                  "totSellQuan": 97,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              ],
+              "unfetched": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/market/v1/quote/",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "mode": "FULL",
+            "exchangeTokens": {
+              "NSE": [
+                "3045"
+              ]
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "producttype": "DELIVERY",
+            "price": "801.4",
+            "qty": "10",
+            "triggerprice": "820",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_market_without_last_price",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        },
+        "POST /rest/secure/angelbroking/market/v1/quote/": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "fetched": [
+                {
+                  "exchange": "NSE",
+                  "tradingSymbol": "SBIN-EQ",
+                  "symbolToken": "3045",
+                  "ltp": 0,
+                  "open": 799.95,
+                  "high": 813.5,
+                  "low": 797.4,
+                  "close": 799.95,
+                  "lastTradeQty": 5,
+                  "tradeVolume": 1234567,
+                  "opnInterest": 0,
+                  "totBuyQuan": 170,
+                  "totSellQuan": 97,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              ],
+              "unfetched": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 502,
+        "body": {
+          "message": "Failed to fetch last_price from Angel quotes",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/market/v1/quote/",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "mode": "FULL",
+            "exchangeTokens": {
+              "NSE": [
+                "3045"
+              ]
+            }
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_two_rules",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": [
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5001"
+              }
+            }
+          },
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5002"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001-5002"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "producttype": "DELIVERY",
+            "price": "779",
+            "qty": "10",
+            "triggerprice": "780",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "producttype": "DELIVERY",
+            "price": "829",
+            "qty": "10",
+            "triggerprice": "830",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_market_protected_around_each_trigger",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": [
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5001"
+              }
+            }
+          },
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5002"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001-5002"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "producttype": "DELIVERY",
+            "price": "776.1",
+            "qty": "10",
+            "triggerprice": "780",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "producttype": "DELIVERY",
+            "price": "825.85",
+            "qty": "10",
+            "triggerprice": "830",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_second_rule_refused_first_cancelled",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": [
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5001"
+              }
+            }
+          },
+          {
+            "body": {
+              "status": false,
+              "message": "Invalid Product Type",
+              "errorcode": "AB9015",
+              "data": null
+            }
+          }
+        ],
+        "POST /rest/secure/angelbroking/gtt/v1/cancelRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Invalid Product Type",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "producttype": "DELIVERY",
+            "price": "779",
+            "qty": "10",
+            "triggerprice": "780",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "producttype": "DELIVERY",
+            "price": "829",
+            "qty": "10",
+            "triggerprice": "830",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/cancelRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001",
+            "symboltoken": "3045",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_first_rule_refused",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": {
+          "body": {
+            "status": false,
+            "message": "Invalid Product Type",
+            "errorcode": "AB9015",
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Invalid Product Type",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "producttype": "DELIVERY",
+            "price": "779",
+            "qty": "10",
+            "triggerprice": "780",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_no_rule_id_on_second_leg",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": [
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5001"
+              }
+            }
+          },
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {}
+            }
+          }
+        ],
+        "POST /rest/secure/angelbroking/gtt/v1/cancelRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 502,
+        "body": {
+          "message": "Angel returned no rule id for the TG leg",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "producttype": "DELIVERY",
+            "price": "779",
+            "qty": "10",
+            "triggerprice": "780",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "producttype": "DELIVERY",
+            "price": "829",
+            "qty": "10",
+            "triggerprice": "830",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/cancelRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001",
+            "symboltoken": "3045",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_refused",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": {
+          "body": {
+            "status": false,
+            "message": "Invalid Product Type",
+            "errorcode": "AB9015",
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Invalid Product Type",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "producttype": "DELIVERY",
+            "price": "790",
+            "qty": "10",
+            "triggerprice": "795",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_no_rule_id",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 502,
+        "body": {
+          "message": "Angel returned no rule id for the SINGLE leg",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "producttype": "DELIVERY",
+            "price": "790",
+            "qty": "10",
+            "triggerprice": "795",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_session_expired",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": {
+          "body": {
+            "status": false,
+            "message": "Invalid Token",
+            "errorcode": "AB9005",
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 401,
+        "body": {
+          "message": "Invalid Token",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/createRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "producttype": "DELIVERY",
+            "price": "790",
+            "qty": "10",
+            "triggerprice": "795",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "NOPE",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/createRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Could not resolve Angel symboltoken for NOPE/NSE",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "place_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "wrong"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "place_missing_fields",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'trigger_type': ['Missing data for required field.'], 'exchange': ['Missing data for required field.'], 'symbol': ['Missing data for required field.'], 'action': ['Missing data for required field.'], 'product': ['Missing data for required field.'], 'quantity': ['Missing data for required field.'], 'price': ['Missing data for required field.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "place_product_mis_refused",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "MIS",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'product': ['GTT supports only CNC (delivery) or NRML (overnight F&O); MIS is intraday-only.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_stoploss_not_below_target",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "830",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'triggerprice_sl': ['Stoploss trigger must be less than target trigger (triggerprice_tg).']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "place_single_without_trigger",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'triggerprice_sl': ['SINGLE GTT requires a positive triggerprice_sl or triggerprice_tg.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "modify_single",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "5001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/modifyRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/modifyRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "price": "790",
+            "qty": "10",
+            "triggerprice": "795",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_market_protected",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "5001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/modifyRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        },
+        "POST /rest/secure/angelbroking/market/v1/quote/": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "fetched": [
+                {
+                  "exchange": "NSE",
+                  "tradingSymbol": "SBIN-EQ",
+                  "symbolToken": "3045",
+                  "ltp": 805.45,
+                  "open": 799.95,
+                  "high": 813.5,
+                  "low": 797.4,
+                  "close": 799.95,
+                  "lastTradeQty": 5,
+                  "tradeVolume": 1234567,
+                  "opnInterest": 0,
+                  "totBuyQuan": 170,
+                  "totSellQuan": 97,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              ],
+              "unfetched": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/market/v1/quote/",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "mode": "FULL",
+            "exchangeTokens": {
+              "NSE": [
+                "3045"
+              ]
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/modifyRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "price": "809.5",
+            "qty": "10",
+            "triggerprice": "795",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_oco_two_rules",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "5001-5002",
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/modifyRule": [
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5001"
+              }
+            }
+          },
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5002"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001-5002"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/modifyRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "price": "779",
+            "qty": "10",
+            "triggerprice": "780",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/modifyRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5002",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "price": "829",
+            "qty": "10",
+            "triggerprice": "830",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_oco_market_protected",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "5001-5002",
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/modifyRule": [
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5001"
+              }
+            }
+          },
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5002"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001-5002"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/modifyRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "price": "776.1",
+            "qty": "10",
+            "triggerprice": "780",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/modifyRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5002",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "price": "825.85",
+            "qty": "10",
+            "triggerprice": "830",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_oco_second_rule_refused",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "5001-5002",
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/modifyRule": [
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5001"
+              }
+            }
+          },
+          {
+            "body": {
+              "status": false,
+              "message": "Invalid Product Type",
+              "errorcode": "AB9015",
+              "data": null
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "TG leg: Invalid Product Type",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/modifyRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "price": "779",
+            "qty": "10",
+            "triggerprice": "780",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/modifyRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5002",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "price": "829",
+            "qty": "10",
+            "triggerprice": "830",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_oco_first_rule_refused",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "5001-5002",
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/modifyRule": {
+          "body": {
+            "status": false,
+            "message": "Invalid Product Type",
+            "errorcode": "AB9015",
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "SL leg: Invalid Product Type",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/modifyRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "price": "779",
+            "qty": "10",
+            "triggerprice": "780",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_unknown_rule",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9999",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/modifyRule": {
+          "body": {
+            "status": false,
+            "message": "Invalid Rule ID",
+            "errorcode": "AB9013",
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "message": "SINGLE leg: Invalid Rule ID",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/modifyRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "9999",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "price": "790",
+            "qty": "10",
+            "triggerprice": "795",
+            "disclosedqty": "0",
+            "timeperiod": 365
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_with_oco_id",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "5001-5002",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/modifyRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "trigger_id '5001-5002' maps to 2 Angel rule(s) but trigger_type=SINGLE needs 1. Angel cannot convert a rule between SINGLE and OCO \u2014 cancel and re-place instead.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "modify_oco_with_single_id",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "5001",
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/modifyRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "trigger_id '5001' maps to 1 Angel rule(s) but trigger_type=OCO needs 2. Angel cannot convert a rule between SINGLE and OCO \u2014 cancel and re-place instead.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "modify_market_without_last_price",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "5001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/modifyRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        },
+        "POST /rest/secure/angelbroking/market/v1/quote/": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "fetched": [
+                {
+                  "exchange": "NSE",
+                  "tradingSymbol": "SBIN-EQ",
+                  "symbolToken": "3045",
+                  "ltp": 0,
+                  "open": 799.95,
+                  "high": 813.5,
+                  "low": 797.4,
+                  "close": 799.95,
+                  "lastTradeQty": 5,
+                  "tradeVolume": 1234567,
+                  "opnInterest": 0,
+                  "totBuyQuan": 170,
+                  "totSellQuan": 97,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 120,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 50,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 80,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 10,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 7,
+                        "orders": 1
+                      }
+                    ]
+                  }
+                }
+              ],
+              "unfetched": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 502,
+        "body": {
+          "message": "Failed to fetch last_price from Angel quotes",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/market/v1/quote/",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "mode": "FULL",
+            "exchangeTokens": {
+              "NSE": [
+                "3045"
+              ]
+            }
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_missing_trigger_id",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'trigger_id': ['Missing data for required field.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "modify_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "5001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "wrong"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "cancel_single",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "5001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/ruleDetails": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001",
+              "symboltoken": "3045",
+              "exchange": "NSE",
+              "tradingsymbol": "SBIN-EQ",
+              "status": "NEW"
+            }
+          }
+        },
+        "POST /rest/secure/angelbroking/gtt/v1/cancelRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleDetails",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/cancelRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001",
+            "symboltoken": "3045",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancel_oco_both_rules",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "5001-5002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/ruleDetails": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001",
+              "symboltoken": "3045",
+              "exchange": "NSE",
+              "tradingsymbol": "SBIN-EQ",
+              "status": "NEW"
+            }
+          }
+        },
+        "POST /rest/secure/angelbroking/gtt/v1/cancelRule": [
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5001"
+              }
+            }
+          },
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5002"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "5001-5002"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleDetails",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/cancelRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001",
+            "symboltoken": "3045",
+            "exchange": "NSE"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleDetails",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5002"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/cancelRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5002",
+            "symboltoken": "3045",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancel_oco_second_rule_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "5001-5002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/ruleDetails": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001",
+              "symboltoken": "3045",
+              "exchange": "NSE",
+              "tradingsymbol": "SBIN-EQ",
+              "status": "NEW"
+            }
+          }
+        },
+        "POST /rest/secure/angelbroking/gtt/v1/cancelRule": [
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5001"
+              }
+            }
+          },
+          {
+            "body": {
+              "status": false,
+              "message": "Invalid Product Type",
+              "errorcode": "AB9015",
+              "data": null
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Invalid Product Type (already cancelled: 5001)",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleDetails",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/cancelRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001",
+            "symboltoken": "3045",
+            "exchange": "NSE"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleDetails",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5002"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/cancelRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5002",
+            "symboltoken": "3045",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancel_oco_second_rule_unknown",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "5001-5002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/ruleDetails": [
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": {
+                "id": "5001",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "tradingsymbol": "SBIN-EQ",
+                "status": "NEW"
+              }
+            }
+          },
+          {
+            "body": {
+              "status": false,
+              "message": "Invalid Rule ID",
+              "errorcode": "AB9013",
+              "data": null
+            }
+          }
+        ],
+        "POST /rest/secure/angelbroking/gtt/v1/cancelRule": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "message": "Could not fetch Angel GTT rule 5002 (already cancelled: 5001)",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleDetails",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/cancelRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001",
+            "symboltoken": "3045",
+            "exchange": "NSE"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleDetails",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5002"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancel_unknown_rule",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "9999",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/ruleDetails": {
+          "body": {
+            "status": false,
+            "message": "Invalid Rule ID",
+            "errorcode": "AB9013",
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "message": "Could not fetch Angel GTT rule 9999",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleDetails",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "9999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancel_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "5001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/ruleDetails": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "5001",
+              "symboltoken": "3045",
+              "exchange": "NSE",
+              "tradingsymbol": "SBIN-EQ",
+              "status": "NEW"
+            }
+          }
+        },
+        "POST /rest/secure/angelbroking/gtt/v1/cancelRule": {
+          "body": {
+            "status": false,
+            "message": "Invalid Product Type",
+            "errorcode": "AB9015",
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Invalid Product Type",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleDetails",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/cancelRule",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "id": "5001",
+            "symboltoken": "3045",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancel_missing_trigger_id",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'trigger_id': ['Missing data for required field.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "cancel_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "5001",
+        "apikey": "wrong"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "book_active_only",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/ruleList": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": [
+              {
+                "id": "1",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "transactiontype": "BUY",
+                "producttype": "DELIVERY",
+                "price": "790",
+                "qty": "10",
+                "triggerprice": "795",
+                "status": "ACTIVE",
+                "createddate": "2026-11-03 09:15:00",
+                "updateddate": "2026-11-03 09:16:00",
+                "expirydate": "2027-11-03 09:15:00"
+              },
+              {
+                "id": "2",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "transactiontype": "BUY",
+                "producttype": "MARGIN",
+                "price": "790",
+                "qty": "10",
+                "triggerprice": "795",
+                "status": "NEW",
+                "createddate": "2026-11-03 09:15:00",
+                "updateddate": "2026-11-03 09:16:00",
+                "expirydate": "2027-11-03 09:15:00"
+              },
+              {
+                "id": "3",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "transactiontype": "SELL",
+                "producttype": "CARRYFORWARD",
+                "price": "790",
+                "qty": "10",
+                "triggerprice": "795",
+                "status": "SENTTOEXCHANGE",
+                "createddate": "2026-11-03 09:15:00",
+                "updateddate": "2026-11-03 09:16:00",
+                "expirydate": "2027-11-03 09:15:00"
+              },
+              {
+                "id": "4",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "transactiontype": "BUY",
+                "producttype": "DELIVERY",
+                "price": "790",
+                "qty": "10",
+                "triggerprice": "795",
+                "status": "CANCELLED",
+                "createddate": "2026-11-03 09:15:00",
+                "updateddate": "2026-11-03 09:16:00",
+                "expirydate": "2027-11-03 09:15:00"
+              },
+              {
+                "id": "5",
+                "tradingsymbol": "UNLISTED-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "transactiontype": "BUY",
+                "producttype": "DELIVERY",
+                "price": "790",
+                "qty": "10",
+                "triggerprice": "795",
+                "status": "ACTIVE",
+                "createddate": "2026-11-03 09:15:00",
+                "updateddate": "2026-11-03 09:16:00",
+                "expirydate": "2027-11-03 09:15:00"
+              },
+              {
+                "id": "6",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "transactiontype": "BUY",
+                "producttype": "INTRADAY",
+                "price": "790",
+                "qty": "10",
+                "triggerprice": "795",
+                "status": "EXPIRED",
+                "createddate": "2026-11-03 09:15:00",
+                "updateddate": "2026-11-03 09:16:00",
+                "expirydate": "2027-11-03 09:15:00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "1",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "NRML",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "2",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "NRML",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "3",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "UNLISTED-EQ",
+              "trigger_id": "5",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleList",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "status": [
+              "NEW",
+              "ACTIVE",
+              "SENTTOEXCHANGE"
+            ],
+            "page": 1,
+            "count": 10
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_status_all_is_still_active_only",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "status": "all",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/ruleList": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": [
+              {
+                "id": "1",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "transactiontype": "BUY",
+                "producttype": "DELIVERY",
+                "price": "790",
+                "qty": "10",
+                "triggerprice": "795",
+                "status": "ACTIVE",
+                "createddate": "2026-11-03 09:15:00",
+                "updateddate": "2026-11-03 09:16:00",
+                "expirydate": "2027-11-03 09:15:00"
+              },
+              {
+                "id": "2",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "transactiontype": "BUY",
+                "producttype": "MARGIN",
+                "price": "790",
+                "qty": "10",
+                "triggerprice": "795",
+                "status": "NEW",
+                "createddate": "2026-11-03 09:15:00",
+                "updateddate": "2026-11-03 09:16:00",
+                "expirydate": "2027-11-03 09:15:00"
+              },
+              {
+                "id": "3",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "transactiontype": "SELL",
+                "producttype": "CARRYFORWARD",
+                "price": "790",
+                "qty": "10",
+                "triggerprice": "795",
+                "status": "SENTTOEXCHANGE",
+                "createddate": "2026-11-03 09:15:00",
+                "updateddate": "2026-11-03 09:16:00",
+                "expirydate": "2027-11-03 09:15:00"
+              },
+              {
+                "id": "4",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "transactiontype": "BUY",
+                "producttype": "DELIVERY",
+                "price": "790",
+                "qty": "10",
+                "triggerprice": "795",
+                "status": "CANCELLED",
+                "createddate": "2026-11-03 09:15:00",
+                "updateddate": "2026-11-03 09:16:00",
+                "expirydate": "2027-11-03 09:15:00"
+              },
+              {
+                "id": "5",
+                "tradingsymbol": "UNLISTED-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "transactiontype": "BUY",
+                "producttype": "DELIVERY",
+                "price": "790",
+                "qty": "10",
+                "triggerprice": "795",
+                "status": "ACTIVE",
+                "createddate": "2026-11-03 09:15:00",
+                "updateddate": "2026-11-03 09:16:00",
+                "expirydate": "2027-11-03 09:15:00"
+              },
+              {
+                "id": "6",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "transactiontype": "BUY",
+                "producttype": "INTRADAY",
+                "price": "790",
+                "qty": "10",
+                "triggerprice": "795",
+                "status": "EXPIRED",
+                "createddate": "2026-11-03 09:15:00",
+                "updateddate": "2026-11-03 09:16:00",
+                "expirydate": "2027-11-03 09:15:00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "1",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "NRML",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "2",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "NRML",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "3",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "UNLISTED-EQ",
+              "trigger_id": "5",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleList",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "status": [
+              "NEW",
+              "ACTIVE",
+              "SENTTOEXCHANGE"
+            ],
+            "page": 1,
+            "count": 10
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_empty",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/ruleList": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleList",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "status": [
+              "NEW",
+              "ACTIVE",
+              "SENTTOEXCHANGE"
+            ],
+            "page": 1,
+            "count": 10
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_walks_pages_until_a_short_one",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/ruleList": [
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": [
+                {
+                  "id": "100",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "101",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "102",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "103",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "104",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "105",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "106",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "107",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "108",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "109",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                }
+              ]
+            }
+          },
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": [
+                {
+                  "id": "200",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "100",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "101",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "102",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "103",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "104",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "105",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "106",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "107",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "108",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "109",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "200",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleList",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "status": [
+              "NEW",
+              "ACTIVE",
+              "SENTTOEXCHANGE"
+            ],
+            "page": 1,
+            "count": 10
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleList",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "status": [
+              "NEW",
+              "ACTIVE",
+              "SENTTOEXCHANGE"
+            ],
+            "page": 2,
+            "count": 10
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_single_object_page",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/ruleList": {
+          "body": {
+            "status": true,
+            "message": "SUCCESS",
+            "errorcode": "",
+            "data": {
+              "id": "7",
+              "tradingsymbol": "SBIN-EQ",
+              "symboltoken": "3045",
+              "exchange": "NSE",
+              "transactiontype": "BUY",
+              "producttype": "DELIVERY",
+              "price": "790",
+              "qty": "10",
+              "triggerprice": "795",
+              "status": "ACTIVE",
+              "createddate": "2026-11-03 09:15:00",
+              "updateddate": "2026-11-03 09:16:00",
+              "expirydate": "2027-11-03 09:15:00"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "7",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleList",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "status": [
+              "NEW",
+              "ACTIVE",
+              "SENTTOEXCHANGE"
+            ],
+            "page": 1,
+            "count": 10
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_second_page_fails_keeps_the_first",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/ruleList": [
+          {
+            "body": {
+              "status": true,
+              "message": "SUCCESS",
+              "errorcode": "",
+              "data": [
+                {
+                  "id": "100",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "101",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "102",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "103",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "104",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "105",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "106",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "107",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "108",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                },
+                {
+                  "id": "109",
+                  "tradingsymbol": "SBIN-EQ",
+                  "symboltoken": "3045",
+                  "exchange": "NSE",
+                  "transactiontype": "BUY",
+                  "producttype": "DELIVERY",
+                  "price": "790",
+                  "qty": "10",
+                  "triggerprice": "795",
+                  "status": "ACTIVE",
+                  "createddate": "2026-11-03 09:15:00",
+                  "updateddate": "2026-11-03 09:16:00",
+                  "expirydate": "2027-11-03 09:15:00"
+                }
+              ]
+            }
+          },
+          {
+            "body": {
+              "status": false,
+              "message": "Invalid Product Type",
+              "errorcode": "AB9015",
+              "data": null
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "100",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "101",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "102",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "103",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "104",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "105",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "106",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "107",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "108",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 09:15:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "109",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleList",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "status": [
+              "NEW",
+              "ACTIVE",
+              "SENTTOEXCHANGE"
+            ],
+            "page": 1,
+            "count": 10
+          }
+        },
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleList",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "status": [
+              "NEW",
+              "ACTIVE",
+              "SENTTOEXCHANGE"
+            ],
+            "page": 2,
+            "count": 10
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_first_page_fails",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /rest/secure/angelbroking/gtt/v1/ruleList": {
+          "body": {
+            "status": false,
+            "message": "Invalid Product Type",
+            "errorcode": "AB9015",
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Invalid Product Type",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apiconnect.angelone.in",
+          "path": "/rest/secure/angelbroking/gtt/v1/ruleList",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer angel-jwt-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-privatekey": "angel-private-key"
+          },
+          "json": {
+            "status": [
+              "NEW",
+              "ACTIVE",
+              "SENTTOEXCHANGE"
+            ],
+            "page": 1,
+            "count": 10
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_bad_status",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "status": "everything",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": {
+            "status": [
+              "Must be one of: active, all."
+            ]
+          },
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "book_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}

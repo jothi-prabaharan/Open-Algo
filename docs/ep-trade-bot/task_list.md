@@ -46,11 +46,11 @@ Shared pieces, done:
 Per active broker (contract-verified means 100% of its recorded fixtures match OpenAlgo, apart from recorded deliberate differences):
 - [x] Zerodha: orders, books, funds, quotes, depth, multiquotes, history (24 fixtures), ticker (20), margin (23)
 - [x] Zerodha: MCX (units to contracts at the Kite boundary, lot from the master contract; 21 fixtures, 16 mutation checks)
-- [ ] Zerodha: GTT
+- [x] Zerodha: GTT (60 fixtures, single and two-leg triggers, MARKET protected into LIMIT, MCX in contracts)
 - [ ] Zerodha: login
 - [ ] Zerodha: market-data feed onto the bus
 - [x] Angel One: orders, books, funds, quotes, depth, multiquotes, history (21 fixtures), margin (15)
-- [ ] Angel One: GTT
+- [x] Angel One: GTT (51 fixtures; an OCO is two rules joined by a dash, rolled back if the pair fails)
 - [ ] Angel One: login
 - [ ] Angel One: market-data feed onto the bus
 - [x] Paytm Money: orders, books, funds, quotes, depth, multiquotes, smart orders, close-all, cancel-all (41 fixtures); the broker has no history, margin calculator or GTT
@@ -58,7 +58,7 @@ Per active broker (contract-verified means 100% of its recorded fixtures match O
 - [ ] Paytm Money: market-data feed onto the bus
 
 Shared endpoints still open:
-- [ ] The 4 GTT endpoints (place, modify, cancel, order book), for Zerodha and Angel One
+- [x] The 4 GTT endpoints (place, modify, cancel, order book), for Zerodha and Angel One; sandbox accounts are told GTT is not there yet (TG4)
 - [ ] Gate 3 artifact, final (covers the three active brokers and the shared pieces; passes 1 to 9 are written up)
 
 ## TG7: Remaining brokers (deferred out of TG3)

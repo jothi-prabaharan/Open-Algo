@@ -1199,3 +1199,25 @@ Kite counts MCX quantity in contracts and OpenAlgo counts units, so the lot matt
 - **Fixtures:** 21 in `zerodha_mcx.fixtures.json`, recorded from the Python code, all matching except `mcx_positionbook_unsizable_root` (the deliberate difference above). Core: 21 new tests in `McxContractsTests`.
 - **Mutation check:** 17 in `tools/mutation/tg3-mcx.json`, all red. Two first survived: MX10 (modify disclosed quantity, no fixture) and MX4 (rewritten, as the first form did not compile). Fixed with two new modify fixtures and a non-constant mutant.
 - **Not done:** GTT quantities on MCX come with the GTT work.
+
+
+## 20. GTT on Zerodha and Angel One
+
+Four endpoints: `/placegttorder`, `/modifygttorder`, `/cancelgttorder` and `/gttorderbook`. A new capability, `IBrokerGtt`, carries them; the shared rules are in `Core/Brokers/Gtt` (the GTT types and `MarketPriceProtection`, a port of `utils/mpp_slab.py`).
+
+- **Zerodha:** a single or two-leg trigger sent to Kite as JSON inside a form. Kite needs the last price, so it is read first, and Kite takes only LIMIT in a trigger, so a MARKET request becomes a LIMIT a protection slab beyond the price: around the last price for a single, around each trigger for a two-leg. On MCX the quantity is in contracts (the same lot rules as orders).
+- **Angel One:** a rule has one trigger and no OCO type, so an OCO is two rules, stoploss first, and the two ids are joined by a dash into one trigger id. If the second rule fails the first is cancelled. A cancel reads each rule back first, because Angel needs its token. The book is active-only whatever `status` says, and walks pages of 10.
+- **Fixtures:** 60 for Zerodha, 51 for Angel One, recorded from the Python code. Every one matches except the deliberate differences below.
+- **Mutation check:** 34 in `tools/mutation/tg3-gtt.json`, all red. One survived at first (the 200-to-500 mapping on a place) because the plugin and the service both did it; the plugin copy was removed, so the service is the only one and the mutant is caught.
+- **Other tests:** 25 Core tests for the protection slab against OpenAlgo's values; 2 integration tests (the kill switch stops placing and changing but not cancelling or reading the book; a sandbox account is told plainly and nothing is sent) and three GTT writes added to the Development refusal test.
+
+**Deliberate differences, each recorded from the Python implementation.**
+
+| Fixture | OpenAlgo | EP Trade bot |
+| --- | --- | --- |
+| place and modify with a symbol not in the master contract | An internal error (Zerodha place and modify) or "could not resolve symboltoken" (Angel One). | Names the symbol and says to download the master contract again. |
+| modify or cancel when Kite refuses with an OK status | Tells the caller it worked, so the trigger the caller believes changed is not. | Reports the refusal. |
+
+**Rules EP Trade bot adds, with no OpenAlgo equivalent.** Placing and changing a trigger go through the environment guard and the kill switch like any order, because the trigger becomes a real order when it fires. Cancelling goes through the guard (Development never reaches a live broker) but not the kill switch, since it only reduces what is live. The book is never checked.
+
+**Not done.** Sandbox GTT (TG4): a sandbox account is told plainly it is not available. The semi-auto queue and the GTT events on the bus. Paytm Money has no GTT.
