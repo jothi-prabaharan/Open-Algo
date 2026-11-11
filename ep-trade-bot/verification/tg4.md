@@ -13,8 +13,8 @@ come back as 1 and 0. No I/O; safe to call from anywhere.
 **How it is held to the Python.** `tools/contract-fixtures/record_indicators.py` calls each function on one fixed, seeded OHLCV data set of 400 bars
 (defaults, then a second parameter set) and records every output. 255 cases:
 
-- 127 with defaults and 112 with a second parameter set;
-- 15 more on the same data with a gap of NaN in bars 100 to 103, for the indicators where a gap matters (SMA, EMA, WMA, HMA, stdev, RSI, ROC,
+- 127 with defaults (VWAP included) and 110 with a second parameter set;
+- 18 more on the same data with a gap of NaN in bars 100 to 103, for the indicators where a gap matters (SMA, EMA, WMA, HMA, stdev, RSI, ROC,
   Bollinger Bands, MACD, ATR, OBV, MFI, Supertrend, CCI, Williams %R, DEMA, KAMA, linear regression);
 - VWAP on 200 five-minute bars inside one session.
 
