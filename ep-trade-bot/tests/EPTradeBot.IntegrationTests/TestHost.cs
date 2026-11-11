@@ -36,6 +36,8 @@ public sealed class TestHost : IAsyncDisposable
             // Hosts run side by side in tests; each gets its own bus port.
             BusPort = FreePort();
             b.UseSetting("Streaming:BusPort", BusPort.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            // The scheduler stays off unless a test turns it on; it reads the real clock.
+            b.UseSetting("Scheduling:Enabled", "false");
             configure?.Invoke(b);
         });
         try

@@ -129,3 +129,12 @@ public sealed class BrokerOptions
     [System.ComponentModel.DataAnnotations.Range(1, 120)]
     public int TimeoutSeconds { get; set; } = 15;
 }
+
+/// <summary>Bound from <c>Scheduling</c>.</summary>
+public sealed class SchedulingOptions
+{
+    public const string Section = "Scheduling";
+
+    /// <summary>Starts the scheduler. Off only in tests that read the schedule without running it.</summary>
+    public bool Enabled { get; set; } = true;
+}

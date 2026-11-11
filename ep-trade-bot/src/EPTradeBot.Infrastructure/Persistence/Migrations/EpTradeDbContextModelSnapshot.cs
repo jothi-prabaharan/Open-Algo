@@ -482,6 +482,14 @@ namespace EPTradeBot.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at_utc");
 
+                    b.Property<string>("Exchange")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(12)
+                        .HasColumnType("character varying(12)")
+                        .HasDefaultValue("NSE")
+                        .HasColumnName("exchange");
+
                     b.Property<string>("ExecutionMode")
                         .IsRequired()
                         .HasMaxLength(16)
@@ -513,11 +521,20 @@ namespace EPTradeBot.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_stopped_at_utc");
 
+                    b.Property<bool>("ManuallyStopped")
+                        .HasColumnType("boolean")
+                        .HasColumnName("manually_stopped");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("name");
+
+                    b.Property<string>("PausedReason")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("paused_reason");
 
                     b.Property<int?>("ProcessId")
                         .HasColumnType("integer")

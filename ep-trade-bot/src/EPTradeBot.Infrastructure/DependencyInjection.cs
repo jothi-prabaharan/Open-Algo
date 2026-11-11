@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Quartz;
 
 namespace EPTradeBot.Infrastructure;
 
@@ -85,6 +86,17 @@ public static class DependencyInjection
         services.AddSingleton<IAccountRiskManager, AccountRiskManager>();
         services.AddSingleton<IOrderDispatcher, OrderDispatcher>();
         services.AddSingleton<KillSwitchService>();
+
+        services.AddOptions<Core.Configuration.SchedulingOptions>().Bind(configuration.GetSection(Core.Configuration.SchedulingOptions.Section)).ValidateDataAnnotations().ValidateOnStart();
+        services.TryAddSingleton<EPTradeBot.Core.Scheduling.IStrategyController, EPTradeBot.Infrastructure.Scheduling.UnhostedStrategyController>();
+        services.AddSingleton<EPTradeBot.Infrastructure.Scheduling.StrategyScheduleService>();
+        services.AddSingleton<EPTradeBot.Infrastructure.Scheduling.ScheduleRegistry>();
+        services.AddQuartz(q => q.UseDefaultThreadPool(p => p.MaxConcurrency = 4));
+        if (configuration.GetValue(Core.Configuration.SchedulingOptions.Section + ":Enabled", true))
+        {
+            services.AddQuartzHostedService(o => o.WaitForJobsToComplete = true);
+            services.AddHostedService(sp => sp.GetRequiredService<EPTradeBot.Infrastructure.Scheduling.ScheduleRegistry>());
+        }
 
         return services;
     }

@@ -77,7 +77,7 @@ Not started (30): fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, defin
 
 ## TG4: Strategy host, Flow, Action Center, agent, MCP, tools
 - [ ] The 31 /api/v1 pairs that sit on TG4 features (option greeks, portfolio, SIP, sector rotation, strategy, Telegram, WhatsApp)
-- [ ] Quartz.NET with IST schedules and weekday controls
+- [x] Quartz.NET with IST schedules and weekday controls (`Core/Scheduling`, `Infrastructure/Scheduling`; 55 tests, 33 mutants)
 - [ ] Hosted strategy process supervisor
 - [ ] Flow engine and node types
 - [x] 127 indicators with parity tests (`Core/Indicators`; 255 recorded cases against `openalgo.ta`, 21 mutation checks)

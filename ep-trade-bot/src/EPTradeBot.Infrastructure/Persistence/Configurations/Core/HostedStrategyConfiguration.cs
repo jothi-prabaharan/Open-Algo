@@ -15,6 +15,8 @@ internal sealed class HostedStrategyConfiguration : IEntityTypeConfiguration<Hos
         b.Property(x => x.ScriptPath).HasMaxLength(260).IsRequired();
         b.Property(x => x.ExecutionMode).HasConversion<string>().HasMaxLength(16);
         b.Property(x => x.ScheduleDays).HasConversion<int>();
+        b.Property(x => x.Exchange).HasMaxLength(12).IsRequired().HasDefaultValue("NSE");
+        b.Property(x => x.PausedReason).HasMaxLength(20);
         b.Property(x => x.LastError).HasMaxLength(500);
         b.HasIndex(x => x.Name).IsUnique().HasDatabaseName("ux_hosted_strategies_name");
         b.HasOne<BrokerAccount>().WithMany().HasForeignKey(x => x.AccountId).OnDelete(DeleteBehavior.SetNull);

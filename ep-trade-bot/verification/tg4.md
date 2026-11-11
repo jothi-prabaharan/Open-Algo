@@ -61,3 +61,33 @@ not logged, expiry boundary, bulk order, reject over any status, and others), al
 no test rejected an order that was already decided. The test above now does, and AC7 is red.
 
 **Not done.** A web screen (Task Group 5, Antigravity). Notifying the trader that an order is waiting (Telegram, TG4 later).
+
+## Quartz.NET scheduling on India time
+
+**What was built.** A hosted strategy (`core.hosted_strategies`) now carries an exchange, a start and stop time (HH:mm, India time), the days it
+runs, a "stopped by hand" flag and a pause reason (migration `HostedStrategySchedule`). Quartz.NET 4 keeps one start and one stop trigger per enabled,
+scheduled strategy, as a cron in the `Asia/Kolkata` zone on the strategy's days, plus two system jobs: the trading-day check at 00:01 IST and the
+enforcer every minute. Misfires are skipped, not replayed. The database is the source of truth: Quartz holds its jobs in memory, `ScheduleRegistry`
+rebuilds every trigger at start and re-syncs one strategy whenever it is created, changed or deleted. `Scheduling:Enabled` turns the scheduler off.
+
+The rules are pure (`Core/Scheduling/ScheduleRules`), ported from OpenAlgo's `python_strategy.py`; `StrategyScheduleService` applies them and asks an
+`IStrategyController` to start or stop. Endpoints (admin token): `/api/v1/hosted-strategies` create, list, read, delete; `PUT .../{id}/schedule`;
+`POST .../{id}/start` and `.../stop`.
+
+- A scheduled start is refused for a strategy the trader stopped by hand, on a day they did not choose, and on a day the exchange is closed. A
+  weekend or holiday refusal pauses the strategy; the enforcer lifts that pause when the exchange trades again and the time is inside the window.
+  Crypto never follows the calendar. A special session (Muhurat) on a weekend counts as a trading day, as does an MCX evening session on an equity
+  holiday.
+- The window is the trader's start to stop cut down to the exchange's session. The enforcer stops a running strategy only when the exchange has no
+  session that day, never for the time of day: that is the scheduled stop's job.
+- Stopping by hand holds until the trader starts it again by hand.
+- One strategy failing in a check never stops the others being checked. A start or stop the controller reports as failed is never recorded as done.
+
+**How it is held.** `ScheduleRulesTests` (37, pure) and `ScheduleTests` (18, real host and database; the clock is a test clock, the calendar is the
+seeded one: 10 Nov 2026 is a real holiday, 8 Nov a Sunday Muhurat session). Trigger times are checked in IST against a week in 2030, because Quartz
+starts a trigger at the real clock. 33 mutants in `tools/mutation/tg4-schedule.json`, all red (pure rules S1-S18, service and registry I1-I15). Three
+of them (the last-second window, a scheduled stop clearing a pause, a failed stop during the enforcer pass) first needed a test of their own.
+
+**Not done.** Nothing starts a process yet: until the strategy supervisor (next item) is registered, the default controller reports that strategy
+hosting is not available and starts and stops nothing, so a strategy is never recorded as running when it is not. Restart catch-up (a start missed
+while the app was down) is the deferred TG2 item.
