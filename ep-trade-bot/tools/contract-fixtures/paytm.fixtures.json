@@ -1,0 +1,5145 @@
+{
+  "broker": "paytm",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "paytm-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500209",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY-Nov2026-FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE",
+      "token": "52023",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY-Nov2026-24000-CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE",
+      "token": "52024",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "OPTIDX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "NIFTY 50",
+      "name": "NIFTY 50",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE",
+      "token": "13",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_missing_fields",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'strategy': ['Missing data for required field.'], 'exchange': ['Missing data for required field.'], 'action': ['Missing data for required field.'], 'quantity': ['Missing data for required field.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "strategy": "test",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/v1/place/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2001000000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/place/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "security_id": "3045",
+            "exchange": "NSE",
+            "txn_type": "B",
+            "order_type": "MKT",
+            "quantity": 10,
+            "product": "I",
+            "price": 0.0,
+            "validity": "DAY",
+            "segment": "E",
+            "source": "M"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit_cnc",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "symbol": "INFY",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": "5",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "strategy": "test",
+        "price": "1500.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/v1/place/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2001000000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/place/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "security_id": "1594",
+            "exchange": "NSE",
+            "txn_type": "S",
+            "order_type": "LMT",
+            "quantity": 5,
+            "product": "C",
+            "price": 1500.5,
+            "validity": "DAY",
+            "segment": "E",
+            "source": "M"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_futures_nrml",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "strategy": "test",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/v1/place/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2001000000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/place/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "security_id": "52023",
+            "exchange": "NSE",
+            "txn_type": "B",
+            "order_type": "MKT",
+            "quantity": 75,
+            "product": null,
+            "price": 0.0,
+            "validity": "DAY",
+            "segment": "D",
+            "source": "M"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_loss_with_trigger",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL",
+        "product": "MIS",
+        "strategy": "test",
+        "price": "800",
+        "trigger_price": "801.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/v1/place/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2001000000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/place/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "security_id": "3045",
+            "exchange": "NSE",
+            "txn_type": "B",
+            "order_type": "MKT",
+            "quantity": 10,
+            "product": "I",
+            "price": 800.0,
+            "validity": "DAY",
+            "segment": "E",
+            "source": "M"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_loss_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "strategy": "test",
+        "trigger_price": "801.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/v1/place/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2001000000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/place/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "security_id": "3045",
+            "exchange": "NSE",
+            "txn_type": "B",
+            "order_type": "MKT",
+            "quantity": 10,
+            "product": "I",
+            "price": 0.0,
+            "validity": "DAY",
+            "segment": "E",
+            "source": "M"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "strategy": "test",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/v1/place/regular": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "message": "Insufficient funds to place this order"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Insufficient funds to place this order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/place/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "security_id": "3045",
+            "exchange": "NSE",
+            "txn_type": "B",
+            "order_type": "MKT",
+            "quantity": 10,
+            "product": "I",
+            "price": 0.0,
+            "validity": "DAY",
+            "segment": "E",
+            "source": "M"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "symbol": "NOSUCH",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "strategy": "test",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/v1/place/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2001000000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/place/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "security_id": null,
+            "exchange": "NSE",
+            "txn_type": "B",
+            "order_type": "MKT",
+            "quantity": 10,
+            "product": "I",
+            "price": 0.0,
+            "validity": "DAY",
+            "segment": "E",
+            "source": "M"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_pending",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "orderid": "2001000000002",
+        "strategy": "t",
+        "symbol": "INFY",
+        "exchange": "NSE",
+        "action": "SELL",
+        "product": "CNC",
+        "pricetype": "LIMIT",
+        "price": "1495.5",
+        "quantity": "5",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/user/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "I",
+                "quantity": 10,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 805.5,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000002",
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Pending",
+                "status": "Pending",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 5,
+                "price": 1500.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 5,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000003",
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "segment": "D",
+                "txn_type": "B",
+                "display_status": "Rejected",
+                "status": "Rejected",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "M",
+                "quantity": 75,
+                "price": 24000.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000004",
+                "security_id": "52024",
+                "exchange": "NSE",
+                "instrument": "OPTIDX",
+                "segment": "D",
+                "txn_type": "S",
+                "display_status": "Open",
+                "status": "Open",
+                "display_order_type": "Stop Loss",
+                "order_type": "SL",
+                "product": "M",
+                "quantity": 75,
+                "price": 120.0,
+                "trigger_price": 110.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000005",
+                "security_id": "500209",
+                "exchange": "BSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Cancelled",
+                "status": "Cancelled",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "C",
+                "quantity": 3,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 3,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000006",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 4,
+                "price": 810.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 810.0,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              }
+            ]
+          }
+        },
+        "POST /orders/v1/modify/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2001000000002",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/user/orders",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/modify/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "order_no": "2001000000002",
+            "exchange": "NSE",
+            "segment": "E",
+            "security_id": "1594",
+            "quantity": 5,
+            "price": 1495.5,
+            "trigger_price": 0.0,
+            "validity": "DAY",
+            "product": "C",
+            "order_type": "LMT",
+            "txn_type": "S",
+            "source": "N",
+            "off_mkt_flag": "N",
+            "serial_no": 1,
+            "group_id": 0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_to_market",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "orderid": "2001000000002",
+        "strategy": "t",
+        "symbol": "INFY",
+        "exchange": "NSE",
+        "action": "SELL",
+        "product": "CNC",
+        "pricetype": "MARKET",
+        "price": "0",
+        "quantity": "5",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/user/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "I",
+                "quantity": 10,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 805.5,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000002",
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Pending",
+                "status": "Pending",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 5,
+                "price": 1500.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 5,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000003",
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "segment": "D",
+                "txn_type": "B",
+                "display_status": "Rejected",
+                "status": "Rejected",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "M",
+                "quantity": 75,
+                "price": 24000.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000004",
+                "security_id": "52024",
+                "exchange": "NSE",
+                "instrument": "OPTIDX",
+                "segment": "D",
+                "txn_type": "S",
+                "display_status": "Open",
+                "status": "Open",
+                "display_order_type": "Stop Loss",
+                "order_type": "SL",
+                "product": "M",
+                "quantity": 75,
+                "price": 120.0,
+                "trigger_price": 110.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000005",
+                "security_id": "500209",
+                "exchange": "BSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Cancelled",
+                "status": "Cancelled",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "C",
+                "quantity": 3,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 3,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000006",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 4,
+                "price": 810.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 810.0,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              }
+            ]
+          }
+        },
+        "POST /orders/v1/modify/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2001000000002",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/user/orders",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/modify/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "order_no": "2001000000002",
+            "exchange": "NSE",
+            "segment": "E",
+            "security_id": "1594",
+            "quantity": 5,
+            "price": "0",
+            "trigger_price": 0.0,
+            "validity": "DAY",
+            "product": "C",
+            "order_type": "MKT",
+            "txn_type": "S",
+            "source": "N",
+            "off_mkt_flag": "N",
+            "serial_no": 1,
+            "group_id": 0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_not_found",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "orderid": "999",
+        "strategy": "t",
+        "symbol": "INFY",
+        "exchange": "NSE",
+        "action": "SELL",
+        "product": "CNC",
+        "pricetype": "LIMIT",
+        "price": "1495.5",
+        "quantity": "5",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/user/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "I",
+                "quantity": 10,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 805.5,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000002",
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Pending",
+                "status": "Pending",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 5,
+                "price": 1500.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 5,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000003",
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "segment": "D",
+                "txn_type": "B",
+                "display_status": "Rejected",
+                "status": "Rejected",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "M",
+                "quantity": 75,
+                "price": 24000.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000004",
+                "security_id": "52024",
+                "exchange": "NSE",
+                "instrument": "OPTIDX",
+                "segment": "D",
+                "txn_type": "S",
+                "display_status": "Open",
+                "status": "Open",
+                "display_order_type": "Stop Loss",
+                "order_type": "SL",
+                "product": "M",
+                "quantity": 75,
+                "price": 120.0,
+                "trigger_price": 110.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000005",
+                "security_id": "500209",
+                "exchange": "BSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Cancelled",
+                "status": "Cancelled",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "C",
+                "quantity": 3,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 3,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000006",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 4,
+                "price": 810.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 810.0,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "message": "Order 999 not found",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/user/orders",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_already_complete",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "orderid": "2001000000001",
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "product": "MIS",
+        "pricetype": "LIMIT",
+        "price": "800",
+        "quantity": "10",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/user/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "I",
+                "quantity": 10,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 805.5,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000002",
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Pending",
+                "status": "Pending",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 5,
+                "price": 1500.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 5,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000003",
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "segment": "D",
+                "txn_type": "B",
+                "display_status": "Rejected",
+                "status": "Rejected",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "M",
+                "quantity": 75,
+                "price": 24000.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000004",
+                "security_id": "52024",
+                "exchange": "NSE",
+                "instrument": "OPTIDX",
+                "segment": "D",
+                "txn_type": "S",
+                "display_status": "Open",
+                "status": "Open",
+                "display_order_type": "Stop Loss",
+                "order_type": "SL",
+                "product": "M",
+                "quantity": 75,
+                "price": 120.0,
+                "trigger_price": 110.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000005",
+                "security_id": "500209",
+                "exchange": "BSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Cancelled",
+                "status": "Cancelled",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "C",
+                "quantity": 3,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 3,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000006",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 4,
+                "price": 810.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 810.0,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Order 2001000000001 cannot be modified. Current status: Successful",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/user/orders",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "orderid": "2001000000002",
+        "strategy": "t",
+        "symbol": "INFY",
+        "exchange": "NSE",
+        "action": "SELL",
+        "product": "CNC",
+        "pricetype": "LIMIT",
+        "price": "1495.5",
+        "quantity": "5",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/user/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "I",
+                "quantity": 10,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 805.5,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000002",
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Pending",
+                "status": "Pending",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 5,
+                "price": 1500.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 5,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000003",
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "segment": "D",
+                "txn_type": "B",
+                "display_status": "Rejected",
+                "status": "Rejected",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "M",
+                "quantity": 75,
+                "price": 24000.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000004",
+                "security_id": "52024",
+                "exchange": "NSE",
+                "instrument": "OPTIDX",
+                "segment": "D",
+                "txn_type": "S",
+                "display_status": "Open",
+                "status": "Open",
+                "display_order_type": "Stop Loss",
+                "order_type": "SL",
+                "product": "M",
+                "quantity": 75,
+                "price": 120.0,
+                "trigger_price": 110.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000005",
+                "security_id": "500209",
+                "exchange": "BSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Cancelled",
+                "status": "Cancelled",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "C",
+                "quantity": 3,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 3,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000006",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 4,
+                "price": 810.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 810.0,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              }
+            ]
+          }
+        },
+        "POST /orders/v1/modify/regular": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "message": "Insufficient funds to place this order"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Insufficient funds to place this order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/user/orders",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/modify/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "order_no": "2001000000002",
+            "exchange": "NSE",
+            "segment": "E",
+            "security_id": "1594",
+            "quantity": 5,
+            "price": 1495.5,
+            "trigger_price": 0.0,
+            "validity": "DAY",
+            "product": "C",
+            "order_type": "LMT",
+            "txn_type": "S",
+            "source": "N",
+            "off_mkt_flag": "N",
+            "serial_no": 1,
+            "group_id": 0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_pending",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "orderid": "2001000000002",
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/user/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "I",
+                "quantity": 10,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 805.5,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000002",
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Pending",
+                "status": "Pending",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 5,
+                "price": 1500.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 5,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000003",
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "segment": "D",
+                "txn_type": "B",
+                "display_status": "Rejected",
+                "status": "Rejected",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "M",
+                "quantity": 75,
+                "price": 24000.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000004",
+                "security_id": "52024",
+                "exchange": "NSE",
+                "instrument": "OPTIDX",
+                "segment": "D",
+                "txn_type": "S",
+                "display_status": "Open",
+                "status": "Open",
+                "display_order_type": "Stop Loss",
+                "order_type": "SL",
+                "product": "M",
+                "quantity": 75,
+                "price": 120.0,
+                "trigger_price": 110.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000005",
+                "security_id": "500209",
+                "exchange": "BSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Cancelled",
+                "status": "Cancelled",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "C",
+                "quantity": 3,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 3,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000006",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 4,
+                "price": 810.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 810.0,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              }
+            ]
+          }
+        },
+        "POST /orders/v1/cancel/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2001000000002",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/user/orders",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/cancel/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "order_no": "2001000000002",
+            "source": "N",
+            "txn_type": "S",
+            "exchange": "NSE",
+            "segment": "E",
+            "product": "C",
+            "security_id": "1594",
+            "quantity": 5,
+            "validity": "DAY",
+            "order_type": "LMT",
+            "price": 1500.0,
+            "off_mkt_flag": "N",
+            "mkt_type": "NL",
+            "serial_no": 1,
+            "group_id": 0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_not_found",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "orderid": "999",
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/user/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "I",
+                "quantity": 10,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 805.5,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000002",
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Pending",
+                "status": "Pending",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 5,
+                "price": 1500.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 5,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000003",
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "segment": "D",
+                "txn_type": "B",
+                "display_status": "Rejected",
+                "status": "Rejected",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "M",
+                "quantity": 75,
+                "price": 24000.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000004",
+                "security_id": "52024",
+                "exchange": "NSE",
+                "instrument": "OPTIDX",
+                "segment": "D",
+                "txn_type": "S",
+                "display_status": "Open",
+                "status": "Open",
+                "display_order_type": "Stop Loss",
+                "order_type": "SL",
+                "product": "M",
+                "quantity": 75,
+                "price": 120.0,
+                "trigger_price": 110.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000005",
+                "security_id": "500209",
+                "exchange": "BSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Cancelled",
+                "status": "Cancelled",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "C",
+                "quantity": 3,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 3,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000006",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 4,
+                "price": 810.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 810.0,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to cancel order due to internal error",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/user/orders",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_already_complete",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "orderid": "2001000000001",
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/user/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "I",
+                "quantity": 10,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 805.5,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000002",
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Pending",
+                "status": "Pending",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 5,
+                "price": 1500.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 5,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000003",
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "segment": "D",
+                "txn_type": "B",
+                "display_status": "Rejected",
+                "status": "Rejected",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "M",
+                "quantity": 75,
+                "price": 24000.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000004",
+                "security_id": "52024",
+                "exchange": "NSE",
+                "instrument": "OPTIDX",
+                "segment": "D",
+                "txn_type": "S",
+                "display_status": "Open",
+                "status": "Open",
+                "display_order_type": "Stop Loss",
+                "order_type": "SL",
+                "product": "M",
+                "quantity": 75,
+                "price": 120.0,
+                "trigger_price": 110.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000005",
+                "security_id": "500209",
+                "exchange": "BSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Cancelled",
+                "status": "Cancelled",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "C",
+                "quantity": 3,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 3,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000006",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 4,
+                "price": 810.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 810.0,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to cancel order due to internal error",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/user/orders",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "orderid": "2001000000002",
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/user/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "I",
+                "quantity": 10,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 805.5,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000002",
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Pending",
+                "status": "Pending",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 5,
+                "price": 1500.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 5,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000003",
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "segment": "D",
+                "txn_type": "B",
+                "display_status": "Rejected",
+                "status": "Rejected",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "M",
+                "quantity": 75,
+                "price": 24000.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000004",
+                "security_id": "52024",
+                "exchange": "NSE",
+                "instrument": "OPTIDX",
+                "segment": "D",
+                "txn_type": "S",
+                "display_status": "Open",
+                "status": "Open",
+                "display_order_type": "Stop Loss",
+                "order_type": "SL",
+                "product": "M",
+                "quantity": 75,
+                "price": 120.0,
+                "trigger_price": 110.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000005",
+                "security_id": "500209",
+                "exchange": "BSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Cancelled",
+                "status": "Cancelled",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "C",
+                "quantity": 3,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 3,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000006",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 4,
+                "price": 810.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 810.0,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              }
+            ]
+          }
+        },
+        "POST /orders/v1/cancel/regular": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "message": "Insufficient funds to place this order"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to cancel order due to internal error",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/user/orders",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/cancel/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "order_no": "2001000000002",
+            "source": "N",
+            "txn_type": "S",
+            "exchange": "NSE",
+            "segment": "E",
+            "product": "C",
+            "security_id": "1594",
+            "quantity": 5,
+            "validity": "DAY",
+            "order_type": "LMT",
+            "price": 1500.0,
+            "off_mkt_flag": "N",
+            "mkt_type": "NL",
+            "serial_no": 1,
+            "group_id": 0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/user/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "I",
+                "quantity": 10,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 805.5,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000002",
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Pending",
+                "status": "Pending",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 5,
+                "price": 1500.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 5,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000003",
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "segment": "D",
+                "txn_type": "B",
+                "display_status": "Rejected",
+                "status": "Rejected",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "M",
+                "quantity": 75,
+                "price": 24000.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000004",
+                "security_id": "52024",
+                "exchange": "NSE",
+                "instrument": "OPTIDX",
+                "segment": "D",
+                "txn_type": "S",
+                "display_status": "Open",
+                "status": "Open",
+                "display_order_type": "Stop Loss",
+                "order_type": "SL",
+                "product": "M",
+                "quantity": 75,
+                "price": 120.0,
+                "trigger_price": 110.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000005",
+                "security_id": "500209",
+                "exchange": "BSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Cancelled",
+                "status": "Cancelled",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "C",
+                "quantity": 3,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 3,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000006",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 4,
+                "price": 810.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 810.0,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "2001000000001",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "MIS",
+                "quantity": 10,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 09:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "trigger pending",
+                "orderid": "2001000000002",
+                "price": 1500.0,
+                "pricetype": "LIMIT",
+                "product": "CNC",
+                "quantity": 5,
+                "symbol": "INFY",
+                "timestamp": "2026-11-03 09:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NFO",
+                "order_status": "rejected",
+                "orderid": "2001000000003",
+                "price": 24000.0,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 75,
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "2026-11-03 09:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NFO",
+                "order_status": "open",
+                "orderid": "2001000000004",
+                "price": 120.0,
+                "pricetype": "STOP LOSS",
+                "product": "MIS",
+                "quantity": 75,
+                "symbol": "NIFTY25NOV2624000CE",
+                "timestamp": "2026-11-03 09:20:01",
+                "trigger_price": 110.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "BSE",
+                "order_status": "cancelled",
+                "orderid": "2001000000005",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": 3,
+                "symbol": "INFY",
+                "timestamp": "2026-11-03 09:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "2001000000006",
+                "price": 810.0,
+                "pricetype": "LIMIT",
+                "product": "CNC",
+                "quantity": 4,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 09:20:01",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 3,
+              "total_completed_orders": 2,
+              "total_open_orders": 1,
+              "total_rejected_orders": 1,
+              "total_sell_orders": 3
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/user/orders",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_empty",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/user/orders": {
+          "body": {
+            "status": "success",
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "cannot access local variable 'order_status' where it is not associated with a value",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/user/orders",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/user/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "I",
+                "quantity": 10,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 805.5,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000002",
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Pending",
+                "status": "Pending",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 5,
+                "price": 1500.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 5,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000003",
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "segment": "D",
+                "txn_type": "B",
+                "display_status": "Rejected",
+                "status": "Rejected",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "M",
+                "quantity": 75,
+                "price": 24000.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000004",
+                "security_id": "52024",
+                "exchange": "NSE",
+                "instrument": "OPTIDX",
+                "segment": "D",
+                "txn_type": "S",
+                "display_status": "Open",
+                "status": "Open",
+                "display_order_type": "Stop Loss",
+                "order_type": "SL",
+                "product": "M",
+                "quantity": 75,
+                "price": 120.0,
+                "trigger_price": 110.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000005",
+                "security_id": "500209",
+                "exchange": "BSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Cancelled",
+                "status": "Cancelled",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "C",
+                "quantity": 3,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 3,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000006",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 4,
+                "price": 810.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 810.0,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "BUY",
+              "average_price": 805.5,
+              "exchange": "NSE",
+              "orderid": "2001000000001",
+              "product": "MIS",
+              "quantity": 10,
+              "symbol": "SBIN",
+              "timestamp": "2026-11-03 09:20:01",
+              "trade_value": 0.0
+            },
+            {
+              "action": "SELL",
+              "average_price": 0.0,
+              "exchange": "NSE",
+              "orderid": "2001000000002",
+              "product": "CNC",
+              "quantity": 5,
+              "symbol": "INFY",
+              "timestamp": "2026-11-03 09:20:01",
+              "trade_value": 0.0
+            },
+            {
+              "action": "BUY",
+              "average_price": 0.0,
+              "exchange": "NFO",
+              "orderid": "2001000000003",
+              "product": "MIS",
+              "quantity": 75,
+              "symbol": "NIFTY25NOV26FUT",
+              "timestamp": "2026-11-03 09:20:01",
+              "trade_value": 0.0
+            },
+            {
+              "action": "SELL",
+              "average_price": 0.0,
+              "exchange": "NFO",
+              "orderid": "2001000000004",
+              "product": "MIS",
+              "quantity": 75,
+              "symbol": "NIFTY25NOV2624000CE",
+              "timestamp": "2026-11-03 09:20:01",
+              "trade_value": 0.0
+            },
+            {
+              "action": "BUY",
+              "average_price": 0.0,
+              "exchange": "BSE",
+              "orderid": "2001000000005",
+              "product": "CNC",
+              "quantity": 3,
+              "symbol": "INFY",
+              "timestamp": "2026-11-03 09:20:01",
+              "trade_value": 0.0
+            },
+            {
+              "action": "SELL",
+              "average_price": 810.0,
+              "exchange": "NSE",
+              "orderid": "2001000000006",
+              "product": "CNC",
+              "quantity": 4,
+              "symbol": "SBIN",
+              "timestamp": "2026-11-03 09:20:01",
+              "trade_value": 0.0
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/user/orders",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/position": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "I",
+                "net_qty": 10,
+                "display_pos_type": "B",
+                "buy_avg": 801.1234,
+                "sell_avg": 0,
+                "net_avg": 801.1234,
+                "last_traded_price": 805.45,
+                "net_val": 43.33,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "product": "M",
+                "net_qty": -75,
+                "display_pos_type": "S",
+                "buy_avg": 0,
+                "sell_avg": 24005.5,
+                "net_avg": 24005.5,
+                "last_traded_price": 23990.0,
+                "net_val": 1162.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "C",
+                "net_qty": 0,
+                "display_pos_type": "N",
+                "buy_avg": 1500.0,
+                "sell_avg": 1499.0,
+                "net_avg": 0,
+                "last_traded_price": 1499.0,
+                "net_val": -2.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "801.12",
+              "exchange": "NSE",
+              "ltp": 805.45,
+              "pnl": 43.33,
+              "product": "MIS",
+              "quantity": 10,
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": "24005.50",
+              "exchange": "NFO",
+              "ltp": 23990.0,
+              "pnl": 1162.5,
+              "product": "MARGIN",
+              "quantity": -75,
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": "0.00",
+              "exchange": "NSE",
+              "ltp": 1499.0,
+              "pnl": -2.5,
+              "product": "CNC",
+              "quantity": 0,
+              "symbol": "INFY"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/position",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /holdings/v1/get-user-holdings-data": {
+          "body": {
+            "status": "success",
+            "data": {
+              "results": [
+                {
+                  "nse_security_id": "3045",
+                  "bse_security_id": "500112",
+                  "nse_symbol": "SBIN",
+                  "bse_symbol": "SBIN",
+                  "quantity": 20,
+                  "cost_price": 700.0,
+                  "last_traded_price": 805.5,
+                  "pc": 799.95
+                },
+                {
+                  "bse_security_id": "500209",
+                  "bse_symbol": "INFY",
+                  "quantity": 3,
+                  "avg_price": 1400.0,
+                  "ltp": 1499.0,
+                  "pc": 1490.0
+                },
+                {
+                  "nse_security_id": "9999",
+                  "nse_symbol": "UNKNOWNCO",
+                  "quantity": 2,
+                  "cost_price": 0,
+                  "last_traded_price": 0
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "avg_price": 700.0,
+                "exchange": "NSE",
+                "ltp": 805.5,
+                "pnl": 2110.0,
+                "pnlpercent": 15.07,
+                "product": "CNC",
+                "quantity": 20.0,
+                "symbol": "SBIN"
+              },
+              {
+                "avg_price": 1400.0,
+                "exchange": "BSE",
+                "ltp": 1499.0,
+                "pnl": 297.0,
+                "pnlpercent": 7.07,
+                "product": "CNC",
+                "quantity": 3.0,
+                "symbol": "INFY"
+              },
+              {
+                "avg_price": 0.0,
+                "exchange": "NSE",
+                "ltp": 0.0,
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 2.0,
+                "symbol": "UNKNOWNCO"
+              }
+            ],
+            "statistics": {
+              "total_holdings": 3.0,
+              "totalholdingvalue": 20607.0,
+              "totalinvvalue": 18200.0,
+              "totalpnlpercentage": 13.23,
+              "totalprofitandloss": 2407.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/holdings/v1/get-user-holdings-data",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_none",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /holdings/v1/get-user-holdings-data": {
+          "body": {
+            "status": "success",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "total_holdings": 0.0,
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/holdings/v1/get-user-holdings-data",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /accounts/v1/funds/summary": {
+          "body": {
+            "status": "success",
+            "data": {
+              "funds_summary": {
+                "available_cash": 99725.05,
+                "collaterals": 1500.0,
+                "utilised_amount": 274.95
+              }
+            }
+          }
+        },
+        "GET /orders/v1/position": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "I",
+                "net_qty": 10,
+                "display_pos_type": "B",
+                "buy_avg": 801.1234,
+                "sell_avg": 0,
+                "net_avg": 801.1234,
+                "last_traded_price": 805.45,
+                "net_val": 43.33,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "product": "M",
+                "net_qty": -75,
+                "display_pos_type": "S",
+                "buy_avg": 0,
+                "sell_avg": 24005.5,
+                "net_avg": 24005.5,
+                "last_traded_price": 23990.0,
+                "net_val": 1162.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "C",
+                "net_qty": 0,
+                "display_pos_type": "N",
+                "buy_avg": 1500.0,
+                "sell_avg": 1499.0,
+                "net_avg": 0,
+                "last_traded_price": 1499.0,
+                "net_val": -2.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "99725.05",
+            "collateral": "1500.00",
+            "m2mrealized": "31.50",
+            "m2munrealized": "130.00",
+            "utiliseddebits": "274.95"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/accounts/v1/funds/summary",
+          "query": [
+            [
+              "config",
+              "true"
+            ]
+          ],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/position",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_long",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/position": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "I",
+                "net_qty": 10,
+                "display_pos_type": "B",
+                "buy_avg": 801.1234,
+                "sell_avg": 0,
+                "net_avg": 801.1234,
+                "last_traded_price": 805.45,
+                "net_val": 43.33,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "product": "M",
+                "net_qty": -75,
+                "display_pos_type": "S",
+                "buy_avg": 0,
+                "sell_avg": 24005.5,
+                "net_avg": 24005.5,
+                "last_traded_price": 23990.0,
+                "net_val": 1162.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "C",
+                "net_qty": 0,
+                "display_pos_type": "N",
+                "buy_avg": 1500.0,
+                "sell_avg": 1499.0,
+                "net_avg": 0,
+                "last_traded_price": 1499.0,
+                "net_val": -2.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": 10,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/position",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/v1/price/live": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "security_id": "3045",
+                "last_price": 805.45,
+                "last_quantity": 5,
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 799.95
+                },
+                "volume_traded": 1234567,
+                "volume": 1234567,
+                "oi": 0,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 120
+                    },
+                    {
+                      "price": 805.35,
+                      "quantity": 50
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 80
+                    },
+                    {
+                      "price": 805.55,
+                      "quantity": 40
+                    },
+                    {
+                      "price": 805.6,
+                      "quantity": 10
+                    },
+                    {
+                      "price": 805.65,
+                      "quantity": 5
+                    },
+                    {
+                      "price": 805.7,
+                      "quantity": 5
+                    },
+                    {
+                      "price": 805.75,
+                      "quantity": 7
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 0,
+            "bid": 0,
+            "high": 810.0,
+            "low": 795.5,
+            "ltp": 805.45,
+            "oi": 0,
+            "open": 800.0,
+            "prev_close": 799.95,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/data/v1/price/live",
+          "query": [
+            [
+              "mode",
+              "FULL"
+            ],
+            [
+              "pref",
+              "NSE:3045:EQUITY"
+            ]
+          ],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_index",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/v1/price/live": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "security_id": "3045",
+                "last_price": 805.45,
+                "last_quantity": 5,
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 799.95
+                },
+                "volume_traded": 1234567,
+                "volume": 1234567,
+                "oi": 0,
+                "depth": {
+                  "buy": [],
+                  "sell": []
+                }
+              },
+              {
+                "security_id": "13",
+                "last_price": 24050.5,
+                "last_quantity": 5,
+                "ohlc": {
+                  "open": 24000.0,
+                  "high": 24100.0,
+                  "low": 23950.0,
+                  "close": 24000.0
+                },
+                "volume_traded": 0,
+                "volume": 0,
+                "oi": 0,
+                "depth": {
+                  "buy": [],
+                  "sell": []
+                }
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 0,
+            "bid": 0,
+            "high": 810.0,
+            "low": 795.5,
+            "ltp": 805.45,
+            "oi": 0,
+            "open": 800.0,
+            "prev_close": 799.95,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/data/v1/price/live",
+          "query": [
+            [
+              "mode",
+              "FULL"
+            ],
+            [
+              "pref",
+              "NSE:13:INDEX"
+            ]
+          ],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_no_data",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/v1/price/live": {
+          "body": {
+            "status": "success",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error from Paytm API: Unknown error",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/data/v1/price/live",
+          "query": [
+            [
+              "mode",
+              "FULL"
+            ],
+            [
+              "pref",
+              "NSE:3045:EQUITY"
+            ]
+          ],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "depth",
+      "method": "POST",
+      "path": "/api/v1/depth",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/v1/price/live": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "security_id": "3045",
+                "last_price": 805.45,
+                "last_quantity": 5,
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 799.95
+                },
+                "volume_traded": 1234567,
+                "volume": 1234567,
+                "oi": 0,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 120
+                    },
+                    {
+                      "price": 805.35,
+                      "quantity": 50
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 80
+                    },
+                    {
+                      "price": 805.55,
+                      "quantity": 40
+                    },
+                    {
+                      "price": 805.6,
+                      "quantity": 10
+                    },
+                    {
+                      "price": 805.65,
+                      "quantity": 5
+                    },
+                    {
+                      "price": 805.7,
+                      "quantity": 5
+                    },
+                    {
+                      "price": 805.75,
+                      "quantity": 7
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "asks": [
+              {
+                "price": 805.5,
+                "quantity": 80
+              },
+              {
+                "price": 805.55,
+                "quantity": 40
+              },
+              {
+                "price": 805.6,
+                "quantity": 10
+              },
+              {
+                "price": 805.65,
+                "quantity": 5
+              },
+              {
+                "price": 805.7,
+                "quantity": 5
+              }
+            ],
+            "bids": [
+              {
+                "price": 805.4,
+                "quantity": 120
+              },
+              {
+                "price": 805.35,
+                "quantity": 50
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              },
+              {
+                "price": 0,
+                "quantity": 0
+              }
+            ],
+            "high": 810.0,
+            "low": 795.5,
+            "ltp": 805.45,
+            "ltq": 5,
+            "oi": 0,
+            "open": 800.0,
+            "prev_close": 799.95,
+            "totalbuyqty": 170,
+            "totalsellqty": 147,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/data/v1/price/live",
+          "query": [
+            [
+              "mode",
+              "FULL"
+            ],
+            [
+              "pref",
+              "NSE:3045:EQUITY"
+            ]
+          ],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_futures",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/v1/price/live": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "security_id": "52023",
+                "last_price": 24010.0,
+                "last_quantity": 5,
+                "ohlc": {
+                  "open": 24000.0,
+                  "high": 24050.0,
+                  "low": 23950.0,
+                  "close": 23990.0
+                },
+                "volume_traded": 450000,
+                "volume": 450000,
+                "oi": 12900000,
+                "depth": {
+                  "buy": [],
+                  "sell": []
+                }
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 0,
+            "bid": 0,
+            "high": 24050.0,
+            "low": 23950.0,
+            "ltp": 24010.0,
+            "oi": 12900000,
+            "open": 24000.0,
+            "prev_close": 23990.0,
+            "volume": 450000
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/data/v1/price/live",
+          "query": [
+            [
+              "mode",
+              "FULL"
+            ],
+            [
+              "pref",
+              "NSE:52023:FUTURE"
+            ]
+          ],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_option",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "NIFTY25NOV2624000CE",
+        "exchange": "NFO",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/v1/price/live": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "security_id": "52024",
+                "last_price": 120.5,
+                "last_quantity": 5,
+                "ohlc": {
+                  "open": 118.0,
+                  "high": 125.0,
+                  "low": 110.0,
+                  "close": 119.0
+                },
+                "volume_traded": 90000,
+                "volume": 90000,
+                "oi": 450000,
+                "depth": {
+                  "buy": [],
+                  "sell": []
+                }
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 0,
+            "bid": 0,
+            "high": 125.0,
+            "low": 110.0,
+            "ltp": 120.5,
+            "oi": 450000,
+            "open": 118.0,
+            "prev_close": 119.0,
+            "volume": 90000
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/data/v1/price/live",
+          "query": [
+            [
+              "mode",
+              "FULL"
+            ],
+            [
+              "pref",
+              "NSE:52024:OPTION"
+            ]
+          ],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "NIFTY",
+            "exchange": "NSE_INDEX"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "NOPE",
+            "exchange": "NSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/v1/price/live": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "security_id": "3045",
+                "last_price": 805.45,
+                "last_quantity": 5,
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 799.95
+                },
+                "volume_traded": 1234567,
+                "volume": 1234567,
+                "oi": 0,
+                "depth": {
+                  "buy": [],
+                  "sell": []
+                }
+              },
+              {
+                "security_id": "13",
+                "last_price": 24050.5,
+                "last_quantity": 5,
+                "ohlc": {
+                  "open": 24000.0,
+                  "high": 24100.0,
+                  "low": 23950.0,
+                  "close": 24000.0
+                },
+                "volume_traded": 0,
+                "volume": 0,
+                "oi": 0,
+                "depth": {
+                  "buy": [],
+                  "sell": []
+                }
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [
+            {
+              "error": "Symbol 'NOPE' not found for exchange 'NSE'. Please verify the symbol name and ensure master contracts are downloaded.",
+              "exchange": "NSE",
+              "symbol": "NOPE"
+            },
+            {
+              "data": {
+                "ask": 0,
+                "bid": 0,
+                "high": 810.0,
+                "low": 795.5,
+                "ltp": 805.45,
+                "oi": 0,
+                "open": 800.0,
+                "prev_close": 799.95,
+                "volume": 1234567
+              },
+              "exchange": "NSE",
+              "symbol": "SBIN"
+            },
+            {
+              "data": {
+                "ask": 0,
+                "bid": 0,
+                "high": 24100.0,
+                "low": 23950.0,
+                "ltp": 24050.5,
+                "oi": 0,
+                "open": 24000.0,
+                "prev_close": 24000.0,
+                "volume": 0
+              },
+              "exchange": "NSE_INDEX",
+              "symbol": "NIFTY"
+            },
+            {
+              "error": "No data received",
+              "exchange": "NSE",
+              "symbol": "INFY"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/data/v1/price/live",
+          "query": [
+            [
+              "mode",
+              "FULL"
+            ],
+            [
+              "pref",
+              "NSE:3045:EQUITY,NSE:13:INDEX,NSE:1594:EQUITY"
+            ]
+          ],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "ping",
+      "method": "POST",
+      "path": "/api/v1/ping",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "broker": "paytm",
+            "message": "pong"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_already_at_target",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "strategy": "test",
+        "position_size": "10",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/position": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "I",
+                "net_qty": 10,
+                "display_pos_type": "B",
+                "buy_avg": 801.1234,
+                "sell_avg": 0,
+                "net_avg": 801.1234,
+                "last_traded_price": 805.45,
+                "net_val": 43.33,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "product": "M",
+                "net_qty": -75,
+                "display_pos_type": "S",
+                "buy_avg": 0,
+                "sell_avg": 24005.5,
+                "net_avg": 24005.5,
+                "last_traded_price": 23990.0,
+                "net_val": 1162.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "C",
+                "net_qty": 0,
+                "display_pos_type": "N",
+                "buy_avg": 1500.0,
+                "sell_avg": 1499.0,
+                "net_avg": 0,
+                "last_traded_price": 1499.0,
+                "net_val": -2.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              }
+            ]
+          }
+        },
+        "POST /orders/v1/place/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "Positions Already Matched. No Action needed.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/position",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_exit_to_zero",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "strategy": "test",
+        "position_size": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/position": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "I",
+                "net_qty": 10,
+                "display_pos_type": "B",
+                "buy_avg": 801.1234,
+                "sell_avg": 0,
+                "net_avg": 801.1234,
+                "last_traded_price": 805.45,
+                "net_val": 43.33,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "product": "M",
+                "net_qty": -75,
+                "display_pos_type": "S",
+                "buy_avg": 0,
+                "sell_avg": 24005.5,
+                "net_avg": 24005.5,
+                "last_traded_price": 23990.0,
+                "net_val": 1162.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "C",
+                "net_qty": 0,
+                "display_pos_type": "N",
+                "buy_avg": 1500.0,
+                "sell_avg": 1499.0,
+                "net_avg": 0,
+                "last_traded_price": 1499.0,
+                "net_val": -2.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              }
+            ]
+          }
+        },
+        "POST /orders/v1/place/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2001000000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/place/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "security_id": "3045",
+            "exchange": "NSE",
+            "txn_type": "S",
+            "order_type": "MKT",
+            "quantity": "10",
+            "product": "I",
+            "price": 0.0,
+            "validity": "DAY",
+            "segment": "E",
+            "source": "M"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_add_to_long",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "strategy": "test",
+        "position_size": "25",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/position": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "I",
+                "net_qty": 10,
+                "display_pos_type": "B",
+                "buy_avg": 801.1234,
+                "sell_avg": 0,
+                "net_avg": 801.1234,
+                "last_traded_price": 805.45,
+                "net_val": 43.33,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "product": "M",
+                "net_qty": -75,
+                "display_pos_type": "S",
+                "buy_avg": 0,
+                "sell_avg": 24005.5,
+                "net_avg": 24005.5,
+                "last_traded_price": 23990.0,
+                "net_val": 1162.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "C",
+                "net_qty": 0,
+                "display_pos_type": "N",
+                "buy_avg": 1500.0,
+                "sell_avg": 1499.0,
+                "net_avg": 0,
+                "last_traded_price": 1499.0,
+                "net_val": -2.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              }
+            ]
+          }
+        },
+        "POST /orders/v1/place/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2001000000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/position",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/place/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "security_id": "3045",
+            "exchange": "NSE",
+            "txn_type": "B",
+            "order_type": "MKT",
+            "quantity": "15",
+            "product": "I",
+            "price": 0.0,
+            "validity": "DAY",
+            "segment": "E",
+            "source": "M"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_futures_nrml_short_to_flat",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "strategy": "test",
+        "position_size": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/position": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "I",
+                "net_qty": 10,
+                "display_pos_type": "B",
+                "buy_avg": 801.1234,
+                "sell_avg": 0,
+                "net_avg": 801.1234,
+                "last_traded_price": 805.45,
+                "net_val": 43.33,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "product": "M",
+                "net_qty": -75,
+                "display_pos_type": "S",
+                "buy_avg": 0,
+                "sell_avg": 24005.5,
+                "net_avg": 24005.5,
+                "last_traded_price": 23990.0,
+                "net_val": 1162.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "C",
+                "net_qty": 0,
+                "display_pos_type": "N",
+                "buy_avg": 1500.0,
+                "sell_avg": 1499.0,
+                "net_avg": 0,
+                "last_traded_price": 1499.0,
+                "net_val": -2.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              }
+            ]
+          }
+        },
+        "POST /orders/v1/place/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2001000000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/position",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/place/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "security_id": "52023",
+            "exchange": "NSE",
+            "txn_type": "B",
+            "order_type": "MKT",
+            "quantity": "75",
+            "product": null,
+            "price": 0.0,
+            "validity": "DAY",
+            "segment": "D",
+            "source": "M"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/position": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "I",
+                "net_qty": 10,
+                "display_pos_type": "B",
+                "buy_avg": 801.1234,
+                "sell_avg": 0,
+                "net_avg": 801.1234,
+                "last_traded_price": 805.45,
+                "net_val": 43.33,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "product": "M",
+                "net_qty": -75,
+                "display_pos_type": "S",
+                "buy_avg": 0,
+                "sell_avg": 24005.5,
+                "net_avg": 24005.5,
+                "last_traded_price": 23990.0,
+                "net_val": 1162.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              },
+              {
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "product": "C",
+                "net_qty": 0,
+                "display_pos_type": "N",
+                "buy_avg": 1500.0,
+                "sell_avg": 1499.0,
+                "net_avg": 0,
+                "last_traded_price": 1499.0,
+                "net_val": -2.5,
+                "realised_profit": 10.5,
+                "unrealised_profit": 43.333
+              }
+            ]
+          }
+        },
+        "POST /orders/v1/place/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/position",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/place/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "security_id": "3045",
+            "exchange": "NSE",
+            "txn_type": "S",
+            "order_type": "MKT",
+            "quantity": "10",
+            "product": "I",
+            "price": "0",
+            "validity": "DAY",
+            "segment": "E",
+            "source": "M"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/place/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "security_id": "52023",
+            "exchange": "NSE",
+            "txn_type": "B",
+            "order_type": "MKT",
+            "quantity": "75",
+            "product": "M",
+            "price": "0",
+            "validity": "DAY",
+            "segment": "D",
+            "source": "M"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_nothing_open",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/position": {
+          "body": {
+            "status": "success",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/position",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders/v1/user/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "I",
+                "quantity": 10,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 805.5,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000002",
+                "security_id": "1594",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Pending",
+                "status": "Pending",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 5,
+                "price": 1500.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 5,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000003",
+                "security_id": "52023",
+                "exchange": "NSE",
+                "instrument": "FUTIDX",
+                "segment": "D",
+                "txn_type": "B",
+                "display_status": "Rejected",
+                "status": "Rejected",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "M",
+                "quantity": 75,
+                "price": 24000.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000004",
+                "security_id": "52024",
+                "exchange": "NSE",
+                "instrument": "OPTIDX",
+                "segment": "D",
+                "txn_type": "S",
+                "display_status": "Open",
+                "status": "Open",
+                "display_order_type": "Stop Loss",
+                "order_type": "SL",
+                "product": "M",
+                "quantity": 75,
+                "price": 120.0,
+                "trigger_price": 110.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 75,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000005",
+                "security_id": "500209",
+                "exchange": "BSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "B",
+                "display_status": "Cancelled",
+                "status": "Cancelled",
+                "display_order_type": "Market",
+                "order_type": "MKT",
+                "product": "C",
+                "quantity": 3,
+                "price": 0.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 0.0,
+                "remaining_quantity": 3,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              },
+              {
+                "order_no": "2001000000006",
+                "security_id": "3045",
+                "exchange": "NSE",
+                "instrument": "ES",
+                "segment": "E",
+                "txn_type": "S",
+                "display_status": "Successful",
+                "status": "Successful",
+                "display_order_type": "Limit",
+                "order_type": "LMT",
+                "product": "C",
+                "quantity": 4,
+                "price": 810.0,
+                "trigger_price": 0.0,
+                "avg_traded_price": 810.0,
+                "remaining_quantity": 0,
+                "validity": "DAY",
+                "off_mkt_flag": "N",
+                "mkt_type": "NL",
+                "serial_no": 1,
+                "group_id": 0,
+                "order_date_time": "2026-11-03 09:20:01"
+              }
+            ]
+          }
+        },
+        "POST /orders/v1/cancel/regular": {
+          "body": {
+            "status": "success",
+            "message": "SUCCESS",
+            "data": [
+              {
+                "order_no": "2001000000001",
+                "message": "Order placed",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "2001000000002"
+          ],
+          "failed_cancellations": [],
+          "message": "Canceled 1 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/user/orders",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/user/orders",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "developer.paytmmoney.com",
+          "path": "/orders/v1/cancel/regular",
+          "query": [],
+          "headers": {
+            "x-jwt-token": "paytm-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "order_no": "2001000000002",
+            "source": "N",
+            "txn_type": "S",
+            "exchange": "NSE",
+            "segment": "E",
+            "product": "C",
+            "security_id": "1594",
+            "quantity": 5,
+            "validity": "DAY",
+            "order_type": "LMT",
+            "price": 1500.0,
+            "off_mkt_flag": "N",
+            "mkt_type": "NL",
+            "serial_no": 1,
+            "group_id": 0
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

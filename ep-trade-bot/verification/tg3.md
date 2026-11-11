@@ -1145,4 +1145,30 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
 - **Mutation check:** 10 more, MG1 to MG10, all red; `tg3-history.json` now holds 99.
 - **Still to do:** margin on Dhan, Dhan Sandbox, Angel One, Upstox, Fyers and Delta Exchange, and the four GTT endpoints.
 
+
+## 17. Paytm Money, the eighth broker
+
+**What was built.** `PaytmPlugin` ports OpenAlgo's broker/paytm: place, modify and cancel; order book, trade book, positions and holdings; funds; quotes, depth and multi-quotes. Paytm Money has no candle history and no position-level margin calculator, and OpenAlgo says so too, so `/history` and `/margin` answer 501 with a plain sentence (the sentence says "in EP Trade bot yet", which is not quite right for these two and should be reworded when the capability texts are revisited).
+
+**Contract tests: 41 fixtures, 598 in all**, covering the orders, books, funds and market data above, and also smart orders, close-all and cancel-all, which go through EP Trade bot's shared logic.
+
+**Deliberate differences, each recorded from the Python implementation.** Several are defects in OpenAlgo that EP Trade bot does not copy:
+
+| Fixture | OpenAlgo | EP Trade bot |
+| --- | --- | --- |
+| Stop-loss and stop-loss-market orders | The order type is looked up under names the API never sends, so the order goes out as a MARKET order, and the trigger price is never sent. | Sends SL or SLM with its trigger price. |
+| NRML orders | Sends product null, which Paytm Money refuses. | Sends "M", Paytm Money's margin product. |
+| A symbol missing from the master contract | Sends security_id null. | Refuses before sending anything. |
+| Cancel of an order that is missing or finished | Fails with "Failed to cancel order due to internal error". | Says the order was not found (404) or what state it is in (400). |
+| Cancel and change of a resting "Open" order | Cancel works for status "Pending" only. | Cancels or changes any order that is still working, as modify already allows. |
+| Cancel-all | Cancels pending orders only. | Cancels every working order, so a resting stop order is cancelled too. |
+| Order book when Paytm Money sends no orders | Fails with a Python error. | An empty book. |
+| Trade book | Paytm Money has no trade book, so every order of the day is listed as a trade, pending and rejected ones too, at price 0. | Lists the orders that traded. |
+| Positions in margin product | Calls it MARGIN, which no order matches. | Calls it NRML. |
+| A quote with no data | "Error from Paytm API: Unknown error". | A sentence for the trader (same status). |
+
+- **Orders are sent once.** OpenAlgo retries a lost order three times after two seconds, which can place it twice. EP Trade bot sends once and, if no answer comes back, says the order may have been placed. Reads are tried up to three times, as OpenAlgo does.
+- **Mutation check:** 20 new ones, PY1 to PY20, all red (`tools/mutation/tg3-paytm.json`).
+- **Not done for Paytm Money:** login, the Paytm Money market-data feed, GTT, and a batch size check for multi-quotes (a test needs more than 100 symbols).
+
 **Task Groups 5 (the Angular app) and 6 (deployment)** are Antigravity's and are not worked on here.

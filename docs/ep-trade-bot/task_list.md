@@ -50,7 +50,8 @@ Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 7 verified). Evi
 - [x] Dhan, Dhan Sandbox (contract-verified; history, GTT, margin, login and feed not yet)
 - [x] Angel One, Upstox (contract-verified; history, GTT, margin, login and feeds not yet)
 - [x] Fyers, Delta Exchange (contract-verified; history, GTT, margin, login, feeds, Delta leverage and fractional quantities not yet)
-- [ ] Remaining adapters in batches (tracked per broker: contract-verified / live-verified)
+- [x] Paytm Money (contract-verified: orders, books, funds, quotes, depth, multiquotes, smart orders, close-all, cancel-all; no history or margin calculator at the broker; login and feed not yet)
+- [ ] Remaining adapters in batches (tracked per broker: contract-verified / live-verified): 30 left
 - [x] NetMQ bus (SUB binds, PUBs connect, startup fails on a taken port) and 8765 WebSocket proxy (OpenAlgo protocol)
 - [ ] Broker market-data feed adapters onto the bus
 - [x] SignalR order-update stream (and WebSocket `subscribe_orders`)

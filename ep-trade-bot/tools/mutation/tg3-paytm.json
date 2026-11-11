@@ -1,0 +1,162 @@
+[
+ {
+  "name": "PY1 buy and sell letters swapped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "order.Action.Equals(\"BUY\", StringComparison.OrdinalIgnoreCase) ? \"B\" : \"S\"",
+  "new": "order.Action.Equals(\"BUY\", StringComparison.OrdinalIgnoreCase) ? \"S\" : \"B\"",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY2 futures sent to the wrong exchange",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "\"NFO\" => \"NSE\", \"BFO\" => \"BSE\", _ => \"EXCHANGE\" };",
+  "new": "\"NFO\" => \"BSE\", \"BFO\" => \"BSE\", _ => \"EXCHANGE\" };",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY3 CNC sent as intraday",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "\"CNC\" => \"C\", \"MIS\" => \"I\"",
+  "new": "\"CNC\" => \"I\", \"MIS\" => \"I\"",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY4 every order sent as cash segment",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "order.Exchange is \"NSE\" or \"BSE\" ? \"E\" : \"D\"",
+  "new": "\"E\"",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY5 stop-loss sent as a market order",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "\"LIMIT\" => \"LMT\", \"SL\" => \"SL\", \"SL-M\" => \"SLM\", _ => \"MKT\"",
+  "new": "\"LIMIT\" => \"LMT\", _ => \"MKT\"",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY6 trigger price left out",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "if (order.PriceType is \"SL\" or \"SL-M\") payload[\"trigger_price\"]",
+  "new": "if (order.PriceType is \"NEVER\") payload[\"trigger_price\"]",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY7 modify to market keeps the old price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "[\"price\"] = market ? \"0\" :",
+  "new": "[\"price\"] = false ? \"0\" :",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY8 finished order can be modified",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "if (!new[] { \"OPEN\", \"TRIGGER PENDING\", \"MODIFIED\", \"PENDING\" }.Contains(status.ToUpperInvariant()))",
+  "new": "if (status.Length < 0)",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY9 finished order can be cancelled",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "if (!new[] { \"OPEN\", \"TRIGGER PENDING\", \"MODIFIED\", \"PENDING\" }.Contains((Str(order[\"status\"]) ?? \"\").ToUpperInvariant()))",
+  "new": "if (Str(order[\"status\"])?.Length < 0)",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY10 trade book lists orders that did not trade",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "if (average <= 0) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY11 long position priced at the sell average",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "Str(p[\"display_pos_type\"]) switch { \"B\" => Float(p[\"buy_avg\"]), \"S\" => Float(p[\"sell_avg\"])",
+  "new": "Str(p[\"display_pos_type\"]) switch { \"B\" => Float(p[\"sell_avg\"]), \"S\" => Float(p[\"sell_avg\"])",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY12 margin position shown as intraday",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "\"C\" => \"CNC\", \"M\" => \"NRML\", _ => \"MIS\"",
+  "new": "\"C\" => \"CNC\", \"M\" => \"MIS\", _ => \"MIS\"",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY13 pending orders counted as completed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "else if (display == \"Pending\") open++;",
+  "new": "else if (display == \"Pending\") completed++;",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY14 derivative order shown on the cash exchange",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "\"NSE\" when Derivative(instrument) => \"NFO\",",
+  "new": "\"NSE\" when Derivative(instrument) => \"NSE\",",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY15 option quoted as equity",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "parts[^1] is \"CE\" or \"PE\" ? \"OPTION\"",
+  "new": "parts[^1] is \"XX\" ? \"OPTION\"",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY16 five levels of depth cut to three",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "Enumerable.Range(0, 5).Select(i =>",
+  "new": "Enumerable.Range(0, 3).Select(i =>",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY17 index quoted on its own exchange",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "instrument.Exchange is \"NFO\" or \"NSE_INDEX\" ? \"NSE\"",
+  "new": "instrument.Exchange is \"NFO\" ? \"NSE\"",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY18 holdings statistics without a count",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "[\"total_holdings\"] = holdings.Count,",
+  "new": "",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY19 BSE holding read from the NSE id",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "(token.Length == 0 && Str(h[\"bse_security_id\"]) is { Length: > 0 }) || Str(h[\"exchange\"]) == \"BSE\"",
+  "new": "Str(h[\"exchange\"]) == \"NEVER\"",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "PY20 funds without the position profit",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Paytm/PaytmPlugin.cs",
+  "old": "realised += Float(p[\"realised_profit\"]);",
+  "new": "realised += 0;",
+  "filter": "FullyQualifiedName~PaytmContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]
