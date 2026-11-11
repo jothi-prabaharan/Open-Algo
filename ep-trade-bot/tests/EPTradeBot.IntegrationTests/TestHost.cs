@@ -38,6 +38,7 @@ public sealed class TestHost : IAsyncDisposable
             b.UseSetting("Streaming:BusPort", BusPort.ToString(System.Globalization.CultureInfo.InvariantCulture));
             // The scheduler stays off unless a test turns it on; it reads the real clock.
             b.UseSetting("Scheduling:Enabled", "false");
+            b.UseSetting("Strategies:Enabled", "false");
             configure?.Invoke(b);
         });
         try

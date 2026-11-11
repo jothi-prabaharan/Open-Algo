@@ -20,9 +20,9 @@ public sealed record AccountKillResult(
     public bool Completed => Failures.Count == 0;
 }
 
-public sealed record GlobalKillResult(int Accounts, int StrategiesHalted, IReadOnlyList<AccountKillResult> Results)
+public sealed record GlobalKillResult(int Accounts, int StrategiesHalted, IReadOnlyList<AccountKillResult> Results, IReadOnlyList<string>? StrategyFailures = null)
 {
-    public bool Completed => Results.All(r => r.Completed);
+    public bool Completed => Results.All(r => r.Completed) && (StrategyFailures is null || StrategyFailures.Count == 0);
 }
 
 /// <summary>
@@ -39,6 +39,7 @@ public sealed class KillSwitchService(
     ILiveOrderRouter live,
     IFreezeQuantityLookup freeze,
     AuditTrail audit,
+    EPTradeBot.Infrastructure.Scheduling.StrategyScheduleService strategies,
     ILogger<KillSwitchService> logger)
 {
     public async Task<AccountKillResult?> SetAccountAsync(Guid accountId, bool engage, string actor, string? reason, CancellationToken cancellationToken = default)
@@ -52,9 +53,11 @@ public sealed class KillSwitchService(
     public async Task<GlobalKillResult> EngageGlobalAsync(string actor, string? reason, CancellationToken cancellationToken = default)
     {
         List<Guid> ids;
+        List<Guid> running;
         int halted;
         await using (var db = await contexts.CreateDbContextAsync(cancellationToken))
         {
+            running = await db.HostedStrategies.AsNoTracking().Where(s => s.IsRunning).Select(s => s.Id).ToListAsync(cancellationToken);
             ids = await db.BrokerAccounts.AsNoTracking().Select(a => a.Id).ToListAsync(cancellationToken);
             halted = await db.HostedStrategies.Where(s => s.IsEnabled || s.IsRunning)
                 .ExecuteUpdateAsync(u => u.SetProperty(s => s.IsEnabled, false).SetProperty(s => s.UpdatedAtUtc, DateTime.UtcNow), cancellationToken);
@@ -74,7 +77,15 @@ public sealed class KillSwitchService(
             }
         });
         var results = (await Task.WhenAll(tasks)).Where(r => r is not null).Select(r => r!).ToList();
-        var global = new GlobalKillResult(ids.Count, halted, results);
+        // Every running strategy is stopped and held stopped, so the schedule does not bring it back; one that will not stop is reported.
+        var strategyFailures = new List<string>();
+        foreach (var id in running)
+        {
+            var stopped = await StopStrategyAsync(id, cancellationToken: CancellationToken.None);
+            if (stopped is not null) strategyFailures.Add(stopped);
+        }
+
+        var global = new GlobalKillResult(ids.Count, halted, results, strategyFailures);
 
         foreach (var r in results)
             await audit.RecordKillSwitchAsync(KillSwitchScope.Account, r.AccountId, true, actor, reason, r.Completed, r, CancellationToken.None);
@@ -103,6 +114,17 @@ public sealed class KillSwitchService(
         var squared = new List<string>();
         var failures = new List<string>();
         IReadOnlyList<OpenPosition> positions = [];
+
+        // The account's strategies stop first, so they cannot send a new order while the switch squares the account off.
+        List<Guid> accountStrategies;
+        await using (var sdb = await contexts.CreateDbContextAsync(cancellationToken))
+            accountStrategies = await sdb.HostedStrategies.AsNoTracking().Where(s => s.AccountId == accountId && s.IsRunning).Select(s => s.Id).ToListAsync(cancellationToken);
+        foreach (var strategyId in accountStrategies)
+        {
+            var failed = await StopStrategyAsync(strategyId, cancellationToken);
+            if (failed is not null) failures.Add(failed);
+        }
+
         try
         {
             if (account.AccountType == AccountType.PAPER)
@@ -156,5 +178,19 @@ public sealed class KillSwitchService(
         }
 
         return new AccountKillResult(account.Id, account.DisplayName, true, cancelled, squared, failures);
+    }
+
+    private async Task<string?> StopStrategyAsync(Guid strategyId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await strategies.StopManuallyAsync(strategyId, cancellationToken);
+            return result.Ok ? null : $"A running strategy could not be stopped: {result.Message}";
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            logger.LogError(ex, "Kill switch could not stop strategy {StrategyId}.", strategyId);
+            return "A running strategy could not be stopped. See the server log.";
+        }
     }
 }

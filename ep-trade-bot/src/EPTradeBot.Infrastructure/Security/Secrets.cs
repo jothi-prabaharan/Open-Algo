@@ -65,10 +65,10 @@ public sealed class ApiKeyService(IDbContextFactory<EpTradeDbContext> contexts, 
         Convert.ToHexStringLower(HMACSHA256.HashData(pepper, Encoding.UTF8.GetBytes(apiKey)));
 
     /// <summary>Creates a key for the account and returns it. It cannot be read back later.</summary>
-    public async Task<(AccountApiKey Record, string Key)> IssueAsync(Guid accountId, string label, CancellationToken cancellationToken = default)
+    public async Task<(AccountApiKey Record, string Key)> IssueAsync(Guid accountId, string label, CancellationToken cancellationToken = default, string orderMode = "auto")
     {
         var key = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(32));
-        var record = new AccountApiKey { AccountId = accountId, Label = label, KeyHash = Hash(key) };
+        var record = new AccountApiKey { AccountId = accountId, Label = label, KeyHash = Hash(key), OrderMode = orderMode };
         await using var db = await contexts.CreateDbContextAsync(cancellationToken);
         db.AccountApiKeys.Add(record);
         await db.SaveChangesAsync(cancellationToken);

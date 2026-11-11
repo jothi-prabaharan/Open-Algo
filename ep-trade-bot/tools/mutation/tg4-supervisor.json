@@ -1,0 +1,218 @@
+[
+ {
+  "name": "H1 an absolute path is a script (both guards removed)",
+  "file": "src/EPTradeBot.Core/Scheduling/StrategyHosting.cs",
+  "old": "|| path.StartsWith('/') || path.Contains(':')) return false;\n        if (!path.EndsWith(\".py\", StringComparison.Ordinal)) return false;\n        return path.Split('/').All(part => part.Length > 0 && part != \".\"",
+  "new": "|| path.Contains(':')) return false;\n        if (!path.EndsWith(\".py\", StringComparison.Ordinal)) return false;\n        return path.Split('/').All(part => part != \".\"",
+  "filter": "FullyQualifiedName~StrategyHostingTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "H2 a parent step is allowed (both guards removed)",
+  "file": "src/EPTradeBot.Core/Scheduling/StrategyHosting.cs",
+  "old": "part.Length > 0 && part != \".\" && part != \"..\" && !part.StartsWith('.')",
+  "new": "part.Length > 0 && part != \".\"",
+  "filter": "FullyQualifiedName~StrategyHostingTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "H3 a hidden folder is allowed",
+  "file": "src/EPTradeBot.Core/Scheduling/StrategyHosting.cs",
+  "old": " && !part.StartsWith('.')",
+  "new": "",
+  "filter": "FullyQualifiedName~StrategyHostingTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "H4 a strategy inherits the whole environment",
+  "file": "src/EPTradeBot.Core/Scheduling/StrategyHosting.cs",
+  "old": "foreach (var name in Inherited)",
+  "new": "foreach (var name in platform.Keys.ToList())",
+  "filter": "FullyQualifiedName~StrategyHostingTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "H5 the OpenAlgo key name is not set",
+  "file": "src/EPTradeBot.Core/Scheduling/StrategyHosting.cs",
+  "old": "            env[\"OPENALGO_API_KEY\"] = i.ApiKey;\n",
+  "new": "",
+  "filter": "FullyQualifiedName~StrategyHostingTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "H6 log files are shared by name",
+  "file": "src/EPTradeBot.Core/Scheduling/StrategyHosting.cs",
+  "old": "-{id:N}.log",
+  "new": "-x.log",
+  "filter": "FullyQualifiedName~StrategyHostingTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "H7 any file type is a script",
+  "file": "src/EPTradeBot.Core/Scheduling/StrategyHosting.cs",
+  "old": "if (!path.EndsWith(\".py\", StringComparison.Ordinal)) return false;\n",
+  "new": "",
+  "filter": "FullyQualifiedName~StrategyHostingTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "H8 the key outlives a stop",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "await keys.RevokeAsync(run.AccountId, run.KeyId, CancellationToken.None);\n        run.Process.Dispose();\n    }\n\n    /// <summary>\n    /// Brings",
+  "new": "run.Process.Dispose();\n    }\n\n    /// <summary>\n    /// Brings",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H9 the key outlives a self-exit",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "await keys.RevokeAsync(run.AccountId, run.KeyId, CancellationToken.None);\n            var now",
+  "new": "var now",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H10 the strategy's mode is not given to its key",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "label[..64] : label, ct, mode);",
+  "new": "label[..64] : label, ct);",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H11 a stubborn strategy is never ended",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "run.Process.Kill();\n            await run.Process.Exited;",
+  "new": "await Task.Delay(50);",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H12 no grace before ending",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "TimeSpan.FromSeconds(Options.StopGraceSeconds), CancellationToken.None",
+  "new": "TimeSpan.Zero, CancellationToken.None",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H13 a self-exit is not recorded",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "if (run.Stopping) return;",
+  "new": "if (run.Stopping || true) return;",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H14 the kill switch is ignored at start",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "if (account.KillSwitchEngaged) return",
+  "new": "if (account.KillSwitchEngaged && s.Id == Guid.Empty) return",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H15 a strategy with no account starts",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "if (s.AccountId is null) return",
+  "new": "if (s.AccountId is null && s.Id == Guid.Empty) return",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H16 a link out of the folder is followed",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "return IsInside(realRoot, real) ? full : null;",
+  "new": "return full;",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H17 the running limit is ignored",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "if (runs.Count >= Options.MaxRunning)",
+  "new": "if (runs.Count >= Options.MaxRunning + 100)",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H18 the process inherits the platform environment",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/ProcessLauncher.cs",
+  "old": "info.Environment.Clear();\n",
+  "new": "",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H19 an orphan is left running",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "launcher.TerminateByPid(pid);\n",
+  "new": "",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H20 any process with the id is taken for the strategy",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "launcher.IsAliveAndMatches(pid, Path.GetFileName(row.ScriptPath))",
+  "new": "launcher.IsAliveAndMatches(pid, \"\")",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H21 a stale row is left running",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "Where(x => x.Id == row.Id && x.IsRunning).ExecuteUpdateAsync",
+  "new": "Where(x => x.Id == row.Id && x.Id == Guid.Empty).ExecuteUpdateAsync",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H22 the reaper waits an hour",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "new PeriodicTimer(TimeSpan.FromSeconds(Options.ReapSeconds))",
+  "new": "new PeriodicTimer(TimeSpan.FromHours(1))",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H23 shutdown leaves strategies running",
+  "file": "src/EPTradeBot.Infrastructure/Scheduling/StrategySupervisor.cs",
+  "old": "await Task.WhenAll(all.Select(x => EndAsync(x.Id, x.Run, CancellationToken.None)));",
+  "new": "",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H24 an account kill switch leaves its strategies",
+  "file": "src/EPTradeBot.Infrastructure/Trading/KillSwitchService.cs",
+  "old": "foreach (var strategyId in accountStrategies)",
+  "new": "foreach (var strategyId in accountStrategies.Where(_ => false))",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H25 the global kill switch leaves strategies",
+  "file": "src/EPTradeBot.Infrastructure/Trading/KillSwitchService.cs",
+  "old": "foreach (var id in running)",
+  "new": "foreach (var id in running.Where(_ => false))",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H26 an unsafe script path is accepted",
+  "file": "src/EPTradeBot.Api/Endpoints/HostedStrategyEndpoints.cs",
+  "old": "if (!StrategyPathRules.IsSafeRelative(request.ScriptPath))",
+  "new": "if (request.ScriptPath.Length < 0 && !StrategyPathRules.IsSafeRelative(request.ScriptPath))",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H27 the logs endpoint returns the start",
+  "file": "src/EPTradeBot.Api/Endpoints/HostedStrategyEndpoints.cs",
+  "old": ".TakeLast(count)",
+  "new": ".Take(count)",
+  "filter": "FullyQualifiedName~SupervisorTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

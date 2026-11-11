@@ -91,3 +91,38 @@ of them (the last-second window, a scheduled stop clearing a pause, a failed sto
 **Not done.** Nothing starts a process yet: until the strategy supervisor (next item) is registered, the default controller reports that strategy
 hosting is not available and starts and stops nothing, so a strategy is never recorded as running when it is not. Restart catch-up (a start missed
 while the app was down) is the deferred TG2 item.
+
+## Hosted strategy supervisor
+
+**What was built.** `StrategySupervisor` runs a hosted strategy as its own operating-system process and replaces the placeholder controller the
+scheduler used (`Strategies:Enabled`, on by default). It ports the process handling in OpenAlgo's `blueprints/python_strategy.py`.
+
+- **Refusals, in plain words, before anything starts:** the strategy is switched off; it has no account; the account is switched off or its kill
+  switch is on; the script is missing; the script resolves (through a symbolic link) outside the strategies folder; the most that may run at once
+  (`Strategies:MaxRunning`, 20) are already running.
+- **A key of its own.** Each run is given a new API key on its account, in the strategy's execution mode: a semi-auto strategy's orders wait in the
+  Action Center, an auto one's go through the guard and risk checks. The key is revoked when the run ends, however it ends.
+- **A clean environment.** The process gets only PATH, HOME, LANG, LC_ALL, TZ, VIRTUAL_ENV, plus `STRATEGY_ID`, `STRATEGY_NAME`, the exchange, the
+  execution mode, the host address and its key (under both `EPTRADE_*` and the `OPENALGO_*` names, so a script written for OpenAlgo runs unchanged).
+  The database connection string, application key, API-key pepper, admin token and broker credentials never reach it.
+- **Logs** go to `log/strategies/<name>-<id>.log` through the shell's own redirection, not a pipe. `GET /api/v1/hosted-strategies/{id}/logs?lines=N`
+  returns the end of the log.
+- **Stop** asks the process to stop (SIGTERM), waits `Strategies:StopGraceSeconds`, then ends it. A strategy that ends by itself is recorded with its
+  exit code and is not restarted; the schedule decides when it runs.
+- **Restart and drift.** At start and every `Strategies:ReapSeconds`, a row marked running with no process is marked stopped, and a process left from
+  before a restart (matched by its command line, so a reused process id is not mistaken for it) is stopped. Shutting the platform down stops every
+  strategy it started.
+- **Kill switches.** Engaging an account's kill switch stops that account's strategies before it squares the account off, and holds them stopped
+  (the schedule does not bring them back). The global switch stops every running strategy, including one whose account was removed while it ran. A
+  strategy that will not stop is reported as a failure of the switch.
+
+**How it is held.** `StrategyHostingTests` (22, pure: the script-path rules, the environment whitelist) and `SupervisorTests` (16), which run a real
+Python interpreter on small scripts in a temporary folder. 27 mutants in `tools/mutation/tg4-supervisor.json`, all red. Two path rules (a leading `/`
+and a `..` step) are each also stopped by a second rule (an empty segment, a leading dot), so removing one alone survives by design; the mutants remove both.
+The global-switch mutant first survived because the account switch already stopped every strategy that had an account; a test with a strategy whose
+account is gone now needs the global path.
+
+**Not done.** Memory, CPU and file limits on a strategy process (OpenAlgo applies them with `resource` limits in the child; here the process runs with
+the platform's own limits until a cgroup or `prlimit` wrapper is added in deployment, which is Task Group 6). A strategy that starts its own child
+processes: only the strategy's own process is stopped. A live log stream (the tail endpoint is polled). Restart catch-up of a start missed while the
+platform was down is the deferred Task Group 2 item.

@@ -88,7 +88,18 @@ public static class DependencyInjection
         services.AddSingleton<KillSwitchService>();
 
         services.AddOptions<Core.Configuration.SchedulingOptions>().Bind(configuration.GetSection(Core.Configuration.SchedulingOptions.Section)).ValidateDataAnnotations().ValidateOnStart();
-        services.TryAddSingleton<EPTradeBot.Core.Scheduling.IStrategyController, EPTradeBot.Infrastructure.Scheduling.UnhostedStrategyController>();
+        services.AddOptions<Core.Configuration.StrategyHostOptions>().Bind(configuration.GetSection(Core.Configuration.StrategyHostOptions.Section)).ValidateDataAnnotations().ValidateOnStart();
+        services.AddSingleton<EPTradeBot.Infrastructure.Scheduling.IProcessLauncher, EPTradeBot.Infrastructure.Scheduling.OsProcessLauncher>();
+        services.AddSingleton<EPTradeBot.Infrastructure.Scheduling.StrategySupervisor>();
+        if (configuration.GetValue(Core.Configuration.StrategyHostOptions.Section + ":Enabled", true))
+        {
+            services.TryAddSingleton<EPTradeBot.Core.Scheduling.IStrategyController>(sp => sp.GetRequiredService<EPTradeBot.Infrastructure.Scheduling.StrategySupervisor>());
+            services.AddHostedService(sp => sp.GetRequiredService<EPTradeBot.Infrastructure.Scheduling.StrategySupervisor>());
+        }
+        else
+        {
+            services.TryAddSingleton<EPTradeBot.Core.Scheduling.IStrategyController, EPTradeBot.Infrastructure.Scheduling.UnhostedStrategyController>();
+        }
         services.AddSingleton<EPTradeBot.Infrastructure.Scheduling.StrategyScheduleService>();
         services.AddSingleton<EPTradeBot.Infrastructure.Scheduling.ScheduleRegistry>();
         services.AddQuartz(q => q.UseDefaultThreadPool(p => p.MaxConcurrency = 4));

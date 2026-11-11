@@ -138,3 +138,38 @@ public sealed class SchedulingOptions
     /// <summary>Starts the scheduler. Off only in tests that read the schedule without running it.</summary>
     public bool Enabled { get; set; } = true;
 }
+
+/// <summary>Bound from <c>Strategies</c>.</summary>
+public sealed class StrategyHostOptions
+{
+    public const string Section = "Strategies";
+
+    /// <summary>The folder scripts live in; a hosted strategy's script path is relative to it.</summary>
+    [Required(AllowEmptyStrings = false)]
+    public string Directory { get; set; } = "strategies";
+
+    /// <summary>The Python interpreter a script is run with.</summary>
+    [Required(AllowEmptyStrings = false)]
+    public string Interpreter { get; set; } = "python3";
+
+    [Required(AllowEmptyStrings = false)]
+    public string LogDirectory { get; set; } = "log/strategies";
+
+    /// <summary>The address a strategy calls back to place its orders.</summary>
+    [Required(AllowEmptyStrings = false)]
+    public string HostUrl { get; set; } = "http://127.0.0.1:5000";
+
+    /// <summary>How long a strategy is given to stop after the request to stop, before it is ended.</summary>
+    [Range(1, 300)]
+    public int StopGraceSeconds { get; set; } = 10;
+
+    /// <summary>How often the supervisor checks that what is marked running is running.</summary>
+    [Range(1, 600)]
+    public int ReapSeconds { get; set; } = 15;
+
+    [Range(1, 200)]
+    public int MaxRunning { get; set; } = 20;
+
+    /// <summary>Starts the supervisor in place of the placeholder controller. Off only in tests that supply their own.</summary>
+    public bool Enabled { get; set; } = true;
+}
