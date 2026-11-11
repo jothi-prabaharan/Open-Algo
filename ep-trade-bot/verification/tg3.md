@@ -1186,3 +1186,16 @@ The fixtures cover each holiday type: the 2026 Muhurat Sunday, an MCX evening se
 - **Contract tests in all: 675.**
 
 **Task Groups 5 (the Angular app) and 6 (deployment)** are Antigravity's and are not worked on here.
+
+
+## 19. Zerodha on MCX
+
+Kite counts MCX quantity in contracts and OpenAlgo counts units, so the lot matters. The rule lives in `Core/Brokers/Zerodha/McxContracts.cs` and is applied at the Kite boundary only.
+
+- **Out:** place, modify (quantity and disclosed quantity) and margin divide units by the lot. A quantity that is not a whole number of lots is refused with a 400 naming the lot, never rounded.
+- **In:** the order book, trade book and position book multiply contracts by the lot. The trade value also uses the quotation multiplier (GOLD is priced per 10 grams but held in 1 kg contracts).
+- **Where the lot comes from:** the master contract row for that exact contract; the table of 30 roots only when there is no row. The longest root wins, so GOLDPETAL is not read as GOLD.
+- **MCXBULLDEX** has two live sizes (30, and 15 from 2026-11-01). With no master row it cannot be sized: an order is refused, and a position book that holds one is refused whole rather than show a figure that may be wrong. OpenAlgo shows it as one contract with no symbol.
+- **Fixtures:** 21 in `zerodha_mcx.fixtures.json`, recorded from the Python code, all matching except `mcx_positionbook_unsizable_root` (the deliberate difference above). Core: 21 new tests in `McxContractsTests`.
+- **Mutation check:** 17 in `tools/mutation/tg3-mcx.json`, all red. Two first survived: MX10 (modify disclosed quantity, no fixture) and MX4 (rewritten, as the first form did not compile). Fixed with two new modify fixtures and a non-constant mutant.
+- **Not done:** GTT quantities on MCX come with the GTT work.

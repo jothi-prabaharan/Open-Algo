@@ -1,0 +1,138 @@
+[
+ {
+  "name": "MX1 part lot rounded down instead of refused",
+  "file": "src/EPTradeBot.Core/Brokers/Zerodha/McxContracts.cs",
+  "old": "if (remainder != 0) throw",
+  "new": "if (remainder < 0) throw",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MX2 negative sign dropped",
+  "file": "src/EPTradeBot.Core/Brokers/Zerodha/McxContracts.cs",
+  "old": "return quantity < 0 ? -contracts : contracts;",
+  "new": "return contracts;",
+  "filter": "FullyQualifiedName~McxContractsTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "MX3 shortest root wins",
+  "file": "src/EPTradeBot.Core/Brokers/Zerodha/McxContracts.cs",
+  "old": ".OrderByDescending(kv => kv.Key.Length)",
+  "new": ".OrderBy(kv => kv.Key.Length)",
+  "filter": "FullyQualifiedName~McxContractsTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "MX3b shortest root wins (fixtures)",
+  "file": "src/EPTradeBot.Core/Brokers/Zerodha/McxContracts.cs",
+  "old": ".OrderByDescending(kv => kv.Key.Length)",
+  "new": ".OrderBy(kv => kv.Key.Length)",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MX4 master lot ignored",
+  "file": "src/EPTradeBot.Core/Brokers/Zerodha/McxContracts.cs",
+  "old": "if (masterLotSize > 0) return masterLotSize;",
+  "new": "if (masterLotSize > int.MaxValue) return masterLotSize;",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MX5 revised root list emptied",
+  "file": "src/EPTradeBot.Core/Brokers/Zerodha/McxContracts.cs",
+  "old": "{ \"MCXBULLDEX\" };",
+  "new": "{ };",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MX6 price multiplier always 1",
+  "file": "src/EPTradeBot.Core/Brokers/Zerodha/McxContracts.cs",
+  "old": "QuotationMultipliers.TryGetValue(root, out var m) ? m :",
+  "new": "QuotationMultipliers.TryGetValue(root, out var m) ? 1 :",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MX7 conversion switched off on place",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "instrument.Exchange == \"MCX\" ? McxContracts.ToKite",
+  "new": "false ? McxContracts.ToKite",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MX8 disclosed quantity left in units on place",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "disclosed = KiteQuantity(order.DisclosedQuantity, instrument, \"Disclosed quantity\");",
+  "new": "disclosed = order.DisclosedQuantity;",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MX9 modify quantity left in units",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "quantity = instrument is null ? change.Quantity : KiteQuantity(change.Quantity, instrument, \"Quantity\");",
+  "new": "quantity = change.Quantity;",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MX10 modify disclosed left in units",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "disclosed = instrument is null ? change.DisclosedQuantity : KiteQuantity(change.DisclosedQuantity, instrument, \"Disclosed quantity\");",
+  "new": "disclosed = change.DisclosedQuantity;",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MX11 margin quantity left in units",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "return KiteQuantity(l.Quantity, l.Instrument, \"Quantity\");",
+  "new": "return l.Quantity;",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MX12 order book quantity left in contracts",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "[\"quantity\"] = await UnitsAsync(o, o[\"quantity\"], cancellationToken) ?? 0,",
+  "new": "[\"quantity\"] = o[\"quantity\"]?.DeepClone() ?? 0,",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MX13 position quantity left in contracts",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "[\"quantity\"] = await UnitsAsync(p, p[\"quantity\"], cancellationToken, strict: true) ?? \"0\",",
+  "new": "[\"quantity\"] = p[\"quantity\"]?.DeepClone() ?? \"0\",",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MX14 unsizable position no longer refused",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "if (strict && McxContracts.UnitsPerContract(tradingSymbol, lot) is null)",
+  "new": "if (false && McxContracts.UnitsPerContract(tradingSymbol, lot) is null)",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MX15 trade value not divided by the contract size",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "return units / size * McxContracts.PriceMultiplier(tradingSymbol, lot) * price;",
+  "new": "return units * McxContracts.PriceMultiplier(tradingSymbol, lot) * price;",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "MX16 trade value without the quotation multiplier",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Zerodha/ZerodhaPlugin.cs",
+  "old": "return units / size * McxContracts.PriceMultiplier(tradingSymbol, lot) * price;",
+  "new": "return units * price;",
+  "filter": "FullyQualifiedName~ZerodhaMcx",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

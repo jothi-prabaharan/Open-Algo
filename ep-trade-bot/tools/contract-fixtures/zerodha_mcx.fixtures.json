@@ -1,0 +1,1821 @@
+{
+  "broker": "zerodha",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [
+    "/margins/orders",
+    "/margins/basket"
+  ],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "779521::::3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "408065::::1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY26NOVFUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "13238786::::51714",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "NIFTY 50",
+      "name": "NIFTY 50",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE",
+      "token": "256265::::1001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "CRUDEOIL18DEC30FUT",
+      "brsymbol": "CRUDEOIL30DECFUT",
+      "name": "CRUDEOIL",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "70000001::::470001",
+      "expiry": "18-DEC-30",
+      "strike": -1.0,
+      "lotsize": 100,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "GOLD05DEC30FUT",
+      "brsymbol": "GOLD30DECFUT",
+      "name": "GOLD",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "70000002::::470002",
+      "expiry": "05-DEC-30",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "GOLDPETAL05DEC30FUT",
+      "brsymbol": "GOLDPETAL30DECFUT",
+      "name": "GOLDPETAL",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "70000003::::470003",
+      "expiry": "05-DEC-30",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "SILVERM05DEC30FUT",
+      "brsymbol": "SILVERM30DECFUT",
+      "name": "SILVERM",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "70000004::::470004",
+      "expiry": "05-DEC-30",
+      "strike": -1.0,
+      "lotsize": 5,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "MCXBULLDEX18DEC30FUT",
+      "brsymbol": "MCXBULLDEX30DECFUT",
+      "name": "MCXBULLDEX",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "70000005::::470005",
+      "expiry": "18-DEC-30",
+      "strike": -1.0,
+      "lotsize": 15,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "mcx_placeorder_one_lot",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "CRUDEOIL18DEC30FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "100",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000777"
+            }
+          }
+        },
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "CRUDEOIL30DECFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": 2,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 2,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 2,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000777",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "CRUDEOIL30DECFUT",
+            "exchange": "MCX",
+            "transaction_type": "BUY",
+            "order_type": "MARKET",
+            "quantity": "1",
+            "product": "NRML",
+            "price": "0.0",
+            "trigger_price": "0.0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgo43e25a174c5b"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_placeorder_two_lots",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "CRUDEOIL18DEC30FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "200",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000777"
+            }
+          }
+        },
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "CRUDEOIL30DECFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": 2,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 2,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 2,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000777",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "CRUDEOIL30DECFUT",
+            "exchange": "MCX",
+            "transaction_type": "BUY",
+            "order_type": "MARKET",
+            "quantity": "2",
+            "product": "NRML",
+            "price": "0.0",
+            "trigger_price": "0.0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgo56ec3f4f64e0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_placeorder_not_a_whole_lot",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "CRUDEOIL18DEC30FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "150",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000777"
+            }
+          }
+        },
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "CRUDEOIL30DECFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": 2,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 2,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 2,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Quantity must be in multiples of lot size 100 for CRUDEOIL18DEC30FUT, got 150",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "mcx_placeorder_disclosed_not_a_whole_lot",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "CRUDEOIL18DEC30FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "200",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "disclosed_quantity": "50",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000777"
+            }
+          }
+        },
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "CRUDEOIL30DECFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": 2,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 2,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 2,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Disclosed quantity must be in multiples of lot size 100 for CRUDEOIL18DEC30FUT, got 50",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "mcx_placeorder_disclosed_a_whole_lot",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "CRUDEOIL18DEC30FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "200",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "disclosed_quantity": "100",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000777"
+            }
+          }
+        },
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "CRUDEOIL30DECFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": 2,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 2,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 2,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000777",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "CRUDEOIL30DECFUT",
+            "exchange": "MCX",
+            "transaction_type": "BUY",
+            "order_type": "MARKET",
+            "quantity": "2",
+            "product": "NRML",
+            "price": "0.0",
+            "trigger_price": "0.0",
+            "disclosed_quantity": "1",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgo83a396e2a353"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_placeorder_lot_of_one",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "GOLD05DEC30FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "3",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000777"
+            }
+          }
+        },
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "CRUDEOIL30DECFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": 2,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 2,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 2,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000777",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "GOLD30DECFUT",
+            "exchange": "MCX",
+            "transaction_type": "BUY",
+            "order_type": "MARKET",
+            "quantity": "3",
+            "product": "NRML",
+            "price": "0.0",
+            "trigger_price": "0.0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgo04b34d6c703f"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_placeorder_gold_petal_not_read_as_gold",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "GOLDPETAL05DEC30FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "4",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000777"
+            }
+          }
+        },
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "CRUDEOIL30DECFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": 2,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 2,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 2,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000777",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "GOLDPETAL30DECFUT",
+            "exchange": "MCX",
+            "transaction_type": "BUY",
+            "order_type": "MARKET",
+            "quantity": "4",
+            "product": "NRML",
+            "price": "0.0",
+            "trigger_price": "0.0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgo8e1545c47315"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_placeorder_silver_mini_lot_of_five",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SILVERM05DEC30FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000777"
+            }
+          }
+        },
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "CRUDEOIL30DECFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": 2,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 2,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 2,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000777",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "SILVERM30DECFUT",
+            "exchange": "MCX",
+            "transaction_type": "BUY",
+            "order_type": "MARKET",
+            "quantity": "2",
+            "product": "NRML",
+            "price": "0.0",
+            "trigger_price": "0.0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgoa0507936a2d4"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_placeorder_revised_size_from_the_master_row",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "MCXBULLDEX18DEC30FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "30",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000777"
+            }
+          }
+        },
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "CRUDEOIL30DECFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": 2,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 2,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 2,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000777",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "MCXBULLDEX30DECFUT",
+            "exchange": "MCX",
+            "transaction_type": "BUY",
+            "order_type": "MARKET",
+            "quantity": "2",
+            "product": "NRML",
+            "price": "0.0",
+            "trigger_price": "0.0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgod5bf92c45379"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_modifyorder_quantity",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "orderid": "151220000000002",
+        "strategy": "t",
+        "symbol": "CRUDEOIL18DEC30FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "product": "NRML",
+        "pricetype": "LIMIT",
+        "price": "6500",
+        "quantity": "300",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /orders/regular/151220000000002": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000002",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.kite.trade",
+          "path": "/orders/regular/151220000000002",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "order_type": "LIMIT",
+            "quantity": "3",
+            "price": "6500.0",
+            "disclosed_quantity": "0",
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_modifyorder_disclosed_a_whole_lot",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "orderid": "151220000000002",
+        "strategy": "t",
+        "symbol": "CRUDEOIL18DEC30FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "product": "NRML",
+        "pricetype": "LIMIT",
+        "price": "6500",
+        "quantity": "300",
+        "disclosed_quantity": "200",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /orders/regular/151220000000002": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "151220000000002",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.kite.trade",
+          "path": "/orders/regular/151220000000002",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "order_type": "LIMIT",
+            "quantity": "3",
+            "price": "6500.0",
+            "disclosed_quantity": "2",
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_modifyorder_disclosed_not_a_whole_lot",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "orderid": "151220000000002",
+        "strategy": "t",
+        "symbol": "CRUDEOIL18DEC30FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "product": "NRML",
+        "pricetype": "LIMIT",
+        "price": "6500",
+        "quantity": "300",
+        "disclosed_quantity": "50",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /orders/regular/151220000000002": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Disclosed quantity must be in multiples of lot size 100 for CRUDEOIL18DEC30FUT, got 50",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "mcx_modifyorder_not_a_whole_lot",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "orderid": "151220000000002",
+        "strategy": "t",
+        "symbol": "CRUDEOIL18DEC30FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "product": "NRML",
+        "pricetype": "LIMIT",
+        "price": "6500",
+        "quantity": "250",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /orders/regular/151220000000002": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Quantity must be in multiples of lot size 100 for CRUDEOIL18DEC30FUT, got 250",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "mcx_orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_id": "151220000000001",
+                "exchange": "MCX",
+                "tradingsymbol": "CRUDEOIL30DECFUT",
+                "transaction_type": "BUY",
+                "order_type": "MARKET",
+                "product": "NRML",
+                "quantity": 2,
+                "filled_quantity": 2,
+                "pending_quantity": 0,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 0,
+                "trigger_price": 0,
+                "average_price": 0,
+                "status": "COMPLETE",
+                "order_timestamp": "2026-11-03 09:20:01"
+              },
+              {
+                "order_id": "151220000000002",
+                "exchange": "MCX",
+                "tradingsymbol": "GOLD30DECFUT",
+                "transaction_type": "BUY",
+                "order_type": "MARKET",
+                "product": "NRML",
+                "quantity": 3,
+                "filled_quantity": 0,
+                "pending_quantity": 3,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 0,
+                "trigger_price": 0,
+                "average_price": 0,
+                "status": "OPEN",
+                "order_timestamp": "2026-11-03 09:20:01"
+              },
+              {
+                "order_id": "151220000000003",
+                "exchange": "MCX",
+                "tradingsymbol": "SILVERM30DECFUT",
+                "transaction_type": "BUY",
+                "order_type": "MARKET",
+                "product": "NRML",
+                "quantity": 4,
+                "filled_quantity": 0,
+                "pending_quantity": 4,
+                "disclosed_quantity": 0,
+                "cancelled_quantity": 0,
+                "price": 0,
+                "trigger_price": 0,
+                "average_price": 0,
+                "status": "OPEN",
+                "order_timestamp": "2026-11-03 09:20:01"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "MCX",
+                "order_status": "complete",
+                "orderid": "151220000000001",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "NRML",
+                "quantity": 200,
+                "symbol": "CRUDEOIL18DEC30FUT",
+                "timestamp": "2026-11-03 09:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "MCX",
+                "order_status": "open",
+                "orderid": "151220000000002",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "NRML",
+                "quantity": 3,
+                "symbol": "GOLD05DEC30FUT",
+                "timestamp": "2026-11-03 09:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "MCX",
+                "order_status": "open",
+                "orderid": "151220000000003",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "NRML",
+                "quantity": 20,
+                "symbol": "SILVERM05DEC30FUT",
+                "timestamp": "2026-11-03 09:20:01",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 3,
+              "total_completed_orders": 1,
+              "total_open_orders": 2,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_tradebook_value_uses_the_quotation_multiplier",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /trades": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "trade_id": "10000001",
+                "order_id": "151220000000001",
+                "exchange": "MCX",
+                "tradingsymbol": "CRUDEOIL30DECFUT",
+                "product": "NRML",
+                "transaction_type": "BUY",
+                "quantity": 2,
+                "average_price": 6500.5,
+                "fill_timestamp": "2026-11-03 09:21:12",
+                "order_timestamp": "2026-11-03 09:21:11"
+              },
+              {
+                "trade_id": "10000002",
+                "order_id": "151220000000002",
+                "exchange": "MCX",
+                "tradingsymbol": "GOLD30DECFUT",
+                "product": "NRML",
+                "transaction_type": "SELL",
+                "quantity": 3,
+                "average_price": 7500.25,
+                "fill_timestamp": "2026-11-03 09:25:00",
+                "order_timestamp": "2026-11-03 09:25:00"
+              },
+              {
+                "trade_id": "10000003",
+                "order_id": "151220000000003",
+                "exchange": "MCX",
+                "tradingsymbol": "SILVERM30DECFUT",
+                "product": "NRML",
+                "transaction_type": "BUY",
+                "quantity": 4,
+                "average_price": 90000.0,
+                "fill_timestamp": "2026-11-03 09:26:00",
+                "order_timestamp": "2026-11-03 09:26:00"
+              },
+              {
+                "trade_id": "10000004",
+                "order_id": "151220000000004",
+                "exchange": "MCX",
+                "tradingsymbol": "GOLDPETAL30DECFUT",
+                "product": "NRML",
+                "transaction_type": "BUY",
+                "quantity": 4,
+                "average_price": 7500.0,
+                "fill_timestamp": "2026-11-03 09:27:00",
+                "order_timestamp": "2026-11-03 09:27:00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "BUY",
+              "average_price": 6500.5,
+              "exchange": "MCX",
+              "orderid": "151220000000001",
+              "product": "NRML",
+              "quantity": 200,
+              "symbol": "CRUDEOIL18DEC30FUT",
+              "timestamp": "2026-11-03 09:21:12",
+              "trade_value": 1300100.0,
+              "tradeid": "10000001"
+            },
+            {
+              "action": "SELL",
+              "average_price": 7500.25,
+              "exchange": "MCX",
+              "orderid": "151220000000002",
+              "product": "NRML",
+              "quantity": 3,
+              "symbol": "GOLD05DEC30FUT",
+              "timestamp": "2026-11-03 09:25:00",
+              "trade_value": 2250075.0,
+              "tradeid": "10000002"
+            },
+            {
+              "action": "BUY",
+              "average_price": 90000.0,
+              "exchange": "MCX",
+              "orderid": "151220000000003",
+              "product": "NRML",
+              "quantity": 20,
+              "symbol": "SILVERM05DEC30FUT",
+              "timestamp": "2026-11-03 09:26:00",
+              "trade_value": 1800000.0,
+              "tradeid": "10000003"
+            },
+            {
+              "action": "BUY",
+              "average_price": 7500.0,
+              "exchange": "MCX",
+              "orderid": "151220000000004",
+              "product": "NRML",
+              "quantity": 4,
+              "symbol": "GOLDPETAL05DEC30FUT",
+              "timestamp": "2026-11-03 09:27:00",
+              "trade_value": 30000.0,
+              "tradeid": "10000004"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/trades",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "CRUDEOIL30DECFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": 2,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 2,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 2,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "GOLD30DECFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": -3,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 3,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 3,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "6500.00",
+              "exchange": "MCX",
+              "ltp": 6510.0,
+              "pnl": 100.0,
+              "product": "NRML",
+              "quantity": 200,
+              "symbol": "CRUDEOIL18DEC30FUT"
+            },
+            {
+              "average_price": "6500.00",
+              "exchange": "MCX",
+              "ltp": 6510.0,
+              "pnl": 100.0,
+              "product": "NRML",
+              "quantity": -3,
+              "symbol": "GOLD05DEC30FUT"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_positionbook_unsizable_root",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "CRUDEOIL30DECFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": 2,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 2,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 2,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                },
+                {
+                  "tradingsymbol": "MCXBULLDEX30JANFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": 1,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 1,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 1,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "6500.00",
+              "exchange": "MCX",
+              "ltp": 6510.0,
+              "pnl": 100.0,
+              "product": "NRML",
+              "quantity": 200,
+              "symbol": "CRUDEOIL18DEC30FUT"
+            },
+            {
+              "average_price": "6500.00",
+              "exchange": "MCX",
+              "ltp": 6510.0,
+              "pnl": 100.0,
+              "product": "NRML",
+              "quantity": 1,
+              "symbol": null
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_openposition_in_units",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "CRUDEOIL18DEC30FUT",
+        "exchange": "MCX",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "CRUDEOIL30DECFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": 2,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 2,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 2,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": 200,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_margin_one_lot",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "CRUDEOIL18DEC30FUT",
+            "exchange": "MCX",
+            "action": "BUY",
+            "quantity": "100",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /margins/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "type": "commodity",
+                "tradingsymbol": "CRUDEOIL30DECFUT",
+                "span": 100.5,
+                "exposure": 20.25,
+                "total": 1608.05
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20.25,
+            "span_margin": 100.5,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/margins/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "exchange": "MCX",
+              "tradingsymbol": "CRUDEOIL30DECFUT",
+              "transaction_type": "BUY",
+              "variety": "regular",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "quantity": 1,
+              "price": 0.0,
+              "trigger_price": 0.0
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "mcx_margin_not_a_whole_lot",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "CRUDEOIL18DEC30FUT",
+            "exchange": "MCX",
+            "action": "BUY",
+            "quantity": "150",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /margins/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "type": "commodity",
+                "tradingsymbol": "CRUDEOIL30DECFUT",
+                "span": 100.5,
+                "exposure": 20.25,
+                "total": 1608.05
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Quantity must be in multiples of lot size 100 for CRUDEOIL18DEC30FUT, got 150",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "mcx_closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "tradingsymbol": "CRUDEOIL30DECFUT",
+                  "exchange": "MCX",
+                  "product": "NRML",
+                  "quantity": 2,
+                  "overnight_quantity": 0,
+                  "buy_quantity": 2,
+                  "sell_quantity": 0,
+                  "day_buy_quantity": 2,
+                  "day_sell_quantity": 0,
+                  "average_price": 6500.0,
+                  "last_price": 6510.0,
+                  "pnl": 100.0,
+                  "buy_value": 0,
+                  "sell_value": 0,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        },
+        "POST /orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "151220000000777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.kite.trade",
+          "path": "/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.kite.trade",
+          "path": "/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-kite-version": "3",
+            "authorization": "token kite-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "tradingsymbol": "CRUDEOIL30DECFUT",
+            "exchange": "MCX",
+            "transaction_type": "SELL",
+            "order_type": "MARKET",
+            "quantity": "2",
+            "product": "NRML",
+            "price": "0",
+            "trigger_price": "0",
+            "disclosed_quantity": "0",
+            "validity": "DAY",
+            "market_protection": "-1",
+            "tag": "openalgoacc1ee62873b"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

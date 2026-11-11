@@ -3,6 +3,7 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using EPTradeBot.Core.Brokers;
+using EPTradeBot.Core.Brokers.Zerodha;
 using Microsoft.Extensions.Logging;
 
 namespace EPTradeBot.Infrastructure.Brokers.Zerodha;
@@ -53,9 +54,19 @@ public sealed class ZerodhaPlugin(
 
     public async Task<BrokerCallResult> PlaceAsync(BrokerSession session, BrokerOrder order, CancellationToken cancellationToken)
     {
-        if (order.Exchange == "MCX") return BrokerCallResult.Refused(400, McxRefusal);
         var instrument = await symbols.FindAsync(BrokerName, order.Symbol, order.Exchange, cancellationToken);
         if (instrument is null) return BrokerCallResult.Refused(400, UnknownSymbol(order.Symbol, order.Exchange));
+        int quantity, disclosed;
+        try
+        {
+            quantity = KiteQuantity(order.Quantity, instrument, "Quantity");
+            disclosed = KiteQuantity(order.DisclosedQuantity, instrument, "Disclosed quantity");
+        }
+        catch (McxQuantityException ex)
+        {
+            return BrokerCallResult.Refused(400, ex.Message);
+        }
+
 
         var tag = "openalgo" + Convert.ToHexStringLower(System.Security.Cryptography.RandomNumberGenerator.GetBytes(6));
         var form = new List<KeyValuePair<string, string>>
@@ -64,11 +75,11 @@ public sealed class ZerodhaPlugin(
             new("exchange", order.Exchange),
             new("transaction_type", order.Action.ToUpperInvariant()),
             new("order_type", order.PriceType),
-            new("quantity", order.Quantity.ToString(CultureInfo.InvariantCulture)),
+            new("quantity", quantity.ToString(CultureInfo.InvariantCulture)),
             new("product", order.Product),
             new("price", Num(order.Price)),
             new("trigger_price", Num(order.TriggerPrice)),
-            new("disclosed_quantity", order.DisclosedQuantity.ToString(CultureInfo.InvariantCulture)),
+            new("disclosed_quantity", disclosed.ToString(CultureInfo.InvariantCulture)),
             new("validity", "DAY"),
             new("market_protection", "-1"),
             new("tag", tag),
@@ -102,13 +113,24 @@ public sealed class ZerodhaPlugin(
 
     public async Task<BrokerCallResult> ModifyAsync(BrokerSession session, BrokerOrderChange change, CancellationToken cancellationToken)
     {
-        if (change.Exchange == "MCX") return BrokerCallResult.Refused(400, McxRefusal);
+        var instrument = await symbols.FindAsync(BrokerName, change.Symbol, change.Exchange, cancellationToken);
+        int quantity, disclosed;
+        try
+        {
+            quantity = instrument is null ? change.Quantity : KiteQuantity(change.Quantity, instrument, "Quantity");
+            disclosed = instrument is null ? change.DisclosedQuantity : KiteQuantity(change.DisclosedQuantity, instrument, "Disclosed quantity");
+        }
+        catch (McxQuantityException ex)
+        {
+            return BrokerCallResult.Refused(400, ex.Message);
+        }
+
         var form = new List<KeyValuePair<string, string>>
         {
             new("order_type", change.PriceType is "MARKET" or "LIMIT" or "SL" or "SL-M" ? change.PriceType : "MARKET"),
-            new("quantity", change.Quantity.ToString(CultureInfo.InvariantCulture)),
+            new("quantity", quantity.ToString(CultureInfo.InvariantCulture)),
             new("price", change.Price != 0 ? Num(change.Price) : "0"),
-            new("disclosed_quantity", change.DisclosedQuantity != 0 ? change.DisclosedQuantity.ToString(CultureInfo.InvariantCulture) : "0"),
+            new("disclosed_quantity", disclosed != 0 ? disclosed.ToString(CultureInfo.InvariantCulture) : "0"),
             new("validity", "DAY"),
         };
         if (change.TriggerPrice != 0) form.Add(new("trigger_price", Num(change.TriggerPrice)));
@@ -163,7 +185,6 @@ public sealed class ZerodhaPlugin(
     {
         var raw = await GetAsync(session, "/orders", cancellationToken);
         var rows = raw["data"] as JsonArray ?? [];
-        RefuseMcx(rows);
         int buy = 0, sell = 0, completed = 0, open = 0, rejected = 0;
         var orders = new JsonArray();
         foreach (var o in rows.OfType<JsonObject>())
@@ -181,7 +202,7 @@ public sealed class ZerodhaPlugin(
                 ["symbol"] = await OpenAlgoSymbolAsync(o, cancellationToken),
                 ["exchange"] = Copy(o["exchange"], ""),
                 ["action"] = Copy(o["transaction_type"], ""),
-                ["quantity"] = Copy(o["quantity"], 0),
+                ["quantity"] = await UnitsAsync(o, o["quantity"], cancellationToken) ?? 0,
                 ["price"] = Copy(o["price"], 0.0),
                 ["trigger_price"] = Copy(o["trigger_price"], 0.0),
                 ["pricetype"] = Copy(o["order_type"], ""),
@@ -204,12 +225,14 @@ public sealed class ZerodhaPlugin(
     {
         var raw = await GetAsync(session, "/trades", cancellationToken);
         var rows = raw["data"] as JsonArray ?? [];
-        RefuseMcx(rows);
         var trades = new JsonArray();
         foreach (var t in rows.OfType<JsonObject>())
         {
-            var quantity = BookFormatting.Number(t["quantity"]) ?? 0;
+            var units = await UnitsAsync(t, t["quantity"], cancellationToken);
+            var quantity = BookFormatting.Number(units) ?? 0;
             var average = BookFormatting.Number(t["average_price"]) ?? 0;
+            // The rupee value of the trade: contracts times the quotation multiplier times the price (units times price off MCX).
+            var tradeValue = Str(t["exchange"]) == "MCX" ? await McxTradeValueAsync(t, quantity, average, cancellationToken) : quantity * average;
             var fill = t["fill_timestamp"];
             trades.Add(new JsonObject
             {
@@ -217,9 +240,9 @@ public sealed class ZerodhaPlugin(
                 ["exchange"] = Copy(t["exchange"], ""),
                 ["product"] = Copy(t["product"], ""),
                 ["action"] = Copy(t["transaction_type"], ""),
-                ["quantity"] = Copy(t["quantity"], 0),
+                ["quantity"] = units ?? 0,
                 ["average_price"] = Copy(t["average_price"], 0.0),
-                ["trade_value"] = quantity * average,
+                ["trade_value"] = tradeValue,
                 ["orderid"] = Copy(t["order_id"], ""),
                 ["tradeid"] = Copy(t["trade_id"], ""),
                 // fill_timestamp is the trade's own time; order_timestamp is shared by every fill of an order.
@@ -234,7 +257,6 @@ public sealed class ZerodhaPlugin(
     {
         var raw = await GetAsync(session, "/portfolio/positions", cancellationToken);
         var rows = raw["data"]?["net"] as JsonArray ?? [];
-        RefuseMcx(rows);
         var positions = new JsonArray();
         foreach (var p in rows.OfType<JsonObject>())
         {
@@ -243,7 +265,7 @@ public sealed class ZerodhaPlugin(
                 ["symbol"] = await OpenAlgoSymbolAsync(p, cancellationToken),
                 ["exchange"] = Copy(p["exchange"], ""),
                 ["product"] = Copy(p["product"], ""),
-                ["quantity"] = Copy(p["quantity"], "0"),
+                ["quantity"] = await UnitsAsync(p, p["quantity"], cancellationToken, strict: true) ?? "0",
                 ["pnl"] = BookFormatting.Round2(BookFormatting.Number(p["pnl"]) ?? 0),
                 ["average_price"] = BookFormatting.Fixed2(BookFormatting.Number(p["average_price"]) ?? 0),
                 ["ltp"] = BookFormatting.Round2(BookFormatting.Number(p["last_price"]) ?? 0),
@@ -528,12 +550,22 @@ public sealed class ZerodhaPlugin(
     /// </summary>
     public async Task<JsonObject> CalculateMarginAsync(BrokerSession session, IReadOnlyList<MarginLeg> legs, CancellationToken cancellationToken)
     {
-        if (legs.Any(l => l.Instrument.Exchange == "MCX")) throw new BrokerException(McxRefusal.Replace("orders", "margin calculations"), 400);
+        int Contracts(MarginLeg l)
+        {
+            try
+            {
+                return KiteQuantity(l.Quantity, l.Instrument, "Quantity");
+            }
+            catch (McxQuantityException ex)
+            {
+                throw new BrokerException(ex.Message, 400);
+            }
+        }
 
         var payload = new JsonArray(legs.Select(l => (JsonNode?)new JsonObject
         {
             ["exchange"] = l.Instrument.Exchange, ["tradingsymbol"] = l.Instrument.BrokerSymbol, ["transaction_type"] = l.Action, ["variety"] = "regular",
-            ["product"] = l.Product, ["order_type"] = l.PriceType, ["quantity"] = l.Quantity, ["price"] = (double)l.Price, ["trigger_price"] = (double)l.TriggerPrice,
+            ["product"] = l.Product, ["order_type"] = l.PriceType, ["quantity"] = Contracts(l), ["price"] = (double)l.Price, ["trigger_price"] = (double)l.TriggerPrice,
         }).ToArray());
 
         using var request = Request(session, HttpMethod.Post, legs.Count > 1 ? "/margins/basket?consider_positions=true" : "/margins/orders");
@@ -571,17 +603,38 @@ public sealed class ZerodhaPlugin(
 
     // ---- plumbing --------------------------------------------------------------------------------------------
 
-    private const string McxRefusal = "MCX orders through Zerodha are not supported in EP Trade bot yet. Place this order on Kite directly.";
     private const string UnansweredOrder =
         "The order was sent to Zerodha but no reply came back, so it may have been placed. Check the order book on Kite before trying again.";
 
     private static string UnknownSymbol(string symbol, string exchange) =>
         $"{symbol} on {exchange} is not in the Zerodha master contract. Check the symbol, or download the master contract again.";
 
-    private static void RefuseMcx(JsonArray rows)
+    /// <summary>
+    /// OpenAlgo units to the quantity Kite takes. Kite counts MCX in contracts; every other exchange is unchanged.
+    /// </summary>
+    private static int KiteQuantity(int quantity, SymbolRecord instrument, string field) =>
+        instrument.Exchange == "MCX" ? McxContracts.ToKite(quantity, instrument.Symbol, instrument.LotSize, field) : quantity;
+
+    /// <summary>A quantity read from Kite, in OpenAlgo units. MCX rows are multiplied by their lot; with <paramref name="strict"/> an MCX contract whose size cannot be known is refused.</summary>
+    private async Task<JsonNode?> UnitsAsync(JsonObject row, JsonNode? value, CancellationToken cancellationToken, bool strict = false)
     {
-        if (rows.OfType<JsonObject>().Any(r => Str(r["exchange"]) == "MCX"))
-            throw new BrokerException("This Zerodha account holds MCX orders or positions, which EP Trade bot cannot read yet (Kite counts MCX in contracts). Use Kite for this account until MCX support arrives.");
+        if (value is null) return null;
+        if (Str(row["exchange"]) != "MCX") return value.DeepClone();
+        var tradingSymbol = Str(row["tradingsymbol"]);
+        var record = await symbols.FindByBrokerSymbolAsync(BrokerName, tradingSymbol ?? "", "MCX", cancellationToken);
+        var lot = record?.LotSize ?? 0;
+        // A position decides whether to trade: reading 30 held contracts as 30 units against a 30 unit target would call it matched.
+        if (strict && McxContracts.UnitsPerContract(tradingSymbol, lot) is null)
+            throw new BrokerException($"Cannot read the open position in {tradingSymbol}: MCX has revised its contract size and the master contract has no row for this expiry. Re-download the master contract, then retry.");
+        return McxContracts.FromKite((long)Float(value), tradingSymbol, lot);
+    }
+
+    private async Task<double> McxTradeValueAsync(JsonObject trade, double units, double price, CancellationToken cancellationToken)
+    {
+        var tradingSymbol = Str(trade["tradingsymbol"]);
+        var lot = (await symbols.FindByBrokerSymbolAsync(BrokerName, tradingSymbol ?? "", "MCX", cancellationToken))?.LotSize ?? 0;
+        var size = McxContracts.UnitsPerContract(tradingSymbol, lot) ?? 1;
+        return units / size * McxContracts.PriceMultiplier(tradingSymbol, lot) * price;
     }
 
     private async Task<JsonNode?> OpenAlgoSymbolAsync(JsonObject row, CancellationToken cancellationToken)

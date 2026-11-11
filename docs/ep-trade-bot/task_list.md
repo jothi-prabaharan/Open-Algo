@@ -45,7 +45,7 @@ Shared pieces, done:
 
 Per active broker (contract-verified means 100% of its recorded fixtures match OpenAlgo, apart from recorded deliberate differences):
 - [x] Zerodha: orders, books, funds, quotes, depth, multiquotes, history (24 fixtures), ticker (20), margin (23)
-- [ ] Zerodha: MCX (Kite counts MCX in contracts, OpenAlgo in units; `mcx_contract_size.py` not ported)
+- [x] Zerodha: MCX (units to contracts at the Kite boundary, lot from the master contract; 21 fixtures, 16 mutation checks)
 - [ ] Zerodha: GTT
 - [ ] Zerodha: login
 - [ ] Zerodha: market-data feed onto the bus
