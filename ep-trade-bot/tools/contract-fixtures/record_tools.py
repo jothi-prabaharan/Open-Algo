@@ -31,7 +31,8 @@ NOW = _real_datetime(2026, 11, 11, 10, 0, 0, tzinfo=IST)
 class Frozen(_real_datetime):
     @classmethod
     def now(cls, tz=None):
-        return NOW if tz is None else NOW.astimezone(tz)
+        # OpenAlgo calls now() bare where it holds naive expiries (wall-clock Indian time) and now(tz) where it holds aware ones.
+        return NOW.replace(tzinfo=None) if tz is None else NOW.astimezone(tz)
 
 
 def record_greeks():
@@ -215,7 +216,60 @@ def record_oi():
     return {"now": NOW.isoformat(), "cases": cases}
 
 
-RECORDERS = {"greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
+def record_vol_surface():
+    import datetime as dt
+    import random
+
+    import services.option_greeks_service as g
+    import services.vol_surface_service as vs
+
+    g.datetime = Frozen
+    real = dt.datetime
+    dt.datetime = Frozen  # the surface reads datetime.now() through a local import
+    try:
+        cases = []
+
+        def run(name, underlying, exchange, expiries, strike_count, ltp, strikes_by_expiry, quote_fail=None, no_quote=()):
+            rng = random.Random(len(name))
+            vs.get_quotes = (lambda **kw: (False, {"status": "error", "message": quote_fail[1]}, quote_fail[0])) if quote_fail else (lambda **kw: (True, {"data": {"ltp": ltp}}, 200))
+            vs.get_available_strikes = lambda base, expiry, opt, exch: list(strikes_by_expiry.get(expiry, []))
+            quotes = {}
+
+            def multi(symbols, api_key):
+                results = []
+                for item in symbols:
+                    sym = item["symbol"]
+                    if sym in no_quote:
+                        continue
+                    if sym not in quotes:
+                        quotes[sym] = round(rng.uniform(0, 400), 2) if rng.random() > 0.15 else 0
+                    results.append({"symbol": sym, "data": {"ltp": quotes[sym]}})
+                return True, {"results": results}, 200
+
+            vs.get_multiquotes = multi
+            ok, resp, code = vs.get_vol_surface_data(underlying, exchange, expiries, strike_count, "key")
+            cases.append({"name": name, "underlying": underlying, "exchange": exchange, "expiries": expiries, "strike_count": strike_count, "ltp": ltp, "strikes": strikes_by_expiry,
+                          "quote_fail": quote_fail, "quotes": quotes, "ok": ok, "code": code, "response": resp})
+
+        wide = [23000 + 50 * i for i in range(0, 60)]
+        narrow = [23500 + 100 * i for i in range(0, 20)]
+        run("nifty-three-expiries", "NIFTY", "NSE_INDEX", ["26NOV26", "31DEC26", "28JAN27"], 6, 24057.0, {"26NOV26": wide, "31DEC26": wide, "28JAN27": narrow})
+        run("single-expiry", "NIFTY", "NSE_INDEX", ["26NOV26"], 4, 24010.0, {"26NOV26": wide})
+        run("banknifty-disjoint", "BANKNIFTY", "NSE_INDEX", ["26NOV26", "31DEC26"], 3, 52110.0, {"26NOV26": [51000 + 100 * i for i in range(30)], "31DEC26": [60000 + 100 * i for i in range(30)]})
+        run("one-expiry-without-strikes", "NIFTY", "NSE_INDEX", ["26NOV26", "31DEC26"], 5, 24057.0, {"26NOV26": wide})
+        run("fractional-strikes", "VEDL", "NFO", ["26NOV26"], 4, 292.4, {"26NOV26": [270 + 2.5 * i for i in range(20)]})
+        run("sensex", "SENSEX", "BSE_INDEX", ["26NOV26"], 5, 80211.0, {"26NOV26": [78000 + 100 * i for i in range(40)]})
+        run("no-expiry-given", "NIFTY", "NSE_INDEX", [], 5, 24057.0, {})
+        run("no-strikes-anywhere", "NIFTY", "NSE_INDEX", ["26NOV26"], 5, 24057.0, {})
+        run("no-ltp", "NIFTY", "NSE_INDEX", ["26NOV26"], 5, 0, {"26NOV26": wide})
+        run("quote-failed", "NIFTY", "NSE_INDEX", ["26NOV26"], 5, 24057.0, {"26NOV26": wide}, quote_fail=(503, "Broker busy"))
+        run("expired-expiry", "NIFTY", "NSE_INDEX", ["10NOV26"], 5, 24057.0, {"10NOV26": wide})
+        return {"now": NOW.isoformat(), "cases": cases}
+    finally:
+        dt.datetime = real
+
+
+RECORDERS = {"vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
 
 if __name__ == "__main__":
     out = {name: fn() for name, fn in RECORDERS.items()}

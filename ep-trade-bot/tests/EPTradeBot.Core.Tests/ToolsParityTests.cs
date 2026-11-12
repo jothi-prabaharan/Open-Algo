@@ -123,4 +123,26 @@ public sealed class ToolsParityTests
             Assert.Null(Difference(expected["response"], result.Response));
         }
     }
+
+    public static IEnumerable<object[]> VolSurfaceCases() => Fixtures["vol_surface"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
+
+    [Theory]
+    [MemberData(nameof(VolSurfaceCases))]
+    public void The_volatility_surface_matches_OpenAlgo_cell_by_cell(int index, string name)
+    {
+        _ = name;
+        var c = Fixtures["vol_surface"]!["cases"]![index]!;
+        var strikes = c["strikes"]!.AsObject();
+        var quotes = c["quotes"]!.AsObject();
+        var failure = c["quote_fail"] is JsonArray f ? ((int Code, string Message)?)(f[0]!.GetValue<int>(), f[1]!.GetValue<string>()) : null;
+        var inputs = new VolSurfaceTool.Inputs(
+            c["ltp"]!.GetValue<double>(), failure,
+            expiry => strikes[expiry] is JsonArray a ? a.Select(x => x!.GetValue<double>()).ToList() : [],
+            symbol => quotes[symbol] is JsonValue v ? v.GetValue<double>() : null);
+        var (ok, response, code) = VolSurfaceTool.Compute(c["underlying"]!.GetValue<string>(), c["exchange"]!.GetValue<string>(),
+            c["expiries"]!.AsArray().Select(x => x!.GetValue<string>()).ToList(), c["strike_count"]!.GetValue<int>(), inputs, Now("vol_surface"));
+        Assert.Equal(c["ok"]!.GetValue<bool>(), ok);
+        Assert.Equal(c["code"]!.GetValue<int>(), code);
+        Assert.Null(Difference(c["response"], response));
+    }
 }
