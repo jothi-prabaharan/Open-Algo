@@ -1,0 +1,66 @@
+[
+ {
+  "name": "S1 list oldest first",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Strategy.cs",
+  "old": "OrderByDescending(s => s.CreatedAt).ThenByDescending(s => s.Id)",
+  "new": "OrderBy(s => s.CreatedAt)",
+  "filter": "FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S2 live opt-in ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Strategy.cs",
+  "old": "if (r.Mode == \"live\" && !strategy.LiveEnabled)",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S3 signal strategy startable",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Strategy.cs",
+  "old": "if (strategy.StrategyKind == \"signal\")",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S4 double start allowed",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Strategy.cs",
+  "old": "if (strategy.CurrentRunId is not null || strategy.Status == \"running\")",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S5 stop on idle strategy goes on",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Strategy.cs",
+  "old": "return strategy.CurrentRunId is null ? V1Result.Error(409, StrategyNotRunning) : V1Result.Error(501, RunEngineMissing);\n    }\n\n    public async Task<V1Result> StrategyCloseLegAsync",
+  "new": "return V1Result.Error(501, RunEngineMissing);\n    }\n\n    public async Task<V1Result> StrategyCloseLegAsync",
+  "filter": "FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S6 orders not scoped to the strategy",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Strategy.cs",
+  "old": ".Where(o => runIds.Contains(o.RunId))",
+  "new": ".Where(o => true)",
+  "filter": "FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S7 events not filtered by run",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Strategy.cs",
+  "old": "if (r.RunId is { } run) events = events.Where(e => e.RunId == run);",
+  "new": "events = events.Where(e => true);",
+  "filter": "FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S8 microseconds always printed",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Strategy.cs",
+  "old": "(micro == 0 ? \"\" :",
+  "new": "(false ? \"\" :",
+  "filter": "FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

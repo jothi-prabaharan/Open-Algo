@@ -55,6 +55,15 @@ internal static class OpenAlgoV1Endpoints
         Post<PortfolioBacktestRequest>(v1, "/portfolio/tearsheet", (s, a, r, _) => Task.FromResult(s.PortfolioTearsheet(a, r)));
         Post<PortfolioHoldingsRequest>(v1, "/portfolio/holdings", (s, a, r, ct) => s.PortfolioHoldingsAsync(a, r, ct));
         v1.MapGet("/portfolio/benchmarks", (RequestDelegate)ServePortfolioBenchmarks).WithName("v1_portfolio_benchmarks");
+        Post<StrategyListRequest>(v1, "/strategy/list", (s, a, r, ct) => s.StrategyListAsync(a, r, ct));
+        Post<StrategyRefRequest>(v1, "/strategy/status", (s, a, r, ct) => s.StrategyStatusAsync(a, r, ct));
+        Post<StrategyStartRequest>(v1, "/strategy/start", (s, a, r, ct) => s.StrategyStartAsync(a, r, ct));
+        Post<StrategyRefRequest>(v1, "/strategy/stop", (s, a, r, ct) => s.StrategyStopAsync(a, r, ct));
+        Post<StrategyRefRequest>(v1, "/strategy/close_all", (s, a, r, ct) => s.StrategyStopAsync(a, r, ct));
+        Post<StrategyCloseLegRequest>(v1, "/strategy/close_leg", (s, a, r, ct) => s.StrategyCloseLegAsync(a, r, ct));
+        Post<StrategyRunsRequest>(v1, "/strategy/runs", (s, a, r, ct) => s.StrategyRunsAsync(a, r, ct));
+        Post<StrategyOrdersRequest>(v1, "/strategy/orders", (s, a, r, ct) => s.StrategyOrdersAsync(a, r, ct));
+        Post<StrategyEventsRequest>(v1, "/strategy/events", (s, a, r, ct) => s.StrategyEventsAsync(a, r, ct));
         Post<SipBacktestRequest>(v1, "/sip/backtest", (s, a, r, ct) => s.SipBacktestAsync(a, r, ct));
         Post<SectorRotationRequest>(v1, "/sectorrotation", (s, a, r, ct) => s.SectorRotationAsync(a, r, ct), ValidationShape.RotationSentence);
         v1.MapGet("/sip/frequencies", (RequestDelegate)(context => Write(context, OpenAlgoApiService.SipFrequencies()))).WithName("v1_sip_frequencies");
@@ -89,7 +98,7 @@ internal static class OpenAlgoV1Endpoints
         "/placeorder", "/placesmartorder", "/modifyorder", "/cancelorder", "/cancelallorder", "/closeposition", "/orderbook", "/tradebook",
         "/positionbook", "/holdings", "/funds", "/orderstatus", "/openposition", "/quotes", "/depth", "/ping", "/analyzer", "/analyzer/toggle",
         "/symbol", "/search", "/expiry", "/optionsymbol", "/basketorder", "/splitorder", "/optionsorder", "/optionsmultiorder", "/instruments",
-        "/multiquotes", "/syntheticfuture", "/optionchain", "/optiongreeks", "/multioptiongreeks", "/portfolio/backtest", "/portfolio/tearsheet", "/portfolio/holdings", "/portfolio/benchmarks", "/sip/backtest", "/sip/frequencies", "/sectorrotation", "/sectorrotation/options", "/market/holidays", "/market/timings", "/pnl/symbols", "/chart", "/history", "/intervals", "/ticker/{symbol}", "/margin",
+        "/multiquotes", "/syntheticfuture", "/optionchain", "/optiongreeks", "/multioptiongreeks", "/portfolio/backtest", "/portfolio/tearsheet", "/portfolio/holdings", "/portfolio/benchmarks", "/strategy/list", "/strategy/status", "/strategy/start", "/strategy/stop", "/strategy/close_all", "/strategy/close_leg", "/strategy/runs", "/strategy/orders", "/strategy/events", "/sip/backtest", "/sip/frequencies", "/sectorrotation", "/sectorrotation/options", "/market/holidays", "/market/timings", "/pnl/symbols", "/chart", "/history", "/intervals", "/ticker/{symbol}", "/margin",
         "/placegttorder", "/modifygttorder", "/cancelgttorder", "/gttorderbook",
     ];
 
