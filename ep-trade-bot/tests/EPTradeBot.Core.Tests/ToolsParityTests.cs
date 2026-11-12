@@ -200,4 +200,50 @@ public sealed class ToolsParityTests
         // Densities are raw gamma x open interest; opengreeks stops its volatility solve a hair earlier than ours, which shows at the tenth digit.
         AssertSame(c["response"], result.Response, 1e-8);
     }
+
+    public static IEnumerable<object[]> OiProfileCases() => Fixtures["oi_profile"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
+
+    [Theory]
+    [MemberData(nameof(OiProfileCases))]
+    public void The_OI_profile_matches_OpenAlgo_including_pauses_and_retries(int index, string name)
+    {
+        _ = name;
+        var c = Fixtures["oi_profile"]!["cases"]![index]!;
+        var chain = c["chain"] as JsonObject;
+        var behaviours = c["behaviours"]!.AsObject();
+        var futuresCandles = c["fut_candles"] as JsonArray;
+        var attempts = new Dictionary<string, int>();
+        var calls = new List<JsonObject>();
+        OiProfileTool.HistoryFetch history = (symbol, exchange, interval, start, end) =>
+        {
+            calls.Add(new JsonObject { ["symbol"] = symbol, ["exchange"] = exchange, ["interval"] = interval, ["start"] = start, ["end"] = end });
+            if (interval != "D")
+                return futuresCandles is not null ? (true, new JsonObject { ["data"] = futuresCandles.DeepClone() }, 200) : (false, new JsonObject { ["message"] = "none" }, 404);
+            var n = attempts[symbol] = attempts.GetValueOrDefault(symbol) + 1;
+            var kind = behaviours[symbol]?.GetValue<string>() ?? "ok";
+            switch (kind)
+            {
+                case "ok": return (true, new JsonObject { ["data"] = new JsonArray(new JsonObject { ["oi"] = 100 }, new JsonObject { ["oi"] = 250 + symbol.Length }, new JsonObject { ["oi"] = 999 }) }, 200);
+                case "one-row": return (true, new JsonObject { ["data"] = new JsonArray(new JsonObject { ["oi"] = 5 }) }, 200);
+                case "empty": return (true, new JsonObject { ["data"] = new JsonArray() }, 200);
+                case "always-429": return (false, new JsonObject { ["message"] = "slow down" }, 429);
+                case "429-once": return n == 1 ? (false, new JsonObject { ["message"] = "slow down" }, 429) : (true, new JsonObject { ["data"] = new JsonArray(new JsonObject { ["oi"] = 40 }, new JsonObject { ["oi"] = 50 }) }, 200);
+                case "raises-429": if (n == 1) throw new InvalidOperationException("HTTP 429 Too Many Requests"); return (true, new JsonObject { ["data"] = new JsonArray(new JsonObject { ["oi"] = 70 }, new JsonObject { ["oi"] = 80 }) }, 200);
+                case "raises": throw new InvalidOperationException("boom");
+                case "failed": return (false, new JsonObject { ["message"] = "no data" }, 500);
+                default: throw new InvalidOperationException(kind);
+            }
+        };
+
+        var sleeps = new List<double>();
+        (string, string)? futures = c["futures"] is JsonArray f ? (f[0]!.GetValue<string>(), f[1]!.GetValue<string>()) : null;
+        (bool Ok, JsonObject Response, int Code) result = chain is null
+            ? (false, (JsonObject)c["response"]!.DeepClone(), c["code"]!.GetValue<int>())
+            : OiProfileTool.Compute(chain, "NIFTY", c["exchange"]!.GetValue<string>(), "26NOV26", c["interval"]!.GetValue<string>(), c["days"]!.GetValue<int>(), futures, history, sleeps.Add, Now("oi_profile"));
+        Assert.Equal(c["ok"]!.GetValue<bool>(), result.Ok);
+        Assert.Equal(c["code"]!.GetValue<int>(), result.Code);
+        AssertSame(c["calls"], new JsonArray(calls.Select(x => (JsonNode)x).ToArray()));
+        AssertSame(c["sleeps"], new JsonArray(sleeps.Select(x => (JsonNode)JsonValue.Create(x)!).ToArray()));
+        AssertSame(c["response"], result.Response);
+    }
 }

@@ -382,7 +382,89 @@ def record_gamma_density():
     return {"now": NOW.isoformat(), "cases": cases}
 
 
-RECORDERS = {"gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
+def record_oi_profile():
+    import types
+
+    import services.oi_profile_service as op
+    import services.strategy_chart_service as sc
+
+    op.datetime = Frozen
+    sc.datetime = Frozen
+    sleeps = []
+    op.time = types.SimpleNamespace(sleep=lambda s: sleeps.append(s), monotonic=lambda: 0.0)
+    cases = []
+    base_epoch = int(NOW.timestamp())
+
+    def candles(n_days, ms=False, with_time=False):
+        rows = []
+        for d in range(n_days):
+            day_start = base_epoch - (n_days - 1 - d) * 86400 - 10 * 3600  # 09:15-ish IST of each day
+            for m in range(6):
+                ts = day_start + m * 300
+                row = {"open": 24000 + d + m, "high": 24010 + d, "low": 23990 + d, "close": 24005 + m, "volume": 1000 + m, "timestamp": ts * 1000 if ms else ts}
+                if with_time:
+                    row["time"] = ts
+                rows.append(row)
+        return rows
+
+    def run(name, chain, days=3, interval="5m", futures=("NIFTY26NOVFUT", "NFO"), fut_candles=None, behaviours=None, exchange="NFO"):
+        sleeps.clear()
+        calls = []
+        behaviours = behaviours or {}
+        attempts = {}
+
+        def history(symbol, exchange, interval, start_date, end_date, api_key):
+            calls.append({"symbol": symbol, "exchange": exchange, "interval": interval, "start": start_date, "end": end_date})
+            if interval != "D":
+                return (True, {"data": fut_candles}, 200) if fut_candles is not None else (False, {"message": "none"}, 404)
+            n = attempts[symbol] = attempts.get(symbol, 0) + 1
+            kind = behaviours.get(symbol, "ok")
+            if kind == "ok":
+                return True, {"data": [{"oi": 100}, {"oi": 250 + len(symbol)}, {"oi": 999}]}, 200
+            if kind == "one-row":
+                return True, {"data": [{"oi": 5}]}, 200
+            if kind == "empty":
+                return True, {"data": []}, 200
+            if kind == "always-429":
+                return False, {"message": "slow down"}, 429
+            if kind == "429-once":
+                return (False, {"message": "slow down"}, 429) if n == 1 else (True, {"data": [{"oi": 40}, {"oi": 50}]}, 200)
+            if kind == "raises-429":
+                if n == 1:
+                    raise Exception("HTTP 429 Too Many Requests")
+                return True, {"data": [{"oi": 70}, {"oi": 80}]}, 200
+            if kind == "raises":
+                raise Exception("boom")
+            if kind == "failed":
+                return False, {"message": "no data"}, 500
+            raise AssertionError(kind)
+
+        op.get_option_chain = lambda **kw: (True, chain, 200)
+        op._find_futures_symbol = lambda *a, **k: ({"symbol": futures[0], "exchange": futures[1]} if futures else None)
+        op.get_history = history
+        ok, resp, code = op.get_oi_profile_data("NIFTY", exchange, "26NOV26", interval, days, "key")
+        cases.append({"name": name, "exchange": exchange, "interval": interval, "days": days, "futures": futures, "fut_candles": fut_candles, "behaviours": behaviours, "chain": chain, "calls": calls,
+                      "sleeps": list(sleeps), "ok": ok, "code": code, "response": resp})
+
+    chain = make_chain("NIFTY", 24050.0, 24050, 50, 20, "26NOV26", 75, 31)
+    syms = [r[leg]["symbol"] for r in chain["chain"] for leg in ("ce", "pe") if r[leg] and r[leg].get("symbol") and r[leg].get("oi", 0) > 0]
+    run("all-ok", chain, fut_candles=candles(4))
+    run("milliseconds-and-cap", chain, days=2, fut_candles=candles(5, ms=True))
+    run("candles-already-timed", chain, days=1, fut_candles=candles(2, with_time=True))
+    run("no-futures", chain, futures=None)
+    run("no-candles", chain, fut_candles=None)
+    run("mixed-history", chain, fut_candles=candles(1), behaviours={syms[0]: "one-row", syms[1]: "empty", syms[2]: "always-429", syms[3]: "429-once", syms[4]: "raises-429", syms[5]: "raises", syms[6]: "failed"})
+    small = make_chain("NIFTY", 24050.0, 24050, 50, 3, "26NOV26", 75, 32)
+    run("small-chain", small, fut_candles=candles(1))
+    run("bfo", make_chain("SENSEX", 80200.0, 80200, 100, 3, "26NOV26", 20, 33), exchange="BSE_INDEX", futures=("SENSEX26NOVFUT", "BFO"), fut_candles=candles(2))
+    ops = {"status": "error", "message": "Option chain unavailable"}
+    op.get_option_chain = lambda **kw: (False, ops, 503)
+    ok, resp, code = op.get_oi_profile_data("NIFTY", "NFO", "26NOV26", "5m", 3, "key")
+    cases.append({"name": "chain-failed", "exchange": "NFO", "interval": "5m", "days": 3, "futures": None, "fut_candles": None, "behaviours": {}, "chain": None, "calls": [], "sleeps": [], "ok": ok, "code": code, "response": resp})
+    return {"now": NOW.isoformat(), "cases": cases}
+
+
+RECORDERS = {"oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
 
 if __name__ == "__main__":
     out = {name: fn() for name, fn in RECORDERS.items()}
