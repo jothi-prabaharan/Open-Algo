@@ -81,7 +81,7 @@ public sealed class FlowService(IDbContextFactory<EpTradeDbContext> contexts, Op
 
         var graph = FlowGraph.Parse(JsonNode.Parse(flow.NodesJson) as JsonArray, JsonNode.Parse(flow.EdgesJson) as JsonArray);
         var broker = account.Broker;
-        var host = new FlowHost(new FlowApi(api, account, ModeName(flow.ExecutionMode)), flow.Name) { LotSizes = (underlying, exchange, token) => LotSizeAsync(broker, underlying, exchange, token) };
+        var host = new FlowHost(new FlowApi(api, account, ModeName(flow.ExecutionMode)), flow.Name) { LotSizes = (underlying, exchange, token) => LotSizeAsync(broker, underlying, exchange, token), Http = new FlowHttp() };
         var run = new FlowRun(() => clock.GetUtcNow().UtcDateTime, host: host);
         if (triggerData is not null) run.Context.Set(trigger == "price_alert" ? "alert" : "webhook", triggerData.DeepClone());
         run.Log($"Starting workflow: {flow.Name}");

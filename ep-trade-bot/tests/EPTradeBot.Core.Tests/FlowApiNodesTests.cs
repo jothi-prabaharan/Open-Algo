@@ -1045,3 +1045,191 @@ public sealed class FlowHistoryNodeTests
         Assert.Equal((true, "2026-11-16"), (friday["is_trading_day"]!.GetValue<bool>(), friday["next_trading_day"]!.GetValue<string>()));
     }
 }
+
+public sealed class FlowMarginNodeTests
+{
+    private sealed class Api : IFlowApi
+    {
+        public List<JsonObject> Bodies { get; } = [];
+
+        public Task<JsonObject> CallAsync(string api, JsonObject body, CancellationToken ct)
+        {
+            Assert.Equal("margin", api);
+            Bodies.Add((JsonObject)body.DeepClone());
+            return Task.FromResult(new JsonObject { ["status"] = "success", ["data"] = new JsonObject { ["total_margin_required"] = 1000 } });
+        }
+    }
+
+    private static readonly DateTime Noon = new DateTime(2026, 11, 11, 12, 0, 0, DateTimeKind.Utc) - EPTradeBot.Core.Time.Ist.Offset;
+
+    private static async Task<(Api Api, FlowRun Run, FlowOutcome Outcome)> RunAsync(JsonObject data, JsonObject? vars = null)
+    {
+        var api = new Api();
+        var run = new FlowRun(() => Noon, host: new FlowHost(api, "t"));
+        foreach (var (k, v) in vars ?? []) run.Context.Set(k, v?.DeepClone());
+        var outcome = await new FlowRunner(CoreFlowNodes.All().Concat(ApiFlowNodes.All())).RunAsync(new FlowGraph([new("s", "start", []), new("n", "margin", data)], [new("s", "n", "")]), run, default);
+        return (api, run, outcome);
+    }
+
+    [Fact]
+    public async Task A_single_position_is_priced_as_a_one_item_basket_with_exchange_defaults()
+    {
+        var (api, _, outcome) = await RunAsync(new() { ["symbol"] = "NIFTY26NOV2624000CE", ["exchange"] = "NFO", ["quantity"] = "75", ["price"] = 120.5, ["action"] = "sell" });
+        Assert.True(outcome.Succeeded, outcome.Message);
+        Assert.Equal("""{"positions":[{"exchange":"NFO","symbol":"NIFTY26NOV2624000CE","action":"SELL","quantity":"75","product":"NRML","pricetype":"MARKET","price":"120.5"}]}""", api.Bodies.Single().ToJsonString());
+    }
+
+    [Fact]
+    public async Task A_basket_is_checked_and_normalised_position_by_position()
+    {
+        var basket = """[{"symbol":"sbin","exchange":"nse","action":"buy","quantity":"{{q}}","product":"mis","pricetype":"limit","price":"812.50","triggerPrice":0}]""";
+        var (api, _, outcome) = await RunAsync(new() { ["positionsJson"] = basket }, new() { ["q"] = 10 });
+        Assert.True(outcome.Succeeded, outcome.Message);
+        Assert.Equal("""{"positions":[{"symbol":"SBIN","exchange":"NSE","action":"BUY","quantity":"10","product":"MIS","pricetype":"LIMIT","price":"812.5","trigger_price":"0"}]}""", api.Bodies.Single().ToJsonString());
+    }
+
+    [Theory]
+    [InlineData("not json", "Margin positions is not valid JSON after variable interpolation")]
+    [InlineData("[]", "Margin positions is an empty basket")]
+    [InlineData("[1]", "the basket contains a non-object entry")]
+    [InlineData("\"\"", "Margin positions is empty after variable interpolation")]
+    [InlineData("{{missing}}", "Margin positions has unresolved value")]
+    [InlineData("[{\"symbol\":\"X\",\"exchange\":\"NSE\",\"action\":\"BUY\",\"quantity\":0,\"product\":\"MIS\",\"pricetype\":\"MARKET\"}]", "Margin position 1: quantity must be at least 1")]
+    [InlineData("[{\"symbol\":\"X\",\"exchange\":\"NSE\",\"action\":\"BUY\",\"quantity\":1,\"product\":\"MIS\"}]", "Margin position 1: pricetype is required")]
+    public async Task A_basket_that_cannot_be_used_is_refused_and_never_replaced_by_the_single_position(string basket, string words)
+    {
+        var (api, run, outcome) = await RunAsync(new() { ["positionsJson"] = basket == "\"\"" ? "" : basket, ["symbol"] = "SBIN" });
+        Assert.False(outcome.Succeeded);
+        Assert.Empty(api.Bodies);
+        Assert.Contains(run.Logs, l => l.Level == "error" && l.Message.Contains(words));
+    }
+
+    [Fact]
+    public async Task With_nothing_to_price_the_node_says_so()
+    {
+        var (api, run, outcome) = await RunAsync([]);
+        Assert.False(outcome.Succeeded);
+        Assert.Empty(api.Bodies);
+        Assert.Contains(run.Logs, l => l.Message.Contains("Margin node has no positions and no symbol to price."));
+    }
+}
+
+public sealed class FlowHttpRequestNodeTests
+{
+    private sealed class Http(string? rejection = null, FlowHttpResponse? reply = null, FlowHttpException? failure = null) : IFlowHttp
+    {
+        public List<(string Method, string Url, Dictionary<string, string> Headers, string? Json, string? Text, TimeSpan Timeout)> Sent { get; } = [];
+
+        public Task<string?> CheckDestinationAsync(string url, CancellationToken ct) => Task.FromResult(rejection);
+
+        public Task<FlowHttpResponse> SendAsync(string method, string url, IReadOnlyDictionary<string, string> headers, JsonNode? jsonBody, string? textBody, TimeSpan timeout, CancellationToken ct)
+        {
+            Sent.Add((method, url, new Dictionary<string, string>(headers), jsonBody?.ToJsonString(), textBody, timeout));
+            return failure is null ? Task.FromResult(reply ?? new FlowHttpResponse(200, true, """{"ok":true}""")) : Task.FromException<FlowHttpResponse>(failure);
+        }
+    }
+
+    private sealed class NoApi : IFlowApi
+    {
+        public Task<JsonObject> CallAsync(string api, JsonObject body, CancellationToken ct) => Task.FromResult(new JsonObject { ["status"] = "success" });
+    }
+
+    private static readonly DateTime Noon = new DateTime(2026, 11, 11, 12, 0, 0, DateTimeKind.Utc) - EPTradeBot.Core.Time.Ist.Offset;
+
+    private static async Task<(Http Http, FlowRun Run, FlowOutcome Outcome)> RunAsync(JsonObject data, Http? http = null, JsonObject? vars = null)
+    {
+        http ??= new Http();
+        data["outputVariable"] = "res";
+        var run = new FlowRun(() => Noon, host: new FlowHost(new NoApi(), "t") { Http = http });
+        foreach (var (k, v) in vars ?? []) run.Context.Set(k, v?.DeepClone());
+        var outcome = await new FlowRunner(CoreFlowNodes.All().Concat(ApiFlowNodes.All())).RunAsync(new FlowGraph([new("s", "start", []), new("n", "httpRequest", data)], [new("s", "n", "")]), run, default);
+        return (http, run, outcome);
+    }
+
+    [Fact]
+    public async Task A_get_returns_the_status_and_parsed_body_and_keeps_them_in_the_variable()
+    {
+        var (http, run, outcome) = await RunAsync(new() { ["url"] = "https://example.com/report/{{id}}?key=SECRET", ["headers"] = """{"X-Token":"{{token}}"}""", ["timeout"] = 5000 }, null, new() { ["id"] = 7, ["token"] = "abc" });
+        Assert.True(outcome.Succeeded, outcome.Message);
+        var sent = Assert.Single(http.Sent);
+        Assert.Equal(("GET", "https://example.com/report/7?key=SECRET", "abc", TimeSpan.FromSeconds(5)), (sent.Method, sent.Url, sent.Headers["X-Token"], sent.Timeout));
+        Assert.True(run.Context.Get("res")!["data"]!["ok"]!.GetValue<bool>());
+        Assert.Equal(200, run.Context.Get("res")!["statusCode"]!.GetValue<int>());
+        Assert.Contains(run.Logs, l => l.Message == "HTTP GET https://example.com/report/7?<redacted>");
+        Assert.DoesNotContain(run.Logs, l => l.Message.Contains("SECRET"));
+    }
+
+    [Fact]
+    public async Task A_post_body_that_is_json_goes_as_json_and_anything_else_as_text()
+    {
+        var (http, _, _) = await RunAsync(new() { ["method"] = "post", ["url"] = "https://example.com", ["body"] = """{"qty":{{q}}}""" }, null, new() { ["q"] = 5 });
+        Assert.Equal(("POST", """{"qty":5}""", null), (http.Sent[0].Method, http.Sent[0].Json, http.Sent[0].Text));
+        (http, _, _) = await RunAsync(new() { ["method"] = "PUT", ["url"] = "https://example.com", ["body"] = "plain words" });
+        Assert.Equal((null, "plain words"), (http.Sent[0].Json, http.Sent[0].Text));
+        (http, _, _) = await RunAsync(new() { ["method"] = "PATCH", ["url"] = "https://example.com" });
+        Assert.Equal("{}", http.Sent[0].Json);
+    }
+
+    [Fact]
+    public async Task A_substituted_value_cannot_add_a_header_or_pull_a_second_reference_into_the_address()
+    {
+        var (http, _, _) = await RunAsync(new() { ["url"] = "https://example.com/{{path}}", ["headers"] = """{"X-A":"{{v}}"}""" }, null,
+            new() { ["path"] = "{{secret}}", ["v"] = "x\", \"X-Injected\": \"yes", ["secret"] = "TOP" });
+        Assert.Equal("https://example.com/{{secret}}", http.Sent[0].Url);
+        Assert.Equal(["X-A"], http.Sent[0].Headers.Keys.ToArray());
+        Assert.Equal("x\", \"X-Injected\": \"yes", http.Sent[0].Headers["X-A"]);
+    }
+
+    [Fact]
+    public async Task A_rejected_destination_stops_before_anything_is_sent()
+    {
+        var (http, run, outcome) = await RunAsync(new() { ["url"] = "http://169.254.169.254/latest/meta-data" }, new Http("host '169.254.169.254' resolves to 169.254.169.254, which is not a public address"));
+        Assert.False(outcome.Succeeded);
+        Assert.Empty(http.Sent);
+        Assert.Contains(run.Logs, l => l.Message.Contains("refusing to send this request: host '169.254.169.254'"));
+    }
+
+    [Theory]
+    [InlineData("", "No URL specified")]
+    [InlineData("TRACE", "Unsupported method: TRACE")]
+    public async Task A_missing_address_or_an_unknown_method_is_refused(string value, string words)
+    {
+        var data = value == "" ? new JsonObject() : new JsonObject { ["url"] = "https://example.com", ["method"] = value };
+        var (http, _, outcome) = await RunAsync(data);
+        Assert.False(outcome.Succeeded);
+        Assert.Contains(words, outcome.Message);
+        Assert.Empty(http.Sent);
+    }
+
+    [Theory]
+    [InlineData("{not json", "headers is not valid JSON")]
+    [InlineData("[1]", "headers must be a JSON object, got list")]
+    public async Task Bad_headers_stop_the_node(string headers, string words)
+    {
+        var (http, run, outcome) = await RunAsync(new() { ["url"] = "https://example.com", ["headers"] = headers });
+        Assert.False(outcome.Succeeded);
+        Assert.Empty(http.Sent);
+        Assert.Contains(run.Logs, l => l.Level == "error" && l.Message.Contains(words));
+    }
+
+    [Fact]
+    public async Task The_wait_is_read_in_milliseconds_capped_and_defaulted()
+    {
+        var (http, _, _) = await RunAsync(new() { ["url"] = "https://example.com", ["timeout"] = 600_000 });
+        Assert.Equal(TimeSpan.FromSeconds(60), http.Sent[0].Timeout);
+        (http, _, _) = await RunAsync(new() { ["url"] = "https://example.com", ["timeout"] = 0 });
+        Assert.Equal(TimeSpan.FromSeconds(30), http.Sent[0].Timeout);
+    }
+
+    [Fact]
+    public async Task A_non_success_status_is_kept_as_an_error_result_with_its_code_and_a_connection_failure_is_not()
+    {
+        var (_, run, outcome) = await RunAsync(new() { ["url"] = "https://example.com" }, new Http(null, new FlowHttpResponse(404, false, "missing")));
+        Assert.False(outcome.Succeeded);
+        Assert.Equal((404, "missing"), (run.Context.Get("res")!["statusCode"]!.GetValue<int>(), run.Context.Get("res")!["data"]!.GetValue<string>()));
+        (_, run, outcome) = await RunAsync(new() { ["url"] = "https://example.com" }, new Http(null, null, new FlowHttpException("connection refused")));
+        Assert.False(outcome.Succeeded);
+        Assert.Contains("connection refused", outcome.Message);
+        Assert.Null(run.Context.Get("res"));
+    }
+}

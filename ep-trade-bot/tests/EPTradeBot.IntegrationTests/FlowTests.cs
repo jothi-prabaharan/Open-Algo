@@ -127,14 +127,14 @@ public sealed class FlowTests
     {
         var s = await NewAsync();
         await using var _ = s.Host;
-        var id = await CreateAsync(s, "basket", ([Node("s", "start"), Node("b", "margin")], [Edge("s", "b")]));
+        var id = await CreateAsync(s, "basket", ([Node("s", "start"), Node("b", "subscribeLtp")], [Edge("s", "b")]));
 
         var (status, refused) = await SendAsync(s.Host.Admin, HttpMethod.Post, $"/api/v1/flows/{id}/activate");
         Assert.Equal(HttpStatusCode.BadRequest, status);
-        Assert.Contains("cannot run margin", refused["message"]!.GetValue<string>());
+        Assert.Contains("cannot run subscribeLtp", refused["message"]!.GetValue<string>());
         var (runStatus, run) = await SendAsync(s.Host.Admin, HttpMethod.Post, $"/api/v1/flows/{id}/run");
         Assert.Equal(HttpStatusCode.Conflict, runStatus);
-        Assert.Contains("cannot run margin", run["message"]!.GetValue<string>());
+        Assert.Contains("cannot run subscribeLtp", run["message"]!.GetValue<string>());
     }
 
     [PostgresFact]

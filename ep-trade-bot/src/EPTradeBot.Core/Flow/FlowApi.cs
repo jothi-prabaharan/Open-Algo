@@ -39,6 +39,24 @@ public sealed record FlowHost(IFlowApi Api, string StrategyTag)
 {
     /// <summary>Finds an underlying's lot size in the master contract. Absent in a host that has no master contract to read.</summary>
     public LotSizeLookup? LotSizes { get; init; }
+
+    /// <summary>Sends the HTTP request node's request. Absent in a host that must not reach the network.</summary>
+    public IFlowHttp? Http { get; init; }
+}
+
+/// <summary>What came back from an outbound request.</summary>
+public sealed record FlowHttpResponse(int Status, bool IsSuccess, string Text);
+
+/// <summary>The request could not be completed (no connection, timed out, ...); the message is shown to the author.</summary>
+public sealed class FlowHttpException(string message) : Exception(message);
+
+/// <summary>Outbound HTTP for a workflow, on its own connections so a slow endpoint cannot hold one an order needs.</summary>
+public interface IFlowHttp
+{
+    /// <summary>Why the destination must not be reached (not a public address, bad scheme, cannot be resolved), or null when it may.</summary>
+    Task<string?> CheckDestinationAsync(string url, CancellationToken ct);
+
+    Task<FlowHttpResponse> SendAsync(string method, string url, IReadOnlyDictionary<string, string> headers, JsonNode? jsonBody, string? textBody, TimeSpan timeout, CancellationToken ct);
 }
 
 public static class FlowApiResults

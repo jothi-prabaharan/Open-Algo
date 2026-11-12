@@ -481,7 +481,7 @@ public sealed class CheckNodes : IFlowNode
 /// <summary>The node types that reach the platform's API.</summary>
 public static class ApiFlowNodes
 {
-    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode(), new OptionsOrderNode(), new OptionsMultiOrderNode(), new BasketOrderNode(), new HistoryNodes()];
+    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode(), new OptionsOrderNode(), new OptionsMultiOrderNode(), new BasketOrderNode(), new HistoryNodes(), new MarginNode(), new HttpRequestNode()];
 }
 
 /// <summary>The nodes that look up instruments, expiries, option chains and the exchange calendar through the platform and keep the answer in a variable.</summary>
@@ -1148,6 +1148,245 @@ public sealed class BasketOrderNode : IFlowNode
         for (var i = 0; i < orders.Count; i++) run.Log($"  Order {i + 1}: {orders[i]!["symbol"]} {orders[i]!["exchange"]} {orders[i]!["action"]} qty={orders[i]!["quantity"]}");
         var result = await host.Api.CallAsync("basketorder", new JsonObject { ["strategy"] = basketName, ["orders"] = orders }, ct);
         run.Log($"Basket order result: {result.ToJsonString()}", ApiNodeSupport.Level(result));
+        ApiNodeSupport.Store(node, run, result);
+        return FlowApiResults.ToResult(result);
+    }
+}
+
+/// <summary>Margin: what a position, or a whole basket of positions, would need.</summary>
+public sealed class MarginNode : IFlowNode
+{
+    public IReadOnlyList<string> Types => ["margin"];
+
+    private static string NumericText(double n) => n == Math.Floor(n) && Math.Abs(n) < 1e15 ? ((long)n).ToString(System.Globalization.CultureInfo.InvariantCulture) : FlowContext.PyFloat(n);
+
+    private static JsonArray? ParsePositions(FlowNode node, FlowContext ctx)
+    {
+        var key = new[] { "positionsJson", "positions" }.FirstOrDefault(k => node.Data[k] is not null);
+        if (key is null) return null;
+        var raw = node.Data[key];
+        if (raw is JsonValue rv && rv.TryGetValue<string>(out var t0)) raw = ctx.ResolveRaw(t0);
+        if (raw is JsonValue sv && sv.TryGetValue<string>(out var text))
+        {
+            if (FlowContext.HasUnresolved(text)) throw new ArgumentException($"Margin positions has unresolved value '{text}'.");
+            text = text.Trim();
+            if (text.Length == 0) throw new ArgumentException("Margin positions is empty after variable interpolation; check the {{variable}} references in the basket.");
+            try
+            {
+                raw = JsonNode.Parse(text);
+            }
+            catch (System.Text.Json.JsonException e)
+            {
+                throw new ArgumentException($"Margin positions is not valid JSON after variable interpolation: {e.Message}");
+            }
+        }
+
+        if (raw is JsonObject single) raw = new JsonArray(single.DeepClone());
+        if (raw is not JsonArray list) throw new ArgumentException("Margin positions must be a JSON array of position objects.");
+        if (list.Count == 0) throw new ArgumentException("Margin positions is an empty basket; add at least one position.");
+        if (list.Any(e => e is not JsonObject)) throw new ArgumentException("Margin positions must all be objects; the basket contains a non-object entry.");
+
+        var result = new JsonArray();
+        for (var index = 1; index <= list.Count; index++)
+        {
+            var position = (JsonObject)list[index - 1]!;
+            try
+            {
+                var v = new RuntimeOrderResolver(ctx, position);
+                var symbol = v.Text("symbol").ToUpperInvariant();
+                var exchange = v.Enum("exchange", OrderVocabulary.Exchanges);
+                var action = v.Enum("action", OrderVocabulary.Actions);
+                var quantity = v.Integer("quantity", null, 1);
+                var product = v.Enum("product", OrderVocabulary.Products);
+                var priceType = v.Enum("pricetype", OrderVocabulary.PriceTypes);
+                var price = v.Number("price", 0.0);
+                var trigger = v.Number("trigger_price", 0.0, "triggerPrice");
+                if (OrderVocabulary.InvalidPriceReason(priceType, price, trigger) is { } invalid) throw new ArgumentException(invalid);
+                var resolved = (JsonObject)position.DeepClone();
+                resolved["symbol"] = symbol;
+                resolved["exchange"] = exchange;
+                resolved["action"] = action;
+                resolved["quantity"] = quantity.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                resolved["product"] = product;
+                resolved["pricetype"] = priceType;
+                if (position.ContainsKey("price")) resolved["price"] = NumericText(price);
+                if (position.ContainsKey("trigger_price") || position.ContainsKey("triggerPrice"))
+                {
+                    resolved.Remove("triggerPrice");
+                    resolved["trigger_price"] = NumericText(trigger);
+                }
+
+                result.Add(resolved);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException($"Margin position {index}: {ex.Message}");
+            }
+        }
+
+        return result;
+    }
+
+    public async Task<FlowNodeResult?> ExecuteAsync(FlowNode node, FlowRun run, CancellationToken ct)
+    {
+        var host = ApiNodeSupport.HostOf(run);
+        var ctx = run.Context;
+        JsonArray? positions;
+        try
+        {
+            positions = ParsePositions(node, ctx);
+        }
+        catch (ArgumentException ex)
+        {
+            run.Log($"Margin failed: {ex.Message}", "error");
+            return FlowApiResults.ToResult(new JsonObject { ["status"] = "error", ["message"] = ex.Message });
+        }
+
+        var symbol = node.Data.Str(ctx, "symbol", "");
+        var exchange = node.Data.Str(ctx, "exchange", "NSE");
+        var quantity = MarketInfoNodes.Int(node, ctx, "quantity", 1);
+        var priceRaw = node.Data["price"];
+        string priceText;
+        if (priceRaw is null || priceRaw is JsonValue e && e.TryGetValue<string>(out var es) && es.Length == 0) priceText = "0";
+        else if (priceRaw is JsonValue ps && ps.TryGetValue<string>(out var pt)) priceText = FlowData.TryParseFloat(ctx.Interpolate(pt), out var parsed) ? FlowContext.PyFloat(parsed) : "0";
+        else priceText = FlowContext.PyFloat(FlowData.ToDouble(priceRaw));
+        var product = node.Data.Str(ctx, "product", OrderVocabulary.DefaultProduct(exchange));
+        var action = node.Data.Str(ctx, "action", "BUY");
+        var priceType = node.Data.Str(ctx, "priceType", "MARKET");
+
+        if (positions is { Count: > 0 }) run.Log($"Calculating margin for a basket of {positions.Count} position(s)");
+        else if (symbol.Length == 0)
+        {
+            const string message = "Margin node has no positions and no symbol to price.";
+            run.Log($"Margin failed: {message}", "error");
+            return FlowApiResults.ToResult(new JsonObject { ["status"] = "error", ["message"] = message });
+        }
+        else
+        {
+            run.Log($"Calculating margin for: {symbol} ({exchange})");
+            positions = new JsonArray(new JsonObject
+            {
+                ["exchange"] = exchange, ["symbol"] = symbol, ["action"] = action.ToUpperInvariant(), ["quantity"] = quantity.ToString(System.Globalization.CultureInfo.InvariantCulture), ["product"] = product,
+                ["pricetype"] = priceType, ["price"] = priceText,
+            });
+        }
+
+        var result = await host.Api.CallAsync("margin", new JsonObject { ["positions"] = positions }, ct);
+        run.Log($"Margin result: {result.ToJsonString()}");
+        ApiNodeSupport.Store(node, run, result);
+        return FlowApiResults.ToResult(result);
+    }
+}
+
+/// <summary>HTTP request: calls an outside address and keeps the answer. The address is checked first so a workflow (or whoever can fire its webhook) cannot reach this machine, the local network or cloud metadata.</summary>
+public sealed class HttpRequestNode : IFlowNode
+{
+    public const int DefaultTimeoutMs = 30_000;
+    public const int MaxTimeoutMs = 60_000;
+
+    public IReadOnlyList<string> Types => ["httpRequest"];
+
+    /// <summary>The address without credentials or query string, for logs that are stored and shown.</summary>
+    public static string Redact(string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri)) return "<unparseable url>";
+        var host = uri.Host + (uri.IsDefaultPort ? "" : ":" + uri.Port.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        var redacted = $"{uri.Scheme}://{host}{uri.AbsolutePath}";
+        return uri.Query.Length > 1 ? redacted + "?<redacted>" : redacted;
+    }
+
+    private static string KindOf(JsonNode? n) => n switch { null => "NoneType", JsonArray => "list", JsonObject => "dict", JsonValue v when v.TryGetValue<bool>(out _) => "bool", JsonValue v when v.TryGetValue<string>(out _) => "str", JsonValue v when v.TryGetValue<long>(out _) => "int", _ => "float" };
+
+    private static FlowNodeResult Error(string message) => FlowApiResults.ToResult(new JsonObject { ["status"] = "error", ["message"] = message });
+
+    public async Task<FlowNodeResult?> ExecuteAsync(FlowNode node, FlowRun run, CancellationToken ct)
+    {
+        var host = ApiNodeSupport.HostOf(run);
+        var ctx = run.Context;
+        var method = node.Data.Str(ctx, "method", "GET").ToUpperInvariant();
+        var url = node.Data["url"] is JsonValue uv ? FlowContext.PyStr(uv) : "";
+        var headersRaw = node.Data["headers"];
+        var body = node.Data["body"];
+        var timeoutMs = MarketInfoNodes.Int(node, ctx, "timeout", DefaultTimeoutMs);
+        if (timeoutMs <= 0) timeoutMs = DefaultTimeoutMs;
+        var timeout = TimeSpan.FromMilliseconds(Math.Min(timeoutMs, MaxTimeoutMs));
+        if (url.Length == 0) return Error("No URL specified");
+
+        // The headers are parsed before their values are interpolated, never after: a substituted value carrying a quote must not become structure.
+        if (headersRaw is JsonValue hv && hv.TryGetValue<string>(out var headerText))
+        {
+            headerText = headerText.Trim();
+            if (headerText.Length == 0) headersRaw = new JsonObject();
+            else
+            {
+                try
+                {
+                    headersRaw = JsonNode.Parse(headerText);
+                }
+                catch (System.Text.Json.JsonException e)
+                {
+                    var message = $"headers is not valid JSON: {e.Message}";
+                    run.Log($"HTTP request aborted: {message}", "error");
+                    return Error(message);
+                }
+            }
+        }
+
+        var headers = new Dictionary<string, string>();
+        if (headersRaw is null) headersRaw = new JsonObject();
+        if (headersRaw is JsonObject map)
+            foreach (var (key, value) in map) headers[key] = ctx.Interpolate(FlowContext.PyStr(value));
+        else
+        {
+            var message = $"headers must be a JSON object, got {KindOf(headersRaw)}";
+            run.Log($"HTTP request aborted: {message}", "error");
+            return Error(message);
+        }
+
+        // The address is interpolated exactly once, here: a second pass would expand a reference a caller smuggled into a value.
+        url = ctx.Interpolate(url);
+        string? text = null;
+        JsonNode? json = null;
+        if (body is JsonValue bv && bv.TryGetValue<string>(out var bodyText)) text = bodyText.Length > 0 ? ctx.Interpolate(bodyText) : "";
+        else if (body is not null) json = body;
+
+        if (host.Http is null) return Error("This platform cannot make outbound requests from a workflow.");
+        if (await host.Http.CheckDestinationAsync(url, ct) is { } rejection)
+        {
+            var message = $"refusing to send this request: {rejection}";
+            run.Log($"HTTP request aborted: {message}", "error");
+            return Error(message);
+        }
+
+        run.Log($"HTTP {method} {Redact(url)}");
+        if (method is not ("GET" or "POST" or "PUT" or "PATCH" or "DELETE")) return Error($"Unsupported method: {method}");
+        JsonNode? payload = null;
+        string? raw = null;
+        if (method is "POST" or "PUT" or "PATCH")
+        {
+            if (json is not null) payload = json;
+            else if (string.IsNullOrEmpty(text)) payload = new JsonObject();
+            else
+            {
+                try { payload = JsonNode.Parse(text); }
+                catch (System.Text.Json.JsonException) { raw = text; }
+            }
+        }
+
+        FlowHttpResponse response;
+        try
+        {
+            response = await host.Http.SendAsync(method, url, headers, payload, raw, timeout, ct);
+        }
+        catch (FlowHttpException e)
+        {
+            return Error(e.Message);
+        }
+
+        JsonNode? data;
+        try { data = JsonNode.Parse(response.Text); }
+        catch (System.Text.Json.JsonException) { data = JsonValue.Create(response.Text); }
+        var result = new JsonObject { ["status"] = response.IsSuccess ? "success" : "error", ["statusCode"] = response.Status, ["data"] = data };
         ApiNodeSupport.Store(node, run, result);
         return FlowApiResults.ToResult(result);
     }
