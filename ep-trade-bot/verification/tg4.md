@@ -345,10 +345,17 @@ fires, the combined stop and target, lock-profit, the exit time, and the daily l
 close was refused stays open and watched; `/stop` and `/close_all` then answer 502 saying so and the next visit retries. The working state (legs, ratchets, pending stop) lives in the run's checkpoint row, so a restart carries on.
 A mode must match the account (sandbox mode on a sandbox account, live on a live account), and entries and exits are market orders only.
 
-**Not done.** Signal strategies (a run per alert, flips), webhooks, the entry-time scheduler for strategies, pause and resume, tick-source switching and recovery events, and per-run broker binding beyond the account recorded
-on the run are not ported; `/strategy/start` refuses a signal strategy, as OpenAlgo's route does. Futures and options legs are resolved from the master contract as the option tools do, but the tests drive cash legs because the
+**The schedule and the webhook** (`StrategySchedulerService`, `StrategyWebhookService`, `POST /api/v1/strategy/webhook/{token}`). A strategy's `{enabled, days, start_time, auto_stop_time, default_mode}` is read every 15
+seconds in IST: a slot fires once a day inside the minute it names (a platform that was down for longer does not enter a market that has moved), starts on the first enabled account of the mode and squares off at the auto-stop
+time (`scheduled_stop`); with no account to trade on, a plain event says so. The webhook is the public route an alert calls with the token in the address (an alert cannot set a header). The token is looked up by
+its SHA-256 digest only; a malformed and an unregistered token get the same answer and are audited without a strategy; then the lock, the address allowlist (CIDR, closed when listed), the body (an object under 16384 bytes),
+the action and mode, live opt-in, a repeat within 60 seconds (one signal) and a start within 30 seconds of a stop. Repeats and cooling off are read from the audit and run rows, so they survive a restart. The stored copy of the
+body loses credential-named values and anything carrying the token. Every outcome is audited and the run records the alert that started it.
+
+**Not done.** Signal strategies (a run per alert, flips) and pause and resume are not ported: a signal strategy's webhook is refused with a plain sentence, and `/strategy/start` refuses it as OpenAlgo's route does. Tick-source
+switching and recovery events, and per-run broker binding beyond the account recorded on the run, are not ported either. Futures and options legs are resolved from the master contract as the option tools do, but the tests drive cash legs because the
 sandbox test host has no option chain; option resolution itself is covered by the option tools' tests.
-`StrategyApiTests` (5), `StrategyRunEngineTests` (11) and `tools/mutation/tg4-strategy-run.json` (17 mutants, all caught; two more were set aside as equivalent: the trailed stop is a pure function of the stored extremes, so
+`StrategyApiTests` (5), `StrategyRunEngineTests` (14), `StrategyWebhookTests` (21), `tools/mutation/tg4-strategy-hooks.json` (17 mutants, all caught; a malformed-token shape check only saves a lookup, so it is not a mutant) and `tools/mutation/tg4-strategy-run.json` (17 mutants, all caught; two more were set aside as equivalent: the trailed stop is a pure function of the stored extremes, so
 not writing it back changes nothing, and excluding the triggering leg from trail-to-entry cannot be seen while the sandbox fills a close at once, since that leg is already closed). `tg4-strategy-api.json` (8 mutants, all caught);
 the book's mutants are in `tg4-strategy-book.json` (11, all caught; one cannot be seen because two guards cover the same case).
 
@@ -388,8 +395,8 @@ callers succeed; the first revocation time is kept), and `Two_callers_revoking_t
 
 | Run | Core | Contract | Architecture | Integration |
 | --- | --- | --- | --- | --- |
-| 1 | 1518 passed | 913 passed | 35 passed | 285 passed |
-| 2 | 1518 passed | 913 passed | 35 passed | 285 passed |
-| 3 | 1518 passed | 913 passed | 35 passed | 285 passed |
+| 1 | 1518 passed | 913 passed | 35 passed | 309 passed |
+| 2 | 1518 passed | 913 passed | 35 passed | 309 passed |
+| 3 | 1518 passed | 913 passed | 35 passed | 309 passed |
 
 **What Gate 4 does not cover.** The strategy module's signal mode, webhooks and scheduler (see the strategy section). Everything else the TG4 plan lists, and every one of the 31 endpoint pairs, is built and held by tests.

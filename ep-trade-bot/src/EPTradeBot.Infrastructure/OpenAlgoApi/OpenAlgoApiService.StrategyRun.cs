@@ -360,7 +360,10 @@ public sealed partial class OpenAlgoApiService
 
     // ---- start -----------------------------------------------------------------------------------------------
 
-    public async Task<V1Result> StrategyStartAsync(BrokerAccount account, StrategyStartRequest r, CancellationToken ct)
+    public Task<V1Result> StrategyStartAsync(BrokerAccount account, StrategyStartRequest r, CancellationToken ct) => StartRunAsync(account, r, "manual", ct);
+
+    /// <summary>Starts a run; <paramref name="source"/> records who asked ("manual" from the API, "scheduler" from the strategy's own schedule).</summary>
+    internal async Task<V1Result> StartRunAsync(BrokerAccount account, StrategyStartRequest r, string source, CancellationToken ct, int? webhookEventId = null)
     {
         await using var db = await contexts.CreateDbContextAsync(ct);
         if (await FindStrategyAsync(db, r.StrategyId!.Value, ct) is not { } found) return V1Result.Error(404, StrategyNotFound);
@@ -397,7 +400,7 @@ public sealed partial class OpenAlgoApiService
 
             var run = new SmStrategyRun
             {
-                StrategyId = strategy.Id, Mode = r.Mode!, Broker = account.Broker, BrokerAccount = account.Id.ToString("N"), TriggerSource = "manual", StartedAt = DateTime.UtcNow,
+                StrategyId = strategy.Id, Mode = r.Mode!, Broker = account.Broker, BrokerAccount = account.Id.ToString("N"), TriggerSource = source, WebhookEventId = webhookEventId, StartedAt = DateTime.UtcNow,
                 ResolvedExpiries = new JsonArray(plans.Select(p => (JsonNode?)JsonValue.Create(p.Leg.Symbol)).ToArray()).ToJsonString(),
             };
             db.Set<SmStrategyRun>().Add(run);
@@ -496,13 +499,20 @@ public sealed partial class OpenAlgoApiService
     // ---- stop and close --------------------------------------------------------------------------------------
 
     public async Task<V1Result> StrategyStopAsync(BrokerAccount account, StrategyRefRequest r, CancellationToken ct) =>
-        await CloseRunAsync(account, r.StrategyId!.Value, "manual_stop", "run_stop_requested", ct);
+        await CloseRunAsync(r.StrategyId!.Value, "manual_stop", "run_stop_requested", ct);
+
+    /// <summary>Squares a run off at its schedule's auto-stop time; the run ends with reason "scheduled_stop".</summary>
+    internal Task<V1Result> ScheduledStopAsync(int strategyId, CancellationToken ct) =>
+        CloseRunAsync(strategyId, "scheduled_stop", "eod_squareoff", ct);
+
+    /// <summary>A stop asked for by an alert on the strategy's webhook.</summary>
+    internal Task<V1Result> WebhookStopAsync(int strategyId, CancellationToken ct) => CloseRunAsync(strategyId, "manual_stop", "run_stop_requested", ct);
 
     /// <summary>Closes every open leg of the strategy's run, then ends the run. A leg the broker refuses to close leaves the run open and watched.</summary>
     public async Task<V1Result> StrategyCloseAllAsync(BrokerAccount account, StrategyRefRequest r, CancellationToken ct) =>
-        await CloseRunAsync(account, r.StrategyId!.Value, "close_all", "close_all_manual", ct);
+        await CloseRunAsync(r.StrategyId!.Value, "close_all", "close_all_manual", ct);
 
-    private async Task<V1Result> CloseRunAsync(BrokerAccount account, int strategyId, string reason, string eventKind, CancellationToken ct)
+    private async Task<V1Result> CloseRunAsync(int strategyId, string reason, string eventKind, CancellationToken ct)
     {
         await using var db = await contexts.CreateDbContextAsync(ct);
         if (await db.Set<SmStrategy>().FirstOrDefaultAsync(s => s.Id == strategyId, ct) is not { } strategy) return V1Result.Error(404, StrategyNotFound);
@@ -559,6 +569,14 @@ public sealed partial class OpenAlgoApiService
         var (realized, unrealized) = RunPnl(state);
         await SaveStateAsync(db, runId, state, realized, unrealized, ct);
         return Mark(runAccount, new V1Result(200, new JsonObject { ["status"] = "success", ["message"] = $"Leg {leg.LegId} closed" }));
+    }
+
+    /// <summary>The account a scheduled or alert-driven start trades on: the first enabled sandbox account for sandbox mode, the first enabled live account for live mode.</summary>
+    internal async Task<BrokerAccount?> AccountForModeAsync(string mode, CancellationToken ct)
+    {
+        var type = mode == "live" ? AccountType.LIVE : AccountType.PAPER;
+        await using var db = await contexts.CreateDbContextAsync(ct);
+        return await db.Set<BrokerAccount>().AsNoTracking().Where(a => a.AccountType == type && a.IsEnabled).OrderBy(a => a.Id).FirstOrDefaultAsync(ct);
     }
 
     private async Task<BrokerAccount?> AccountOfRunAsync(EpTradeDbContext db, SmStrategyRun run, CancellationToken ct)

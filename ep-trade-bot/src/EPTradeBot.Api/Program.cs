@@ -83,6 +83,7 @@ v1.MapAgent();
 v1.MapMcpManagement();
 v1.MapOpenAlgoV1();
 v1.MapMessaging();
+v1.MapStrategyWebhook();
 if (app.Environment.IsDevelopment()) v1.MapDevelopmentQuotes();
 
 app.MapMcp();

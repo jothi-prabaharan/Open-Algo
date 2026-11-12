@@ -324,4 +324,86 @@ public sealed class StrategyRunEngineTests
         Assert.Equal(1, await db.Set<SmStrategyRun>().CountAsync(r => r.StrategyId == id));
         Assert.Single(await db.Set<SmStrategyOrder>().Where(o => o.Kind == "entry" && db.Set<SmStrategyRun>().Where(r => r.StrategyId == id).Select(r => r.Id).Contains(o.RunId)).ToListAsync());
     }
+
+    private sealed class FixedClock(DateTimeOffset now) : TimeProvider
+    {
+        public DateTimeOffset Now { get; set; } = now;
+        public override DateTimeOffset GetUtcNow() => Now;
+    }
+
+    private static StrategySchedulerService Scheduler(TestHost host, FixedClock clock) =>
+        new(host.Get<OpenAlgoApiService>(), host.Get<Microsoft.EntityFrameworkCore.IDbContextFactory<EPTradeBot.Infrastructure.Persistence.EpTradeDbContext>>(), clock,
+            Microsoft.Extensions.Logging.Abstractions.NullLogger<StrategySchedulerService>.Instance);
+
+    // Wednesday 2026-11-11, IST time given, as an instant.
+    private static DateTimeOffset Ist(int h, int m, int s = 0) => new DateTimeOffset(2026, 11, 11, h, m, s, TimeSpan.FromHours(5.5)).ToUniversalTime();
+
+    [PostgresFact]
+    public async Task The_schedule_starts_the_run_at_its_minute_once_and_squares_it_off_at_the_stop_time()
+    {
+        var (host, _, key) = await NewAsync();
+        await using var _ = host;
+        var id = await AddStrategyAsync(host, $"[{Cash(1, "B", 10)}]", s => s.Scheduler = """{"enabled":true,"days":["WED"],"start_time":"09:20","auto_stop_time":"15:15","default_mode":"sandbox"}""");
+        var clock = new FixedClock(Ist(9, 19, 50));
+        var scheduler = Scheduler(host, clock);
+
+        await scheduler.VisitAsync(CancellationToken.None);
+        Assert.Equal("stopped", (await ReadStrategyAsync(host, id)).Status);
+
+        clock.Now = Ist(9, 20, 5);
+        await scheduler.VisitAsync(CancellationToken.None);
+        var started = await ReadAsync(host, id);
+        Assert.Equal(("running", "scheduler", "sandbox"), (started.Strategy.Status, started.Run.TriggerSource, started.Run.Mode));
+
+        // Stopped by hand inside the same minute, the slot is spent: visiting again opens nothing new.
+        Assert.Equal(200, (await PostAsync(host, "/api/v1/strategy/stop", new { apikey = key, strategy_id = id })).Status);
+        clock.Now = Ist(9, 20, 20);
+        await scheduler.VisitAsync(CancellationToken.None);
+        await using (var db = host.NewDb()) Assert.Equal(1, await db.Set<SmStrategyRun>().CountAsync(r => r.StrategyId == id));
+
+        // Started again by hand later, the auto-stop still closes it.
+        Assert.Equal(200, (await StartAsync(host, key, id)).Status);
+
+        clock.Now = Ist(15, 15, 3);
+        await scheduler.VisitAsync(CancellationToken.None);
+        var done = await ReadAsync(host, id);
+        Assert.Equal(("stopped", "scheduled_stop"), (done.Strategy.Status, done.Run.StopReason));
+    }
+
+    [PostgresFact]
+    public async Task The_schedule_skips_other_days_a_missed_slot_and_a_strategy_that_is_off()
+    {
+        var (host, _, _) = await NewAsync();
+        await using var _ = host;
+        var otherDay = await AddStrategyAsync(host, $"[{Cash(1, "B", 10)}]", s => s.Scheduler = """{"enabled":true,"days":["MON"],"start_time":"09:20","default_mode":"sandbox"}""");
+        var off = await AddStrategyAsync(host, $"[{Cash(1, "B", 10)}]", s => s.Scheduler = """{"enabled":false,"days":["WED"],"start_time":"09:20","default_mode":"sandbox"}""");
+        var late = await AddStrategyAsync(host, $"[{Cash(1, "B", 10)}]", s => s.Scheduler = """{"enabled":true,"days":["WED"],"start_time":"09:20","default_mode":"sandbox"}""");
+        // Two minutes after the slot: too late to enter a market that has moved, whatever the day or switch.
+        await Scheduler(host, new FixedClock(Ist(9, 22, 0))).VisitAsync(CancellationToken.None);
+        Assert.Equal("stopped", (await ReadStrategyAsync(host, late)).Status);
+        // On the slot's minute, the Monday-only and switched-off strategies still stay stopped.
+        await Scheduler(host, new FixedClock(Ist(9, 20, 5))).VisitAsync(CancellationToken.None);
+        Assert.Equal("stopped", (await ReadStrategyAsync(host, otherDay)).Status);
+        Assert.Equal("stopped", (await ReadStrategyAsync(host, off)).Status);
+        Assert.Equal("running", (await ReadStrategyAsync(host, late)).Status);
+    }
+
+    [PostgresFact]
+    public async Task A_missed_start_with_no_account_to_trade_on_is_said_plainly()
+    {
+        var host = new TestHost("Development");
+        await using var _ = host;
+        var id = await AddStrategyAsync(host, $"[{Cash(1, "B", 10)}]", s => s.Scheduler = """{"enabled":true,"days":["WED"],"start_time":"09:20","default_mode":"sandbox"}""");
+        await Scheduler(host, new FixedClock(Ist(9, 20, 5))).VisitAsync(CancellationToken.None);
+        await using var db = host.NewDb();
+        var ev = await db.Set<SmStrategyEvent>().AsNoTracking().SingleAsync(e => e.StrategyId == id);
+        Assert.Contains("no enabled sandbox account", ev.Message);
+        Assert.Equal("stopped", (await ReadStrategyAsync(host, id)).Status);
+    }
+
+    private static async Task<SmStrategy> ReadStrategyAsync(TestHost host, int id)
+    {
+        await using var db = host.NewDb();
+        return await db.Set<SmStrategy>().AsNoTracking().SingleAsync(s => s.Id == id);
+    }
 }

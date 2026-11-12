@@ -88,6 +88,9 @@ public static class DependencyInjection
         services.AddSingleton<SandboxEngine>();
         services.AddHostedService<SandboxSquareOffService>();
         services.AddSingleton<EPTradeBot.Infrastructure.OpenAlgoApi.StrategyRunMonitor>();
+        services.AddSingleton<EPTradeBot.Infrastructure.OpenAlgoApi.StrategySchedulerService>();
+        services.AddHostedService(sp => sp.GetRequiredService<EPTradeBot.Infrastructure.OpenAlgoApi.StrategySchedulerService>());
+        services.AddSingleton<EPTradeBot.Infrastructure.OpenAlgoApi.StrategyWebhookService>();
         services.AddHostedService(sp => sp.GetRequiredService<EPTradeBot.Infrastructure.OpenAlgoApi.StrategyRunMonitor>());
         services.AddSingleton<AuditTrail>();
         services.AddSingleton<IAccountRiskManager, AccountRiskManager>();

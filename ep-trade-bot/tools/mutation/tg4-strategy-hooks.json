@@ -1,0 +1,138 @@
+[
+ {
+  "name": "W1 locked strategy still acts",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategyWebhookService.cs",
+  "old": "if (strategy.WebhookLocked)",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "W2 allowlist ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategyWebhookService.cs",
+  "old": "if (!IpAllowed(ip, strategy.WebhookIpAllowlist))",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "W3 live opt-in ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategyWebhookService.cs",
+  "old": "if (mode == \"live\" && !strategy.LiveEnabled)",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "W4 repeat not detected",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategyWebhookService.cs",
+  "old": "e.Result == \"ok\" && e.Action == rawAction",
+  "new": "e.Result == \"nope\" && e.Action == rawAction",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "W5 cooling off ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategyWebhookService.cs",
+  "old": "if (last is { } stopped && (now",
+  "new": "if (Environment.TickCount64 < 0 && last is { } stopped && (now",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "W6 payload stored with token",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategyWebhookService.cs",
+  "old": "var safe = Redact(payload, token);",
+  "new": "var safe = payload.DeepClone();",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "W7 secret keys kept",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategyWebhookService.cs",
+  "old": "SecretHints.Any(h => name.Contains(h, StringComparison.OrdinalIgnoreCase)) ? \"[redacted]\" :",
+  "new": "false ? \"[redacted]\" :",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "W8 oversize body accepted",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategyWebhookService.cs",
+  "old": "if (body.Length > MaxPayloadBytes)",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "W10 unknown token says so",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategyWebhookService.cs",
+  "old": "private const string UnknownToken = \"Unknown or expired webhook token\";",
+  "new": "private const string UnknownToken = \"No such strategy\";",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "W11 prefix of mask ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategyWebhookService.cs",
+  "old": "Within(candidate.GetAddressBytes(), network.GetAddressBytes(), prefix)",
+  "new": "Within(candidate.GetAddressBytes(), network.GetAddressBytes(), bits)",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "W12 empty allowlist closed",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategyWebhookService.cs",
+  "old": "if (entries.Count == 0) return true;",
+  "new": "if (entries.Count == 0) return false;",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "W13 signal strategy acted on",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategyWebhookService.cs",
+  "old": "if (strategy.StrategyKind == \"signal\")\n            {",
+  "new": "if (strategy.StrategyKind == \"signal\" && Environment.TickCount64 < 0)\n            {",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S1 outside the minute still fires",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategySchedulerService.cs",
+  "old": "late >= TimeSpan.FromSeconds(60) ||",
+  "new": "",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S2 slot fires every visit",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategySchedulerService.cs",
+  "old": "|| !fired.Add((strategy.Id, today, name))",
+  "new": "",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S3 days ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategySchedulerService.cs",
+  "old": "if (!days.Contains(Days[(int)now.DayOfWeek])) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S4 disabled schedule runs",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategySchedulerService.cs",
+  "old": "config[\"enabled\"]?.GetValue<bool>() != true",
+  "new": "false",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S5 stop slot ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/StrategySchedulerService.cs",
+  "old": "new[] { (\"start\", Slot(config[\"start_time\"])), (\"stop\", Slot(config[\"auto_stop_time\"])) }",
+  "new": "new[] { (\"start\", Slot(config[\"start_time\"])) }",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]
