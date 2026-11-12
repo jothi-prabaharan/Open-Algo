@@ -858,3 +858,190 @@ public sealed class FlowBasketOrderNodeTests
         Assert.Contains(run.Logs, l => l.Message.Contains("Basket order row 1: invalid product 'XX'"));
     }
 }
+
+public sealed class FlowHistoryNodeTests
+{
+    private sealed class Api(JsonObject? history = null, JsonObject? holidays = null) : IFlowApi
+    {
+        public List<(string Api, JsonObject Body)> Calls { get; } = [];
+
+        public Task<JsonObject> CallAsync(string api, JsonObject body, CancellationToken ct)
+        {
+            Calls.Add((api, (JsonObject)body.DeepClone()));
+            return Task.FromResult(api == "holidays" ? (holidays ?? new JsonObject { ["status"] = "success", ["data"] = new JsonArray() }) : history is null ? new JsonObject { ["status"] = "success" } : (JsonObject)history.DeepClone());
+        }
+    }
+
+    // Wednesday 11 November 2026, 12:00 India time.
+    private static readonly DateTime Noon = new DateTime(2026, 11, 11, 12, 0, 0, DateTimeKind.Utc) - EPTradeBot.Core.Time.Ist.Offset;
+
+    private static long Epoch(int month, int day, int hour = 9, int minute = 15) => new DateTimeOffset(2026, month, day, hour, minute, 0, TimeSpan.FromHours(5.5)).ToUnixTimeSeconds();
+
+    private static JsonObject Bar(long ts, double o, double h, double l, double c, double v = 100) => new() { ["timestamp"] = ts, ["open"] = o, ["high"] = h, ["low"] = l, ["close"] = c, ["volume"] = v };
+
+    private static JsonObject Candles(params JsonObject[] rows) => new() { ["status"] = "success", ["data"] = new JsonArray(rows.Select(r => (JsonNode)r).ToArray()) };
+
+    private static async Task<(Api Api, FlowRun Run, FlowOutcome Outcome)> RunAsync(string type, JsonObject data, Api api)
+    {
+        data["outputVariable"] = "out";
+        var run = new FlowRun(() => Noon, host: new FlowHost(api, "t"));
+        var outcome = await new FlowRunner(CoreFlowNodes.All().Concat(ApiFlowNodes.All())).RunAsync(new FlowGraph([new("s", "start", []), new("n", type, data)], [new("s", "n", "")]), run, default);
+        return (api, run, outcome);
+    }
+
+    [Fact]
+    public async Task History_with_days_counts_back_from_today_in_india_and_is_then_held_to_two_hundred_bars()
+    {
+        var (api, _, outcome) = await RunAsync("history", new() { ["symbol"] = "SBIN", ["days"] = 30, ["interval"] = "D" }, new Api(Candles(Bar(Epoch(11, 10), 1, 2, 0.5, 1.5))));
+        Assert.True(outcome.Succeeded, outcome.Message);
+        Assert.Equal("""{"symbol":"SBIN","exchange":"NSE","interval":"D","start_date":"2026-10-12","end_date":"2026-11-11"}""", api.Calls[0].Body.ToJsonString());
+        // Thirty days of five-minute bars is far more than two hundred, so the start moves up to 9 calendar days back.
+        (api, _, _) = await RunAsync("history", new() { ["symbol"] = "SBIN", ["days"] = 30 }, new Api(Candles(Bar(Epoch(11, 10), 1, 2, 0.5, 1.5))));
+        Assert.Equal("2026-11-02", api.Calls[0].Body["start_date"]!.GetValue<string>());
+    }
+
+    [Fact]
+    public async Task An_explicit_range_wins_but_is_pulled_in_to_at_most_two_hundred_bars()
+    {
+        var (api, _, _) = await RunAsync("history", new() { ["symbol"] = "SBIN", ["interval"] = "D", ["startDate"] = "2020-01-01", ["endDate"] = "2026-11-10", ["days"] = 5 }, new Api(Candles(Bar(Epoch(11, 10), 1, 2, 0.5, 1.5))));
+        // 200 daily bars cover 325 calendar days (200 x 1.6 + 5) back from the end date.
+        Assert.Equal("2025-12-20", api.Calls[0].Body["start_date"]!.GetValue<string>());
+        Assert.Equal("2026-11-10", api.Calls[0].Body["end_date"]!.GetValue<string>());
+        (api, _, _) = await RunAsync("history", new() { ["symbol"] = "SBIN", ["interval"] = "D", ["startDate"] = "2026-10-01", ["endDate"] = "2026-11-10" }, new Api(Candles(Bar(Epoch(11, 10), 1, 2, 0.5, 1.5))));
+        Assert.Equal("2026-10-01", api.Calls[0].Body["start_date"]!.GetValue<string>());
+    }
+
+    [Fact]
+    public async Task A_long_answer_is_cut_to_the_latest_two_hundred_bars()
+    {
+        var rows = Enumerable.Range(0, 250).Select(i => Bar(1_700_000_000 + i * 300, i, i, i, i)).ToArray();
+        var (_, run, _) = await RunAsync("history", new() { ["symbol"] = "SBIN" }, new Api(Candles(rows)));
+        var stored = run.Context.Get("out")!["data"]!.AsArray();
+        Assert.Equal(200, stored.Count);
+        Assert.Equal(50, stored[0]!["open"]!.GetValue<double>());
+    }
+
+    [Fact]
+    public async Task Bar_offset_zero_is_the_latest_closed_bar_and_the_one_still_forming_is_skipped()
+    {
+        var bars = new[] { Bar(Epoch(11, 11, 11, 30), 10, 11, 9, 10.5), Bar(Epoch(11, 11, 11, 35), 20, 21, 19, 20.5), Bar(Epoch(11, 11, 11, 55), 30, 31, 29, 30.5) };
+        // 12:00 now: the 11:55 five-minute bar started five minutes ago, so it has just closed; at 11:58 it would still be forming.
+        var (_, run, outcome) = await RunAsync("barOffset", new() { ["symbol"] = "SBIN", ["interval"] = "5m", ["offsetBars"] = 1 }, new Api(Candles(bars)));
+        Assert.True(outcome.Succeeded, outcome.Message);
+        Assert.Equal(20.5, run.Context.Get("out")!["close"]!.GetValue<double>());
+        Assert.Equal(1, run.Context.Get("out")!["offsetBars"]!.GetValue<long>());
+
+        var forming = new[] { Bar(Epoch(11, 11, 11, 30), 10, 11, 9, 10.5), Bar(Epoch(11, 11, 11, 58), 30, 31, 29, 30.5) };
+        (_, run, _) = await RunAsync("barOffset", new() { ["symbol"] = "SBIN", ["interval"] = "5m" }, new Api(Candles(forming)));
+        Assert.Equal(10.5, run.Context.Get("out")!["close"]!.GetValue<double>());
+    }
+
+    [Fact]
+    public async Task Bar_offset_reaching_past_the_history_fails_saying_how_far()
+    {
+        var (_, run, outcome) = await RunAsync("barOffset", new() { ["symbol"] = "SBIN", ["interval"] = "5m", ["offsetBars"] = 7 }, new Api(Candles(Bar(Epoch(11, 11, 10, 0), 1, 2, 0.5, 1.5))));
+        Assert.False(outcome.Succeeded);
+        Assert.Contains("Not enough history to reach 7 bars back for SBIN", outcome.Message);
+        _ = run;
+    }
+
+    [Fact]
+    public async Task The_previous_day_is_the_last_daily_bar_that_is_not_today()
+    {
+        var bars = new[] { Bar(Epoch(11, 9, 0, 0), 1, 5, 0.5, 4), Bar(Epoch(11, 10, 0, 0), 4, 9, 3, 8), Bar(Epoch(11, 11, 0, 0), 8, 12, 7, 11) };
+        var (_, run, outcome) = await RunAsync("priorPeriodOhlc", new() { ["symbol"] = "SBIN" }, new Api(Candles(bars)));
+        Assert.True(outcome.Succeeded, outcome.Message);
+        var o = run.Context.Get("out")!;
+        Assert.Equal(("2026-11-10", 9.0, 3.0, 8.0), (o["date"]!.GetValue<string>(), o["pdh"]!.GetValue<double>(), o["pdl"]!.GetValue<double>(), o["pdc"]!.GetValue<double>()));
+    }
+
+    [Fact]
+    public async Task The_previous_week_and_month_are_aggregated_from_the_days_of_the_last_completed_one()
+    {
+        var days = new[] { Bar(Epoch(11, 2, 0, 0), 100, 110, 95, 105, 10), Bar(Epoch(11, 4, 0, 0), 105, 120, 100, 118, 20), Bar(Epoch(11, 6, 0, 0), 118, 119, 90, 92, 30), Bar(Epoch(11, 9, 0, 0), 92, 99, 91, 98, 5) };
+        var (_, run, _) = await RunAsync("priorPeriodOhlc", new() { ["symbol"] = "SBIN", ["period"] = "previous_week" }, new Api(Candles(days)));
+        var week = run.Context.Get("out")!;
+        Assert.Equal(("2026-11-02/2026-11-08", 100.0, 120.0, 90.0, 92.0, 60.0), (week["date"]!.GetValue<string>(), week["open"]!.GetValue<double>(), week["high"]!.GetValue<double>(), week["low"]!.GetValue<double>(), week["close"]!.GetValue<double>(), week["volume"]!.GetValue<double>()));
+
+        var months = new[] { Bar(Epoch(10, 5, 0, 0), 50, 60, 40, 55, 1), Bar(Epoch(10, 30, 0, 0), 55, 80, 54, 70, 2), Bar(Epoch(11, 2, 0, 0), 70, 71, 69, 70, 3) };
+        (_, run, _) = await RunAsync("priorPeriodOhlc", new() { ["symbol"] = "SBIN", ["period"] = "previous_month" }, new Api(Candles(months)));
+        var month = run.Context.Get("out")!;
+        Assert.Equal(("2026-10", 50.0, 80.0, 40.0, 70.0), (month["date"]!.GetValue<string>(), month["open"]!.GetValue<double>(), month["high"]!.GetValue<double>(), month["low"]!.GetValue<double>(), month["close"]!.GetValue<double>()));
+    }
+
+    [Theory]
+    [InlineData("previous_day", "not enough history to determine previous_day")]
+    [InlineData("previous_hour", "not enough history to determine previous_hour")]
+    [InlineData("previous_week", "not enough history to determine previous_week")]
+    [InlineData("last_year", "unknown period 'last_year'")]
+    public async Task Without_a_closed_period_to_report_the_node_says_so_rather_than_passing_off_the_current_one(string period, string words)
+    {
+        var (_, _, outcome) = await RunAsync("priorPeriodOhlc", new() { ["symbol"] = "SBIN", ["period"] = period }, new Api(Candles(Bar(Epoch(11, 11, 12, 0), 1, 2, 0.5, 1.5))));
+        Assert.False(outcome.Succeeded);
+        Assert.Contains(words, outcome.Message);
+    }
+
+    [Fact]
+    public async Task A_failed_history_fetch_names_the_symbol_interval_and_a_hint()
+    {
+        var (_, _, outcome) = await RunAsync("barOffset", new() { ["symbol"] = "SBIN", ["interval"] = "7m" }, new Api(new JsonObject { ["status"] = "error", ["message"] = "bad interval" }));
+        Assert.False(outcome.Succeeded);
+        Assert.Contains("History fetch failed for SBIN (7m): bad interval.", outcome.Message);
+        Assert.Contains("Intervals node", outcome.Message);
+    }
+
+    [Fact]
+    public async Task A_missing_symbol_is_refused()
+    {
+        var (api, _, outcome) = await RunAsync("priorPeriodOhlc", [], new Api());
+        Assert.False(outcome.Succeeded);
+        Assert.Contains("Symbol is required", outcome.Message);
+        Assert.Empty(api.Calls);
+    }
+
+    private static JsonObject Holidays(params (string Date, string Type, string[] Closed)[] days) => new()
+    {
+        ["status"] = "success",
+        ["data"] = new JsonArray(days.Select(d => (JsonNode)new JsonObject { ["date"] = d.Date, ["holiday_type"] = d.Type, ["closed_exchanges"] = new JsonArray(d.Closed.Select(c => (JsonNode)c).ToArray()) }).ToArray()),
+    };
+
+    [Fact]
+    public async Task The_calendar_answers_new_week_month_and_quarter_from_the_first_trading_day_not_the_date()
+    {
+        // 2026-11-02 is a Monday that is a holiday, so the week's first trading day is Tuesday the 3rd.
+        var holidays = Holidays(("2026-11-02", "TRADING_HOLIDAY", ["NSE"]), ("2026-11-08", "SPECIAL_SESSION", []), ("2026-11-20", "SETTLEMENT_HOLIDAY", ["NSE"]));
+        var (_, run, outcome) = await RunAsync("calendar", new() { ["date"] = "2026-11-03" }, new Api(null, holidays));
+        Assert.True(outcome.Succeeded, outcome.Message);
+        var c = run.Context.Get("out")!;
+        // The 1st is a Sunday and the 2nd a holiday, so the 3rd also starts the month.
+        Assert.Equal((true, true, true, "Tuesday", "2026-11-03"), (c["is_new_week"]!.GetValue<bool>(), c["is_trading_day"]!.GetValue<bool>(), c["is_new_month"]!.GetValue<bool>(), c["weekday"]!.GetValue<string>(), c["first_trading_day_of_week"]!.GetValue<string>()));
+        Assert.Equal("2026-11-03", c["first_trading_day_of_month"]!.GetValue<string>());
+        Assert.Equal("2026-10-30", c["prev_trading_day"]!.GetValue<string>());
+
+        (_, run, _) = await RunAsync("calendar", new() { ["date"] = "2026-11-08" }, new Api(null, holidays));
+        var sunday = run.Context.Get("out")!;
+        Assert.Equal((true, true, true), (sunday["is_trading_day"]!.GetValue<bool>(), sunday["is_weekend"]!.GetValue<bool>(), sunday["is_special_session"]!.GetValue<bool>()));
+
+        (_, run, _) = await RunAsync("calendar", new() { ["date"] = "2026-11-20" }, new Api(null, holidays));
+        Assert.True(run.Context.Get("out")!["is_trading_day"]!.GetValue<bool>());
+    }
+
+    [Fact]
+    public async Task The_calendar_defaults_to_the_trading_session_date_and_refuses_a_bad_date()
+    {
+        var (api, run, _) = await RunAsync("calendar", [], new Api());
+        Assert.Equal("2026-11-11", run.Context.Get("out")!["date"]!.GetValue<string>());
+        Assert.Equal(3, api.Calls.Count(c => c.Api == "holidays"));
+        var (_, _, outcome) = await RunAsync("calendar", new() { ["date"] = "next tuesday" }, new Api());
+        Assert.False(outcome.Succeeded);
+        Assert.Contains("Calendar date must be YYYY-MM-DD, got 'next tuesday'", outcome.Message);
+    }
+
+    [Fact]
+    public async Task When_the_holiday_list_is_unavailable_only_weekends_are_closed()
+    {
+        var (_, run, _) = await RunAsync("calendar", new() { ["date"] = "2026-11-13" }, new Api(null, new JsonObject { ["status"] = "error", ["message"] = "down" }));
+        var friday = run.Context.Get("out")!;
+        Assert.Equal((true, "2026-11-16"), (friday["is_trading_day"]!.GetValue<bool>(), friday["next_trading_day"]!.GetValue<string>()));
+    }
+}
