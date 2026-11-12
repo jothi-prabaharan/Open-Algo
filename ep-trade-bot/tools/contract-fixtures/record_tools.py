@@ -341,7 +341,48 @@ def record_strike_profile():
     return {"now": NOW.isoformat(), "cases": cases}
 
 
-RECORDERS = {"strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
+def record_gamma_density():
+    import services.gamma_density_service as gd
+    import services.option_greeks_service as g
+
+    g.datetime = Frozen
+    cases = []
+
+    def run(name, chain, exchange="NFO", expiry="26NOV26", forward=None, rate=None, fail=None):
+        gd.get_option_chain = (lambda **kw: (False, {"status": "error", "message": fail[1]}, fail[0])) if fail else (lambda **kw: (True, chain, 200))
+        gd._resolve_forward_price = lambda *a, **k: forward
+        ok, resp, code = gd.calculate_gamma_density("NIFTY", exchange, expiry, "key", rate)
+        cases.append({"name": name, "exchange": exchange, "expiry": expiry, "forward": forward, "rate": rate, "chain": chain, "fail": fail, "ok": ok, "code": code, "response": resp})
+
+    chain = make_chain("NIFTY", 24050.0, 24050, 50, 23, "26NOV26", 75, 21)
+    run("nifty-with-forward", chain, forward=24110.5)
+    run("nifty-spot-as-forward", chain)
+    run("with-rate", chain, forward=24110.5, rate=6.5)
+    run("expiry-tomorrow", make_chain("NIFTY", 24050.0, 24050, 50, 23, "12NOV26", 75, 22), expiry="12NOV26", forward=24055.0)
+    run("expired", make_chain("NIFTY", 24050.0, 24050, 50, 23, "10NOV26", 75, 23), expiry="10NOV26", forward=24055.0)
+    run("mcx", make_chain("GOLD", 72500.0, 72500, 100, 12, "26NOV26", 100, 24), exchange="MCX", forward=72610.0)
+    dead = make_chain("NIFTY", 24050.0, 24050, 50, 6, "26NOV26", 75, 25)
+    for r in dead["chain"]:
+        for leg in ("ce", "pe"):
+            if r[leg]:
+                r[leg]["ltp"] = 0
+    run("no-usable-premium", dead, forward=24100.0)
+    off = make_chain("NIFTY", 24050.0, 24050, 50, 10, "26NOV26", 75, 26)
+    off["atm_strike"] = 99999
+    run("atm-not-in-chain", off, forward=24100.0)
+    junk = make_chain("NIFTY", 24050.0, 24050, 50, 6, "26NOV26", 75, 27)
+    junk["chain"] += [{"strike": 0, "ce": {"oi": 5, "ltp": 1}, "pe": None}, {"strike": "x", "ce": None, "pe": None}, {"strike": -5, "ce": None, "pe": None}]
+    run("junk-strikes", junk, forward=24100.0)
+    run("no-spot", make_chain("NIFTY", 0, 24050, 50, 3, "26NOV26", 75, 28))
+    empty = make_chain("NIFTY", 24050.0, 24050, 50, 3, "26NOV26", 75, 29)
+    empty["chain"] = []
+    run("empty-chain", empty)
+    run("bad-month", chain, expiry="26XYZ26")
+    run("chain-failed", None, fail=(503, "Option chain unavailable"))
+    return {"now": NOW.isoformat(), "cases": cases}
+
+
+RECORDERS = {"gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
 
 if __name__ == "__main__":
     out = {name: fn() for name, fn in RECORDERS.items()}

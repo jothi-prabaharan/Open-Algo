@@ -9,7 +9,7 @@ public sealed class ToolsParityTests
     private static readonly JsonObject Fixtures = JsonNode.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", "tools.fixtures.json")))!.AsObject();
 
     /// <summary>Equal as data: numbers by value (to the last digit OpenAlgo shows), containers element by element.</summary>
-    internal static string? Difference(JsonNode? expected, JsonNode? actual, string path = "$")
+    internal static string? Difference(JsonNode? expected, JsonNode? actual, string path = "$", double tolerance = 1e-12)
     {
         if (expected is null || actual is null) return expected is null && actual is null ? null : $"{path}: expected {expected?.ToJsonString() ?? "null"}, got {actual?.ToJsonString() ?? "null"}";
         if (expected is JsonObject eo)
@@ -17,7 +17,7 @@ public sealed class ToolsParityTests
             if (actual is not JsonObject ao) return $"{path}: expected an object, got {actual.ToJsonString()}";
             foreach (var (key, value) in eo)
                 if (!ao.ContainsKey(key)) return $"{path}.{key}: missing";
-                else if (Difference(value, ao[key], $"{path}.{key}") is { } d) return d;
+                else if (Difference(value, ao[key], $"{path}.{key}", tolerance) is { } d) return d;
             foreach (var (key, _) in ao)
                 if (!eo.ContainsKey(key)) return $"{path}.{key}: unexpected";
             return null;
@@ -27,7 +27,7 @@ public sealed class ToolsParityTests
         {
             if (actual is not JsonArray aa || aa.Count != ea.Count) return $"{path}: expected {ea.Count} items, got {(actual as JsonArray)?.Count.ToString() ?? actual.ToJsonString()}";
             for (var i = 0; i < ea.Count; i++)
-                if (Difference(ea[i], aa[i], $"{path}[{i}]") is { } d) return d;
+                if (Difference(ea[i], aa[i], $"{path}[{i}]", tolerance) is { } d) return d;
             return null;
         }
 
@@ -36,8 +36,15 @@ public sealed class ToolsParityTests
         if (ev.TryGetValue<string>(out var es)) return av.TryGetValue<string>(out var s2) && s2 == es ? null : $"{path}: expected \"{es}\", got {av.ToJsonString()}";
         if (ev.TryGetValue<bool>(out var eb)) return av.TryGetValue<bool>(out var b2) && b2 == eb ? null : $"{path}: expected {eb}, got {av.ToJsonString()}";
         if (FlowNumber(ev, out var en) && FlowNumber(av, out var an))
-            return en == an || Math.Abs(en - an) <= 1e-12 * Math.Max(1.0, Math.Abs(en)) ? null : $"{path}: expected {en:R}, got {an:R}";
+            return en == an || Math.Abs(en - an) <= tolerance * Math.Max(1.0, Math.Abs(en)) ? null : $"{path}: expected {en:R}, got {an:R}";
         return $"{path}: expected {ev.ToJsonString()}, got {av.ToJsonString()}";
+    }
+
+    /// <summary>Fails with the full path and both values; Assert.Null cuts the message short.</summary>
+    internal static void AssertSame(JsonNode? expected, JsonNode? actual, double tolerance = 1e-12)
+    {
+        var d = Difference(expected, actual, "$", tolerance);
+        Assert.True(d is null, d);
     }
 
     private static bool FlowNumber(JsonValue v, out double d)
@@ -62,7 +69,7 @@ public sealed class ToolsParityTests
             c["rate"]?.GetValue<double>(), c["expiry_time"]?.GetValue<string>(), now);
         Assert.Equal(c["ok"]!.GetValue<bool>(), ok);
         Assert.Equal(c["code"]!.GetValue<int>(), code);
-        Assert.Null(Difference(c["response"], response));
+        AssertSame(c["response"], response);
     }
 
     private static DateTime Now(string tool) => DateTime.Parse(Fixtures[tool]!["now"]!.GetValue<string>()[..19], System.Globalization.CultureInfo.InvariantCulture);
@@ -81,7 +88,7 @@ public sealed class ToolsParityTests
             : GexTool.Compute(chain, c["futures"]?.GetValue<double>(), "NIFTY", c["exchange"]!.GetValue<string>(), c["expiry"]!.GetValue<string>(), Now("gex"));
         Assert.Equal(c["ok"]!.GetValue<bool>(), result.Ok);
         Assert.Equal(c["code"]!.GetValue<int>(), result.Code);
-        Assert.Null(Difference(c["response"], result.Response));
+        AssertSame(c["response"], result.Response);
     }
 
     public static IEnumerable<object[]> IvSmileCases() => Fixtures["iv_smile"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
@@ -98,7 +105,7 @@ public sealed class ToolsParityTests
             : IvSmileTool.Compute(chain, "NIFTY", c["exchange"]!.GetValue<string>(), c["expiry"]!.GetValue<string>(), Now("iv_smile"));
         Assert.Equal(c["ok"]!.GetValue<bool>(), result.Ok);
         Assert.Equal(c["code"]!.GetValue<int>(), result.Code);
-        Assert.Null(Difference(c["response"], result.Response));
+        AssertSame(c["response"], result.Response);
     }
 
     public static IEnumerable<object[]> OiCases() => Fixtures["oi"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
@@ -120,7 +127,7 @@ public sealed class ToolsParityTests
                 : kind == "oi" ? OiTools.OiData(chain, futures, underlying, expiry) : OiTools.MaxPain(chain, futures, underlying, expiry);
             Assert.Equal(expected["ok"]!.GetValue<bool>(), result.Ok);
             Assert.Equal(expected["code"]!.GetValue<int>(), result.Code);
-            Assert.Null(Difference(expected["response"], result.Response));
+            AssertSame(expected["response"], result.Response);
         }
     }
 
@@ -143,7 +150,7 @@ public sealed class ToolsParityTests
             c["expiries"]!.AsArray().Select(x => x!.GetValue<string>()).ToList(), c["strike_count"]!.GetValue<int>(), inputs, Now("vol_surface"));
         Assert.Equal(c["ok"]!.GetValue<bool>(), ok);
         Assert.Equal(c["code"]!.GetValue<int>(), code);
-        Assert.Null(Difference(c["response"], response));
+        AssertSame(c["response"], response);
     }
 
     public static IEnumerable<object[]> StrikeProfileCases() => Fixtures["strike_profile"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
@@ -173,6 +180,24 @@ public sealed class ToolsParityTests
         Assert.Equal(c["ok"]!.GetValue<bool>(), ok);
         Assert.Equal(c["code"]!.GetValue<int>(), code);
         Assert.Equal(recorded.Select(r => (r!["expiry"]!.GetValue<string>(), r["strike_count"]!.GetValue<int>())), made);
-        Assert.Null(Difference(c["response"], response));
+        AssertSame(c["response"], response);
+    }
+
+    public static IEnumerable<object[]> GammaDensityCases() => Fixtures["gamma_density"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
+
+    [Theory]
+    [MemberData(nameof(GammaDensityCases))]
+    public void Gamma_density_matches_OpenAlgo_at_both_horizons(int index, string name)
+    {
+        _ = name;
+        var c = Fixtures["gamma_density"]!["cases"]![index]!;
+        var chain = c["chain"] as JsonObject;
+        (bool Ok, JsonObject Response, int Code) result = chain is null
+            ? (false, (JsonObject)c["response"]!.DeepClone(), c["code"]!.GetValue<int>())
+            : GammaDensityTool.Compute(chain, "NIFTY", c["exchange"]!.GetValue<string>(), c["expiry"]!.GetValue<string>(), c["rate"]?.GetValue<double>(), c["forward"]?.GetValue<double>(), Now("gamma_density"));
+        Assert.Equal(c["ok"]!.GetValue<bool>(), result.Ok);
+        Assert.Equal(c["code"]!.GetValue<int>(), result.Code);
+        // Densities are raw gamma x open interest; opengreeks stops its volatility solve a hair earlier than ours, which shows at the tenth digit.
+        AssertSame(c["response"], result.Response, 1e-8);
     }
 }
