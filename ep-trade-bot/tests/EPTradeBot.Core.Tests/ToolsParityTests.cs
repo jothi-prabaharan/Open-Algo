@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using EPTradeBot.Core.Options;
+using EPTradeBot.Core.Portfolio;
 
 namespace EPTradeBot.Core.Tests;
 
@@ -411,5 +412,40 @@ public sealed class ToolsParityTests
         }
 
         AssertSame(c["response"], actual);
+    }
+
+    public static IEnumerable<object[]> SectorRotationCases() => Fixtures["sector_rotation"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
+
+    [Fact]
+    public void The_sector_rotation_page_options_match_OpenAlgo()
+    {
+        var (ok, response, code) = SectorRotationTool.ListOptions();
+        Assert.True(ok);
+        Assert.Equal(200, code);
+        AssertSame(JsonNode.Parse("{\"status\":\"success\",\"data\":" + Fixtures["sector_rotation"]!["options"]!["data"]!.ToJsonString() + "}"), response);
+    }
+
+    [Theory]
+    [MemberData(nameof(SectorRotationCases))]
+    public void The_relative_rotation_map_matches_OpenAlgo(int index, string name)
+    {
+        _ = name;
+        var c = Fixtures["sector_rotation"]!["cases"]![index]!;
+        var data = c["data"]!.AsObject();
+        var errors = c["errors"]!.AsObject();
+        var loads = new List<JsonObject>();
+        SectorRotationTool.CloseLoader load = (instrument, start, end, source) =>
+        {
+            loads.Add(new JsonObject { ["symbol"] = instrument.Symbol, ["exchange"] = instrument.Exchange, ["start"] = start, ["end"] = end, ["source"] = source });
+            if (errors[instrument.Symbol]?.GetValue<string>() is { } why) throw why == "boom" ? new InvalidOperationException(why) : new PriceDataException(why);
+            var pair = data[instrument.Symbol]!.AsArray();
+            return new PriceSeries(pair[0]!.AsArray().Select(d => DateOnly.ParseExact(d!.GetValue<string>(), "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)).ToArray(), pair[1]!.AsArray().Select(v => v!.GetValue<double>()).ToArray());
+        };
+        var end = DateOnly.ParseExact(Fixtures["sector_rotation"]!["end"]!.GetValue<string>(), "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+        var (ok, response, code) = SectorRotationTool.Compute(c["benchmark"]!.GetValue<string>(), c["timeframe"]!.GetValue<string>(), c["source"]!.GetValue<string>(), c["instruments"] as JsonArray, end, load);
+        Assert.Equal(c["ok"]!.GetValue<bool>(), ok);
+        Assert.Equal(c["code"]!.GetValue<int>(), code);
+        AssertSame(c["loads"], new JsonArray(loads.Select(x => (JsonNode)x).ToArray()));
+        AssertSame(c["response"], response);
     }
 }

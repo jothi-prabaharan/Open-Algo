@@ -849,6 +849,93 @@ def record_strategy_pnl():
     return {"now": NOW.isoformat(), "cases": cases}
 
 
+def record_sector_rotation():
+    import random
+    import types
+    from datetime import date, timedelta
+
+    import pandas as pd
+
+    import services.sector_rotation_service as sr
+    from portfolio.data import DataError
+
+    end = date(2026, 11, 10)
+
+    def sessions(first, last, skip=()):
+        d, out = first, []
+        while d <= last:
+            if d.weekday() < 5 and d not in skip:
+                out.append(d)
+            d += timedelta(days=1)
+        return out
+
+    def walk(days, seed, start=1000.0, drift=0.0003, vol=0.01, trend=0.0):
+        rng = random.Random(seed)
+        price, out = start, []
+        for i, _ in enumerate(days):
+            price *= 1 + rng.gauss(drift + trend * (1 if i > len(days) // 2 else -1), vol)
+            out.append(round(price, 2))
+        return out
+
+    cases = []
+    first = end - timedelta(days=800)
+
+    def run(name, benchmark="NIFTY", timeframe="daily", source="db", instruments=None, data=None, errors=None, bench_error=False):
+        loads = []
+        data = data or {}
+        errors = errors or {}
+
+        def load_prices(symbols, exchanges, start, end_, source="db", allowed_exchanges=None, cache=True, **creds):
+            sym = symbols[0]
+            loads.append({"symbol": sym, "exchange": exchanges[0], "start": start, "end": end_, "source": source})
+            if sym in errors:
+                raise (DataError(errors[sym]) if errors[sym] != "boom" else RuntimeError("boom"))
+            dates, closes = data[sym]
+            frame = pd.DataFrame({sym: closes}, index=pd.DatetimeIndex(pd.to_datetime(dates)))
+            return types.SimpleNamespace(closes=frame, source=source, warnings={}, start=None, end=None)
+
+        sr.load_prices = load_prices
+        sr._CLOSES_CACHE.clear()
+        ok, resp, code = sr.compute_sector_rotation(benchmark, timeframe, source, instruments=instruments, end_date=end)
+        cases.append({"name": name, "benchmark": benchmark, "timeframe": timeframe, "source": source, "instruments": instruments, "data": data, "errors": errors, "loads": loads, "ok": ok, "code": code, "response": resp})
+
+    days = sessions(first, end)
+    bsedays = sessions(first, end, skip={date(2026, 4, 3), date(2026, 9, 14)})
+    names = ["NIFTYAUTO", "NIFTYIT", "NIFTYPHARMA", "FINNIFTY", "NIFTYMETAL", "NIFTYREALTY", "NIFTYFMCG", "NIFTYENERGY", "NIFTYMEDIA", "NIFTYPSE", "NIFTYPSUBANK", "NIFTYPVTBANK", "NIFTYINFRA", "NIFTYCOMMODITIES"]
+    base = {"NIFTY": ([d.isoformat() for d in days], walk(days, 1, 20000.0)), "NIFTY500": ([d.isoformat() for d in days], walk(days, 2, 18000.0)),
+            "SENSEX": ([d.isoformat() for d in bsedays], walk(bsedays, 3, 70000.0))}
+    for i, n in enumerate(names):
+        trend = (i - 7) * 0.0002
+        base[n] = ([d.isoformat() for d in days], walk(days, 10 + i, 1000.0 + 100 * i, trend=trend))
+
+    run("default-daily", data=base)
+    run("default-weekly", timeframe="weekly", data=base)
+    run("api-source", source="api", data=base)
+    run("sensex-benchmark-holiday-mismatch", benchmark="SENSEX", timeframe="weekly", data=base)
+    run("sensex-benchmark-daily", benchmark="sensex", data=base)
+    run("custom-instruments", instruments=[{"symbol": "nifty it", "exchange": "nse_index"}] if False else [{"symbol": "niftyit", "exchange": "nse_index", "label": "Tech"}, {"symbol": "NIFTYPHARMA", "exchange": "NSE_INDEX"}, {"symbol": "NIFTYPHARMA", "exchange": "NSE_INDEX", "label": "dup"},
+                                                                 {"symbol": "NIFTYAUTO", "exchange": "NSE_INDEX", "label": "  "}], data=base)
+    run("benchmark-in-the-list", instruments=[{"symbol": "NIFTY", "exchange": "NSE_INDEX"}, {"symbol": "NIFTYIT", "exchange": "NSE_INDEX"}], data=base)
+    short = {**base, "NIFTYIT": ([d.isoformat() for d in days[-30:]], walk(days[-30:], 99))}
+    run("short-history-and-missing", data=short, errors={"NIFTYMEDIA": "no data", "NIFTYPSE": "boom"})
+    run("short-history-weekly", timeframe="weekly", data=short)
+    run("everything-missing", data={"NIFTY": base["NIFTY"]}, errors={n: "no data" for n in names})
+    run("only-short-history", instruments=[{"symbol": "NIFTYIT", "exchange": "NSE_INDEX"}], data=short)
+    run("benchmark-missing-db", data={}, errors={"NIFTY": "no data"})
+    run("benchmark-missing-api", source="api", data={}, errors={"NIFTY": "no data"})
+    run("bad-benchmark", benchmark="DOW", data=base)
+    run("blank-benchmark", benchmark="", data=base)
+    run("bad-timeframe", timeframe="monthly", data=base)
+    run("bad-source", source="file", data=base)
+    run("too-many", instruments=[{"symbol": f"S{i}", "exchange": "NSE"} for i in range(41)], data=base)
+    run("blank-symbol", instruments=[{"symbol": " ", "exchange": "NSE"}], data=base)
+    run("bad-exchange", instruments=[{"symbol": "ES", "exchange": "NFO"}], data=base)
+    run("no-exchange", instruments=[{"symbol": "ES"}], data=base)
+    run("stocks-on-the-map", instruments=[{"symbol": "INFY", "exchange": "NSE"}, {"symbol": "TCS", "exchange": "NSE", "label": "Tata Consultancy"}],
+        data={**base, "INFY": ([d.isoformat() for d in days], walk(days, 41, 1500.0)), "TCS": ([d.isoformat() for d in days], walk(days, 42, 3500.0))})
+    return {"now": NOW.isoformat(), "end": end.isoformat(), "cases": cases, "options": sr.list_options()[1]}
+
+
 def record_strategy_chart():
     return _strategy_chart_cases("strategy_chart")
 
@@ -857,7 +944,7 @@ def record_multi_strike_oi():
     return _strategy_chart_cases("multi_strike_oi")
 
 
-RECORDERS = {"strategy_pnl": record_strategy_pnl, "arbitrage": record_arbitrage, "custom_straddle": record_custom_straddle, "straddle_chart": record_straddle_chart, "strategy_chart": record_strategy_chart, "multi_strike_oi": record_multi_strike_oi, "oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
+RECORDERS = {"sector_rotation": record_sector_rotation, "strategy_pnl": record_strategy_pnl, "arbitrage": record_arbitrage, "custom_straddle": record_custom_straddle, "straddle_chart": record_straddle_chart, "strategy_chart": record_strategy_chart, "multi_strike_oi": record_multi_strike_oi, "oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
 
 if __name__ == "__main__":
     out = {name: fn() for name, fn in RECORDERS.items()}
