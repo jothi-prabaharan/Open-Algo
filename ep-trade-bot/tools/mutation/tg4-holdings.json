@@ -1,0 +1,50 @@
+[
+ {
+  "name": "H2 plain average instead of weighted",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "(Math.Abs(holding.Quantity) * holding.AveragePrice + value) / totalQuantity",
+  "new": "(holding.AveragePrice + position.AveragePrice) / 2m",
+  "filter": "FullyQualifiedName~SandboxHoldingsTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H3 sale proceeds not credited",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "if (funds is not null) funds.AvailableBalance += value;",
+  "new": "if (funds is not null) funds.AvailableBalance += 0m;",
+  "filter": "FullyQualifiedName~SandboxHoldingsTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H4 margin stays reserved after settlement",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "if (funds is not null) funds.UsedMargin = (funds.UsedMargin ?? 0m) - Math.Min(value, funds.UsedMargin ?? 0m);\n                    }\n                    else",
+  "new": "if (funds is not null) funds.UsedMargin = funds.UsedMargin ?? 0m;\n                    }\n                    else",
+  "filter": "FullyQualifiedName~SandboxHoldingsTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H5 zero holding kept",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "if (holding.Quantity == 0) db.Remove(holding);",
+  "new": "if (holding.Quantity == 0) holding.Ltp = 0;",
+  "filter": "FullyQualifiedName~SandboxHoldingsTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H6 holdings not marked to market",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "h.Pnl = (ltp - h.AveragePrice) * Math.Abs(h.Quantity);",
+  "new": "h.Pnl = h.Pnl;",
+  "filter": "FullyQualifiedName~SandboxHoldingsTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H7 position kept after settlement",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "                db.Remove(position);\n                await db.SaveChangesAsync(cancellationToken);\n                return true;",
+  "new": "                await db.SaveChangesAsync(cancellationToken);\n                return true;",
+  "filter": "FullyQualifiedName~SandboxHoldingsTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

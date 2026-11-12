@@ -24,7 +24,7 @@ namespace EPTradeBot.Infrastructure.Sandbox;
 ///
 /// Scope of this port: market, limit, SL and SL-M orders, leverage-based margin,
 /// positions with average price and realised P&amp;L, cancel, square-off. Not yet ported:
-/// GTT, CNC holdings and T+1 settlement, catch-up after a restart. Intraday (MIS) positions and orders are closed by the square-off sweep.
+/// GTT. Intraday (MIS) positions and orders are closed by the square-off sweep, delivery (CNC) positions become holdings the next day, and a restart settles what it missed.
 /// </summary>
 public sealed class SandboxEngine(
     IDbContextFactory<EpTradeDbContext> contexts,
@@ -277,6 +277,96 @@ public sealed class SandboxEngine(
         }
 
         return settled;
+    }
+
+    /// <summary>
+    /// T+1 settlement: delivery (CNC) positions opened before today (Indian calendar) become holdings. A purchase adds to the holding at the weighted average and moves its margin out of
+    /// the reserved total; a sale reduces the holding and credits the proceeds. A position another run already settled is not found again. Returns how many were settled.
+    /// </summary>
+    public async Task<int> SettleT1Async(DateTime nowIst, CancellationToken cancellationToken = default)
+    {
+        var today = DateOnly.FromDateTime(nowIst);
+        var cutoffUtc = Ist.ToUtc(nowIst.Date);
+        List<int> ids;
+        await using (var db = await contexts.CreateDbContextAsync(cancellationToken))
+            ids = await db.Set<SandboxPosition>().AsNoTracking().Where(p => p.Product == "CNC" && p.CreatedAt < cutoffUtc).Select(p => p.Id).ToListAsync(cancellationToken);
+
+        var settled = 0;
+        foreach (var id in ids)
+        {
+            var done = await WithRetryAsync(async db =>
+            {
+                var position = await db.Set<SandboxPosition>().SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
+                if (position is null || position.CreatedAt >= cutoffUtc) return false;
+                if (position.Quantity == 0)
+                {
+                    db.Remove(position);
+                    await db.SaveChangesAsync(cancellationToken);
+                    return false;
+                }
+
+                var funds = await db.Set<SandboxFund>().SingleOrDefaultAsync(f => f.UserId == position.UserId, cancellationToken);
+                var holding = await db.Set<SandboxHolding>().SingleOrDefaultAsync(h => h.UserId == position.UserId && h.Symbol == position.Symbol && h.Exchange == position.Exchange, cancellationToken);
+                var value = Math.Abs(position.Quantity) * position.AveragePrice;
+                var now = UtcNow;
+                if (holding is not null)
+                {
+                    if (position.Quantity > 0)
+                    {
+                        var totalQuantity = Math.Abs(holding.Quantity) + Math.Abs(position.Quantity);
+                        holding.AveragePrice = totalQuantity > 0 ? (Math.Abs(holding.Quantity) * holding.AveragePrice + value) / totalQuantity : holding.AveragePrice;
+                        holding.Quantity += position.Quantity;
+                        if (funds is not null) funds.UsedMargin = (funds.UsedMargin ?? 0m) - Math.Min(value, funds.UsedMargin ?? 0m);
+                    }
+                    else
+                    {
+                        holding.Quantity += position.Quantity;
+                        if (funds is not null) funds.AvailableBalance += value;
+                    }
+
+                    holding.Ltp = position.Ltp;
+                    holding.UpdatedAt = now;
+                    if (holding.Quantity == 0) db.Remove(holding);
+                }
+                else
+                {
+                    db.Add(new SandboxHolding
+                    {
+                        UserId = position.UserId, Symbol = position.Symbol, Exchange = position.Exchange, Quantity = position.Quantity, AveragePrice = position.AveragePrice,
+                        Ltp = position.Ltp ?? position.AveragePrice, Pnl = 0m, PnlPercent = 0m, SettlementDate = today, CreatedAt = now, UpdatedAt = now,
+                    });
+                    if (funds is not null) funds.UsedMargin = (funds.UsedMargin ?? 0m) - Math.Min(value, funds.UsedMargin ?? 0m);
+                }
+
+                if (funds is not null) funds.UpdatedAt = now;
+                db.Remove(position);
+                await db.SaveChangesAsync(cancellationToken);
+                return true;
+            }, cancellationToken);
+            if (done) settled++;
+        }
+
+        return settled;
+    }
+
+    /// <summary>The account's holdings, marked to the latest quotes (a holding with no quote keeps the figures it was last given).</summary>
+    public async Task<IReadOnlyList<SandboxHolding>> GetHoldingsAsync(Guid accountId, CancellationToken cancellationToken = default)
+    {
+        var userId = UserId(accountId);
+        return await WithRetryAsync<IReadOnlyList<SandboxHolding>>(async db =>
+        {
+            var holdings = await db.Set<SandboxHolding>().Where(h => h.UserId == userId && h.Quantity != 0).OrderBy(h => h.Symbol).ThenBy(h => h.Exchange).ToListAsync(cancellationToken);
+            foreach (var h in holdings)
+            {
+                if (quotes.Get(h.Exchange, h.Symbol)?.Ltp is not { } ltp || ltp <= 0) continue;
+                h.Ltp = ltp;
+                h.Pnl = (ltp - h.AveragePrice) * Math.Abs(h.Quantity);
+                h.PnlPercent = h.AveragePrice > 0 ? (ltp - h.AveragePrice) / h.AveragePrice * 100m : 0m;
+            }
+
+            await db.SaveChangesAsync(cancellationToken);
+            return holdings;
+        }, cancellationToken);
     }
 
     public async Task<IReadOnlyList<OpenPosition>> GetOpenPositionsAsync(Guid accountId, CancellationToken cancellationToken = default)

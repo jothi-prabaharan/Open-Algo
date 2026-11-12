@@ -324,11 +324,26 @@ public sealed partial class OpenAlgoApiService(
     {
         if (account.AccountType == AccountType.PAPER)
         {
-            // Sandbox CNC holdings and T+1 settlement arrive in TG4; until then the sandbox holds none.
+            var held = await sandbox.GetHoldingsAsync(account.Id, ct);
+            var rows = new JsonArray();
+            decimal value = 0, invested = 0, pnl = 0;
+            foreach (var h in held)
+            {
+                var current = h.Ltp is > 0 ? Math.Abs(h.Quantity) * h.Ltp.Value : 0m;
+                value += current;
+                invested += Math.Abs(h.Quantity) * h.AveragePrice;
+                pnl += h.Pnl ?? 0m;
+                rows.Add(new JsonObject
+                {
+                    ["symbol"] = h.Symbol, ["exchange"] = h.Exchange, ["product"] = "CNC", ["quantity"] = h.Quantity, ["average_price"] = (double)h.AveragePrice, ["ltp"] = (double)(h.Ltp ?? 0m),
+                    ["pnl"] = (double)(h.Pnl ?? 0m), ["pnlpercent"] = (double)(h.PnlPercent ?? 0m), ["current_value"] = (double)current, ["settlement_date"] = h.SettlementDate.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture),
+                });
+            }
+
             return Mark(account, Success(new JsonObject
             {
-                ["holdings"] = new JsonArray(),
-                ["statistics"] = new JsonObject { ["totalholdingvalue"] = 0.0, ["totalinvvalue"] = 0.0, ["totalprofitandloss"] = 0.0, ["totalpnlpercentage"] = 0.0 },
+                ["holdings"] = rows,
+                ["statistics"] = new JsonObject { ["totalholdingvalue"] = (double)value, ["totalinvvalue"] = (double)invested, ["totalprofitandloss"] = (double)pnl, ["totalpnlpercentage"] = invested > 0 ? (double)(pnl / invested * 100m) : 0.0 },
             }));
         }
 

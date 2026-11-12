@@ -8,6 +8,9 @@ public static class Ist
     public static readonly TimeZoneInfo Zone = ResolveZone();
 
     /// <summary>The IST wall-clock time of a UTC instant, as an unspecified-kind DateTime.</summary>
+    /// <summary>An Indian wall-clock time as UTC.</summary>
+    public static DateTime ToUtc(DateTime ist) => DateTime.SpecifyKind(ist - Offset, DateTimeKind.Utc);
+
     public static DateTime FromUtc(DateTime utc)
     {
         if (utc.Kind == DateTimeKind.Local) utc = utc.ToUniversalTime();
