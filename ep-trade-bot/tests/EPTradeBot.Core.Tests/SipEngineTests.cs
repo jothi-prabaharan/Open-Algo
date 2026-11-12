@@ -41,3 +41,34 @@ public sealed class SipEngineTests
         Assert.Equal(1098.65 - 1000 - 1.5, result.Cash, 8);
     }
 }
+
+public sealed class PriceSeriesBuilderTests
+{
+    private static readonly DateOnly D1 = new(2026, 1, 5);
+
+    [Fact]
+    public void A_session_read_twice_keeps_the_last_value_and_bars_without_a_close_are_dropped()
+    {
+        var series = EPTradeBot.Core.Portfolio.PriceSeriesBuilder.Build([(D1.AddDays(1), 11.0), (D1, 10.0), (D1, 12.0), (D1.AddDays(2), null), (D1.AddDays(3), double.NaN)], "X", "a", "b");
+        Assert.Equal([D1, D1.AddDays(1)], series.Dates);
+        Assert.Equal([12.0, 11.0], series.Closes);
+    }
+
+    [Fact]
+    public void Too_few_sessions_non_positive_closes_and_no_bars_are_refused_with_the_reason()
+    {
+        var one = Assert.Throws<EPTradeBot.Core.Portfolio.PriceDataException>(() => EPTradeBot.Core.Portfolio.PriceSeriesBuilder.Build([(D1, 1.0)], "X", "2026-01-01", "2026-02-01"));
+        Assert.Equal("only 1 session(s) are common to all 1 symbols between 2026-01-01 and 2026-02-01; a shorter window or a symbol with a later listing date is likely", one.Message);
+        var negative = Assert.Throws<EPTradeBot.Core.Portfolio.PriceDataException>(() => EPTradeBot.Core.Portfolio.PriceSeriesBuilder.Build([(D1, 1.0), (D1.AddDays(1), 0.0)], "X", "a", "b"));
+        Assert.Equal("price matrix must contain only positive finite closes", negative.Message);
+        var none = Assert.Throws<EPTradeBot.Core.Portfolio.PriceDataException>(() => EPTradeBot.Core.Portfolio.PriceSeriesBuilder.Build(Array.Empty<(DateOnly, double?)>(), "X", "a", "b"));
+        Assert.Equal("X: no rows survived timestamp/close parsing", none.Message);
+    }
+
+    [Fact]
+    public void A_move_past_35_percent_is_reported_as_python_prints_it_and_a_smaller_one_is_not()
+    {
+        var series = EPTradeBot.Core.Portfolio.PriceSeriesBuilder.Build([(D1, 100.0), (D1.AddDays(1), 50.0), (D1.AddDays(2), 52.0), (D1.AddDays(3), 69.0)], "X", "a", "b");
+        Assert.Equal(["('2026-01-06', -0.5)"], EPTradeBot.Core.Portfolio.PriceSeriesBuilder.SplitWarnings(series));
+    }
+}

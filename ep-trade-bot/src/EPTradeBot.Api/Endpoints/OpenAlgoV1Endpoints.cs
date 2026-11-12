@@ -51,6 +51,10 @@ internal static class OpenAlgoV1Endpoints
         Post<MultiQuotesRequest>(v1, "/multiquotes", (s, a, r, ct) => s.MultiQuotesAsync(a, r, ct));
         Post<SyntheticFutureRequest>(v1, "/syntheticfuture", (s, a, r, ct) => s.SyntheticFutureAsync(a, r, ct), ValidationShape.Errors);
         Post<OptionChainRequest>(v1, "/optionchain", (s, a, r, ct) => s.OptionChainAsync(a, r, ct), ValidationShape.Errors);
+        Post<SipBacktestRequest>(v1, "/sip/backtest", (s, a, r, ct) => s.SipBacktestAsync(a, r, ct));
+        Post<SectorRotationRequest>(v1, "/sectorrotation", (s, a, r, ct) => s.SectorRotationAsync(a, r, ct), ValidationShape.RotationSentence);
+        v1.MapGet("/sip/frequencies", (RequestDelegate)(context => Write(context, OpenAlgoApiService.SipFrequencies()))).WithName("v1_sip_frequencies");
+        v1.MapGet("/sectorrotation/options", (RequestDelegate)(context => Write(context, OpenAlgoApiService.SectorRotationOptions()))).WithName("v1_sectorrotation_options");
         Post<OptionGreeksRequest>(v1, "/optiongreeks", (s, a, r, ct) => s.OptionGreeksAsync(a, r, ct), ValidationShape.Errors);
         Post<MultiOptionGreeksRequest>(v1, "/multioptiongreeks", (s, a, r, ct) => s.MultiOptionGreeksAsync(a, r, ct), ValidationShape.Errors);
         Post<BasketOrderRequest>(v1, "/basketorder", (s, a, r, ct) => s.BasketOrderAsync(a, r, ct));
@@ -81,7 +85,7 @@ internal static class OpenAlgoV1Endpoints
         "/placeorder", "/placesmartorder", "/modifyorder", "/cancelorder", "/cancelallorder", "/closeposition", "/orderbook", "/tradebook",
         "/positionbook", "/holdings", "/funds", "/orderstatus", "/openposition", "/quotes", "/depth", "/ping", "/analyzer", "/analyzer/toggle",
         "/symbol", "/search", "/expiry", "/optionsymbol", "/basketorder", "/splitorder", "/optionsorder", "/optionsmultiorder", "/instruments",
-        "/multiquotes", "/syntheticfuture", "/optionchain", "/optiongreeks", "/multioptiongreeks", "/market/holidays", "/market/timings", "/pnl/symbols", "/chart", "/history", "/intervals", "/ticker/{symbol}", "/margin",
+        "/multiquotes", "/syntheticfuture", "/optionchain", "/optiongreeks", "/multioptiongreeks", "/sip/backtest", "/sip/frequencies", "/sectorrotation", "/sectorrotation/options", "/market/holidays", "/market/timings", "/pnl/symbols", "/chart", "/history", "/intervals", "/ticker/{symbol}", "/margin",
         "/placegttorder", "/modifygttorder", "/cancelgttorder", "/gttorderbook",
     ];
 
@@ -94,6 +98,8 @@ internal static class OpenAlgoV1Endpoints
     {
         Message,
         Errors,
+        /// <summary>/sectorrotation answers any refused field with one sentence a trader can act on.</summary>
+        RotationSentence,
     }
 
     private static void Post<T>(RouteGroupBuilder v1, string path, Func<OpenAlgoApiService, BrokerAccount, T, CancellationToken, Task<V1Result>> handler,
@@ -261,7 +267,9 @@ internal static class OpenAlgoV1Endpoints
             beforeValidation: static (_, body) => body.Count == 0 ? V1Result.Error(400, "No data provided") : null,
             beforeKey: static r => OpenAlgoApiService.ChartLimits(r.Preferences));
 
-    private static V1Result Invalid(ValidationShape shape, JsonObject fields) => shape == ValidationShape.Errors
+    private static V1Result Invalid(ValidationShape shape, JsonObject fields) => shape == ValidationShape.RotationSentence
+        ? V1Result.Error(400, "These map settings were not accepted. Choose the benchmark and timeframe again, or use Reset to sectors if you added symbols.")
+        : shape == ValidationShape.Errors
         ? new V1Result(400, new JsonObject { ["status"] = "error", ["message"] = "Validation error", ["errors"] = fields })
         : new V1Result(400, new JsonObject { ["status"] = "error", ["message"] = fields });
 

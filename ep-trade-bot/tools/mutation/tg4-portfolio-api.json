@@ -1,0 +1,50 @@
+[
+ {
+  "name": "P1 split threshold doubled",
+  "file": "src/EPTradeBot.Core/Portfolio/PriceSeriesBuilder.cs",
+  "old": "public const double SplitThreshold = 0.35;",
+  "new": "public const double SplitThreshold = 0.7;",
+  "filter": "FullyQualifiedName~PriceSeriesBuilderTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P2 first value kept for a session read twice",
+  "file": "src/EPTradeBot.Core/Portfolio/PriceSeriesBuilder.cs",
+  "old": "last[date] = c;",
+  "new": "last.TryAdd(date, c);",
+  "filter": "FullyQualifiedName~PriceSeriesBuilderTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P3 zero close allowed",
+  "file": "src/EPTradeBot.Core/Portfolio/PriceSeriesBuilder.cs",
+  "old": "|| v <= 0)",
+  "new": "|| v < 0)",
+  "filter": "FullyQualifiedName~PriceSeriesBuilderTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P4 minimum sessions off by one",
+  "file": "src/EPTradeBot.Core/Portfolio/PriceSeriesBuilder.cs",
+  "old": "if (last.Count < minSessions)",
+  "new": "if (last.Count < minSessions - 1)",
+  "filter": "FullyQualifiedName~PriceSeriesBuilderTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P5 candle date taken in UTC not Indian time",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Portfolio.cs",
+  "old": "DateTimeKind.Utc) + EPTradeBot.Core.Time.Ist.Offset), (double?)c.Close))",
+  "new": "DateTimeKind.Utc)), (double?)c.Close))",
+  "filter": "FullyQualifiedName~PortfolioApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "P7 sector settings error leaks field detail",
+  "file": "src/EPTradeBot.Api/Endpoints/OpenAlgoV1Endpoints.cs",
+  "old": "ValidationShape.RotationSentence\n        ? V1Result.Error(400, \"These map settings",
+  "new": "ValidationShape.Message\n        ? V1Result.Error(400, \"These map settings",
+  "filter": "FullyQualifiedName~PortfolioApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]
