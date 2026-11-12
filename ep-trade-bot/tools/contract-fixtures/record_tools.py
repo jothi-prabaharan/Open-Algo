@@ -269,7 +269,79 @@ def record_vol_surface():
         dt.datetime = real
 
 
-RECORDERS = {"vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
+def make_greek_chain(spot, atm, step, count, expiry_epoch, server_ts, lot, seed, forward=None, with_greeks=True):
+    """An option chain as get_option_chain(with_greeks=True) returns it: each leg carries open interest, implied volatility, delta and gamma."""
+    import random
+
+    from opengreeks import black76
+
+    rng = random.Random(seed)
+    years = max((expiry_epoch - server_ts) / (365 * 86400), 0.0001)
+    fwd = forward or spot * 1.002
+    rows = []
+    for i in range(-count, count + 1):
+        strike = atm + i * step
+        row = {"strike": strike}
+        for leg in ("ce", "pe"):
+            iv = round(11 + abs(i) * 0.35 + (1.5 if leg == "pe" and i < 0 else 0), 2)
+            sigma = iv / 100
+            flag = "c" if leg == "ce" else "p"
+            d = {"symbol": f"X{strike}{leg.upper()}", "ltp": round(black76.black(flag, fwd, strike, years, 0.0, sigma), 2), "oi": rng.randint(0, 600000) * (1 if abs(i) < count - 2 else 0),
+                 "lotsize": lot, "implied_volatility": iv}
+            if with_greeks:
+                d["delta"] = round(black76.delta(flag, fwd, strike, years, 0.0, sigma), 4)
+                gamma = round(black76.gamma(flag, fwd, strike, years, 0.0, sigma), 6)
+                d["gamma"] = 0.0 if gamma != gamma else gamma  # a chain carries no NaN
+            row[leg] = d
+        rows.append(row)
+    return {"status": "success", "underlying": "NIFTY", "underlying_ltp": spot, "atm_strike": atm, "expiry_ts": expiry_epoch, "server_ts": server_ts, "forward_price": fwd, "chain": rows}
+
+
+def record_strike_profile():
+    import services.strike_profile_service as sp
+
+    sp.datetime = Frozen
+    cases = []
+    now_epoch = int(NOW.timestamp())
+    day = 86400
+
+    def run(name, expiries, spot, range_pct, per_expiry, fail_after=None, busy=False, no_server_ts=False):
+        calls = []
+
+        def fetch(underlying, exchange, expiry_date, strike_count, api_key, with_greeks):
+            idx = expiries.index(expiry_date)
+            if fail_after is not None and idx >= fail_after:
+                return (False, {"status": "error", "message": "Option chain unavailable"}, 429 if busy else 404)
+            spec = per_expiry[expiry_date]
+            chain = make_greek_chain(spot, spec["atm"], spec["step"], strike_count, spec["epoch"], now_epoch, spec["lot"], seed=idx + 3, with_greeks=spec.get("greeks", True))
+            if no_server_ts:
+                del chain["server_ts"]
+            calls.append({"expiry": expiry_date, "strike_count": strike_count, "chain": chain})
+            return True, chain, 200
+
+        sp.get_option_chain = fetch
+        ok, resp, code = sp.get_strike_profile("NIFTY", "NFO", expiries, "key", range_pct)
+        cases.append({"name": name, "expiries": expiries, "range_pct": range_pct, "calls": calls, "fail_after": fail_after, "busy": busy, "ok": ok, "code": code, "response": resp})
+
+    e1 = now_epoch + 15 * day + 19800
+    e2 = now_epoch + 50 * day + 19800
+    spec = lambda epoch, atm=24050, step=50, lot=75, **kw: {"epoch": epoch, "atm": atm, "step": step, "lot": lot, **kw}
+    run("two-expiries-5pct", ["26NOV26", "31DEC26"], 24057.0, 5.0, {"26NOV26": spec(e1), "31DEC26": spec(e2)})
+    run("widest-window", ["26NOV26"], 24057.0, None, {"26NOV26": spec(e1)})
+    run("narrow-window", ["26NOV26"], 24057.0, 1.0, {"26NOV26": spec(e1)})
+    run("second-expiry-missing", ["26NOV26", "31DEC26"], 24057.0, 5.0, {"26NOV26": spec(e1), "31DEC26": spec(e2)}, fail_after=1)
+    run("first-expiry-fails", ["26NOV26"], 24057.0, 5.0, {"26NOV26": spec(e1)}, fail_after=0)
+    run("broker-busy", ["26NOV26", "31DEC26"], 24057.0, 5.0, {"26NOV26": spec(e1), "31DEC26": spec(e2)}, fail_after=1, busy=True)
+    run("no-spot", ["26NOV26"], 0, 5.0, {"26NOV26": spec(e1)})
+    run("no-expiries", [], 24057.0, 5.0, {})
+    run("no-server-ts", ["26NOV26"], 24057.0, 5.0, {"26NOV26": spec(e1)}, no_server_ts=True)
+    run("chain-without-greeks", ["26NOV26"], 24057.0, 5.0, {"26NOV26": spec(e1, greeks=False)})
+    run("expiry-today", ["26NOV26"], 24057.0, 5.0, {"26NOV26": spec(now_epoch + 3600)})
+    run("wide-step", ["26NOV26"], 52110.0, 3.0, {"26NOV26": spec(e1, atm=52100, step=100, lot=30)})
+    return {"now": NOW.isoformat(), "cases": cases}
+
+
+RECORDERS = {"strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
 
 if __name__ == "__main__":
     out = {name: fn() for name, fn in RECORDERS.items()}

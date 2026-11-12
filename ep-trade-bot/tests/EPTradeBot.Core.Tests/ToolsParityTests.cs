@@ -145,4 +145,34 @@ public sealed class ToolsParityTests
         Assert.Equal(c["code"]!.GetValue<int>(), code);
         Assert.Null(Difference(c["response"], response));
     }
+
+    public static IEnumerable<object[]> StrikeProfileCases() => Fixtures["strike_profile"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
+
+    [Theory]
+    [MemberData(nameof(StrikeProfileCases))]
+    public void The_strike_profile_matches_OpenAlgo_including_flip_and_walls(int index, string name)
+    {
+        _ = name;
+        var c = Fixtures["strike_profile"]!["cases"]![index]!;
+        var recorded = c["calls"]!.AsArray();
+        var expiries = c["expiries"]!.AsArray().Select(x => x!.GetValue<string>()).ToList();
+        var failAfter = c["fail_after"]?.GetValue<int>();
+        var busy = c["busy"]!.GetValue<bool>();
+        var made = new List<(string Expiry, int Count)>();
+        StrikeProfileTool.ChainFetch fetch = (expiry, count) =>
+        {
+            if (failAfter is { } f && expiries.IndexOf(expiry) >= f)
+                return (false, new JsonObject { ["status"] = "error", ["message"] = "Option chain unavailable" }, busy ? 429 : 404);
+            made.Add((expiry, count));
+            var hit = recorded.FirstOrDefault(r => r!["expiry"]!.GetValue<string>() == expiry && r["strike_count"]!.GetValue<int>() == count);
+            Assert.True(hit is not null, $"OpenAlgo never asked for {expiry} at {count} strikes");
+            return (true, (JsonObject)hit!["chain"]!.DeepClone(), 200);
+        };
+        var now = DateTime.Parse(Fixtures["strike_profile"]!["now"]!.GetValue<string>()[..19], System.Globalization.CultureInfo.InvariantCulture);
+        var (ok, response, code) = StrikeProfileTool.Compute("NIFTY", "NFO", expiries, c["range_pct"]?.GetValue<double>(), fetch, now.AddHours(-5.5));
+        Assert.Equal(c["ok"]!.GetValue<bool>(), ok);
+        Assert.Equal(c["code"]!.GetValue<int>(), code);
+        Assert.Equal(recorded.Select(r => (r!["expiry"]!.GetValue<string>(), r["strike_count"]!.GetValue<int>())), made);
+        Assert.Null(Difference(c["response"], response));
+    }
 }
