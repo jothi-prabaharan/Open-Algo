@@ -86,9 +86,9 @@ public static partial class ReturnStats
         return q < 0 ? -val : val;
     }
 
-    private static JsonNode? Clean(double x) => double.IsFinite(x) ? JsonValue.Create(PyNumber.Round(x, 6)) : null;
+    internal static JsonNode? Clean(double x) => double.IsFinite(x) ? JsonValue.Create(PyNumber.Round(x, 6)) : null;
 
-    private static JsonNode? Clean(double? x) => x is { } v ? Clean(v) : null;
+    internal static JsonNode? Clean(double? x) => x is { } v ? Clean(v) : null;
 
     private static JsonArray CleanList(IEnumerable<double> values) => new(values.Select(Clean).ToArray());
 

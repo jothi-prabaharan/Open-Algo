@@ -5,8 +5,11 @@ public sealed record PriceMatrix(DateOnly[] Dates, string[] Symbols, double[][] 
 {
     public int Sessions => Dates.Length;
 
-    /// <summary>Inner join of single-symbol series on their common sessions, as OpenAlgo aligns them.</summary>
-    public static PriceMatrix Join(IReadOnlyList<(string Symbol, PriceSeries Series)> columns, string source)
+    /// <summary>Moves large enough to look like an unadjusted corporate action, per symbol: (date, move).</summary>
+    public IReadOnlyList<KeyValuePair<string, List<(DateOnly Date, double Move)>>> Warnings { get; init; } = [];
+
+    /// <summary>Inner join of single-symbol series on their common sessions, as OpenAlgo aligns them (portfolio.data._assemble).</summary>
+    public static PriceMatrix Join(IReadOnlyList<(string Symbol, PriceSeries Series)> columns, string source, string start = "", string end = "", int minSessions = 2)
     {
         if (columns.Count == 0) throw new PriceDataException("no symbols requested");
         var common = columns[0].Series.Dates.ToHashSet();
@@ -15,7 +18,24 @@ public sealed record PriceMatrix(DateOnly[] Dates, string[] Symbols, double[][] 
         var rows = new double[dates.Length][];
         var lookup = columns.Select(c => c.Series.Dates.Select((d, i) => (d, i)).ToDictionary(x => x.d, x => c.Series.Closes[x.i])).ToArray();
         for (var r = 0; r < dates.Length; r++) rows[r] = [.. lookup.Select(l => l[dates[r]])];
-        return new PriceMatrix(dates, [.. columns.Select(c => c.Symbol)], rows, source);
+        if (rows.Any(row => row.Any(v => !double.IsFinite(v) || v <= 0))) throw new PriceDataException("price matrix must contain only positive finite closes");
+        if (dates.Length < minSessions)
+            throw new PriceDataException($"only {dates.Length} session(s) are common to all {columns.Count} symbols between {start} and {end}; a shorter window or a symbol with a later listing date is likely");
+
+        var warnings = new List<KeyValuePair<string, List<(DateOnly, double)>>>();
+        for (var j = 0; j < columns.Count; j++)
+        {
+            var hits = new List<(DateOnly, double)>();
+            for (var i = 1; i < dates.Length; i++)
+            {
+                var move = rows[i][j] / rows[i - 1][j] - 1.0;
+                if (Math.Abs(move) > PriceSeriesBuilder.SplitThreshold) hits.Add((dates[i], move));
+            }
+
+            if (hits.Count > 0) warnings.Add(new(columns[j].Symbol, hits));
+        }
+
+        return new PriceMatrix(dates, [.. columns.Select(c => c.Symbol)], rows, source) { Warnings = warnings };
     }
 }
 

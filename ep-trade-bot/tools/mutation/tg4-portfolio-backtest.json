@@ -1,0 +1,210 @@
+[
+ {
+  "name": "B1 cluster threshold strict",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioDiagnostics.cs",
+  "old": "corr[i][j] >= threshold",
+  "new": "corr[i][j] > threshold + 0.2",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B2 fund marker list drops GOLD",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioDiagnostics.cs",
+  "old": "\"SENSEX\", \"GOLD\", \"SILVER\"",
+  "new": "\"SENSEX\", \"SILVER\"",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B3 effective bets ceiling 10",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioDiagnostics.cs",
+  "old": "Scale(eff, 1.0, 12.0)",
+  "new": "Scale(eff, 1.0, 10.0)",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B4 trend lookback 100",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioDiagnostics.cs",
+  "old": "const int Lookback = 200;",
+  "new": "const int Lookback = 100;",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B5 grade cutoff B at 60",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioDiagnostics.cs",
+  "old": "overall >= 65 ? \"B\"",
+  "new": "overall >= 60 ? \"B\"",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B6 attribution cost effect sign",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioDiagnostics.cs",
+  "old": "[\"cost_effect\"] = netReturn - grossReturn",
+  "new": "[\"cost_effect\"] = grossReturn - netReturn",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B7 attribution lag dropped",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioDiagnostics.cs",
+  "old": "var prev = realizedWeights[wi - 1];",
+  "new": "var prev = realizedWeights[wi];",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B8 crisis coverage threshold",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioDiagnostics.cs",
+  "old": "double minCoverage = 0.6",
+  "new": "double minCoverage = 0.9",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B9 crisis needs 2 sessions",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioDiagnostics.cs",
+  "old": "chunk.Count < 2 ? null",
+  "new": "chunk.Count < 1 ? null",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B10 mc block size",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioScenarios.cs",
+  "old": "int block = 20",
+  "new": "int block = 21",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B11 mc seed",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioScenarios.cs",
+  "old": "uint seed = 12345",
+  "new": "uint seed = 12346",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B12 mc cagr sign handling",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioScenarios.cs",
+  "old": "Math.Sign(1.0 + f) * Math.Pow",
+  "new": "Math.Pow",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B13 walk forward step",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioScenarios.cs",
+  "old": "Math.Max(1, (int)(stepYears * ReturnStats.TradingDays))",
+  "new": "Math.Max(1, (int)(stepYears * 250))",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B14 sweep ranks lowest sharpe",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioScenarios.cs",
+  "old": "OrderByDescending(x => double.IsNaN(x.r.Sharpe) ? -9e9 : x.r.Sharpe)",
+  "new": "OrderBy(x => double.IsNaN(x.r.Sharpe) ? -9e9 : x.r.Sharpe)",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B15 sweep curve thinning",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioScenarios.cs",
+  "old": "run.Equity.Length / 300",
+  "new": "run.Equity.Length / 200",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B16 insights lagging threshold",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioInsights.cs",
+  "old": "if (ex < -0.01)",
+  "new": "if (ex < -0.02)",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B17 insights single name 0.4",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioInsights.cs",
+  "old": "(D(heaviest[\"weight_final\"]) ?? 0) > 0.4",
+  "new": "(D(heaviest[\"weight_final\"]) ?? 0) > 0.5",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B18 insights pillar floor 30",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioInsights.cs",
+  "old": "if (score < 30 &&",
+  "new": "if (score < 20 &&",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B19 asset return windows 1Y",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioBacktestService.cs",
+  "old": "(\"1Y\", 252)",
+  "new": "(\"1Y\", 250)",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B20 allocation thinning",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioBacktestService.cs",
+  "old": "weights.Length / 400",
+  "new": "weights.Length / 300",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B21 sharpe or-nan quirk",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioBacktestService.cs",
+  "old": "TryGetValue<double>(out var d) && d != 0 ? d",
+  "new": "TryGetValue<double>(out var d) ? d",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B22 benchmark not forward filled",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioBacktestService.cs",
+  "old": "if (lookup.TryGetValue(d, out var c)) carried = c;",
+  "new": "carried = lookup.TryGetValue(d, out var c) ? c : null;",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B23 brokerage rate scaled by 100",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioBacktestService.cs",
+  "old": "[\"rate\"] = brokeragePct,",
+  "new": "[\"rate\"] = brokeragePct / 100.0,",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B24 tax renamed gst dropped",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioBacktestService.cs",
+  "old": "key == \"tax\" ? \"gst\" : key",
+  "new": "key",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B25 split threshold in join",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioEngine.cs",
+  "old": "PriceSeriesBuilder.SplitThreshold) hits",
+  "new": "0.9) hits",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B26 PyFormat ties away from zero",
+  "file": "src/EPTradeBot.Core/Portfolio/PyFormat.cs",
+  "old": "(twice == denominator && !quotient.IsEven)",
+  "new": "(twice == denominator)",
+  "filter": "FullyQualifiedName~PortfolioBacktestParityTests|FullyQualifiedName~NumpyRandomTests|FullyQualifiedName~PyFormatTests",
+  "project": "EPTradeBot.Core.Tests"
+ }
+]
