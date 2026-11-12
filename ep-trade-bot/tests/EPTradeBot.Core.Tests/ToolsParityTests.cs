@@ -372,4 +372,21 @@ public sealed class ToolsParityTests
         AssertSame(c["calls"], new JsonArray(calls.OrderBy(x => x["symbol"]!.GetValue<string>(), StringComparer.Ordinal).ThenBy(x => x["exchange"]!.GetValue<string>(), StringComparer.Ordinal).Select(x => (JsonNode)x).ToArray()));
         AssertSame(c["response"], response);
     }
+
+    public static IEnumerable<object[]> ArbitrageCases() => Fixtures["arbitrage"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
+
+    [Theory]
+    [MemberData(nameof(ArbitrageCases))]
+    public void The_arbitrage_universe_matches_OpenAlgo(int index, string name)
+    {
+        _ = name;
+        var c = Fixtures["arbitrage"]!["cases"]![index]!;
+        var universe = c["universe"]!.AsObject();
+        var exchanges = c["exchanges"] is JsonArray a ? a.Select(x => x!.GetValue<string>()).ToList() : ArbitrageTool.DefaultExchanges.ToList();
+        ArbitrageTool.FuturesLookup lookup = exchange => universe[exchange] is JsonArray rows ? rows.Select(r => (JsonObject)r!.DeepClone()).ToList() : [];
+        var (ok, response, code) = ArbitrageTool.Universe(exchanges, lookup, Now("arbitrage"));
+        Assert.Equal(c["ok"]!.GetValue<bool>(), ok);
+        Assert.Equal(c["code"]!.GetValue<int>(), code);
+        AssertSame(c["response"], response);
+    }
 }

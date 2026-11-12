@@ -736,6 +736,50 @@ def record_custom_straddle():
     return {"now": NOW.isoformat(), "cases": cases}
 
 
+def record_arbitrage():
+    import services.arbitrage_service as ar
+
+    ar.datetime = Frozen
+    cases = []
+
+    def fut(exchange, name, expiry, sym=None, lot=50, tick=0.05, **extra):
+        sym = sym or f"{name}{expiry.replace('-', '')[:5]}FUT"
+        return {"symbol": sym, "exchange": exchange, "name": name, "expiry": expiry, "lotsize": lot, "tick_size": tick, **extra}
+
+    universe = {
+        "NFO": [
+            fut("NFO", "NIFTY", "26-NOV-26", lot=75), fut("NFO", "NIFTY", "31-DEC-26", lot=75), fut("NFO", "NIFTY", "28-JAN-27", lot=75), fut("NFO", "NIFTY", "25-FEB-27", lot=75),
+            fut("NFO", "BANKNIFTY", "31-DEC-26", lot=30), fut("NFO", "BANKNIFTY", "26-NOV-26", lot=30), fut("NFO", "BANKNIFTY", "28-JAN-27", lot=30),
+            fut("NFO", "RELIANCE", "26-NOV-26", lot=250), fut("NFO", "RELIANCE", "31-DEC-26", lot=250),
+            fut("NFO", "SBIN", "26-NOV-26", lot=1500),
+            fut("NFO", "TCS", "26-NOV-2026", sym="TCS26NOV26FUT", lot=175), fut("NFO", "TCS", "31-dec-2026", sym="TCS31DEC26FUT", lot=175), fut("NFO", "TCS", "bad-date", sym="TCSBADFUT", lot=175),
+            fut("NFO", "INFY", "26-NOV-26"), fut("NFO", "INFY", "26-NOV-26", sym="INFY26NOVFUT", lot=400), fut("NFO", "INFY", "31-DEC-26"),
+            {"symbol": "NIFTY26NOV2624000CE", "exchange": "NFO", "name": "NIFTY", "expiry": "26-NOV-26"},
+            fut("NFO", None, "26-NOV-26", sym="NONAMEFUT"), fut("NFO", "NOEXP", "", sym="NOEXPFUT"), {"symbol": None, "exchange": "NFO", "name": "ZZ", "expiry": "26-NOV-26"},
+            fut("NFO", "ITC", "26-NOV-26", sym="itc26novfut", lot=1600), fut("NFO", "ITC", "31-DEC-26", sym="itc31decfut", lot=1600),
+        ],
+        "MCX": [fut("MCX", "GOLD", "05-DEC-26", lot=100, tick=1.0), fut("MCX", "GOLD", "05-FEB-27", lot=100, tick=1.0), fut("MCX", "GOLD", "05-APR-27", lot=100, tick=1.0), fut("MCX", "CRUDEOIL", "19-NOV-26", lot=100, tick=1.0), fut("MCX", "CRUDEOIL", "21-DEC-26", lot=100, tick=1.0)],
+        "BFO": [fut("BFO", "SENSEX", "26-NOV-26", lot=20), fut("BFO", "SENSEX", "31-DEC-26", lot=20)],
+        "CDS": [fut("CDS", "USDINR", "27-NOV-26", lot=1000, tick=0.0025), fut("CDS", "USDINR", "29-DEC-26", lot=1000, tick=0.0025), fut("CDS", "USDINR", "27-JAN-27", lot=1000, tick=0.0025)],
+    }
+
+    def run(name, exchanges=None):
+        ar.fno_search_symbols = lambda exchange, instrumenttype, limit: list(universe.get(exchange, []))
+        ok, resp, code = (ar.get_arbitrage_universe() if exchanges is None else ar.get_arbitrage_universe(exchanges))
+        cases.append({"name": name, "exchanges": exchanges, "universe": universe, "ok": ok, "code": code, "response": resp})
+
+    run("default")
+    run("nfo-only", ["NFO"])
+    run("all-four", ["nfo", "MCX", "bfo", "cds"])
+    run("padded-and-unsupported", [" nfo ", "xyz", ""])
+    run("only-unsupported", ["XYZ"])
+    run("empty-list", [])
+    run("blank-entries", ["", "  "])
+    run("duplicate-exchange", ["NFO", "NFO"])
+    run("bfo-two-contracts", ["BFO"])
+    return {"now": NOW.isoformat(), "cases": cases}
+
+
 def record_strategy_chart():
     return _strategy_chart_cases("strategy_chart")
 
@@ -744,7 +788,7 @@ def record_multi_strike_oi():
     return _strategy_chart_cases("multi_strike_oi")
 
 
-RECORDERS = {"custom_straddle": record_custom_straddle, "straddle_chart": record_straddle_chart, "strategy_chart": record_strategy_chart, "multi_strike_oi": record_multi_strike_oi, "oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
+RECORDERS = {"arbitrage": record_arbitrage, "custom_straddle": record_custom_straddle, "straddle_chart": record_straddle_chart, "strategy_chart": record_strategy_chart, "multi_strike_oi": record_multi_strike_oi, "oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
 
 if __name__ == "__main__":
     out = {name: fn() for name, fn in RECORDERS.items()}
