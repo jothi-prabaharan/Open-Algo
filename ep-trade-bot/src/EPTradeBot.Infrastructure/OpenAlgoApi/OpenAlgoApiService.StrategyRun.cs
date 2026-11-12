@@ -48,6 +48,9 @@ public sealed partial class OpenAlgoApiService
         [JsonPropertyName("exit_kind")] public string? ExitKind { get; set; }
         [JsonPropertyName("exit_order_id")] public string? ExitOrderId { get; set; }
         [JsonPropertyName("exit_price")] public double? ExitPrice { get; set; }
+
+        /// <summary>A signal-mode leg returns to "flat" after an exit so the same symbol can be signalled again the same day; its realised P&amp;L keeps accumulating.</summary>
+        [JsonPropertyName("signal")] public bool Signal { get; set; }
     }
 
     private sealed class RunState
@@ -313,8 +316,8 @@ public sealed partial class OpenAlgoApiService
     private static void CloseLeg(RunLeg leg, double exitPrice)
     {
         leg.ExitPrice = exitPrice;
-        leg.RealizedPnl = AggregateEvaluator.PositionPnl(SideOf(leg), leg.EntryAvg, leg.Qty, exitPrice);
-        leg.Status = "closed";
+        leg.RealizedPnl += AggregateEvaluator.PositionPnl(SideOf(leg), leg.EntryAvg, leg.Qty, exitPrice);
+        leg.Status = leg.Signal ? "flat" : "closed";
     }
 
     private async Task<SmStrategyOrder?> OrderRowAsync(EpTradeDbContext db, int runId, string? orderId, CancellationToken ct) =>
@@ -602,6 +605,8 @@ public sealed partial class OpenAlgoApiService
     private async Task<bool> FinishIfDoneAsync(EpTradeDbContext db, SmStrategy strategy, SmStrategyRun run, RunState state, CancellationToken ct)
     {
         if (state.Legs.Any(l => l.Status is "open" or "pending")) return false;
+        // A signal strategy's run lasts the trading day: flat legs wait for the next alert, and only a requested stop or the day's end closes it.
+        if (strategy.StrategyKind == "signal" && state.PendingStop is null) return false;
         var (realized, unrealized) = RunPnl(state);
         var total = realized + unrealized;
         state.PnlPeak = Math.Max(state.PnlPeak, total);

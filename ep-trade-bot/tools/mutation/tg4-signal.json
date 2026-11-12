@@ -1,0 +1,130 @@
+[
+ {
+  "name": "G1 direction ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Signal.cs",
+  "old": "if (strategy.Direction == \"long_only\" && side == \"short\" || strategy.Direction == \"short_only\" && side == \"long\")",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G2 leg side ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Signal.cs",
+  "old": "if (legSide != \"both\" && legSide != side)",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G3 window ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Signal.cs",
+  "old": "if (WindowNote(strategy, action) is { } window)",
+  "new": "if (Environment.TickCount64 < 0 && WindowNote(strategy, action) is { } window)",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G4 exits blocked before entry time",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Signal.cs",
+  "old": "action.EndsWith(\"_entry\", StringComparison.Ordinal) && strategy.EntryTime is { } entry",
+  "new": "strategy.EntryTime is { } entry",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G5 exit time ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Signal.cs",
+  "old": "if (strategy.ExitTime is { } exit && now >= exit) return \"outside_trading_window\";",
+  "new": "",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G6 repeat entry places again",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Signal.cs",
+  "old": "if (leg is { Status: \"open\" } held && held.Position == position) return",
+  "new": "if (Environment.TickCount64 < 0 && leg is { Status: \"open\" } held && held.Position == position) return",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G7 exit on flat leg places an order",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Signal.cs",
+  "old": "if (leg is null || leg.Status != \"open\" || leg.Position != position) return",
+  "new": "if (leg is null) return",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G8 flip enters without closing",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Signal.cs",
+  "old": "        if (leg is { Status: \"open\" })\n        {\n            if (!await ExitLegAsync",
+  "new": "        if (leg is { Status: \"open\" } && Environment.TickCount64 < 0)\n        {\n            if (!await ExitLegAsync",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G9 naked short allowed",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Signal.cs",
+  "old": "if (position == \"S\" && !strategy.Product.Equals(\"MIS\"",
+  "new": "if (Environment.TickCount64 < 0 && position == \"S\" && !strategy.Product.Equals(\"MIS\"",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G10 stale run kept",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Signal.cs",
+  "old": "if (started >= NowIst().Date) return (current, null);",
+  "new": "if (started >= NowIst().Date || Environment.TickCount64 >= 0) return (current, null);",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G11 lots not multiplied",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Signal.cs",
+  "old": "(int)raw.Value * Math.Max(contract?.Lotsize ?? 1, 1)",
+  "new": "(int)raw.Value",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G12 symbol fallback ignores exchange",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Signal.cs",
+  "old": "!string.Equals(LegText(leg, \"exchange\"), exchange, StringComparison.OrdinalIgnoreCase)",
+  "new": "false",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G13 live mode by default",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Signal.cs",
+  "old": "var mode = strategy.LiveEnabled ? \"live\" : \"sandbox\";",
+  "new": "var mode = \"live\";",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G14 signal run closed when flat",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "if (strategy.StrategyKind == \"signal\" && state.PendingStop is null) return false;",
+  "new": "",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G15 realised pnl overwritten",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "leg.RealizedPnl += AggregateEvaluator",
+  "new": "leg.RealizedPnl = AggregateEvaluator",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G16 signal leg closed not flat",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "leg.Status = leg.Signal ? \"flat\" : \"closed\";",
+  "new": "leg.Status = \"closed\";",
+  "filter": "FullyQualifiedName~StrategyWebhookTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

@@ -199,8 +199,17 @@ public sealed partial class StrategyWebhookService(OpenAlgoApiService api, IDbCo
 
             if (strategy.StrategyKind == "signal")
             {
-                await AuditAsync("rejected_invalid_action", id, rawAction, null, safe, ip, userAgent, "Signal strategies are not run by EP Trade bot");
-                return Out("rejected_invalid_action", "This is a signal strategy. EP Trade bot runs batch strategies only, so the signal was not acted on.", strategy: id);
+                // Signals bypass the repeat and cooling-off windows: an alert engine repeats itself, and the engine answers a repeat as an accepted no-op.
+                var legId = payload["leg_id"] is JsonValue lv && lv.TryGetValue<int>(out var lid) ? lid : (int?)null;
+                var signal = await api.HandleSignalAsync(id, rawAction, legId, Text(payload["symbol"]), Text(payload["exchange"]), ct);
+                if (!signal.Ok)
+                {
+                    await AuditAsync("rejected_invalid_action", id, rawAction, null, safe, ip, userAgent, signal.Error);
+                    return Out("rejected_invalid_action", signal.Error ?? "The signal was refused", strategy: id);
+                }
+
+                await AuditAsync("ok", id, rawAction, null, safe, ip, userAgent, null);
+                return Out("ok", signal.Note is { } note ? $"Signal accepted ({note})" : "Signal accepted", ok: true, strategy: id, run: signal.RunId);
             }
 
             string? mode = null;

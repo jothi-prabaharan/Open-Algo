@@ -352,10 +352,16 @@ its SHA-256 digest only; a malformed and an unregistered token get the same answ
 the action and mode, live opt-in, a repeat within 60 seconds (one signal) and a start within 30 seconds of a stop. Repeats and cooling off are read from the audit and run rows, so they survive a restart. The stored copy of the
 body loses credential-named values and anything carrying the token. Every outcome is audited and the run records the alert that started it.
 
-**Not done.** Signal strategies (a run per alert, flips) and pause and resume are not ported: a signal strategy's webhook is refused with a plain sentence, and `/strategy/start` refuses it as OpenAlgo's route does. Tick-source
-switching and recovery events, and per-run broker binding beyond the account recorded on the run, are not ported either. Futures and options legs are resolved from the master contract as the option tools do, but the tests drive cash legs because the
+**Signal mode** (`OpenAlgoApiService.Signal.cs`, reached through the webhook with `long_entry`, `long_exit`, `short_entry`, `short_exit` and a `leg_id` or a symbol and exchange). A signal strategy has one run per
+trading day, opened by the day's first signal (sandbox unless the strategy is enabled for live) and closed at its exit time, or by the first signal of a later day. A signal outside the window, an exit on a flat leg and an entry
+on a leg already held that way are accepted no-ops that name why (an alert engine repeats itself); a signal against the strategy's direction or a leg's own side is a refusal. An opposite signal closes the held
+position first and opens the new side only once that close has filled. A leg that exits goes back to flat with its realised profit accumulating, so it can be signalled again the same day. Cash is never held short overnight,
+quantity is units or lots times the lot size, and the same stops, targets, trails and combined limits as a batch run apply.
+
+**Not done, and why.** OpenAlgo has no pause or resume (only the words in its event vocabulary), so there is nothing to port. Not brought across: tick-source switching events and the module's separate recovery routine (a restart
+here resumes each open run from its stored state on the monitor's next visit), and per-run broker binding beyond the account recorded on the run. Futures and options legs are resolved from the master contract as the option tools do, but the tests drive cash legs because the
 sandbox test host has no option chain; option resolution itself is covered by the option tools' tests.
-`StrategyApiTests` (5), `StrategyRunEngineTests` (14), `StrategyWebhookTests` (21), `tools/mutation/tg4-strategy-hooks.json` (17 mutants, all caught; a malformed-token shape check only saves a lookup, so it is not a mutant) and `tools/mutation/tg4-strategy-run.json` (17 mutants, all caught; two more were set aside as equivalent: the trailed stop is a pure function of the stored extremes, so
+`StrategyApiTests` (5), `StrategyRunEngineTests` (14), `StrategyWebhookTests` (29), `tools/mutation/tg4-signal.json` (16 mutants, all caught), `tools/mutation/tg4-strategy-hooks.json` (17 mutants, all caught; a malformed-token shape check only saves a lookup, so it is not a mutant) and `tools/mutation/tg4-strategy-run.json` (17 mutants, all caught; two more were set aside as equivalent: the trailed stop is a pure function of the stored extremes, so
 not writing it back changes nothing, and excluding the triggering leg from trail-to-entry cannot be seen while the sandbox fills a close at once, since that leg is already closed). `tg4-strategy-api.json` (8 mutants, all caught);
 the book's mutants are in `tg4-strategy-book.json` (11, all caught; one cannot be seen because two guards cover the same case).
 
@@ -395,8 +401,8 @@ callers succeed; the first revocation time is kept), and `Two_callers_revoking_t
 
 | Run | Core | Contract | Architecture | Integration |
 | --- | --- | --- | --- | --- |
-| 1 | 1518 passed | 913 passed | 35 passed | 309 passed |
-| 2 | 1518 passed | 913 passed | 35 passed | 309 passed |
-| 3 | 1518 passed | 913 passed | 35 passed | 309 passed |
+| 1 | 1518 passed | 913 passed | 35 passed | 317 passed |
+| 2 | 1518 passed | 913 passed | 35 passed | 317 passed |
+| 3 | 1518 passed | 913 passed | 35 passed | 317 passed |
 
-**What Gate 4 does not cover.** The strategy module's signal mode, webhooks and scheduler (see the strategy section). Everything else the TG4 plan lists, and every one of the 31 endpoint pairs, is built and held by tests.
+**What Gate 4 does not cover.** The strategy module's tick-source switching and separate recovery routine (see the strategy section). Everything else the TG4 plan lists, and every one of the 31 endpoint pairs, is built and held by tests.
