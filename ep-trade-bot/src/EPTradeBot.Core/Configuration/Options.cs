@@ -190,3 +190,33 @@ public sealed class AgentOptions
     [Range(5, 600)]
     public int TimeoutSeconds { get; set; } = 90;
 }
+
+/// <summary>Bound from <c>Mcp</c>.</summary>
+public sealed class McpOptions
+{
+    public const string Section = "Mcp";
+
+    /// <summary>How the outside world addresses this install, e.g. https://bot.example.com. Left empty, the address of the request is used.</summary>
+    public string? PublicBaseUrl { get; set; }
+
+    /// <summary>Browser origins allowed to call /mcp (e.g. https://claude.ai). A request from any other browser origin is refused; one with no origin (a desktop client) is not affected.</summary>
+    public List<string> AllowedOrigins { get; set; } = [];
+
+    [Range(5, 1440)]
+    public int AccessTokenMinutes { get; set; } = 60;
+
+    [Range(1, 365)]
+    public int RefreshTokenDays { get; set; } = 30;
+
+    [Range(1, 500)]
+    public int MaxClients { get; set; } = 50;
+
+    [Range(1, 600)]
+    public int ReadsPerMinute { get; set; } = 60;
+
+    [Range(1, 600)]
+    public int WritesPerMinute { get; set; } = 5;
+
+    /// <summary>Only the tools that read are offered over HTTP.</summary>
+    public bool ReadOnly { get; set; }
+}

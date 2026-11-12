@@ -24,6 +24,14 @@ public sealed class EpTradeDbContext(DbContextOptions<EpTradeDbContext> options)
     public DbSet<FlowRunRecord> FlowRuns => Set<FlowRunRecord>();
 
     public DbSet<AgentSetting> AgentSettings => Set<AgentSetting>();
+
+    public DbSet<McpClient> McpClients => Set<McpClient>();
+
+    public DbSet<McpAuthorizationCode> McpAuthorizationCodes => Set<McpAuthorizationCode>();
+
+    public DbSet<McpToken> McpTokens => Set<McpToken>();
+
+    public DbSet<McpCallRecord> McpCalls => Set<McpCallRecord>();
     public DbSet<OrderAuditLog> OrderAuditLogs => Set<OrderAuditLog>();
     public DbSet<KillSwitchEvent> KillSwitchEvents => Set<KillSwitchEvent>();
     public DbSet<ActionCenterDecision> ActionCenterDecisions => Set<ActionCenterDecision>();

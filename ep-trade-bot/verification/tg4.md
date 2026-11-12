@@ -221,3 +221,27 @@ errors it gets back). 22 mutants in `tools/mutation/tg4-agent.json`, all red; tw
 
 **Not done.** Streaming answers, saved conversations, voice, and the chart, option-visualisation, web-search, strategy and OpenScript generation tools of OpenAlgo's agent. The tools that exist are the
 ones the Gate 4 rule needs (read, and propose only); more are additive.
+
+## MCP (stdio and HTTP with OAuth)
+
+**What was built.** One JSON-RPC 2.0 server (`McpServer`) shared by two transports: `EPTradeBot.Mcp` (standard input and output, for a desktop assistant on the same computer, reaching the platform
+through `HttpPlatformApi` with an API key) and `POST /mcp` on the platform (bearer token). Tools (`McpTools.All`) call the same `/api/v1` endpoints as everything else: data, account, orders (place,
+smart, split, basket, options, modify, cancel, cancel all, close all) and market information.
+
+- **Reads and writes are separate.** Each tool is read-only or a write. A read-only server lists and runs no write (by name either), a toolset can be narrowed, a write needs the `mcp:write`
+  scope (a missing scope is a 403 on HTTP), and writes are rationed apart from reads (5 and 60 a minute by default, sliding window per token).
+- **Arguments are checked before anything is sent:** unknown arguments, wrong types, fractions where a whole number is wanted, and values outside the allowed words (case-insensitive) are refused
+  with a sentence naming the argument. Orders default to MARKET and MIS and carry the strategy label `python mcp`, as OpenAlgo's MCP does.
+- **Answers are marked as data.** Every result sits under a `data` key with a note that it is data, not instructions. A refused or timed-out write is never described as safe to repeat.
+- **OAuth 2.1 for the HTTP side:** dynamic client registration (https return addresses, or http on this computer only, no fragments, a cap on applications), authorization code with PKCE S256
+  (required), an approval page the trader confirms with the admin token (read granted always, write only when ticked, orders default to the Action Center), codes that are hashed, single-use,
+  bound to the application and return address and expire, access tokens that expire and can be revoked, rotating refresh tokens whose replay revokes the whole grant, and a switched-off
+  account losing access at once. Token answers are never cached, the approval page cannot be framed and escapes every name, browser origins are checked against a list, and a missing token is told
+  where to sign in.
+- **Every call is audited** (tool, outcome, client, token id) and the grant's order mode applies: a semi-auto grant's orders wait in the Action Center.
+
+**How it is held.** `McpServerTests` (63) and `McpTests` (33, against a real PostgreSQL through the full host). 56 mutants in `tools/mutation/tg4-mcp.json`, all red. Four first survived or did not
+build: the target position of a smart order, upper-casing of the exchange, separate counts for reads and writes (each needed a test), and the API key sent by the HTTP client (the mutant did not
+compile and was rewritten so it does).
+
+**Not done.** Tools for charts, strategy and OpenScript generation, and the Telegram and WhatsApp tools wait for their endpoints (next item). Consent for individual tools is by scope, not per call.

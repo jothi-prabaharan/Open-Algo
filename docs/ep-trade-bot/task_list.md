@@ -83,7 +83,7 @@ Not started (30): fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, defin
 - [x] 127 indicators with parity tests (`Core/Indicators`; 255 recorded cases against `openalgo.ta`, 21 mutation checks)
 - [x] Action Center Auto / Semi-Auto, re-check at approval
 - [x] Agent on Microsoft.Extensions.AI, proposal-only order tools (`Infrastructure/Agent`; 25 tests, 22 mutants; no tool can send an order)
-- [ ] MCP stdio + HTTP/OAuth
+- [x] MCP stdio + HTTP/OAuth
 - [ ] 20 tool back ends with numeric parity tests
 - [ ] Gate 4 artifact
 

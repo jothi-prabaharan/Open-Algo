@@ -96,6 +96,9 @@ public sealed class TestHost : IAsyncDisposable
 
     public HttpClient Anonymous() => _factory.CreateClient();
 
+    /// <summary>A client that does not follow redirects, for reading where a response sends the browser.</summary>
+    public HttpClient NoRedirects() => _factory.CreateClient(new Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+
     public T Get<T>() where T : notnull => _factory.Services.GetRequiredService<T>();
 
     public EpTradeDbContext NewDb() => _factory.Services.GetRequiredService<IDbContextFactory<EpTradeDbContext>>().CreateDbContext();

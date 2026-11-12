@@ -1,0 +1,450 @@
+[
+ {
+  "name": "M1 an unknown protocol version is echoed",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "asked is not null && ProtocolVersions.Contains(asked) ? asked",
+  "new": "asked is not null ? asked",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M2 a notification gets an answer",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "if (isNotification) return McpOutcome.None;",
+  "new": "if (isNotification && method.Length < 0) return McpOutcome.None;",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M3 a read-only server lists writes",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "(!policy.ReadOnly || t.ReadOnly) && (policy.Toolsets",
+  "new": "true && (policy.Toolsets",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M4 a read-only server runs a write by name",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "if (tool is null || (policy.ReadOnly && !tool.ReadOnly) ||",
+  "new": "if (tool is null ||",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M5 a toolset is not enforced on a call",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "|| (policy.Toolsets is not null && !policy.Toolsets.Contains(tool.Toolset)))\n            return new McpOutcome(Error(id, InvalidParams, $\"This server has no tool",
+  "new": ")\n            return new McpOutcome(Error(id, InvalidParams, $\"This server has no tool",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M6 the write scope is not checked",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "if (!session.Can(tool.Scope)) return",
+  "new": "if (!session.Can(tool.Scope) && name.Length < 0) return",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M7 a missing scope is answered 200",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "403, \"insufficient_scope\")",
+  "new": "200, \"insufficient_scope\")",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M8 arguments are not validated",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "if (Validate(tool.Schema, args) is { Count: > 0 } problems)",
+  "new": "if (Validate(tool.Schema, args) is { Count: > 0 } problems && name.Length < 0)",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M9 writes are rationed like reads",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "tool.ReadOnly ? policy.ReadsPerMinute : policy.WritesPerMinute",
+  "new": "policy.ReadsPerMinute",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M10 a refused order is said to be safe to repeat",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "retrySafe: tool.ReadOnly)); outcome = \"error\";",
+  "new": "retrySafe: true)); outcome = \"error\";",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M11 a timed-out write is said to be safe to repeat",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "retrySafe: tool.ReadOnly));\n            outcome = \"timeout\";",
+  "new": "retrySafe: true));\n            outcome = \"timeout\";",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M12 an answer is not marked as data",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "[\"data\"] = data.DeepClone() };",
+  "new": "[\"payload\"] = data.DeepClone() };",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M13 calls are not audited",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "if (audit is not null) await audit(",
+  "new": "if (audit is not null && name.Length < 0) await audit(",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M14 a batch answers its notifications",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "if (one.Response is not null) answers.Add(one.Response);",
+  "new": "answers.Add(one.Response ?? new JsonObject());",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M15 an unknown argument is accepted",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "{ problems.Add($\"'{key}' is not an argument of this tool.\"); continue; }",
+  "new": "{ continue; }",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M16 an allowed word is case-sensitive",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "StringComparison.OrdinalIgnoreCase)))\n                problems.Add",
+  "new": "StringComparison.Ordinal)))\n                problems.Add",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "M17 a fraction counts as a whole number",
+  "file": "src/EPTradeBot.Core/Mcp/McpServer.cs",
+  "old": "FlowData.TryNumber(n, out var d) && d == Math.Floor(d)",
+  "new": "FlowData.TryNumber(n, out var d) && d >= 0 || true",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "T1 the label of an order is not OpenAlgo's",
+  "file": "src/EPTradeBot.Core/Mcp/McpTools.cs",
+  "old": "public const string DefaultStrategy = \"python mcp\";",
+  "new": "public const string DefaultStrategy = \"mcp\";",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "T2 a smart order drops its target position",
+  "file": "src/EPTradeBot.Core/Mcp/McpTools.cs",
+  "old": "if (smart) o[\"position_size\"] = Whole(a, \"position_size\", 0);",
+  "new": "",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "T3 an exchange is not upper-cased",
+  "file": "src/EPTradeBot.Core/Mcp/McpTools.cs",
+  "old": "[\"exchange\"] = Str(a, \"exchange\", \"NSE\").ToUpperInvariant(),\n            [\"action\"]",
+  "new": "[\"exchange\"] = Str(a, \"exchange\", \"NSE\"),\n            [\"action\"]",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "T4 the default price type is limit",
+  "file": "src/EPTradeBot.Core/Mcp/McpTools.cs",
+  "old": "[\"pricetype\"] = Str(a, \"price_type\", \"MARKET\").ToUpperInvariant(),\n            [\"product\"] = Str(a, \"product\", \"MIS\")",
+  "new": "[\"pricetype\"] = Str(a, \"price_type\", \"LIMIT\").ToUpperInvariant(),\n            [\"product\"] = Str(a, \"product\", \"MIS\")",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "T5 the default product is delivery",
+  "file": "src/EPTradeBot.Core/Mcp/McpTools.cs",
+  "old": "[\"product\"] = Str(a, \"product\", \"MIS\").ToUpperInvariant(), [\"price\"] = Num(a, \"price\", 0), [\"trigger_price\"] = Num(a, \"trigger_price\", 0),\n            [\"disclosed_quantity\"]",
+  "new": "[\"product\"] = Str(a, \"product\", \"CNC\").ToUpperInvariant(), [\"price\"] = Num(a, \"price\", 0), [\"trigger_price\"] = Num(a, \"trigger_price\", 0),\n            [\"disclosed_quantity\"]",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "T6 cancel-all is not marked destructive",
+  "file": "src/EPTradeBot.Core/Mcp/McpTools.cs",
+  "old": "Call(\"cancelallorder\", a => new JsonObject { [\"strategy\"] = Str(a, \"strategy\", DefaultStrategy) }), destructive: true),",
+  "new": "Call(\"cancelallorder\", a => new JsonObject { [\"strategy\"] = Str(a, \"strategy\", DefaultStrategy) })),",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "T7 modify is not marked destructive",
+  "file": "src/EPTradeBot.Core/Mcp/McpTools.cs",
+  "old": "}), destructive: true),\n        Write(\"cancel_order\"",
+  "new": "})),\n        Write(\"cancel_order\"",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "T8 a quote reads the wrong endpoint",
+  "file": "src/EPTradeBot.Core/Mcp/McpTools.cs",
+  "old": "Call(\"quotes\", a => new JsonObject",
+  "new": "Call(\"depth\", a => new JsonObject",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "R1 the rate limit allows one more",
+  "file": "src/EPTradeBot.Core/Mcp/McpRateLimiter.cs",
+  "old": "if (q.Count >= perMinute) return false;",
+  "new": "if (q.Count > perMinute) return false;",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "R2 the window is two minutes",
+  "file": "src/EPTradeBot.Core/Mcp/McpRateLimiter.cs",
+  "old": "nowUtc - q.Peek() >= TimeSpan.FromMinutes(1)) q.Dequeue",
+  "new": "nowUtc - q.Peek() >= TimeSpan.FromMinutes(2)) q.Dequeue",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "R3 reads and writes share a count",
+  "file": "src/EPTradeBot.Core/Mcp/McpRateLimiter.cs",
+  "old": "if (!calls.TryGetValue((token, write), out var q)) calls[(token, write)] = q",
+  "new": "if (!calls.TryGetValue((token, false), out var q)) calls[(token, false)] = q",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "H1 the key is not sent",
+  "file": "src/EPTradeBot.Core/Mcp/HttpPlatformApi.cs",
+  "old": "payload[\"apikey\"] = apiKey;",
+  "new": "payload[\"apikey\"] = apiKey.Length < 0 ? apiKey : \"\";",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "H2 holidays use the wrong path",
+  "file": "src/EPTradeBot.Core/Mcp/HttpPlatformApi.cs",
+  "old": "\"holidays\" => \"market/holidays\"",
+  "new": "\"holidays\" => \"holidays\"",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "H3 a 200 that says error is success",
+  "file": "src/EPTradeBot.Core/Mcp/HttpPlatformApi.cs",
+  "old": "var failed = !response.IsSuccessStatusCode || json[\"status\"]?.GetValue<string>() == \"error\";",
+  "new": "var failed = !response.IsSuccessStatusCode;",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "S1 a blank line is parsed",
+  "file": "src/EPTradeBot.Core/Mcp/StdioTransport.cs",
+  "old": "if (string.IsNullOrWhiteSpace(line)) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~McpServerTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "O1 an http return address is accepted",
+  "file": "src/EPTradeBot.Infrastructure/Mcp/McpOAuthService.cs",
+  "old": "(u.Scheme == Uri.UriSchemeHttp && u.IsLoopback)",
+  "new": "(u.Scheme == Uri.UriSchemeHttp)",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "O2 a return address may carry a fragment",
+  "file": "src/EPTradeBot.Infrastructure/Mcp/McpOAuthService.cs",
+  "old": "u.Fragment.Length > 0 || ",
+  "new": "",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "O3 any number of applications may register",
+  "file": "src/EPTradeBot.Infrastructure/Mcp/McpOAuthService.cs",
+  "old": ">= Options.MaxClients)",
+  "new": ">= Options.MaxClients + 1000)",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "O4 a code never expires",
+  "file": "src/EPTradeBot.Infrastructure/Mcp/McpOAuthService.cs",
+  "old": "row.ExpiresAtUtc < now)",
+  "new": "row.ExpiresAtUtc < now.AddDays(-1))",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "O5 a code works for any return address",
+  "file": "src/EPTradeBot.Infrastructure/Mcp/McpOAuthService.cs",
+  "old": "row.RedirectUri != redirectUri ||",
+  "new": "",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "O6 a code works for any application",
+  "file": "src/EPTradeBot.Infrastructure/Mcp/McpOAuthService.cs",
+  "old": "if (row.ClientId != clientId ||",
+  "new": "if (",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "O7 pkce is not checked",
+  "file": "src/EPTradeBot.Infrastructure/Mcp/McpOAuthService.cs",
+  "old": "if (!CryptographicOperations.FixedTimeEquals(Encoding.ASCII.GetBytes(Challenge(verifier))",
+  "new": "if (row.CodeChallenge.Length < 0 && !CryptographicOperations.FixedTimeEquals(Encoding.ASCII.GetBytes(Challenge(verifier))",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "O8 a code can be used again",
+  "file": "src/EPTradeBot.Infrastructure/Mcp/McpOAuthService.cs",
+  "old": "c.CodeHash == hash && c.UsedAtUtc == null)",
+  "new": "c.CodeHash == hash)",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "O9 a replayed refresh token is not noticed",
+  "file": "src/EPTradeBot.Infrastructure/Mcp/McpOAuthService.cs",
+  "old": "if (token.PreviousRefreshHash == hash && token.RefreshHash != hash)",
+  "new": "if (token.PreviousRefreshHash == hash && token.RefreshHash != hash && hash.Length < 0)",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "O10 a refresh token works for any application",
+  "file": "src/EPTradeBot.Infrastructure/Mcp/McpOAuthService.cs",
+  "old": "if (token is null || token.ClientId != clientId) return",
+  "new": "if (token is null) return",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "O11 an access token never expires",
+  "file": "src/EPTradeBot.Infrastructure/Mcp/McpOAuthService.cs",
+  "old": "token.AccessExpiresAtUtc < now) return null;",
+  "new": "token.AccessExpiresAtUtc < now.AddYears(-10)) return null;",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "O12 a revoked token still works",
+  "file": "src/EPTradeBot.Infrastructure/Mcp/McpOAuthService.cs",
+  "old": "if (token is null || token.RevokedAtUtc is not null || token.AccessExpiresAtUtc",
+  "new": "if (token is null || token.AccessExpiresAtUtc",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "O13 a switched-off account keeps its access",
+  "file": "src/EPTradeBot.Infrastructure/Mcp/McpOAuthService.cs",
+  "old": "if (account is null || !account.IsEnabled) return null;",
+  "new": "if (account is null) return null;",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "O14 refreshing leaves the old access token valid",
+  "file": "src/EPTradeBot.Infrastructure/Mcp/McpOAuthService.cs",
+  "old": "        token.AccessHash = hasher.Hash(access);\n        token.RefreshHash",
+  "new": "        _ = access;\n        token.RefreshHash",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "E1 anyone can approve",
+  "file": "src/EPTradeBot.Api/Endpoints/McpEndpoints.cs",
+  "old": "if (!admin.Matches(form[\"admin_token\"].ToString()))",
+  "new": "if (!admin.Matches(form[\"admin_token\"].ToString()) && r.State.Length < 0)",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "E2 write is granted whether or not it was ticked",
+  "file": "src/EPTradeBot.Api/Endpoints/McpEndpoints.cs",
+  "old": "scopes.Where(s => s == McpSession.ReadScope || form[\"allow_write\"] == \"1\")",
+  "new": "scopes.Where(s => true)",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "E3 orders are sent at once by default",
+  "file": "src/EPTradeBot.Api/Endpoints/McpEndpoints.cs",
+  "old": "var mode = form[\"order_mode\"] == \"auto\" ? \"auto\" : \"semi_auto\";",
+  "new": "var mode = \"auto\";",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "E4 any browser origin is allowed",
+  "file": "src/EPTradeBot.Api/Endpoints/McpEndpoints.cs",
+  "old": "return origin.Length == 0 || o.AllowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase);",
+  "new": "return true;",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "E5 the approval page can be framed",
+  "file": "src/EPTradeBot.Api/Endpoints/McpEndpoints.cs",
+  "old": "ctx.Response.Headers[\"X-Frame-Options\"] = \"DENY\";",
+  "new": "",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "E6 names are not escaped on the approval page",
+  "file": "src/EPTradeBot.Api/Endpoints/McpEndpoints.cs",
+  "old": "private static string Enc(string s) => WebUtility.HtmlEncode(s);",
+  "new": "private static string Enc(string s) => s;",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "E7 pkce is optional on the approval page",
+  "file": "src/EPTradeBot.Api/Endpoints/McpEndpoints.cs",
+  "old": "if (r.Challenge.Length is < 43 or > 128 || r.Method != \"S256\") return Redirect(r.RedirectUri, r.State, (\"error\", \"invalid_request\"), (\"error_description\", \"PKCE with S256 is required.\"));",
+  "new": "",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "E8 an unregistered return address is redirected to",
+  "file": "src/EPTradeBot.Api/Endpoints/McpEndpoints.cs",
+  "old": "if (!McpOAuthService.RedirectMatches(client, r.RedirectUri)) return (null,",
+  "new": "if (!McpOAuthService.RedirectMatches(client, r.RedirectUri) && r.State.Length < 0) return (null,",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "E9 tokens may be cached",
+  "file": "src/EPTradeBot.Api/Endpoints/McpEndpoints.cs",
+  "old": "ctx.Response.Headers.CacheControl = \"no-store\";\n            ctx.Response.Headers.Pragma = \"no-cache\";",
+  "new": "",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "E10 a missing token is not told where to sign in",
+  "file": "src/EPTradeBot.Api/Endpoints/McpEndpoints.cs",
+  "old": "ctx.Response.Headers.WWWAuthenticate = $\"Bearer {metadata}\";",
+  "new": "",
+  "filter": "FullyQualifiedName~McpTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

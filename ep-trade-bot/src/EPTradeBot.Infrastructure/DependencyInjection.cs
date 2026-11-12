@@ -106,6 +106,17 @@ public static class DependencyInjection
         services.AddOptions<Core.Configuration.AgentOptions>().Bind(configuration.GetSection(Core.Configuration.AgentOptions.Section)).ValidateDataAnnotations().ValidateOnStart();
         services.TryAddSingleton<EPTradeBot.Infrastructure.Agent.IAgentChatClientFactory, EPTradeBot.Infrastructure.Agent.OpenAiCompatibleClientFactory>();
         services.AddSingleton<EPTradeBot.Infrastructure.Agent.AgentService>();
+        services.AddOptions<Core.Configuration.McpOptions>().Bind(configuration.GetSection(Core.Configuration.McpOptions.Section)).ValidateDataAnnotations().ValidateOnStart();
+        services.AddSingleton<EPTradeBot.Infrastructure.Mcp.McpOAuthService>();
+        services.AddSingleton<EPTradeBot.Infrastructure.Mcp.McpAudit>();
+        services.AddSingleton(sp =>
+        {
+            var o = sp.GetRequiredService<IOptions<Core.Configuration.McpOptions>>().Value;
+            var audit = sp.GetRequiredService<EPTradeBot.Infrastructure.Mcp.McpAudit>();
+            return new EPTradeBot.Core.Mcp.McpServer(EPTradeBot.Core.Mcp.McpTools.All,
+                new EPTradeBot.Core.Mcp.McpPolicy { ReadOnly = o.ReadOnly, ReadsPerMinute = o.ReadsPerMinute, WritesPerMinute = o.WritesPerMinute },
+                new EPTradeBot.Core.Mcp.McpRateLimiter(), audit.WriteAsync);
+        });
         services.AddSingleton<EPTradeBot.Infrastructure.Flow.FlowService>();
         services.AddSingleton<EPTradeBot.Infrastructure.Flow.FlowScheduleRunner>();
         services.AddSingleton<EPTradeBot.Infrastructure.Flow.FlowPriceMonitor>();

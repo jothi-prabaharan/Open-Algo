@@ -80,9 +80,11 @@ v1.MapActionCenter();
 v1.MapHostedStrategies();
 v1.MapFlows();
 v1.MapAgent();
+v1.MapMcpManagement();
 v1.MapOpenAlgoV1();
 if (app.Environment.IsDevelopment()) v1.MapDevelopmentQuotes();
 
+app.MapMcp();
 app.MapHub<OrdersHub>(OrdersHub.Path);
 app.MapGet("/healthz", () => Results.Ok(new { status = "ok" }));
 
