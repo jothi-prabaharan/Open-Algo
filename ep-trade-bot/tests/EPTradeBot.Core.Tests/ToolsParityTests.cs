@@ -100,4 +100,27 @@ public sealed class ToolsParityTests
         Assert.Equal(c["code"]!.GetValue<int>(), result.Code);
         Assert.Null(Difference(c["response"], result.Response));
     }
+
+    public static IEnumerable<object[]> OiCases() => Fixtures["oi"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
+
+    [Theory]
+    [MemberData(nameof(OiCases))]
+    public void Open_interest_and_max_pain_match_OpenAlgo(int index, string name)
+    {
+        _ = name;
+        var c = Fixtures["oi"]!["cases"]![index]!;
+        var chain = c["chain"] as JsonObject;
+        var underlying = c["underlying"]!.GetValue<string>();
+        var expiry = c["expiry"]!.GetValue<string>();
+        var futures = c["futures"]?.GetValue<double>();
+        foreach (var (kind, expected) in new[] { ("oi", c["oi"]!), ("pain", c["pain"]!) })
+        {
+            (bool Ok, JsonObject Response, int Code) result = chain is null
+                ? (false, (JsonObject)expected["response"]!.DeepClone(), expected["code"]!.GetValue<int>())
+                : kind == "oi" ? OiTools.OiData(chain, futures, underlying, expiry) : OiTools.MaxPain(chain, futures, underlying, expiry);
+            Assert.Equal(expected["ok"]!.GetValue<bool>(), result.Ok);
+            Assert.Equal(expected["code"]!.GetValue<int>(), result.Code);
+            Assert.Null(Difference(expected["response"], result.Response));
+        }
+    }
 }

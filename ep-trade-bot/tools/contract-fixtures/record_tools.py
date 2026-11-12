@@ -169,10 +169,56 @@ def record_iv_smile():
     return {"now": NOW.isoformat(), "cases": cases}
 
 
-RECORDERS = {"greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile}
+def record_oi():
+    import services.oi_tracker_service as oi
+
+    cases = []
+    specs = [("nifty", "NIFTY", 24050.0, 24050, 50, 23, "26NOV26", 75, 11, 24110.5), ("banknifty", "BANKNIFTY", 52110.0, 52100, 100, 10, "26NOV26", 30, 12, None),
+             ("small", "FINNIFTY", 23000.0, 23000, 50, 3, "26NOV26", 65, 13, 23010.0)]
+    for name, underlying, spot, atm, step, count, expiry, lot, seed, fut in specs:
+        chain = make_chain(underlying, spot, atm, step, count, expiry, lot, seed)
+        oi.get_option_chain = lambda **kw: (True, chain, 200)
+        oi._get_nearest_futures_price = lambda **kw: fut
+        row = {"name": name, "exchange": "NFO", "expiry": expiry, "underlying": underlying, "chain": chain, "futures": fut}
+        ok, resp, code = oi.get_oi_data(underlying, "NFO", expiry, "key")
+        row["oi"] = {"ok": ok, "code": code, "response": resp}
+        ok, resp, code = oi.calculate_max_pain(underlying, "NFO", expiry, "key")
+        row["pain"] = {"ok": ok, "code": code, "response": resp}
+        cases.append(row)
+    # No open interest anywhere, so no ratio and every pain is zero
+    chain = make_chain("NIFTY", 24050.0, 24050, 50, 4, "26NOV26", 75, 14)
+    for r in chain["chain"]:
+        for leg in ("ce", "pe"):
+            if r[leg]:
+                r[leg]["oi"] = 0
+                r[leg]["volume"] = 0
+    # Strikes that are not numbers or not positive, and an empty chain
+    for label, strikes in [("no-oi", None), ("bad-strikes", [0, -50, "x"]), ("empty", [])]:
+        c = json.loads(json.dumps(chain))
+        if strikes is not None:
+            c["chain"] = [{"strike": s, "ce": {"oi": 100, "volume": 5, "lotsize": 50}, "pe": {"oi": 200, "volume": 6, "lotsize": 50}} for s in strikes]
+        oi.get_option_chain = lambda **kw: (True, c, 200)
+        oi._get_nearest_futures_price = lambda **kw: None
+        row = {"name": label, "exchange": "NFO", "expiry": "26NOV26", "underlying": "NIFTY", "chain": c, "futures": None}
+        ok, resp, code = oi.get_oi_data("NIFTY", "NFO", "26NOV26", "key")
+        row["oi"] = {"ok": ok, "code": code, "response": resp}
+        ok, resp, code = oi.calculate_max_pain("NIFTY", "NFO", "26NOV26", "key")
+        row["pain"] = {"ok": ok, "code": code, "response": resp}
+        cases.append(row)
+    oi.get_option_chain = lambda **kw: (False, {"status": "error", "message": "Option chain unavailable"}, 503)
+    row = {"name": "chain-failed", "exchange": "NFO", "expiry": "26NOV26", "underlying": "NIFTY", "chain": None, "futures": None}
+    ok, resp, code = oi.get_oi_data("NIFTY", "NFO", "26NOV26", "key")
+    row["oi"] = {"ok": ok, "code": code, "response": resp}
+    ok, resp, code = oi.calculate_max_pain("NIFTY", "NFO", "26NOV26", "key")
+    row["pain"] = {"ok": ok, "code": code, "response": resp}
+    cases.append(row)
+    return {"now": NOW.isoformat(), "cases": cases}
+
+
+RECORDERS = {"greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
 
 if __name__ == "__main__":
     out = {name: fn() for name, fn in RECORDERS.items()}
     (Path(__file__).with_name("tools.fixtures.json")).write_text(json.dumps(out, indent=1, default=str))
     for name, v in out.items():
-        print(name, len(v["cases"]), "cases;", sum(1 for c in v["cases"] if c["ok"]), "ok")
+        print(name, len(v["cases"]), "cases;", sum(1 for c in v["cases"] if c.get("ok", c.get("oi", {}).get("ok"))), "ok")
