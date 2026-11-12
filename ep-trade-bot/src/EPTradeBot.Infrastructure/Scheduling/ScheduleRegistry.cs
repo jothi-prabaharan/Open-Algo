@@ -24,6 +24,8 @@ public sealed class ScheduleRegistry(ISchedulerFactory factory, IDbContextFactor
 
     public static JobKey StopJobKey(Guid id) => new($"stop:{id:N}", Group);
 
+    public static JobKey FlowJobKey(Guid id) => new($"flow:{id:N}", Group);
+
     public static readonly JobKey DailyCheckKey = new("trading-day-check", SystemGroup);
     public static readonly JobKey EnforcerKey = new("market-hours-enforcer", SystemGroup);
 
@@ -36,6 +38,20 @@ public sealed class ScheduleRegistry(ISchedulerFactory factory, IDbContextFactor
         await ApplyAsync(scheduler, id, s, ct);
     }
 
+    /// <summary>Puts the schedule trigger of one workflow in line with its row (removing it when the row is gone, switched off or not scheduled).</summary>
+    public async Task SyncFlowAsync(FlowDefinition? flow, CancellationToken ct)
+    {
+        var scheduler = await factory.GetScheduler(ct);
+        if (flow is null) return;
+        await scheduler.DeleteJob(FlowJobKey(flow.Id), ct);
+        if (!flow.IsActive || !flow.IsScheduled || flow.ScheduleTimeIst is not { } time) return;
+        await AddAsync<FlowScheduleJob>(scheduler, FlowJobKey(flow.Id), flow.Id, time, flow.ScheduleDays, ct);
+        logger.LogInformation("Workflow {FlowId} scheduled at {Time} on {Days}.", flow.Id, time, flow.ScheduleDays);
+    }
+
+    /// <summary>Removes a workflow's schedule trigger by id (for a workflow that has been deleted).</summary>
+    public async Task RemoveFlowAsync(Guid flowId, CancellationToken ct) => await (await factory.GetScheduler(ct)).DeleteJob(FlowJobKey(flowId), ct);
+
     /// <summary>Starts the system jobs and puts every strategy's triggers in place.</summary>
     public async Task StartAsync(CancellationToken ct)
     {
@@ -46,6 +62,8 @@ public sealed class ScheduleRegistry(ISchedulerFactory factory, IDbContextFactor
         await using var db = await contexts.CreateDbContextAsync(ct);
         foreach (var s in await db.HostedStrategies.AsNoTracking().ToListAsync(ct))
             await ApplyAsync(scheduler, s.Id, s, ct);
+        foreach (var f in await db.FlowDefinitions.AsNoTracking().Where(x => x.IsActive && x.IsScheduled).ToListAsync(ct))
+            await SyncFlowAsync(f, ct);
     }
 
     public Task StopAsync(CancellationToken ct) => Task.CompletedTask;

@@ -156,3 +156,43 @@ could not be killed until a scenario existed for them (the visit bound, yes/no h
 substituted into text is written as Python writes it; a value printed by `stringify` is written as `json.dumps` does.
 
 **Not done here.** The order, data, alert and streaming node types, persistence, triggers and the HTTP surface: next item.
+
+## Flow: nodes, workflows, triggers, endpoints
+
+**What was built.** 35 of the editor's 61 node types now run (the 3 gates, the trigger nodes and group, log, variable, math, delay, wait-until, variable condition, time window and time condition from the core, and
+here place, smart and modify order, cancel and cancel-all, close positions, indicator, quote, depth, order status, open position, order book, trade book, position book, holdings, funds, price condition,
+position check and fund check). Their behaviour is ported from OpenAlgo's executor:
+
+- Order fields are read by `RuntimeOrderResolver`: a default is used only when the field is absent; a supplied value must resolve and be valid, so a typo never becomes quantity 1 or MARKET. A limit or stop
+  order without its price, and a stop without its trigger, is refused before anything is sent. The product defaults to NRML on a derivatives segment and MIS elsewhere; a chosen product always wins.
+- A modify reads the live order and changes only what the node names, never guessing action, product or price type. A close of one symbol squares off only the matching product, the other way.
+- Price, position and fund checks decide only on data they could read: an unreadable quote, book or balance is an error that takes neither branch, and a position check with no symbol or a fund check with no minimum
+  fails closed.
+- The indicator node (`IndicatorNode`, `IndicatorInputs` generated from the recorded fixtures) computes any of the 127 indicators over a symbol's bounded history (at most 200 bars, 50 of them warm-up) or over
+  another indicator's series, reporting latest, previous, a fixed tail and the value N bars back; an indicator that produces nothing is an error.
+- `FlowValidator` ports the structural checks (shape, ids, known types, edges, one trigger, no cycles, nothing unreachable, size limits) and adds one: a node type the editor knows but this engine cannot run is refused
+  by name at switch-on and at run, never skipped, so a workflow cannot send the orders around a basket order it never sent.
+
+A workflow (`core.flow_definitions`, `core.flow_runs`; the OpenAlgo tables stay for importing) belongs to one account and runs in auto or semi-auto mode through the same service layer as `/api/v1`, so the
+environment guard, the kill switches, the risk limits and the Action Center apply exactly as to any order. Triggers: manual run, a webhook (a token in the address, kept as a hash, shown once, rotatable; one
+answer for every way the address can be wrong), a schedule (Quartz, India time, on the chosen days and only when the exchange trades), and a price alert (`PriceAlertRules` ported from OpenAlgo's monitor: the 13
+conditions in both vocabularies, once-only latch and every-time re-entry, fed by bus ticks; a once-only alert is spent when it fires and its workflow switched off). A workflow that is already running is answered
+"already running", never queued to run again. Endpoints (`/api/v1/flows`): list, read, create, update, delete, export, activate, deactivate, run, webhook token, runs and one run with its logs, and the public
+`/api/v1/flow-webhook/{id}/{token}`.
+
+**How it is held.** Core: `FlowApiNodesTests` (every node's request shape and each refusal), `FlowIndicatorNodeTests` (against the recorded `openalgo.ta` values), `FlowValidatorTests`, `PriceAlertRulesTests`, plus the
+254 recorded cases of the engine core. Integration: `FlowTests` (14): save and switch-on rules, a run into the sandbox, a condition not met, semi-auto then approval, an over-limit order refused, missing account and
+kill switch, already-running, webhook with payload / missing field / wrong token / rotation, a tick-driven price alert and its spending, an alert that can never fire, restore after restart, schedule in India time
+and the holiday skip, delete. 60 mutants in `tools/mutation/tg4-flow-nodes.json`, all red; five first survived and needed a test (the product filter on close and on open position, the 200-bar ceiling, the zero
+offset, the group exemption).
+
+**Not done.** The other 26 node types (basket, split and options orders, history, symbol/expiry/option chain/synthetic future/multi quotes, calendar, holidays, timings, margin, strategy P&L, prior-period OHLC,
+bar offset, the alert nodes, HTTP request, the streaming subscriptions): a workflow containing one is refused by name. Order-update triggers and the moving-percent price alerts need the account's order feed.
+
+**Test stability found while verifying the Flow work.** Three failures that did not reproduce in isolation were each traced to a cause, not re-run into green. (1) A real race in the broker
+feed: two clients letting go of the last instrument at once both reached "nothing held"; the second removed whatever connection was registered, which could be a newer one (left running with
+nothing able to stop it), and stopped the old one twice (`ObjectDisposedException`). The release now removes a connection only if it is still the registered one, and a connection's stop is
+idempotent; `A_late_release_on_a_closed_connection_leaves_the_newer_connection_alone_and_a_connection_stops_only_once` replays the second client's late call by name, and
+`tools/mutation/tg4-feed-race.json` (two mutants) reverts each half and turns it red. (2) The test hosts chose a "free" bus port by binding port 0 and releasing it; an outgoing connection
+could take that port before the host bound it. Ports now come from a range below the operating system's outgoing range, and are never handed out twice by one process. (3) The orphan-process
+test reconciled a process that had only just been forked, whose command line still showed its parent's; it now waits until the process has started, as an orphan from an earlier start has.

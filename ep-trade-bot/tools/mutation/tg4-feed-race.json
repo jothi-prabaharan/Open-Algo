@@ -1,0 +1,18 @@
+[
+ {
+  "name": "FH1 a second client letting go removes whatever connection is there",
+  "file": "src/EPTradeBot.Infrastructure/Streaming/FeedHost.cs",
+  "old": "bool removed;\n        lock (gate) removed = ((ICollection<KeyValuePair<Guid, Connection>>)connections).Remove(new KeyValuePair<Guid, Connection>(accountId, connection));\n        if (removed) await connection.StopAsync();",
+  "new": "lock (gate) connections.Remove(accountId);\n        await connection.StopAsync();",
+  "filter": "FullyQualifiedName~A_late_release_on_a_closed_connection",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "FH2 a connection can be stopped twice",
+  "file": "src/EPTradeBot.Infrastructure/Streaming/FeedHost.cs",
+  "old": "lock (sync) return stopping ??= StopCoreAsync();",
+  "new": "lock (sync) { stopping = StopCoreAsync(); return stopping; }",
+  "filter": "FullyQualifiedName~A_late_release_on_a_closed_connection",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

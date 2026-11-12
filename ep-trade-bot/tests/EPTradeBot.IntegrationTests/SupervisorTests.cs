@@ -311,6 +311,8 @@ public sealed class SupervisorTests
         // A process the supervisor does not hold, as one left by an earlier run of the platform would be.
         var launcher = new OsProcessLauncher();
         var left = launcher.Launch(new ProcessLaunch("python3", ["-u", Path.Combine(s.Scripts, "orphan.py")], s.Scripts, new Dictionary<string, string> { ["PATH"] = Environment.GetEnvironmentVariable("PATH")! }, Path.Combine(s.Logs, "orphan.log")));
+        // A process that has only just been forked still shows its parent's command line; one left by an earlier start of the platform has long since started.
+        Assert.True(await WaitAsync(() => Task.FromResult(SafeCmd(left.Pid).Contains("orphan.py")), 10));
         await using (var db = s.Host.NewDb())
             await db.HostedStrategies.Where(x => x.Id == id).ExecuteUpdateAsync(u => u.SetProperty(x => x.IsRunning, true).SetProperty(x => x.ProcessId, left.Pid));
 
@@ -334,6 +336,7 @@ public sealed class SupervisorTests
         var other = launcher.Launch(new ProcessLaunch("python3", ["-u", Path.Combine(s.Scripts, "other.py")], s.Scripts, new Dictionary<string, string> { ["PATH"] = Environment.GetEnvironmentVariable("PATH")! }, Path.Combine(s.Logs, "other.log")));
         try
         {
+            Assert.True(await WaitAsync(() => Task.FromResult(SafeCmd(other.Pid).Contains("other.py")), 10));
             await using (var db = s.Host.NewDb())
                 await db.HostedStrategies.Where(x => x.Id == id).ExecuteUpdateAsync(u => u.SetProperty(x => x.IsRunning, true).SetProperty(x => x.ProcessId, other.Pid));
 

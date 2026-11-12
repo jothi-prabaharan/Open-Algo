@@ -10,7 +10,11 @@ public static class FlowData
     /// <summary>A text field with its <c>{{}}</c> references substituted; the default when the field is missing or empty.</summary>
     public static string Str(this JsonObject data, FlowContext ctx, string key, string fallback = "")
     {
-        var raw = data[key] is JsonValue v ? FlowContext.PyStr(v) : "";
+        // A missing, empty, zero or false field takes the default, as a falsy value does in OpenAlgo.
+        if (data[key] is not JsonValue v) return fallback;
+        if (v.TryGetValue<bool>(out var b) && !b) return fallback;
+        if (TryNumber(v, out var n) && n == 0) return fallback;
+        var raw = FlowContext.PyStr(v);
         return raw.Length == 0 ? fallback : ctx.Interpolate(raw);
     }
 
@@ -39,6 +43,9 @@ public static class FlowData
         d = 0;
         return false;
     }
+
+    /// <summary>A number held as a JSON number or as text.</summary>
+    public static bool TryParseOrNumber(JsonValue v, out double d) => TryNumber(v, out d) || (v.TryGetValue<string>(out var s) && TryParseFloat(s, out d));
 
     public static bool TryParseFloat(string text, out double value)
     {

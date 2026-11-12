@@ -1,0 +1,482 @@
+[
+ {
+  "name": "A1 the default exchange is NFO",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "v.Enum(\"exchange\", OrderVocabulary.Exchanges, \"NSE\")",
+  "new": "v.Enum(\"exchange\", OrderVocabulary.Exchanges, \"NFO\")",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A2 the symbol is not upper-cased",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "v.Text(\"symbol\").ToUpperInvariant()",
+  "new": "v.Text(\"symbol\")",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A3 the product ignores the segment",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "OrderVocabulary.DefaultProduct(exchange)),",
+  "new": "\"MIS\"),",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A4 a normal order may have zero quantity",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "allowZeroQuantity ? 0 : 1",
+  "new": "0",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A5 a limit order without a price is sent",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "is { } invalid) throw new ArgumentException(invalid);",
+  "new": "is { } invalid && order.Quantity < 0) throw new ArgumentException(invalid);",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A6 a smart order drops its position size",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "body[\"position_size\"] = new RuntimeOrderResolver(run.Context, node.Data).Integer(\"positionSize\", 0);",
+  "new": "body[\"position_size\"] = 0;",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A7 a node strategy tag is ignored",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "return tag.Length > 0 ? tag : host.StrategyTag;",
+  "new": "return host.StrategyTag;",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A8 a modify guesses the action",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "(ApiNodeSupport.Supplied(node, run, \"action\") ?? Live(\"action\")).ToUpperInvariant();",
+  "new": "(ApiNodeSupport.Supplied(node, run, \"action\") ?? \"BUY\").ToUpperInvariant();",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A9 a modify may have a non-positive quantity",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "if (quantity <= 0)",
+  "new": "if (quantity < -1000)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A10 a modify with a missing field is sent",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "if (missing.Count > 0)",
+  "new": "if (missing.Count > 100)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A11 closing one symbol closes everything",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "if (symbol is null)\n        {\n            run.Log(\"Closing all positions\");",
+  "new": "if (symbol is null || symbol is not null)\n        {\n            run.Log(\"Closing all positions\");",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A12 a close goes the same way as the position",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "quantity > 0 ? \"SELL\" : \"BUY\"",
+  "new": "quantity > 0 ? \"BUY\" : \"SELL\"",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A13 a close ignores the product",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": " && Text(p, \"product\") == product && Qty(p) != 0",
+  "new": " && Qty(p) != 0",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A14 change percent is not a percent",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "(ltp - prev) / prev * 100.0",
+  "new": "(ltp - prev) / prev",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A15 a price check decides on an unreadable quote",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "if (!FlowApiResults.IsSuccess(quote)) return Abort(",
+  "new": "if (!FlowApiResults.IsSuccess(quote) && quote.Count < 0) return Abort(",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A16 a position check with no symbol passes",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "if (symbol.Length == 0)\n            // Fail closed",
+  "new": "if (symbol.Length < 0)\n            // Fail closed",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A17 quantity above includes equal",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "met = quantity > threshold; line",
+  "new": "met = quantity >= threshold; line",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A18 a fund check needs more than the minimum",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "var met = available >= minimum;",
+  "new": "var met = available > minimum;",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A19 a legacy less-than fund check is accepted",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "new[] { \"gt\", \"gte\", \"ge\", \">\", \">=\" }.Contains(legacy)",
+  "new": "new[] { \"gt\", \"gte\", \"ge\", \">\", \">=\" }.Contains(legacy) || true",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A20 an open position ignores the product",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "if (!string.IsNullOrEmpty(product) && held != product) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A21 a node answer is not kept",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "run.Context.Set(name.Trim(), result.DeepClone());",
+  "new": "_ = result;",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I1 no warm-up rows",
+  "file": "src/EPTradeBot.Core/Flow/IndicatorNode.cs",
+  "old": "public const int WarmupBars = 50;",
+  "new": "public const int WarmupBars = 0;",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I2 the bar ceiling is raised",
+  "file": "src/EPTradeBot.Core/Flow/IndicatorNode.cs",
+  "old": "public const int MaxBars = 200;",
+  "new": "public const int MaxBars = 300;",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I3 the offset is off by one",
+  "file": "src/EPTradeBot.Core/Flow/IndicatorNode.cs",
+  "old": "ClampBars(offsetBars + 1L) - 1",
+  "new": "ClampBars(offsetBars)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I4 values are rounded to four places",
+  "file": "src/EPTradeBot.Core/Flow/IndicatorNode.cs",
+  "old": "Math.Round(valid[i], 6,",
+  "new": "Math.Round(valid[i], 4,",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I5 bars with no value are not skipped",
+  "file": "src/EPTradeBot.Core/Flow/IndicatorNode.cs",
+  "old": "outputs[column].Where(x => !double.IsNaN(x)).ToArray()",
+  "new": "outputs[column].ToArray()",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I6 an indicator with no value is reported as success",
+  "file": "src/EPTradeBot.Core/Flow/IndicatorNode.cs",
+  "old": "latest.Count > 0 && latest.All(kv => kv.Value is null))",
+  "new": "latest.Count > 0 && latest.All(kv => kv.Value is null) && count < 0)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I7 no trading-day allowance",
+  "file": "src/EPTradeBot.Core/Flow/IndicatorNode.cs",
+  "old": "bars / perDay * 1.6",
+  "new": "bars / perDay * 1.0",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I8 a nested series may be a single value",
+  "file": "src/EPTradeBot.Core/Flow/IndicatorNode.cs",
+  "old": "if (sourceSeries.Count < 2)",
+  "new": "if (sourceSeries.Count < 0)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I9 a two-series indicator runs on one series",
+  "file": "src/EPTradeBot.Core/Flow/IndicatorNode.cs",
+  "old": "if (TwoSeries.Contains(name))",
+  "new": "if (TwoSeries.Contains(name) && name.Length < 0)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I10 a multi-input indicator can be nested",
+  "file": "src/EPTradeBot.Core/Flow/IndicatorNode.cs",
+  "old": "if (!(inputs.Length == 1 && inputs[0].Series == \"data\"))",
+  "new": "if (!(inputs.Length == 1 && inputs[0].Series == \"data\") && name.Length < 0)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "V1 two nodes may share an id",
+  "file": "src/EPTradeBot.Core/Flow/FlowValidator.cs",
+  "old": "else if (!ids.Add(id))",
+  "new": "else if (!ids.Add(id) && id.Length < 0)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "V2 an unknown node type is accepted",
+  "file": "src/EPTradeBot.Core/Flow/FlowValidator.cs",
+  "old": "else if (!KnownTypes.Contains(type))",
+  "new": "else if (!KnownTypes.Contains(type) && type.Length < 0)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "V3 an edge may start nowhere",
+  "file": "src/EPTradeBot.Core/Flow/FlowValidator.cs",
+  "old": "if (source is null || !ids.Contains(source))",
+  "new": "if (source is null)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "V4 several triggers are allowed",
+  "file": "src/EPTradeBot.Core/Flow/FlowValidator.cs",
+  "old": "else if (triggers.Count > 1)",
+  "new": "else if (triggers.Count > 100)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "V5 a cycle is not found",
+  "file": "src/EPTradeBot.Core/Flow/FlowValidator.cs",
+  "old": "if (colour[next] == 1)",
+  "new": "if (colour[next] == 99)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "V6 unreachable nodes are not reported",
+  "file": "src/EPTradeBot.Core/Flow/FlowValidator.cs",
+  "old": "if (unreachable.Count > 0)",
+  "new": "if (unreachable.Count > 100)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "V7 a group is reported unreachable",
+  "file": "src/EPTradeBot.Core/Flow/FlowValidator.cs",
+  "old": ".Where(x => !decorative.Contains(x))",
+  "new": ".Where(x => true)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "V8 an unsupported node is allowed",
+  "file": "src/EPTradeBot.Core/Flow/FlowValidator.cs",
+  "old": "if (unsupported.Count > 0)",
+  "new": "if (unsupported.Count > 100)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "V9 the node limit is raised",
+  "file": "src/EPTradeBot.Core/Flow/FlowValidator.cs",
+  "old": "if (nodes.Count > MaxNodes)",
+  "new": "if (nodes.Count > MaxNodes * 10)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P1 greater-than includes equal",
+  "file": "src/EPTradeBot.Core/Flow/PriceAlertRules.cs",
+  "old": "case \"greater_than\": return price > a.Target;",
+  "new": "case \"greater_than\": return price >= a.Target;",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P2 crossing tolerance is one percent",
+  "file": "src/EPTradeBot.Core/Flow/PriceAlertRules.cs",
+  "old": "var tolerance = price * 0.001;",
+  "new": "var tolerance = price * 0.01;",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P3 a cross needs the last price strictly below",
+  "file": "src/EPTradeBot.Core/Flow/PriceAlertRules.cs",
+  "old": "last <= a.Target && price > a.Target",
+  "new": "last < a.Target && price > a.Target",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P4 a once-only alert is not spent",
+  "file": "src/EPTradeBot.Core/Flow/PriceAlertRules.cs",
+  "old": "if (!alert.EveryTime) state.Triggered = true;",
+  "new": "",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P5 a non-price is a price",
+  "file": "src/EPTradeBot.Core/Flow/PriceAlertRules.cs",
+  "old": "if (!(price > 0) || !double.IsFinite(price)) return false;",
+  "new": "if (price < -1e9) return false;",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P6 a fired alert forgets its price",
+  "file": "src/EPTradeBot.Core/Flow/PriceAlertRules.cs",
+  "old": "            state.LastPrice = price;\n            return true;",
+  "new": "            return true;",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P7 a channel excludes its lower edge",
+  "file": "src/EPTradeBot.Core/Flow/PriceAlertRules.cs",
+  "old": "(a.Lower ?? a.Target) <= price && price <=",
+  "new": "(a.Lower ?? a.Target) < price && price <=",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P8 an alert with no price is accepted",
+  "file": "src/EPTradeBot.Core/Flow/PriceAlertRules.cs",
+  "old": "if (NeedsPrice.Contains(condition) && !(price > 0))",
+  "new": "if (NeedsPrice.Contains(condition) && price < 0)",
+  "filter": "FullyQualifiedName~Flow|FullyQualifiedName~PriceAlert",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "S1 a workflow can run twice at once",
+  "file": "src/EPTradeBot.Infrastructure/Flow/FlowService.cs",
+  "old": "if (!await gate.WaitAsync(0, ct))",
+  "new": "if (!await gate.WaitAsync(0, ct) && ct.IsCancellationRequested)",
+  "filter": "FullyQualifiedName~FlowTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S2 a half-built workflow is run",
+  "file": "src/EPTradeBot.Infrastructure/Flow/FlowService.cs",
+  "old": "if (problems.Count > 0) return",
+  "new": "if (problems.Count > 100) return",
+  "filter": "FullyQualifiedName~FlowTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S3 a run ignores the kill switch",
+  "file": "src/EPTradeBot.Infrastructure/Flow/FlowService.cs",
+  "old": "if (account.KillSwitchEngaged)",
+  "new": "if (account.KillSwitchEngaged && account.Id == Guid.Empty)",
+  "filter": "FullyQualifiedName~FlowTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S4 a semi-auto workflow sends at once",
+  "file": "src/EPTradeBot.Infrastructure/Flow/FlowService.cs",
+  "old": "new FlowApi(api, account, ModeName(flow.ExecutionMode))",
+  "new": "new FlowApi(api, account, \"auto\")",
+  "filter": "FullyQualifiedName~FlowTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S5 a failed run is recorded as completed",
+  "file": "src/EPTradeBot.Infrastructure/Flow/FlowService.cs",
+  "old": "record.Status = outcome.Succeeded ? \"completed\" : \"failed\";",
+  "new": "record.Status = \"completed\";",
+  "filter": "FullyQualifiedName~FlowTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S6 any webhook token is accepted",
+  "file": "src/EPTradeBot.Infrastructure/Flow/FlowTriggers.cs",
+  "old": "stored is not null && CryptographicOperations.FixedTimeEquals(System.Text.Encoding.ASCII.GetBytes(stored), System.Text.Encoding.ASCII.GetBytes(keys.Hash(presented)))",
+  "new": "true",
+  "filter": "FullyQualifiedName~FlowTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S7 a once-only price alert is not retired",
+  "file": "src/EPTradeBot.Infrastructure/Flow/FlowPriceMonitor.cs",
+  "old": "if (watch.Alert.EveryTime) return;",
+  "new": "if (watch.Alert.EveryTime || true) return;",
+  "filter": "FullyQualifiedName~FlowTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S8 a switched-off workflow keeps its triggers",
+  "file": "src/EPTradeBot.Infrastructure/Flow/FlowTriggers.cs",
+  "old": "if (flow is null || !flow.IsActive)",
+  "new": "if (flow is null)",
+  "filter": "FullyQualifiedName~FlowTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S9 active workflows are not restored at start",
+  "file": "src/EPTradeBot.Infrastructure/Flow/FlowTriggers.cs",
+  "old": ".Where(f => f.IsActive).Select(f => f.Id)",
+  "new": ".Where(f => !f.IsActive).Select(f => f.Id)",
+  "filter": "FullyQualifiedName~FlowTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S10 a scheduled run ignores the calendar",
+  "file": "src/EPTradeBot.Infrastructure/Flow/FlowScheduleRunner.cs",
+  "old": "if (!verdict.Allowed)",
+  "new": "if (!verdict.Allowed && flowId == Guid.Empty)",
+  "filter": "FullyQualifiedName~FlowTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S11 a workflow is switched on half-built",
+  "file": "src/EPTradeBot.Api/Endpoints/FlowEndpoints.cs",
+  "old": "f.NodesJson, f.EdgesJson, strict: true) is { Count: > 0 } bad",
+  "new": "f.NodesJson, f.EdgesJson, strict: false) is { Count: > 0 } bad",
+  "filter": "FullyQualifiedName~FlowTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "S12 an export carries the account",
+  "file": "src/EPTradeBot.Api/Endpoints/FlowEndpoints.cs",
+  "old": "[\"edges\"] = JsonNode.Parse(f.EdgesJson) })\n                : Missing());",
+  "new": "[\"edges\"] = JsonNode.Parse(f.EdgesJson), [\"account_id\"] = f.AccountId })\n                : Missing());",
+  "filter": "FullyQualifiedName~FlowTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

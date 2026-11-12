@@ -128,11 +128,18 @@ public sealed class FeedHost(
         Connection? connection;
         lock (gate) connections.TryGetValue(accountId, out connection);
         if (connection is null) return;
-        if (connection.Release(exchange, symbol, mode) == 0)
-        {
-            lock (gate) connections.Remove(accountId);
-            await connection.StopAsync();
-        }
+        await LetGoAsync(accountId, connection, exchange, symbol, mode);
+    }
+
+    /// <summary>Gives up one hold on the connection the caller looked up, and closes that connection if it is now empty.</summary>
+    private async Task LetGoAsync(Guid accountId, Connection connection, string exchange, string symbol, StreamMode mode)
+    {
+        if (connection.Release(exchange, symbol, mode) != 0) return;
+        // Removed only if it is still this connection: two clients letting go together both reach zero, and the second must not take out a newer
+        // connection that a subscription opened in between (it would be left running with nothing able to stop it).
+        bool removed;
+        lock (gate) removed = ((ICollection<KeyValuePair<Guid, Connection>>)connections).Remove(new KeyValuePair<Guid, Connection>(accountId, connection));
+        if (removed) await connection.StopAsync();
     }
 
     /// <summary>One account's connection to its broker.</summary>
@@ -197,7 +204,15 @@ public sealed class FeedHost(
             lock (sync) run ??= Task.Run(() => RunAsync(stop.Token));
         }
 
-        public async Task StopAsync()
+        private Task? stopping;
+
+        /// <summary>Stops the connection. Safe to call more than once and from several places at once: they all wait for the one stop.</summary>
+        public Task StopAsync()
+        {
+            lock (sync) return stopping ??= StopCoreAsync();
+        }
+
+        private async Task StopCoreAsync()
         {
             // What was queued for the broker (the unsubscribe that emptied the connection) goes out first, for a moment, before the socket is closed.
             Task? sending;

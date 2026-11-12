@@ -29,7 +29,11 @@ public sealed class FlowRun(Func<DateTime> utcNow, Func<TimeSpan, CancellationTo
     public void Log(string message, string level = "info") => Logs.Add(new FlowLogLine(UtcNow(), level, message));
 }
 
-public sealed record FlowOutcome(bool Succeeded, string Message, IReadOnlyList<FlowError> Errors);
+/// <summary>A run hit one of the engine's own bounds (depth or visits), whose wording is meant to be read.</summary>
+public sealed class FlowLimitException(string message) : InvalidOperationException(message);
+
+/// <summary>How a run ended. <see cref="Fault"/> is an unexpected failure whose detail belongs in the log, never on a trader's screen.</summary>
+public sealed record FlowOutcome(bool Succeeded, string Message, IReadOnlyList<FlowError> Errors, Exception? Fault = null);
 
 /// <summary>
 /// Walks a workflow graph from its trigger node. Port of OpenAlgo's execute_node_chain with its protections kept:
@@ -61,19 +65,37 @@ public sealed class FlowRunner(IEnumerable<IFlowNode> nodes)
 
     private readonly Dictionary<string, IFlowNode> handlers = nodes.SelectMany(n => n.Types.Select(t => (t, n))).ToDictionary(x => x.t, x => x.n, StringComparer.Ordinal);
 
+    /// <summary>Whether this runner can execute a node type (a gate, or one with a handler).</summary>
+    public bool Supports(string type) => GateTypes.Contains(type) || handlers.ContainsKey(type);
+
     public async Task<FlowOutcome> RunAsync(FlowGraph graph, FlowRun run, CancellationToken ct)
     {
         var trigger = graph.Trigger;
         if (trigger is null) return new FlowOutcome(false, "No trigger node found", []);
+        // A node the editor knows and this runner cannot execute must stop the run before anything is sent, never be skipped.
+        var cannot = graph.Nodes.Where(n => FlowValidator.KnownTypes.Contains(n.Type) && !Supports(n.Type)).Select(n => n.Type).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToList();
+        if (cannot.Count > 0)
+        {
+            var message = $"This platform cannot run {string.Join(", ", cannot)} nodes yet, so the workflow was not started.";
+            run.Log(message, "error");
+            return new FlowOutcome(false, message, []);
+        }
+
         var visits = new Dictionary<string, int>(StringComparer.Ordinal);
         try
         {
             await WalkAsync(trigger.Id, graph, run, visits, 0, ct);
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+        catch (FlowLimitException ex)
         {
             run.Log($"Error: {ex.Message}", "error");
             return new FlowOutcome(false, ex.Message, run.Errors);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            const string message = "The workflow stopped because of an unexpected problem. The server log has the detail.";
+            run.Log(message, "error");
+            return new FlowOutcome(false, message, run.Errors, ex);
         }
 
         if (run.Errors.Count > 0)
@@ -87,8 +109,8 @@ public sealed class FlowRunner(IEnumerable<IFlowNode> nodes)
 
     private async Task WalkAsync(string nodeId, FlowGraph graph, FlowRun run, Dictionary<string, int> visits, int depth, CancellationToken ct)
     {
-        if (depth > MaxDepth) throw new InvalidOperationException($"Maximum node depth ({MaxDepth}) exceeded");
-        if (visits.Values.Sum() >= MaxVisits) throw new InvalidOperationException($"Maximum node visits ({MaxVisits}) exceeded");
+        if (depth > MaxDepth) throw new FlowLimitException($"Maximum node depth ({MaxDepth}) exceeded");
+        if (visits.Values.Sum() >= MaxVisits) throw new FlowLimitException($"Maximum node visits ({MaxVisits}) exceeded");
         visits[nodeId] = visits.GetValueOrDefault(nodeId) + 1;
         if (!graph.ById.TryGetValue(nodeId, out var node)) return;
         var type = node.Type;

@@ -468,6 +468,160 @@ namespace EPTradeBot.Infrastructure.Persistence.Migrations
                     b.ToTable("broker_accounts", "core");
                 });
 
+            modelBuilder.Entity("EPTradeBot.Core.Entities.Core.FlowDefinition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("AccountId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("account_id");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("EdgesJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("edges_json");
+
+                    b.Property<string>("Exchange")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(12)
+                        .HasColumnType("character varying(12)")
+                        .HasDefaultValue("NSE")
+                        .HasColumnName("exchange");
+
+                    b.Property<string>("ExecutionMode")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("execution_mode");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsScheduled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_scheduled");
+
+                    b.Property<DateTime?>("LastRunAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_run_at_utc");
+
+                    b.Property<string>("LastRunStatus")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("last_run_status");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NodesJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("nodes_json");
+
+                    b.Property<int>("ScheduleDays")
+                        .HasColumnType("integer")
+                        .HasColumnName("schedule_days");
+
+                    b.Property<TimeOnly?>("ScheduleTimeIst")
+                        .HasColumnType("time without time zone")
+                        .HasColumnName("schedule_time_ist");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
+                    b.Property<string>("WebhookTokenHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("webhook_token_hash");
+
+                    b.HasKey("Id")
+                        .HasName("pk_flow_definitions");
+
+                    b.HasIndex("AccountId")
+                        .HasDatabaseName("ix_flow_definitions_account_id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ux_flow_definitions_name");
+
+                    b.HasIndex("WebhookTokenHash")
+                        .IsUnique()
+                        .HasDatabaseName("ux_flow_definitions_webhook_token_hash");
+
+                    b.ToTable("flow_definitions", "core");
+                });
+
+            modelBuilder.Entity("EPTradeBot.Core.Entities.Core.FlowRunRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Error")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("error");
+
+                    b.Property<string>("ErrorsJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("errors_json");
+
+                    b.Property<DateTime?>("FinishedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("finished_at_utc");
+
+                    b.Property<Guid>("FlowId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("flow_id");
+
+                    b.Property<string>("LogsJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("logs_json");
+
+                    b.Property<DateTime>("StartedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("started_at_utc");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Trigger")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("trigger");
+
+                    b.HasKey("Id")
+                        .HasName("pk_flow_runs");
+
+                    b.HasIndex("FlowId", "StartedAtUtc")
+                        .HasDatabaseName("ix_flow_runs_flow_started");
+
+                    b.ToTable("flow_runs", "core");
+                });
+
             modelBuilder.Entity("EPTradeBot.Core.Entities.Core.HostedStrategy", b =>
                 {
                     b.Property<Guid>("Id")
@@ -6156,6 +6310,25 @@ namespace EPTradeBot.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_account_risk_settings_broker_accounts_account_id");
+                });
+
+            modelBuilder.Entity("EPTradeBot.Core.Entities.Core.FlowDefinition", b =>
+                {
+                    b.HasOne("EPTradeBot.Core.Entities.Core.BrokerAccount", null)
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_flow_definitions_broker_accounts_account_id");
+                });
+
+            modelBuilder.Entity("EPTradeBot.Core.Entities.Core.FlowRunRecord", b =>
+                {
+                    b.HasOne("EPTradeBot.Core.Entities.Core.FlowDefinition", null)
+                        .WithMany()
+                        .HasForeignKey("FlowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_flow_runs_flow_definitions_flow_id");
                 });
 
             modelBuilder.Entity("EPTradeBot.Core.Entities.Core.HostedStrategy", b =>

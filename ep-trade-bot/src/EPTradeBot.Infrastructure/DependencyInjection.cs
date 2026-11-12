@@ -79,6 +79,7 @@ public static class DependencyInjection
             services.AddHostedService(sp => sp.GetRequiredService<SandboxTickMatcher>());
             services.AddHostedService(sp => sp.GetRequiredService<MarketDataBus>());
             services.AddHostedService(sp => sp.GetRequiredService<FeedHost>());
+            services.AddHostedService(sp => sp.GetRequiredService<EPTradeBot.Infrastructure.Flow.FlowPriceMonitor>());
         }
         services.AddSingleton<KeyedAsyncLock<Guid>>();
         services.AddSingleton<SandboxEngine>();
@@ -102,6 +103,12 @@ public static class DependencyInjection
         }
         services.AddSingleton<EPTradeBot.Infrastructure.Scheduling.StrategyScheduleService>();
         services.AddSingleton<EPTradeBot.Infrastructure.Scheduling.ScheduleRegistry>();
+        services.AddSingleton<EPTradeBot.Infrastructure.Flow.FlowService>();
+        services.AddSingleton<EPTradeBot.Infrastructure.Flow.FlowScheduleRunner>();
+        services.AddSingleton<EPTradeBot.Infrastructure.Flow.FlowPriceMonitor>();
+        services.AddSingleton<IMarketTickSink>(sp => sp.GetRequiredService<EPTradeBot.Infrastructure.Flow.FlowPriceMonitor>());
+        services.AddSingleton<EPTradeBot.Infrastructure.Flow.FlowTriggers>();
+        services.AddHostedService(sp => sp.GetRequiredService<EPTradeBot.Infrastructure.Flow.FlowTriggers>());
         services.AddQuartz(q => q.UseDefaultThreadPool(p => p.MaxConcurrency = 4));
         if (configuration.GetValue(Core.Configuration.SchedulingOptions.Section + ":Enabled", true))
         {

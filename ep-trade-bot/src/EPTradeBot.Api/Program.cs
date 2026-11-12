@@ -78,6 +78,7 @@ v1.MapManagement();
 v1.MapCredentials();
 v1.MapActionCenter();
 v1.MapHostedStrategies();
+v1.MapFlows();
 v1.MapOpenAlgoV1();
 if (app.Environment.IsDevelopment()) v1.MapDevelopmentQuotes();
 

@@ -94,7 +94,7 @@ public sealed class FlowParityTests
         var run = new FlowRun(() => utc, (d, _) => { sleeps.Add(d.TotalSeconds); return Task.CompletedTask; });
         foreach (var (k, v) in g["vars"]!.AsObject()) run.Context.Set(k, v?.DeepClone());
 
-        var outcome = await new FlowRunner(CoreFlowNodes.All()).RunAsync(graph, run, default);
+        var outcome = await new FlowRunner(CoreFlowNodes.All().Concat(ApiFlowNodes.All())).RunAsync(graph, run, default);
 
         // What the graph did to its variables, in order, and what it said.
         var expectedVars = g["variables"]!.AsObject();

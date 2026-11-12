@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using EPTradeBot.Core.Entities.Core;
 using EPTradeBot.Core.Entities.Legacy.Core;
+using EPTradeBot.Core.Streaming;
 using EPTradeBot.Infrastructure.Streaming;
 using Microsoft.AspNetCore.Hosting;
 
@@ -190,6 +191,43 @@ public sealed class FeedHostTests
         Assert.True(await FakeFeedServer.UntilAsync(() => broker.Received.Any(m => m.Contains("unsubscribe"))));
         Assert.Contains("""{"a":"unsubscribe","v":[779521]}""", broker.Received);
         Assert.True(await FakeFeedServer.UntilAsync(() => s.Host.Get<FeedHost>().Connections == 0), "The connection stayed open with nothing subscribed.");
+    }
+
+    /// <summary>
+    /// Two clients letting go together both reach "nothing held". The second holds a connection that is already closed, and by then a new subscription may have opened
+    /// another. This replays that second call by name, since no ordering of public calls can be made to produce it every time.
+    /// </summary>
+    [PostgresFact]
+    public async Task A_late_release_on_a_closed_connection_leaves_the_newer_connection_alone_and_a_connection_stops_only_once()
+    {
+        await using var broker = new FakeFeedServer();
+        var s = await ZerodhaAsync(broker);
+        await using var _host = s.Host;
+        var feed = s.Host.Get<FeedHost>();
+        var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+        var table = (System.Collections.IDictionary)typeof(FeedHost).GetField("connections", flags)!.GetValue(feed)!;
+
+        Assert.True((await feed.SubscribeAsync(s.Account, "zerodha", "NSE", "SBIN", StreamMode.Ltp, default)).Ok);
+        var old = table[s.Account]!;
+        await feed.UnsubscribeAsync(s.Account, "NSE", "SBIN", StreamMode.Ltp, default); // the first client lets go: closed and removed
+        Assert.Equal(0, feed.Connections);
+        Assert.True((await feed.SubscribeAsync(s.Account, "zerodha", "NSE", "INFY", StreamMode.Ltp, default)).Ok);
+        var newer = table[s.Account]!;
+        Assert.NotSame(old, newer);
+
+        // The second client's release arrives now, on the connection it looked up before.
+        var letGo = (Task)typeof(FeedHost).GetMethod("LetGoAsync", flags)!.Invoke(feed, [s.Account, old, "NSE", "SBIN", StreamMode.Ltp])!;
+        await letGo;
+
+        Assert.Equal(1, feed.Connections);
+        Assert.Same(newer, table[s.Account]);
+
+        // And asking a closed connection to stop again is harmless, however many times and from wherever.
+        var stop = old.GetType().GetMethod("StopAsync")!;
+        await Task.WhenAll(Enumerable.Range(0, 4).Select(_ => (Task)stop.Invoke(old, null)!));
+
+        await feed.UnsubscribeAsync(s.Account, "NSE", "INFY", StreamMode.Ltp, default);
+        Assert.Equal(0, feed.Connections);
     }
 
     [PostgresFact]

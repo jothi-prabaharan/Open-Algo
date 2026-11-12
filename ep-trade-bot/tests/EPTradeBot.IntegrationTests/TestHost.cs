@@ -61,13 +61,35 @@ public sealed class TestHost : IAsyncDisposable
 
     public Microsoft.AspNetCore.TestHost.TestServer Server => _factory.Server;
 
+    private static readonly HashSet<int> ReservedPorts = [];
+
+    /// <summary>
+    /// A port nothing is using. It is taken from a range below the one the operating system hands to outgoing connections (32768 and up on Linux), because a port that
+    /// was free a moment ago is exactly the one an outgoing connection may take before the host binds it; and no port is handed out twice by one process.
+    /// </summary>
     public static int FreePort()
     {
-        var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0);
-        listener.Start();
-        var port = ((System.Net.IPEndPoint)listener.LocalEndpoint).Port;
-        listener.Stop();
-        return port;
+        lock (ReservedPorts)
+        {
+            for (var attempt = 0; attempt < 500; attempt++)
+            {
+                var port = Random.Shared.Next(20_000, 30_000);
+                if (!ReservedPorts.Add(port)) continue;
+                try
+                {
+                    var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, port);
+                    listener.Start();
+                    listener.Stop();
+                    return port;
+                }
+                catch (System.Net.Sockets.SocketException)
+                {
+                    // Taken by something else: try another.
+                }
+            }
+        }
+
+        throw new InvalidOperationException("No free port was found for a test host.");
     }
 
     public IServiceProvider Services => _factory.Services;
