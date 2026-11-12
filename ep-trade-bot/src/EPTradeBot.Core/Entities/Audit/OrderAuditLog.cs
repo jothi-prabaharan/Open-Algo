@@ -12,6 +12,7 @@ public enum OrderSource
     ActionCenter = 6,
     KillSwitch = 7,
     StrategyModule = 8,
+    SquareOff = 9,
 }
 
 public enum OrderOutcome

@@ -24,7 +24,7 @@ namespace EPTradeBot.Infrastructure.Sandbox;
 ///
 /// Scope of this port: market, limit, SL and SL-M orders, leverage-based margin,
 /// positions with average price and realised P&amp;L, cancel, square-off. Not yet ported:
-/// GTT, CNC holdings and T+1 settlement, catch-up after a restart, auto square-off timers.
+/// GTT, CNC holdings and T+1 settlement, catch-up after a restart. Intraday (MIS) positions and orders are closed by the square-off sweep.
 /// </summary>
 public sealed class SandboxEngine(
     IDbContextFactory<EpTradeDbContext> contexts,
@@ -179,6 +179,104 @@ public sealed class SandboxEngine(
         }
 
         return filled;
+    }
+
+    /// <summary>
+    /// The auto square-off: from each exchange's cut-off time, its open MIS orders are cancelled (returning their margin) and its MIS positions closed at the market.
+    /// Safe to run repeatedly: what is already closed or cancelled is not found again.
+    /// </summary>
+    public async Task<(int Cancelled, int Closed)> SquareOffAsync(TimeOnly nowIst, CancellationToken cancellationToken = default)
+    {
+        var o = options.Value;
+        TimeOnly? Due(string exchange) => SandboxSquareOff.TimeFor(exchange, o.NseBseSquareOffTime, o.CdsBcdSquareOffTime, o.McxSquareOffTime, o.NcdexSquareOffTime);
+
+        List<(string UserId, string OrderId, string Exchange)> orders;
+        List<(string UserId, string Symbol, string Exchange, int Quantity)> positions;
+        await using (var db = await contexts.CreateDbContextAsync(cancellationToken))
+        {
+            orders = (await db.Set<SandboxOrder>().AsNoTracking().Where(x => x.Product == "MIS" && x.OrderStatus == "open").Select(x => new { x.UserId, x.Orderid, x.Exchange }).ToListAsync(cancellationToken))
+                .Where(x => SandboxSquareOff.IsDue(Due(x.Exchange), nowIst)).Select(x => (x.UserId, x.Orderid, x.Exchange)).ToList();
+            positions = (await db.Set<SandboxPosition>().AsNoTracking().Where(x => x.Product == "MIS" && x.Quantity != 0).Select(x => new { x.UserId, x.Symbol, x.Exchange, x.Quantity }).ToListAsync(cancellationToken))
+                .Where(x => SandboxSquareOff.IsDue(Due(x.Exchange), nowIst)).Select(x => (x.UserId, x.Symbol, x.Exchange, x.Quantity)).ToList();
+        }
+
+        var cancelled = 0;
+        foreach (var (userId, orderId, _) in orders)
+        {
+            if (await CancelAsync(Guid.ParseExact(userId, "N"), orderId, cancellationToken)) cancelled++;
+        }
+
+        var closed = 0;
+        foreach (var (userId, symbol, exchange, quantity) in positions)
+        {
+            try
+            {
+                var result = await PlaceAsync(new OrderIntent
+                {
+                    AccountId = Guid.ParseExact(userId, "N"), Source = EPTradeBot.Core.Entities.Audit.OrderSource.SquareOff, Symbol = symbol, Exchange = exchange,
+                    Action = quantity > 0 ? "SELL" : "BUY", Quantity = Math.Abs(quantity), Product = "MIS", PriceType = "MARKET", Actor = "square-off",
+                }, cancellationToken);
+                if (result.Status == DispatchStatus.Accepted) closed++;
+                else logger.LogWarning("Auto square-off of {Symbol} was refused: {Message}", symbol, result.Message);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                logger.LogError(ex, "Auto square-off of {Symbol} failed", symbol);
+            }
+        }
+
+        return (cancelled, closed);
+    }
+
+    /// <summary>
+    /// Settles intraday positions that outlived their session (the platform was down at the cut-off): each is closed at its last known price, its margin released, and its profit or loss
+    /// goes to the all-time total only, because the day it belongs to is over. A position traded since the boundary is left alone. Returns how many were settled.
+    /// </summary>
+    public async Task<int> CatchUpStaleMisAsync(CancellationToken cancellationToken = default)
+    {
+        var o = options.Value;
+        var boundary = Ist.LastSessionExpiryUtc(UtcNow);
+        List<int> ids;
+        await using (var db = await contexts.CreateDbContextAsync(cancellationToken))
+        {
+            ids = (await db.Set<SandboxPosition>().AsNoTracking().Where(p => p.Product == "MIS" && p.Quantity != 0 && p.UpdatedAt < boundary).Select(p => new { p.Id, p.Exchange }).ToListAsync(cancellationToken))
+                .Where(p => SandboxSquareOff.TimeFor(p.Exchange, o.NseBseSquareOffTime, o.CdsBcdSquareOffTime, o.McxSquareOffTime, o.NcdexSquareOffTime) is not null).Select(p => p.Id).ToList();
+        }
+
+        var settled = 0;
+        foreach (var id in ids)
+        {
+            var done = await WithRetryAsync(async db =>
+            {
+                var position = await db.Set<SandboxPosition>().SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
+                // The test is made again under the write: a fill since the query makes it today's position.
+                if (position is null || position.Quantity == 0 || position.UpdatedAt >= boundary) return false;
+                var price = position.Ltp is > 0 ? position.Ltp.Value : position.AveragePrice;
+                var quantity = position.Quantity;
+                var pnl = quantity > 0 ? (price - position.AveragePrice) * quantity : (position.AveragePrice - price) * Math.Abs(quantity);
+                var margin = position.MarginBlocked ?? 0;
+                var funds = await db.Set<SandboxFund>().SingleOrDefaultAsync(f => f.UserId == position.UserId, cancellationToken);
+                if (funds is not null)
+                {
+                    funds.AvailableBalance += margin + pnl;
+                    funds.UsedMargin = Math.Max(0m, (funds.UsedMargin ?? 0m) - margin);
+                    funds.RealizedPnl += pnl;
+                    funds.TotalPnl = funds.RealizedPnl + (funds.UnrealizedPnl ?? 0);
+                }
+
+                position.Quantity = 0;
+                position.MarginBlocked = 0;
+                position.Pnl = pnl;
+                position.AccumulatedRealizedPnl += pnl;
+                position.TodayRealizedPnl = 0;
+                await db.SaveChangesAsync(cancellationToken);
+                logger.LogInformation("Catch-up settled the stale intraday position in {Symbol}: quantity {Quantity}, profit or loss {Pnl}.", position.Symbol, quantity, pnl);
+                return true;
+            }, cancellationToken);
+            if (done) settled++;
+        }
+
+        return settled;
     }
 
     public async Task<IReadOnlyList<OpenPosition>> GetOpenPositionsAsync(Guid accountId, CancellationToken cancellationToken = default)

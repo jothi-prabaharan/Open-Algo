@@ -28,6 +28,18 @@ public sealed class SandboxOptions
     /// <summary>Starting capital of each PAPER account, INR. Default 1 crore.</summary>
     [Range(typeof(decimal), "1", "100000000000")]
     public decimal StartingCapital { get; set; } = 10_000_000m;
+
+    /// <summary>When MIS orders are cancelled and MIS positions closed, IST, as HH:MM. NSE, BSE and their derivatives share one time.</summary>
+    public string NseBseSquareOffTime { get; set; } = "15:15";
+
+    public string CdsBcdSquareOffTime { get; set; } = "16:45";
+
+    public string McxSquareOffTime { get; set; } = "23:30";
+
+    public string NcdexSquareOffTime { get; set; } = "17:00";
+
+    /// <summary>Whether the minute timer runs the sweep. The sweep itself can always be called.</summary>
+    public bool AutoSquareOff { get; set; } = true;
 }
 
 /// <summary>Bound from <c>Security</c>.</summary>

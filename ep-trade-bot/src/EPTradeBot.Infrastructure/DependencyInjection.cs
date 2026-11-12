@@ -86,6 +86,7 @@ public static class DependencyInjection
         }
         services.AddSingleton<KeyedAsyncLock<Guid>>();
         services.AddSingleton<SandboxEngine>();
+        services.AddHostedService<SandboxSquareOffService>();
         services.AddSingleton<AuditTrail>();
         services.AddSingleton<IAccountRiskManager, AccountRiskManager>();
         services.AddSingleton<IOrderDispatcher, OrderDispatcher>();

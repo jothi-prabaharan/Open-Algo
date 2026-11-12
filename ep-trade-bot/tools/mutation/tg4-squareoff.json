@@ -1,0 +1,82 @@
+[
+ {
+  "name": "Q1 square-off before the minute",
+  "file": "src/EPTradeBot.Core/Sandbox/SandboxSquareOff.cs",
+  "old": "now >= t",
+  "new": "now > t",
+  "filter": "FullyQualifiedName~SandboxSquareOffTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "Q2 CNC positions closed too",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "x.Product == \"MIS\" && x.Quantity != 0",
+  "new": "x.Quantity != 0",
+  "filter": "FullyQualifiedName~SandboxSquareOffTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "Q3 resting orders left open",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "if (await CancelAsync(Guid.ParseExact(userId, \"N\"), orderId, cancellationToken)) cancelled++;",
+  "new": "cancelled += 0;",
+  "filter": "FullyQualifiedName~SandboxSquareOffTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "Q4 short positions bought with a sell",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "Action = quantity > 0 ? \"SELL\" : \"BUY\"",
+  "new": "Action = \"SELL\"",
+  "filter": "FullyQualifiedName~SandboxSquareOffTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "Q5 MCX shares the equity cut-off",
+  "file": "src/EPTradeBot.Core/Sandbox/SandboxSquareOff.cs",
+  "old": "\"MCX\" => Parse(mcx)",
+  "new": "\"MCX\" => Parse(nseBse)",
+  "filter": "FullyQualifiedName~SandboxSquareOffTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "Q6 bad time not defaulted",
+  "file": "src/EPTradeBot.Core/Sandbox/SandboxSquareOff.cs",
+  "old": "new TimeOnly(15, 15);\n    }",
+  "new": "new TimeOnly(0, 0);\n    }",
+  "filter": "FullyQualifiedName~SandboxSquareOffTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R1 today's profit credited",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "position.TodayRealizedPnl = 0;\n                await db.SaveChangesAsync",
+  "new": "position.TodayRealizedPnl = pnl;\n                await db.SaveChangesAsync",
+  "filter": "FullyQualifiedName~After_a_restart",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R2 margin not released",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "funds.AvailableBalance += margin + pnl;",
+  "new": "funds.AvailableBalance += pnl;",
+  "filter": "FullyQualifiedName~After_a_restart",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R4 realized total not updated",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "funds.RealizedPnl += pnl;\n                    funds.TotalPnl",
+  "new": "funds.TotalPnl",
+  "filter": "FullyQualifiedName~After_a_restart",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R5 short loss sign",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.cs",
+  "old": "(position.AveragePrice - price) * Math.Abs(quantity)",
+  "new": "(price - position.AveragePrice) * Math.Abs(quantity)",
+  "filter": "FullyQualifiedName~After_a_restart",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]
