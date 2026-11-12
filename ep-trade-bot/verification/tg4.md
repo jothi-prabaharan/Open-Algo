@@ -290,3 +290,23 @@ four equivalent: a time value of exactly zero (the next clause already catches i
 steps it back down, and an installment dated after the SIP's end (the sessions were already cut to the window).
 
 **Not done.** Portfolio Backtester and Portfolio Analyzer (OpenAlgo's `portfolio_service`): they rest on the `openstatz` statistics library (about 28 functions) and the `portfolio` engine, which are next.
+
+## Gate 4 (interim): what the chain has been shown to do
+
+`Gate4Tests` (integration, real host, PostgreSQL) drives the whole chain with a live tick on the bus: a price alert watches SBIN crossing up through 505; when it fires, an indicator node reads the
+three-bar average of the five-minute closes from the broker's history; a condition lets the order through only if that average is above 500; then the order goes through the environment guard and
+the account's risk limits into the sandbox.
+
+| Claim | Test |
+| --- | --- |
+| A tick through the level with a supporting indicator sends exactly one order into the sandbox (average 512), the alert is spent and the run is recorded | `Auto_a_tick_through_the_level_and_a_supporting_indicator_send_one_order_into_the_sandbox` |
+| The same tick with an indicator that does not support the trade (average 490) sends nothing, and the run still completes with the reason in its log | `Auto_an_indicator_that_does_not_support_the_trade_stops_it_though_the_tick_crossed` |
+| In Semi-Auto the same chain puts the order in the Action Center, nothing reaches the sandbox, and approving sends it once | `Semi_auto_the_same_chain_waits_in_the_action_center_and_sends_only_when_a_person_approves` |
+| An order over the account's quantity limit is never sent and the run fails saying why | `An_order_the_accounts_limits_refuse_is_never_sent_and_the_run_says_why` |
+| A suggestion from the assistant waits for a person, a rejected one is never sent, and there is no tool that sends | `AgentTests`: `A_suggested_order_waits_in_the_action_center_and_nothing_is_sent_until_the_trader_approves_it`, `A_suggestion_the_trader_rejects_is_never_sent`, `The_assistant_has_no_tool_that_sends_an_order` |
+| Approval decides again with the guard, the kill switches and the risk limits as of that moment | `ActionCenterTests.The_guard_and_the_risk_limits_are_decided_again_at_approval` |
+
+The four chain tests were run five times in a row with no failure (they wait for the publisher to connect by ticking until the effect shows, as the existing price-alert test does).
+
+**Gate 4 is not complete.** Still open in TG4: the Portfolio Backtester and Portfolio Analyzer back ends (18 of 20 tools are done), the 26 Flow node types that are refused by name, the 31 `/api/v1`
+endpoint pairs on TG4 features, and the TG2 items that were deferred to this group (sandbox GTT, CNC holdings with T+1 settlement, catch-up after a restart, auto square-off timers).
