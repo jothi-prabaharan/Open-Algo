@@ -51,6 +51,9 @@ public sealed class RuntimeOrderResolver(FlowContext context, JsonObject data)
         return fallback;
     }
 
+    /// <summary>The field as resolved (a list stays a list), or "key is required" when it is absent.</summary>
+    public JsonNode? Raw(string key, params string[] aliases) => Find(key, aliases, null, true);
+
     /// <summary>A text field that may be absent or blank, but must be text when given.</summary>
     public string OptionalText(string key)
     {

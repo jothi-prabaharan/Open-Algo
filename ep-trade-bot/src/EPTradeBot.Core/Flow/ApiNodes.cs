@@ -481,7 +481,7 @@ public sealed class CheckNodes : IFlowNode
 /// <summary>The node types that reach the platform's API.</summary>
 public static class ApiFlowNodes
 {
-    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode(), new OptionsOrderNode()];
+    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode(), new OptionsOrderNode(), new OptionsMultiOrderNode()];
 }
 
 /// <summary>The nodes that look up instruments, expiries, option chains and the exchange calendar through the platform and keep the answer in a variable.</summary>
@@ -800,5 +800,203 @@ public sealed class OptionsOrderNode : IFlowNode
             run.Log($"Error resolving expiry: {e.Message}", "error");
             return (null, null);
         }
+    }
+}
+
+/// <summary>Options multi-order: a straddle, strangle, condor or spread generated from a name, or custom legs each with its own strike or offset, expiry, side, size and price.</summary>
+public sealed class OptionsMultiOrderNode : IFlowNode
+{
+    public IReadOnlyList<string> Types => ["optionsMultiOrder"];
+
+    private sealed record Leg(string? Offset, double? Strike, string ExpiryDate, string ExpiryType, string OptionType, string Action, long Lots, string PriceType, string Product, double Price, double Trigger, long SplitSize);
+
+    private static JsonObject Failure(FlowRun run, string message)
+    {
+        run.Log($"Options multi-order failed: {message}", "error");
+        return new JsonObject { ["status"] = "error", ["message"] = message };
+    }
+
+    private static FlowNodeResult Stop(FlowRun run, string message) => FlowNodeResult.Fail(Failure(run, message)["message"]!.GetValue<string>());
+
+    public async Task<FlowNodeResult?> ExecuteAsync(FlowNode node, FlowRun run, CancellationToken ct)
+    {
+        var host = ApiNodeSupport.HostOf(run);
+        var ctx = run.Context;
+        string underlying, expiryType, expiryInput, strategyType, action, product, width, priceType;
+        long lots;
+        double price, trigger;
+        try
+        {
+            var v = new RuntimeOrderResolver(ctx, node.Data);
+            underlying = v.Text("underlying", "NIFTY").ToUpperInvariant();
+            expiryType = v.Text("expiryType", "current_week").ToLowerInvariant();
+            expiryInput = v.OptionalText("expiryDate").ToUpperInvariant();
+            if (expiryInput.Length == 0 && System.Text.RegularExpressions.Regex.IsMatch(expiryType.ToUpperInvariant(), Contracts.V1.ApiPatterns.ExpiryDdMmmYy)) expiryInput = expiryType.ToUpperInvariant();
+            if (expiryInput.Length > 0 && !System.Text.RegularExpressions.Regex.IsMatch(expiryInput, Contracts.V1.ApiPatterns.ExpiryDdMmmYy))
+                throw new ArgumentException($"expiryDate must be in DDMMMYY format such as 28OCT25, got '{expiryInput}'");
+            if (expiryInput.Length == 0 && !OptionVocabulary.ExpiryTypes.Contains(expiryType))
+                throw new ArgumentException($"expiryType must be one of {string.Join(", ", OptionVocabulary.ExpiryTypes)}, got '{expiryType}'");
+            strategyType = v.Text("strategy", "custom", "strategyType").ToLowerInvariant();
+            action = v.Enum("action", OrderVocabulary.Actions, "SELL");
+            lots = v.Integer("quantity", 1, 1);
+            product = v.Enum("product", OrderVocabulary.Products, "NRML");
+            width = v.Text("strangleWidth", "OTM2").ToUpperInvariant();
+            if (!System.Text.RegularExpressions.Regex.IsMatch(width, Contracts.V1.ApiPatterns.OptionOffset)) throw new ArgumentException($"strangleWidth must be ATM, ITM1-ITM50, or OTM1-OTM50, got '{width}'");
+            priceType = v.Enum("priceType", OrderVocabulary.PriceTypes, "MARKET");
+            price = v.Number("price", 0.0);
+            trigger = v.Number("triggerPrice", 0.0);
+            if (node.Data.ContainsKey("exchange")) v.Enum("exchange", OrderVocabulary.Exchanges);
+            if (strategyType != "custom")
+            {
+                if (priceType is not ("MARKET" or "LIMIT")) throw new ArgumentException("generated option strategies support only MARKET and LIMIT price types");
+                if (OrderVocabulary.InvalidPriceReason(priceType, price, trigger) is { } invalid) throw new ArgumentException(invalid);
+            }
+        }
+        catch (ArgumentException ex)
+        {
+            return ApiNodeSupport.RuntimeOrderError(run, "Options multi-order", ex);
+        }
+
+        List<Leg>? custom = null;
+        if (strategyType == "custom")
+        {
+            try
+            {
+                custom = ParseLegs(ctx, node.Data, product, priceType, price, trigger);
+            }
+            catch (ArgumentException ex)
+            {
+                return ApiNodeSupport.RuntimeOrderError(run, "Options multi-order", ex);
+            }
+        }
+
+        run.Log($"Strategy: {strategyType}, Action: {action}, Quantity: {lots} lots, Product: {product}");
+        var (underlyingExchange, foExchange) = OptionVocabulary.Exchanges(underlying, node.Data.Str(ctx, "exchange", ""));
+        var (lot, lotError) = await OptionVocabulary.LotSizeAsync(host, run, underlying, foExchange, ct);
+        if (lot is null) return Stop(run, lotError!);
+        var total = lots * lot.Value;
+        run.Log($"Lot size for {underlying}: {lot} -> {lots} lot(s) = {total}");
+
+        var expiry = expiryInput;
+        if (expiry.Length == 0)
+        {
+            var (date, _) = await OptionsOrderNode.ResolveExpiryAsync(host, run, underlying, foExchange, expiryType, ct);
+            if (date is null) return Stop(run, $"Could not resolve expiry for {expiryType}");
+            expiry = date;
+        }
+
+        run.Log($"Resolved expiry: {(expiryInput.Length > 0 ? expiryInput : expiryType)} -> {expiry}");
+        var legs = new JsonArray();
+        if (custom is not null)
+        {
+            var cache = new Dictionary<string, string>();
+            for (var i = 0; i < custom.Count; i++)
+            {
+                var leg = custom[i];
+                var legExpiry = leg.ExpiryDate;
+                if (legExpiry.Length == 0 && leg.ExpiryType.Length > 0)
+                {
+                    if (!cache.TryGetValue(leg.ExpiryType, out legExpiry!))
+                    {
+                        var (resolved, _) = await OptionsOrderNode.ResolveExpiryAsync(host, run, underlying, foExchange, leg.ExpiryType, ct);
+                        if (resolved is null) return Stop(run, $"leg {i + 1}: could not resolve expiry for {leg.ExpiryType}");
+                        cache[leg.ExpiryType] = legExpiry = resolved;
+                    }
+                }
+
+                var body = new JsonObject();
+                if (leg.Strike is { } strike) body["strike"] = strike; else body["offset"] = leg.Offset;
+                body["option_type"] = leg.OptionType;
+                body["action"] = leg.Action;
+                body["pricetype"] = leg.PriceType;
+                body["product"] = leg.Product;
+                body["price"] = leg.Price;
+                body["trigger_price"] = leg.Trigger;
+                body["splitsize"] = leg.SplitSize;
+                body["quantity"] = leg.Lots * lot.Value;
+                if (!string.IsNullOrEmpty(legExpiry)) body["expiry_date"] = legExpiry;
+                legs.Add(body);
+            }
+        }
+        else
+        {
+            if (priceType is "SL" or "SL-M")
+                return Stop(run, $"{priceType} is not available for a generated {strategyType} strategy: its legs carry no trigger price. Use MARKET or LIMIT, or build the legs individually as custom legs where each can set its own trigger price.");
+            if (OrderVocabulary.InvalidPriceReason(priceType, price, 0.0) is { } bad) return Stop(run, bad);
+            JsonObject Make(string offset, string type, string side) => new()
+            {
+                ["offset"] = offset, ["option_type"] = type, ["action"] = side, ["quantity"] = total, ["pricetype"] = priceType, ["product"] = product, ["price"] = price, ["splitsize"] = 0,
+            };
+            switch (strategyType)
+            {
+                case "straddle": legs.Add(Make("ATM", "CE", action)); legs.Add(Make("ATM", "PE", action)); break;
+                case "strangle": legs.Add(Make(width, "CE", action)); legs.Add(Make(width, "PE", action)); break;
+                case "iron_condor": legs.Add(Make("OTM2", "CE", "SELL")); legs.Add(Make("OTM4", "CE", "BUY")); legs.Add(Make("OTM2", "PE", "SELL")); legs.Add(Make("OTM4", "PE", "BUY")); break;
+                case "bull_call_spread": legs.Add(Make("ATM", "CE", "BUY")); legs.Add(Make("OTM2", "CE", "SELL")); break;
+                case "bear_put_spread": legs.Add(Make("ATM", "PE", "BUY")); legs.Add(Make("OTM2", "PE", "SELL")); break;
+                default: run.Log(strategyType == "custom" ? "Custom strategy selected but no legs provided" : $"Unknown strategy type: {strategyType}", "warning"); break;
+            }
+        }
+
+        if (legs.Count == 0) return Stop(run, $"No legs generated for strategy: {strategyType}");
+        run.Log($"Placing options multi-order: {underlying} {strategyType} with {legs.Count} legs");
+        var result = await host.Api.CallAsync("optionsmultiorder", new JsonObject
+        {
+            ["underlying"] = underlying, ["exchange"] = underlyingExchange, ["expiry_date"] = expiry, ["legs"] = legs, ["strategy"] = ApiNodeSupport.Tag(node, run, host),
+        }, ct);
+        run.Log($"Options multi-order result: {result.ToJsonString()}", ApiNodeSupport.Level(result));
+        ApiNodeSupport.Store(node, run, result);
+        return FlowApiResults.ToResult(result);
+    }
+
+    private static List<Leg> ParseLegs(FlowContext ctx, JsonObject data, string product, string nodePriceType, double nodePrice, double nodeTrigger)
+    {
+        var raw = new RuntimeOrderResolver(ctx, data).Raw("legs", "orderLegs");
+        if (raw is not JsonArray { Count: > 0 } array) throw new ArgumentException("legs must resolve to a non-empty list of objects");
+        if (array.Any(l => l is not JsonObject)) throw new ArgumentException("every resolved leg must be an object");
+        var result = new List<Leg>();
+        for (var index = 1; index <= array.Count; index++)
+        {
+            try
+            {
+                var v = new RuntimeOrderResolver(ctx, (JsonObject)array[index - 1]!);
+                var mode = v.Enum("strikeMode", ["OFFSET", "STRIKE"], "OFFSET");
+                string? offset = null;
+                double? strike = null;
+                if (mode == "STRIKE")
+                {
+                    strike = v.Number("strike");
+                    if (strike <= 0) throw new ArgumentException($"strike must be a positive number, got {FlowContext.PyFloat(strike.Value)}");
+                }
+                else
+                {
+                    offset = v.Text("offset").ToUpperInvariant();
+                    if (!System.Text.RegularExpressions.Regex.IsMatch(offset, Contracts.V1.ApiPatterns.OptionOffset)) throw new ArgumentException($"offset must be ATM, ITM1-ITM50, or OTM1-OTM50, got '{offset}'");
+                }
+
+                var expiry = v.OptionalText("expiry").ToUpperInvariant();
+                if (expiry.Length > 0 && !System.Text.RegularExpressions.Regex.IsMatch(expiry, Contracts.V1.ApiPatterns.ExpiryDdMmmYy))
+                    throw new ArgumentException($"expiry must be in DDMMMYY format such as 28OCT25, got '{expiry}'");
+                var type = v.OptionalText("expiryType").ToLowerInvariant();
+                if (type.Length > 0 && !OptionVocabulary.ExpiryTypes.Contains(type))
+                    throw new ArgumentException($"expiryType must be one of {string.Join(", ", OptionVocabulary.ExpiryTypes)}, got '{type}'");
+                var optionType = v.Enum("optionType", ["CE", "PE"]);
+                var action = v.Enum("action", OrderVocabulary.Actions);
+                var quantity = v.Integer("quantity", null, 1);
+                var legProduct = v.Enum("product", OrderVocabulary.Products, product);
+                var priceType = v.Enum("priceType", OrderVocabulary.PriceTypes, nodePriceType, "pricetype");
+                var price = v.Number("price", nodePrice);
+                var trigger = v.Number("triggerPrice", nodeTrigger, "trigger_price");
+                var split = v.Integer("splitSize", 0, 0, "splitsize");
+                if (OrderVocabulary.InvalidPriceReason(priceType, price, trigger) is { } invalid) throw new ArgumentException(invalid);
+                result.Add(new Leg(offset, strike, expiry, type, optionType, action, quantity, priceType, legProduct, price, trigger, split));
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException($"leg {index}: {ex.Message}");
+            }
+        }
+
+        return result;
     }
 }

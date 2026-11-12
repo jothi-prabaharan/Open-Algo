@@ -651,3 +651,115 @@ public sealed class FlowOptionsOrderNodeTests
         Assert.Single(api.Calls);
     }
 }
+
+public sealed class FlowOptionsMultiOrderNodeTests
+{
+    private sealed class Api : IFlowApi
+    {
+        public List<(string Api, JsonObject Body)> Calls { get; } = [];
+
+        public Task<JsonObject> CallAsync(string api, JsonObject body, CancellationToken ct)
+        {
+            Calls.Add((api, (JsonObject)body.DeepClone()));
+            return Task.FromResult(api == "expiry"
+                ? new JsonObject { ["status"] = "success", ["data"] = new JsonArray("13-NOV-26", "20-NOV-26", "27-NOV-26") }
+                : new JsonObject { ["status"] = "success" });
+        }
+    }
+
+    private static readonly DateTime Noon = new DateTime(2026, 11, 11, 12, 0, 0, DateTimeKind.Utc) - EPTradeBot.Core.Time.Ist.Offset;
+
+    private static async Task<(Api Api, FlowRun Run, FlowOutcome Outcome)> RunAsync(JsonObject data, JsonObject? vars = null)
+    {
+        var api = new Api();
+        var host = new FlowHost(api, "t") { LotSizes = (_, _, _) => Task.FromResult(LotSizeAnswer.Found(75)) };
+        var run = new FlowRun(() => Noon, host: host);
+        foreach (var (k, v) in vars ?? []) run.Context.Set(k, v?.DeepClone());
+        var outcome = await new FlowRunner(CoreFlowNodes.All().Concat(ApiFlowNodes.All())).RunAsync(new FlowGraph([new("s", "start", []), new("n", "optionsMultiOrder", data)], [new("s", "n", "")]), run, default);
+        return (api, run, outcome);
+    }
+
+    private static string Legs(Api api) => api.Calls.Single(c => c.Api == "optionsmultiorder").Body["legs"]!.ToJsonString();
+
+    [Fact]
+    public async Task A_straddle_sells_the_money_call_and_put_in_units_of_the_lot()
+    {
+        var (api, _, outcome) = await RunAsync(new() { ["strategy"] = "straddle", ["quantity"] = 2, ["expiryDate"] = "26NOV26" });
+        Assert.True(outcome.Succeeded, outcome.Message);
+        var call = Assert.Single(api.Calls);
+        Assert.Equal("""{"underlying":"NIFTY","exchange":"NSE_INDEX","expiry_date":"26NOV26","legs":[{"offset":"ATM","option_type":"CE","action":"SELL","quantity":150,"pricetype":"MARKET","product":"NRML","price":0,"splitsize":0},{"offset":"ATM","option_type":"PE","action":"SELL","quantity":150,"pricetype":"MARKET","product":"NRML","price":0,"splitsize":0}],"strategy":"t"}""", call.Body.ToJsonString());
+    }
+
+    [Theory]
+    [InlineData("strangle", "OTM2,CE,SELL;OTM2,PE,SELL")]
+    [InlineData("iron_condor", "OTM2,CE,SELL;OTM4,CE,BUY;OTM2,PE,SELL;OTM4,PE,BUY")]
+    [InlineData("bull_call_spread", "ATM,CE,BUY;OTM2,CE,SELL")]
+    [InlineData("bear_put_spread", "ATM,PE,BUY;OTM2,PE,SELL")]
+    public async Task Each_named_strategy_has_the_legs_it_is_known_by(string strategy, string expected)
+    {
+        var (api, _, _) = await RunAsync(new() { ["strategy"] = strategy, ["expiryDate"] = "26NOV26" });
+        var legs = api.Calls.Single().Body["legs"]!.AsArray().Select(l => $"{l!["offset"]},{l["option_type"]},{l["action"]}");
+        Assert.Equal(expected, string.Join(";", legs));
+    }
+
+    [Fact]
+    public async Task A_strangle_uses_its_width_and_a_strategy_alias_is_read()
+    {
+        var (api, _, _) = await RunAsync(new() { ["strategyType"] = "strangle", ["strangleWidth"] = "otm5", ["action"] = "BUY", ["expiryDate"] = "26NOV26" });
+        Assert.All(api.Calls.Single().Body["legs"]!.AsArray(), l => { Assert.Equal("OTM5", l!["offset"]!.GetValue<string>()); Assert.Equal("BUY", l["action"]!.GetValue<string>()); });
+    }
+
+    [Fact]
+    public async Task Custom_legs_pick_a_strike_or_an_offset_and_may_carry_their_own_expiry_and_price()
+    {
+        var legs = JsonNode.Parse("""[{"strikeMode":"STRIKE","strike":24000,"expiry":"26nov26","optionType":"ce","action":"buy","quantity":1},{"offset":"otm3","expiryType":"next_week","optionType":"PE","action":"SELL","quantity":2,"priceType":"LIMIT","price":55.5,"splitSize":3}]""")!;
+        var (api, _, outcome) = await RunAsync(new() { ["strategy"] = "custom", ["legs"] = legs, ["expiryDate"] = "13NOV26" });
+        Assert.True(outcome.Succeeded, outcome.Message);
+        Assert.Equal("expiry", api.Calls[0].Api);   // only the relative leg expiry is looked up
+        Assert.Equal("""[{"strike":24000,"option_type":"CE","action":"BUY","pricetype":"MARKET","product":"NRML","price":0,"trigger_price":0,"splitsize":0,"quantity":75,"expiry_date":"26NOV26"},{"offset":"OTM3","option_type":"PE","action":"SELL","pricetype":"LIMIT","product":"NRML","price":55.5,"trigger_price":0,"splitsize":3,"quantity":150,"expiry_date":"20NOV26"}]""", Legs(api));
+    }
+
+    [Fact]
+    public async Task Legs_can_come_from_a_variable()
+    {
+        var legs = JsonNode.Parse("""[{"offset":"ATM","optionType":"CE","action":"SELL","quantity":1}]""")!;
+        var (api, _, outcome) = await RunAsync(new() { ["strategy"] = "custom", ["legs"] = "{{plan.legs}}", ["expiryDate"] = "26NOV26" }, new() { ["plan"] = new JsonObject { ["legs"] = legs } });
+        Assert.True(outcome.Succeeded, outcome.Message);
+        Assert.Single(api.Calls.Single().Body["legs"]!.AsArray());
+    }
+
+    [Theory]
+    [InlineData("""[]""", "legs must resolve to a non-empty list")]
+    [InlineData("""[1]""", "every resolved leg must be an object")]
+    [InlineData("""[{"offset":"ATM","optionType":"CE","action":"SELL","quantity":0}]""", "leg 1: quantity must be at least 1")]
+    [InlineData("""[{"offset":"ATM","optionType":"CE","action":"SELL","quantity":1},{"offset":"XTM","optionType":"CE","action":"SELL","quantity":1}]""", "leg 2: offset must be ATM")]
+    [InlineData("""[{"strikeMode":"STRIKE","strike":-5,"optionType":"CE","action":"SELL","quantity":1}]""", "leg 1: strike must be a positive number")]
+    [InlineData("""[{"offset":"ATM","expiry":"soon","optionType":"CE","action":"SELL","quantity":1}]""", "leg 1: expiry must be in DDMMMYY format")]
+    [InlineData("""[{"offset":"ATM","priceType":"LIMIT","optionType":"CE","action":"SELL","quantity":1}]""", "leg 1: LIMIT order needs a positive price")]
+    public async Task A_bad_custom_leg_stops_the_node_naming_the_leg(string legs, string words)
+    {
+        var (api, run, outcome) = await RunAsync(new() { ["strategy"] = "custom", ["legs"] = JsonNode.Parse(legs), ["expiryDate"] = "26NOV26" });
+        Assert.False(outcome.Succeeded);
+        Assert.Empty(api.Calls);
+        Assert.Contains(run.Logs, l => l.Level == "error" && l.Message.Contains(words));
+    }
+
+    [Fact]
+    public async Task A_generated_strategy_cannot_carry_a_stop_price_and_says_so()
+    {
+        var (api, run, outcome) = await RunAsync(new() { ["strategy"] = "straddle", ["priceType"] = "SL", ["triggerPrice"] = 5, ["price"] = 1, ["expiryDate"] = "26NOV26" });
+        Assert.False(outcome.Succeeded);
+        Assert.Empty(api.Calls);
+        Assert.Contains(run.Logs, l => l.Message.Contains("generated option strategies support only MARKET and LIMIT"));
+    }
+
+    [Fact]
+    public async Task An_unknown_strategy_name_places_nothing()
+    {
+        var (api, run, outcome) = await RunAsync(new() { ["strategy"] = "butterfly", ["expiryDate"] = "26NOV26" });
+        Assert.False(outcome.Succeeded);
+        Assert.Empty(api.Calls);
+        Assert.Contains(run.Logs, l => l.Level == "warning" && l.Message.Contains("Unknown strategy type: butterfly"));
+        Assert.Contains(run.Logs, l => l.Message.Contains("No legs generated for strategy: butterfly"));
+    }
+}
