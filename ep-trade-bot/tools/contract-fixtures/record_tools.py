@@ -149,6 +149,10 @@ def record_iv_smile():
         ok, resp, code = sm.get_iv_smile_data(underlying, "NFO", expiry, "key")
         cases.append({"name": name, "exchange": "NFO", "expiry": expiry, "chain": chain, "ok": ok, "code": code, "response": resp})
     # An ATM strike with no legs at all, and one with only a put
+    chain = make_chain("NIFTY", 24050.0, 24050, 200, 12, "26NOV26", 75, 8)
+    sm.get_option_chain = lambda **kw: (True, chain, 200)
+    ok, resp, code = sm.get_iv_smile_data("NIFTY", "NFO", "26NOV26", "key")
+    cases.append({"name": "wide-step-skew-reaches-five-percent", "exchange": "NFO", "expiry": "26NOV26", "chain": chain, "ok": ok, "code": code, "response": resp})
     chain = make_chain("NIFTY", 24050.0, 24050, 50, 12, "26NOV26", 75, 5)
     chain["chain"][12]["ce"] = None
     chain["chain"][12]["pe"]["ltp"] = 0
@@ -259,6 +263,8 @@ def record_vol_surface():
         run("one-expiry-without-strikes", "NIFTY", "NSE_INDEX", ["26NOV26", "31DEC26"], 5, 24057.0, {"26NOV26": wide})
         run("fractional-strikes", "VEDL", "NFO", ["26NOV26"], 4, 292.4, {"26NOV26": [270 + 2.5 * i for i in range(20)]})
         run("sensex", "SENSEX", "BSE_INDEX", ["26NOV26"], 5, 80211.0, {"26NOV26": [78000 + 100 * i for i in range(40)]})
+        run("exactly-two-common-strikes", "NIFTY", "NSE_INDEX", ["26NOV26", "31DEC26"], 3, 24057.0,
+            {"26NOV26": [24000 + 50 * i for i in range(-10, 10)], "31DEC26": [23800, 24050, 24100, 24300, 24400, 24500]})
         run("no-expiry-given", "NIFTY", "NSE_INDEX", [], 5, 24057.0, {})
         run("no-strikes-anywhere", "NIFTY", "NSE_INDEX", ["26NOV26"], 5, 24057.0, {})
         run("no-ltp", "NIFTY", "NSE_INDEX", ["26NOV26"], 5, 0, {"26NOV26": wide})
@@ -305,7 +311,7 @@ def record_strike_profile():
     now_epoch = int(NOW.timestamp())
     day = 86400
 
-    def run(name, expiries, spot, range_pct, per_expiry, fail_after=None, busy=False, no_server_ts=False):
+    def run(name, expiries, spot, range_pct, per_expiry, fail_after=None, busy=False, no_server_ts=False, tweak=None):
         calls = []
 
         def fetch(underlying, exchange, expiry_date, strike_count, api_key, with_greeks):
@@ -316,6 +322,8 @@ def record_strike_profile():
             chain = make_greek_chain(spot, spec["atm"], spec["step"], strike_count, spec["epoch"], now_epoch, spec["lot"], seed=idx + 3, with_greeks=spec.get("greeks", True))
             if no_server_ts:
                 del chain["server_ts"]
+            if tweak:
+                tweak(chain)
             calls.append({"expiry": expiry_date, "strike_count": strike_count, "chain": chain})
             return True, chain, 200
 
@@ -337,6 +345,17 @@ def record_strike_profile():
     run("no-server-ts", ["26NOV26"], 24057.0, 5.0, {"26NOV26": spec(e1)}, no_server_ts=True)
     run("chain-without-greeks", ["26NOV26"], 24057.0, 5.0, {"26NOV26": spec(e1, greeks=False)})
     run("expiry-today", ["26NOV26"], 24057.0, 5.0, {"26NOV26": spec(now_epoch + 3600)})
+    def tie(chain):
+        rows = [r for r in chain["chain"] if r["strike"] in (24000, 24100)]
+        for r in rows:
+            for leg in ("ce", "pe"):
+                r[leg].update({"oi": 5000, "gamma": 0.001, "delta": 0.4 if leg == "ce" else -0.4, "implied_volatility": 12.0})
+        for r in chain["chain"]:
+            if r["strike"] not in (24000, 24100):
+                for leg in ("ce", "pe"):
+                    r[leg].update({"oi": 10, "gamma": 0.00001})
+
+    run("tied-call-and-put-walls", ["26NOV26"], 24057.0, 5.0, {"26NOV26": spec(e1)}, tweak=tie)
     run("wide-step", ["26NOV26"], 52110.0, 3.0, {"26NOV26": spec(e1, atm=52100, step=100, lot=30)})
     return {"now": NOW.isoformat(), "cases": cases}
 
@@ -478,14 +497,14 @@ def _strategy_chart_cases(which):
     midnight = int(NOW.replace(hour=0, minute=0, second=0).timestamp())
     cases = []
 
-    def series(days_back, n=8, base=100.0, step=1.5, ms_ts=False, skip=(), no_close=(), oi=None, start_min=9 * 60 + 15):
+    def series(days_back, n=8, base=100.0, step=1.5, ms_ts=False, skip=(), no_close=(), oi=None, start_min=9 * 60 + 15, gap=300):
         rows = []
         for d in days_back:
             t0 = midnight - d * 86400 + start_min * 60 - 19800
             for i in range(n):
                 if (d, i) in skip:
                     continue
-                ts = t0 + i * 300
+                ts = t0 + i * gap
                 row = {"timestamp": ts * 1000 if ms_ts else ts, "open": base + i, "high": base + i + 1, "low": base + i - 1, "close": round(base + i * step + d, 2), "volume": 100 + i}
                 if (d, i) in no_close:
                     del row["close"]
@@ -543,6 +562,9 @@ def _strategy_chart_cases(which):
     run("duplicate-legs", base, [leg(ce, "SELL", 100), leg(ce, "SELL", 100), leg(pe, "BUY", 50)])
     run("filtered-legs", base, [leg(ce, "SELL", 100), leg(pe, "SELL", 100, active=False), leg("NIFTY26NOVFUT", "BUY", 24000, segment="FUTURE"), leg("X", "HOLD"), {"symbol": "Y", "side": "BUY"}, "junk", None, leg(pe, "buy", "bad")])
     run("string-price", base, [leg(ce, "SELL", "120.5"), leg(pe, "SELL", None)])
+    clock = {"NIFTY": series(d3, n=24, base=24000, start_min=0, gap=3600), ce: series(d3, n=24, base=120, start_min=0, gap=3600, oi=500), pe: series(d3, n=24, base=110, start_min=0, gap=3600, oi=600)}
+    run("round-the-clock-one-day", clock, legs2, days=1)
+    run("round-the-clock-two-days", clock, legs2, days=2)
     run("explicit-window", base, legs2, start="2026-11-01", end="2026-11-10")
     run("explicit-window-open-end", base, legs2, start="2026-11-05")
     run("explicit-window-bad-date", base, legs2, start="2026-02-31")
@@ -933,7 +955,9 @@ def record_sector_rotation():
     run("no-exchange", instruments=[{"symbol": "ES"}], data=base)
     run("stocks-on-the-map", instruments=[{"symbol": "INFY", "exchange": "NSE"}, {"symbol": "TCS", "exchange": "NSE", "label": "Tata Consultancy"}],
         data={**base, "INFY": ([d.isoformat() for d in days], walk(days, 41, 1500.0)), "TCS": ([d.isoformat() for d in days], walk(days, 42, 3500.0))})
-    return {"now": NOW.isoformat(), "end": end.isoformat(), "cases": cases, "options": sr.list_options()[1]}
+    boundaries = [[r, m] for r in (99.999, 100.0, 100.001) for m in (99.999, 100.0, 100.001)]
+    quadrants = [[r, m, sr.quadrant(r, m)] for r, m in boundaries]
+    return {"now": NOW.isoformat(), "end": end.isoformat(), "cases": cases, "options": sr.list_options()[1], "quadrants": quadrants}
 
 
 def record_iv_chart():
@@ -955,17 +979,18 @@ def record_iv_chart():
     def spot_at(d, i, centre):
         return round(centre + (d - 1) * 35 + i * 9 - (i % 4) * 17, 2)
 
-    def underlying(days, centre, n=14, ms=False, skip=(), key="close"):
+    def underlying(days, centre, n=14, ms=False, skip=(), key="close", tshift=0):
         rows = []
         for d in days:
             for i in range(n):
                 if (d, i) in skip:
                     continue
-                ts = candle_ts(d, i)
+                ts = candle_ts(d, i, tshift)
                 rows.append({"timestamp": ts * 1000 if ms else ts, key: spot_at(d, i, centre)})
         return rows
 
-    def option(days, centre, strike, flag, expiry, n=14, skip=(), shift=0, zero=(), junk=()):
+    def option(days, centre, strike, flag, expiry, n=14, skip=(), shift=0, zero=(), junk=(), tshift=0):
+        shift = shift + tshift
         rows = []
         e = expiry_epoch(expiry)
         for d in days:
@@ -993,10 +1018,10 @@ def record_iv_chart():
         calls = []
         d_all = tuple(range(n_days))
         atm_strike = atm if atm is not None else min(strikes, key=lambda s: abs(s - quote[1])) if strikes and quote[0] == "ok" else None
-        hist = {under: u_hist if u_hist is not None else underlying(d_all, centre, **{k: v for k, v in kw.items() if k in ("n", "ms", "skip", "key")})}
+        hist = {under: u_hist if u_hist is not None else underlying(d_all, centre, **{k: v for k, v in kw.items() if k in ("n", "ms", "skip", "key", "tshift")})}
         if atm_strike is not None:
-            hist[f"{under}{expiry.upper()}{int(atm_strike)}CE"] = ce_hist if ce_hist is not None else option(d_all, centre, atm_strike, "c", expiry, **{k: v for k, v in kw.items() if k in ("n", "shift", "zero", "junk") or k == "ce_skip" and False})
-            hist[f"{under}{expiry.upper()}{int(atm_strike)}PE"] = pe_hist if pe_hist is not None else option(d_all, centre, atm_strike, "p", expiry, **{k: v for k, v in kw.items() if k in ("n", "shift", "zero", "junk")})
+            hist[f"{under}{expiry.upper()}{int(atm_strike)}CE"] = ce_hist if ce_hist is not None else option(d_all, centre, atm_strike, "c", expiry, **{k: v for k, v in kw.items() if k in ("n", "shift", "zero", "junk", "tshift")})
+            hist[f"{under}{expiry.upper()}{int(atm_strike)}PE"] = pe_hist if pe_hist is not None else option(d_all, centre, atm_strike, "p", expiry, **{k: v for k, v in kw.items() if k in ("n", "shift", "zero", "junk", "tshift")})
 
         def get_history(symbol, exchange, interval, start_date, end_date, api_key):
             calls.append({"symbol": symbol, "exchange": exchange, "interval": interval, "start": start_date, "end": end_date})
@@ -1021,6 +1046,7 @@ def record_iv_chart():
     run("two-days-ms", strikes, days=2, ms=True)
     run("expiry-tomorrow", strikes, expiry="12NOV26")
     run("expired", strikes, expiry="10NOV26")
+    run("expiry-day-late-candles", strikes, expiry="11NOV26", n=20, tshift=330)
     run("zero-priced-candles", strikes, zero={(0, 3), (1, 5)})
     run("at-intrinsic-candles", strikes, junk={(0, 2), (0, 9)})
     run("option-offset-timestamps", strikes, shift=1)

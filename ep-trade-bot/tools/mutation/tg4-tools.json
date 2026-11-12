@@ -1,0 +1,562 @@
+[
+ {
+  "name": "B1 theta adds interest decay with the wrong sign",
+  "file": "src/EPTradeBot.Core/Options/Black76.cs",
+  "old": "return (decay + r * price) / 365.0;",
+  "new": "return (decay - r * price) / 365.0;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B2 vega is per ten points",
+  "file": "src/EPTradeBot.Core/Options/Black76.cs",
+  "old": "Math.Sqrt(t) * 0.01;\n    }\n\n    /// <summary>For one percentage point of the rate",
+  "new": "Math.Sqrt(t) * 0.1;\n    }\n\n    /// <summary>For one percentage point of the rate",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B3 volatility ceiling is 400 percent",
+  "file": "src/EPTradeBot.Core/Options/Black76.cs",
+  "old": "private const double Highest = 5.0;",
+  "new": "private const double Highest = 4.0;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B4 rho has the wrong sign",
+  "file": "src/EPTradeBot.Core/Options/Black76.cs",
+  "old": "=> -t * Price(call, f, k, t, r, sigma) * 0.01;",
+  "new": "=> t * Price(call, f, k, t, r, sigma) * 0.01;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "B5 put delta uses the call formula",
+  "file": "src/EPTradeBot.Core/Options/Black76.cs",
+  "old": "return call ? df * NormalCdf(d1) : -df * NormalCdf(-d1);",
+  "new": "return call ? df * NormalCdf(d1) : -df * NormalCdf(d1);",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "G1 time value of zero still solves",
+  "file": "src/EPTradeBot.Core/Options/OptionGreeks.cs",
+  "old": "if (timeValue <= 0 || (intrinsic > 0 && timeValue < 0.01))",
+  "new": "if (timeValue < 0 || (intrinsic > 0 && timeValue < 0.01))",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "G2 minimum expiry is a thousandth of a year",
+  "file": "src/EPTradeBot.Core/Options/OptionGreeks.cs",
+  "old": "if (years < 0.0001) { years = 0.0001;",
+  "new": "if (years < 0.001) { years = 0.001;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "G3 MCX expires on the half hour",
+  "file": "src/EPTradeBot.Core/Options/OptionSymbols.cs",
+  "old": "\"MCX\" => (23, 30)",
+  "new": "\"MCX\" => (23, 0)",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "G4 equity expiry is on the hour",
+  "file": "src/EPTradeBot.Core/Options/OptionSymbols.cs",
+  "old": "_ => (15, 30) };",
+  "new": "_ => (15, 0) };",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "G5 a decaying option reads days wrongly",
+  "file": "src/EPTradeBot.Core/Options/OptionGreeks.cs",
+  "old": "(expiry - nowIst).TotalSeconds / (60 * 60 * 24)",
+  "new": "(expiry - nowIst).TotalSeconds / (60 * 60 * 12)",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "X1 GEX ignores the lot size",
+  "file": "src/EPTradeBot.Core/Options/GexTool.cs",
+  "old": "return (oi, gamma, gamma * oi * lot, lot);",
+  "new": "return (oi, gamma, gamma * oi, lot);",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "X2 net GEX adds the put side",
+  "file": "src/EPTradeBot.Core/Options/GexTool.cs",
+  "old": "var net = ceGex - peGex;",
+  "new": "var net = ceGex + peGex;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "X3 skew is call minus put",
+  "file": "src/EPTradeBot.Core/Options/IvSmileTool.cs",
+  "old": "skew = PyNumber.Round(putIv.Value - callIv.Value, 2);",
+  "new": "skew = PyNumber.Round(callIv.Value - putIv.Value, 2);",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "X4 skew looks four percent out",
+  "file": "src/EPTradeBot.Core/Options/IvSmileTool.cs",
+  "old": "var distance = a * 0.05;",
+  "new": "var distance = a * 0.04;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "X5 max pain counts equal strikes",
+  "file": "src/EPTradeBot.Core/Options/OiTools.cs",
+  "old": "if (cs > s && ceOi > 0)",
+  "new": "if (cs >= s && ceOi > 0)",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "X6 PCR is calls over puts",
+  "file": "src/EPTradeBot.Core/Options/OiTools.cs",
+  "old": "[\"pcr_oi\"] = ceOi > 0 ? PyNumber.Round(peOi / ceOi, 2) : 0,",
+  "new": "[\"pcr_oi\"] = peOi > 0 ? PyNumber.Round(ceOi / peOi, 2) : 0,",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "X7 vol surface takes calls above the money only",
+  "file": "src/EPTradeBot.Core/Options/VolSurfaceTool.cs",
+  "old": "strike >= atmStrike ? \"CE\" : \"PE\"",
+  "new": "strike > atmStrike ? \"CE\" : \"PE\"",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "X8 vol surface window is one short",
+  "file": "src/EPTradeBot.Core/Options/VolSurfaceTool.cs",
+  "old": "var end = Math.Min(strikes.Count, index + strikeCount + 1);",
+  "new": "var end = Math.Min(strikes.Count, index + strikeCount);",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "X9 vol surface needs two common strikes",
+  "file": "src/EPTradeBot.Core/Options/VolSurfaceTool.cs",
+  "old": "if (common.Count < 3)",
+  "new": "if (common.Count < 2)",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "S1 flip grid has one point fewer",
+  "file": "src/EPTradeBot.Core/Options/StrikeProfileTool.cs",
+  "old": "public const int FlipGridPoints = 241;",
+  "new": "public const int FlipGridPoints = 240;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "S2 GEX is not scaled to one percent",
+  "file": "src/EPTradeBot.Core/Options/StrikeProfileTool.cs",
+  "old": "sign * gamma * oi * spot * spot * 0.01 / Crore",
+  "new": "sign * gamma * oi * spot * spot / Crore",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "S3 a tied wall moves to the later strike",
+  "file": "src/EPTradeBot.Core/Options/StrikeProfileTool.cs",
+  "old": "if (call > callBest) {",
+  "new": "if (call >= callBest) {",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "S4 busy broker is not passed through",
+  "file": "src/EPTradeBot.Core/Options/StrikeProfileTool.cs",
+  "old": "if (code == 429 || index == 0)",
+  "new": "if (index == 0)",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "D1 intraday horizon uses the longer time",
+  "file": "src/EPTradeBot.Core/Options/GammaDensityTool.cs",
+  "old": "Math.Min(years, IntradayYears)",
+  "new": "Math.Max(years, IntradayYears)",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "D2 fallback volatility is twenty percent",
+  "file": "src/EPTradeBot.Core/Options/GammaDensityTool.cs",
+  "old": "private const double FallbackIv = 0.15;",
+  "new": "private const double FallbackIv = 0.2;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "D3 median takes the lower middle",
+  "file": "src/EPTradeBot.Core/Options/GammaDensityTool.cs",
+  "old": "atmIv = sorted[sorted.Count / 2];",
+  "new": "atmIv = sorted[(sorted.Count - 1) / 2];",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P1 batches of four",
+  "file": "src/EPTradeBot.Core/Options/OiProfileTool.cs",
+  "old": "private const int BatchSize = 5;",
+  "new": "private const int BatchSize = 4;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P2 backoff does not double",
+  "file": "src/EPTradeBot.Core/Options/OiProfileTool.cs",
+  "old": "sleep(RetryBaseDelay * Math.Pow(2, attempt));\n                    continue;\n                }\n\n                return (symbol, 0.0);\n            }\n            catch",
+  "new": "sleep(RetryBaseDelay);\n                    continue;\n                }\n\n                return (symbol, 0.0);\n            }\n            catch",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P3 previous OI is the latest row",
+  "file": "src/EPTradeBot.Core/Options/OiProfileTool.cs",
+  "old": "data.Count >= 2 ? OptionChainReading.Num(data[^2], \"oi\") : 0.0",
+  "new": "data.Count >= 2 ? OptionChainReading.Num(data[^1], \"oi\") : 0.0",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P4 trading window buffer is two days a day",
+  "file": "src/EPTradeBot.Core/Options/TradingWindow.cs",
+  "old": "var buffer = Math.Max(2, days * 3 + 2);",
+  "new": "var buffer = Math.Max(2, days * 2 + 2);",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P5 a week ends on Thursday",
+  "file": "src/EPTradeBot.Core/Options/StrategyChartSupport.cs",
+  "old": "DateOnly.FromDateTime(DateTimeOffset.FromUnixTimeSeconds((long)OptionChainReading.Num(o, \"time\")).UtcDateTime.Add(IstOffset))",
+  "new": "DateOnly.FromDateTime(DateTimeOffset.FromUnixTimeSeconds((long)OptionChainReading.Num(o, \"time\")).UtcDateTime)",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C1 sell is a debit",
+  "file": "src/EPTradeBot.Core/Options/StrategyChartSupport.cs",
+  "old": "side == \"SELL\" ? 1 : -1",
+  "new": "side == \"SELL\" ? -1 : 1",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C2 one extra trading day is kept",
+  "file": "src/EPTradeBot.Core/Options/StrategyChartSupport.cs",
+  "old": ".Take(n).ToHashSet()",
+  "new": ".Take(n + 1).ToHashSet()",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C3 an explicit window may be 500 days",
+  "file": "src/EPTradeBot.Core/Options/StrategyChartSupport.cs",
+  "old": "public const int MaxWindowDays = 400;",
+  "new": "public const int MaxWindowDays = 500;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C4 synthetic future adds the put",
+  "file": "src/EPTradeBot.Core/Options/StraddleChartTool.cs",
+  "old": "[\"synthetic_future\"] = PyNumber.Round(strike + cePrice - pePrice, 2)",
+  "new": "[\"synthetic_future\"] = PyNumber.Round(strike + cePrice + pePrice, 2)",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C5 days to expiry rounds up",
+  "file": "src/EPTradeBot.Core/Options/StraddleChartTool.cs",
+  "old": "Math.Max(0, (int)Math.Floor((close - nowIst).TotalDays))",
+  "new": "Math.Max(0, (int)Math.Ceiling((close - nowIst).TotalDays))",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C6 adjustment on equal drift",
+  "file": "src/EPTradeBot.Core/Options/CustomStraddleTool.cs",
+  "old": "Math.Abs(atm - entryStrike.Value) >= adjustmentPoints",
+  "new": "Math.Abs(atm - entryStrike.Value) > adjustmentPoints",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C7 unrealized profit is reversed",
+  "file": "src/EPTradeBot.Core/Options/CustomStraddleTool.cs",
+  "old": "unrealized = (entryCe - cc + (entryPe - cp)) * quantity;",
+  "new": "unrealized = (cc - entryCe + (cp - entryPe)) * quantity;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C8 quantity ignores lots",
+  "file": "src/EPTradeBot.Core/Options/CustomStraddleTool.cs",
+  "old": "var quantity = lotSize * lots;",
+  "new": "var quantity = lotSize;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C9 iv chart skips greeks at zero volatility",
+  "file": "src/EPTradeBot.Core/Options/IvChartTool.cs",
+  "old": "if (s > 0)\n                    {",
+  "new": "if (s > 1)\n                    {",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "C10 iv chart minimum time",
+  "file": "src/EPTradeBot.Core/Options/IvChartTool.cs",
+  "old": "if (years < 0.0001) { years = 0.0001;",
+  "new": "if (years < 0.001) { years = 0.001;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A1 only two legs per underlying",
+  "file": "src/EPTradeBot.Core/Options/ArbitrageTool.cs",
+  "old": "public const int MaxLegs = 3;",
+  "new": "public const int MaxLegs = 2;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A2 one contract makes a pair",
+  "file": "src/EPTradeBot.Core/Options/ArbitrageTool.cs",
+  "old": "if (contracts.Count < 2) continue;",
+  "new": "if (contracts.Count < 1) continue;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "A3 unparseable expiries sort first",
+  "file": "src/EPTradeBot.Core/Options/ArbitrageTool.cs",
+  "old": "return DateTime.MaxValue;\n    }\n\n    private static JsonObject Leg",
+  "new": "return DateTime.MinValue;\n    }\n\n    private static JsonObject Leg",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N1 unrealized is reversed",
+  "file": "src/EPTradeBot.Core/Options/StrategyPnlTool.cs",
+  "old": "else unrealized = qty * (ltp.Value - avg);",
+  "new": "else unrealized = qty * (avg - ltp.Value);",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N2 flat legs sort first",
+  "file": "src/EPTradeBot.Core/Options/StrategyPnlTool.cs",
+  "old": ".OrderBy(x => Math.Abs(OptionChainReading.Num(x.Leg, \"quantity\")) <= 1e-9)",
+  "new": ".OrderByDescending(x => Math.Abs(OptionChainReading.Num(x.Leg, \"quantity\")) <= 1e-9)",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "N3 a missing last price counts as no price",
+  "file": "src/EPTradeBot.Core/Options/StrategyPnlTool.cs",
+  "old": "ltpByKey[(Text(p, \"symbol\"), Text(p, \"exchange\"), Text(p, \"product\"))] = F(raw);",
+  "new": "if (raw is not null) ltpByKey[(Text(p, \"symbol\"), Text(p, \"exchange\"), Text(p, \"product\"))] = F(raw);",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "R1 a boundary value counts as weak",
+  "file": "src/EPTradeBot.Core/Portfolio/SectorRotationTool.cs",
+  "old": "ratio >= 100 ? (momentum >= 100 ?",
+  "new": "ratio > 100 ? (momentum >= 100 ?",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "R2 weights are flat",
+  "file": "src/EPTradeBot.Core/Portfolio/SectorRotationTool.cs",
+  "old": "sum += values[i - length + 1 + k] * (k + 1);",
+  "new": "sum += values[i - length + 1 + k];",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "R3 weeks end Thursday",
+  "file": "src/EPTradeBot.Core/Portfolio/SectorRotationTool.cs",
+  "old": "(4 - (int)(((int)d.DayOfWeek + 6) % 7) + 7) % 7",
+  "new": "(3 - (int)(((int)d.DayOfWeek + 6) % 7) + 7) % 7",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "R4 momentum looks back one bar less",
+  "file": "src/EPTradeBot.Core/Portfolio/SectorRotationTool.cs",
+  "old": "var m = i >= momentum ? 100 * ratio[i] / ratio[i - momentum] : double.NaN;",
+  "new": "var m = i >= momentum ? 100 * ratio[i] / ratio[i - momentum + 1] : double.NaN;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I1 step-up on a 366 day year",
+  "file": "src/EPTradeBot.Core/Portfolio/SipSchedule.cs",
+  "old": "(d.DayNumber - first.DayNumber) / 365)",
+  "new": "(d.DayNumber - first.DayNumber) / 366)",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I2 a SIP may start on the 29th",
+  "file": "src/EPTradeBot.Core/Portfolio/SipSchedule.cs",
+  "old": "public const int MaxDayOfMonth = 28;",
+  "new": "public const int MaxDayOfMonth = 29;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I3 quarterly steps four months",
+  "file": "src/EPTradeBot.Core/Portfolio/SipSchedule.cs",
+  "old": "var step = frequency == \"monthly\" ? 1 : 3;",
+  "new": "var step = frequency == \"monthly\" ? 1 : 4;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I4 xirr on a 360 day year",
+  "file": "src/EPTradeBot.Core/Portfolio/Xirr.cs",
+  "old": "private const double DaysPerYear = 365.0;",
+  "new": "private const double DaysPerYear = 360.0;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I5 charge is allowed to equal the budget",
+  "file": "src/EPTradeBot.Core/Portfolio/SipEngine.cs",
+  "old": "while (shares > 0 && shares * price + charge > budget)",
+  "new": "while (shares > 0 && shares * price + charge >= budget)",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests|FullyQualifiedName~SipEngineTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I6 unspent cash is lost",
+  "file": "src/EPTradeBot.Core/Portfolio/SipEngine.cs",
+  "old": "var budget = cash + inst.Amount;",
+  "new": "var budget = inst.Amount;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I7 an installment past the end still runs",
+  "file": "src/EPTradeBot.Core/Portfolio/SipSchedule.cs",
+  "old": "if (executed > end) break;",
+  "new": "if (executed > end && start.DayNumber < 0) break;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I8 stamp duty on the sell leg",
+  "file": "src/EPTradeBot.Core/Portfolio/CostSchedule.cs",
+  "old": "new Charge(\"stamp_duty\", \"Stamp duty\", \"buy\", Rate: 0.00015)",
+  "new": "new Charge(\"stamp_duty\", \"Stamp duty\", \"sell\", Rate: 0.00015)",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I9 GST on every charge",
+  "file": "src/EPTradeBot.Core/Portfolio/CostSchedule.cs",
+  "old": "new Charge(\"stt\", \"STT\", \"turnover\", Rate: 0.001)",
+  "new": "new Charge(\"stt\", \"STT\", \"turnover\", Rate: 0.001, Taxed: true)",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I10 BSE pays the NSE exchange fee",
+  "file": "src/EPTradeBot.Core/Portfolio/CostSchedule.cs",
+  "old": "? 0.0000375 : 0.0000307",
+  "new": "? 0.0000307 : 0.0000307",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I11 rolling windows step six months",
+  "file": "src/EPTradeBot.Core/Portfolio/SipAnalytics.cs",
+  "old": "int stepMonths = 3",
+  "new": "int stepMonths = 6",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I12 a heatmap cell cap of 800",
+  "file": "src/EPTradeBot.Core/Portfolio/SipAnalytics.cs",
+  "old": "public const int MaxGridCells = 900;",
+  "new": "public const int MaxGridCells = 800;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I13 drawdown trough is the last minimum",
+  "file": "src/EPTradeBot.Core/Portfolio/SipAnalytics.cs",
+  "old": "if (!double.IsNaN(dd[i]) && (trough < 0 || dd[i] < dd[trough])) trough = i;",
+  "new": "if (!double.IsNaN(dd[i]) && (trough < 0 || dd[i] <= dd[trough])) trough = i;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I14 underwater streak counts equal values",
+  "file": "src/EPTradeBot.Core/Portfolio/SipAnalytics.cs",
+  "old": "if (r.Value[i] < r.Invested[i])\n            {",
+  "new": "if (r.Value[i] <= r.Invested[i])\n            {",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I15 crisis runway of 100 days",
+  "file": "src/EPTradeBot.Core/Portfolio/SipCrisis.cs",
+  "old": "public const int MinSipDays = 120;",
+  "new": "public const int MinSipDays = 100;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I16 crisis median takes the upper middle",
+  "file": "src/EPTradeBot.Core/Portfolio/SipCrisis.cs",
+  "old": "advantages.Count % 2 == 1 ? advantages[mid] : (advantages[mid - 1] + advantages[mid]) / 2;",
+  "new": "advantages[mid];",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I17 a SIP window of 31 years",
+  "file": "src/EPTradeBot.Core/Portfolio/SipService.cs",
+  "old": "public const int MaxSipYears = 30;",
+  "new": "public const int MaxSipYears = 31;",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I18 frequency comparison scales weekly by 48",
+  "file": "src/EPTradeBot.Core/Portfolio/SipAnalytics.cs",
+  "old": "(\"weekly\", 52)",
+  "new": "(\"weekly\", 48)",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "I19 lumpsum buys fractional units",
+  "file": "src/EPTradeBot.Core/Portfolio/SipEngine.cs",
+  "old": "var units = (long)Math.Floor(amount / entry);",
+  "new": "var units = (long)Math.Ceiling(amount / entry);",
+  "filter": "FullyQualifiedName~ToolsParityTests|FullyQualifiedName~SipParityTests|FullyQualifiedName~Black76ParityTests|FullyQualifiedName~PyNumberTests",
+  "project": "EPTradeBot.Core.Tests"
+ }
+]

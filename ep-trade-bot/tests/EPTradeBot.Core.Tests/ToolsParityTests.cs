@@ -488,4 +488,11 @@ public sealed class ToolsParityTests
         Assert.Equal(c["defaults"]!["code"]!.GetValue<int>(), codeD);
         AssertSame(c["defaults"]!["response"], responseD);
     }
+
+    [Fact]
+    public void Quadrant_boundaries_match_OpenAlgo()
+    {
+        foreach (var row in Fixtures["sector_rotation"]!["quadrants"]!.AsArray())
+            Assert.Equal(row![2]!.GetValue<string>(), SectorRotationTool.Quadrant(row[0]!.GetValue<double>(), row[1]!.GetValue<double>()));
+    }
 }

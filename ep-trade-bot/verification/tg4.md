@@ -245,3 +245,48 @@ build: the target position of a smart order, upper-casing of the exchange, separ
 compile and was rewritten so it does).
 
 **Not done.** Tools for charts, strategy and OpenScript generation, and the Telegram and WhatsApp tools wait for their endpoints (next item). Consent for individual tools is by scope, not per call.
+
+## Tool back ends (18 of 20) with numeric parity
+
+**What was built.** The calculation behind each of OpenAlgo's `/tools` pages, as pure code in `Core/Options` and `Core/Portfolio` with the broker, the database and the clock passed in. Each was checked
+against OpenAlgo's own Python by recording its answers for a set of inputs (`tools/contract-fixtures/record_tools.py`, `record_sip.py`, `record_black76.py`) and replaying the same inputs here.
+
+| Page | .NET | Python it follows | Recorded cases |
+| --- | --- | --- | --- |
+| Option Greeks (and the price/IV core every option tool shares) | `Black76`, `OptionGreeks`, `OptionSymbols` | `opengreeks.black76`, `option_greeks_service` | 2,880 grid + 36 + 20 chart cases |
+| GEX Dashboard | `GexTool` | `gex_service` | 4 |
+| IV Smile | `IvSmileTool` | `iv_smile_service` | 8 |
+| OI Tracker and Max Pain | `OiTools` | `oi_tracker_service` | 7 x 2 |
+| OI Profile | `OiProfileTool` | `oi_profile_service` (batches, pauses and 429 back-off included) | 9 |
+| Vol Surface | `VolSurfaceTool` | `vol_surface_service` | 12 |
+| Strike Profile | `StrikeProfileTool` | `strike_profile_service` (gamma flip, walls) | 13 |
+| Gamma Density | `GammaDensityTool` | `gamma_density_service` | 13 |
+| Strategy Builder chart and OI Range | `StrategyChartTools` | `strategy_chart_service`, `multi_strike_oi_service` | 34 + 34 |
+| Straddle Chart | `StraddleChartTool` | `straddle_chart_service` | 18 |
+| Straddle PnL | `CustomStraddleTool` | `custom_straddle_service` | 20 |
+| Arbitrage | `ArbitrageTool` | `arbitrage_service` | 9 |
+| Strategy Portfolio | `StrategyPnlTool` | `strategy_pnl_service` | 18 |
+| Sector Rotation | `SectorRotationTool` | `sector_rotation_service` | 22 + options + boundaries |
+| SIP Backtester | `Sip*`, `Xirr`, `CostSchedule` | `sip_service`, `sip/*`, `portfolio.costs` | 46 |
+| Option Chain | (TG3, `/api/v1/optionchain`) | | |
+
+- **Agreement.** Prices, Greeks and the 2,880-case grid agree to a part in a billion; every rounded figure in every response is identical. Where OpenAlgo returns an unrounded float (gamma
+  density, a few SIP rates) the comparison allows 1e-8 to 1e-9, because the volatility solver and Brent's method stop a hair apart. `PyNumber.Round` reproduces Python's round(): by the exact
+  binary value, and only a true tie to the even digit (`PyNumberTests`).
+- **Messages.** Every error sentence and status code OpenAlgo gives for a bad input, a missing price or a failed fetch is recorded and compared, including the order in which checks fire.
+- **Time series.** Charts compare every candle (sampled one in fifty for the SIP curves), the calls made to the data source (which symbols, which window), the pauses between batches and the
+  retry back-off.
+
+**Known divergences, each deliberate and tested.**
+- A candle with no close: OpenAlgo writes `NaN` (which is not valid JSON); the .NET chart skips the candle, which is what the code around it plainly intends.
+- SIP with the flat basis-point cost model: OpenAlgo's `Costs` has no `charge` method and the request fails with a server error. Here it charges traded value x (bps/10,000 + slippage), as the
+  portfolio back tester does.
+- A price equal to intrinsic value to the last digit: whether the solver refuses it depends on the last bit of OpenAlgo's discounting. Not compared; OpenAlgo's Greeks service never reaches the
+  solver in that case (a time value of nothing returns the theoretical Greeks first).
+- Where the price barely moves with volatility (vega under 1e-4) many volatilities reprice to the last digit; both answers are checked by repricing the option.
+
+**How it is held.** About 340 parity cases plus hand-worked SIP cases. 70 mutants in `tools/mutation/tg4-tools.json`: 66 caught (10 only after adding a recorded scenario or a hand-worked test),
+four equivalent: a time value of exactly zero (the next clause already catches it), `>=` for `>` between a strike and itself in max pain (adds zero), rounding a lumpsum up where the loop that follows
+steps it back down, and an installment dated after the SIP's end (the sessions were already cut to the window).
+
+**Not done.** Portfolio Backtester and Portfolio Analyzer (OpenAlgo's `portfolio_service`): they rest on the `openstatz` statistics library (about 28 functions) and the `portfolio` engine, which are next.

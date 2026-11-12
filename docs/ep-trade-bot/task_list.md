@@ -84,7 +84,7 @@ Not started (30): fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, defin
 - [x] Action Center Auto / Semi-Auto, re-check at approval
 - [x] Agent on Microsoft.Extensions.AI, proposal-only order tools (`Infrastructure/Agent`; 25 tests, 22 mutants; no tool can send an order)
 - [x] MCP stdio + HTTP/OAuth
-- [ ] 20 tool back ends with numeric parity tests
+- [ ] 20 tool back ends with numeric parity tests: 18 done (`Core/Options`, `Core/Portfolio`; about 340 recorded cases, 70 mutants); Portfolio Backtester and Portfolio Analyzer remain (they need the openstatz maths)
 - [ ] Gate 4 artifact
 
 ## TG5: Angular PWA (owned by Antigravity; not worked on in this session)

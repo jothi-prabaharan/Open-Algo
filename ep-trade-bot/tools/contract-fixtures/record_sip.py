@@ -128,6 +128,12 @@ d_short, c_short = series(date(2024, 1, 1), date(2025, 12, 31), 1500.0, 3, holid
 bench_mid = series(date(2015, 1, 1), date(2026, 11, 10), 8000.0, 4)
 bench_short = series(date(2024, 1, 1), date(2025, 12, 31), 20000.0, 5)
 
+d_170, c_170 = series(date(2012, 9, 3), date(2026, 11, 10), 900.0, 7)
+d_rise = sessions(date(2022, 1, 3), date(2023, 12, 29))
+c_rise = [round(100 + i * 0.5, 2) for i in range(len(d_rise))]
+d_covid, c_covid = series(date(2018, 1, 1), date(2021, 4, 20), 700.0, 8, crash=(date(2020, 2, 20), date(2020, 3, 23)))
+d_rise = [d.isoformat() for d in d_rise]
+
 full = lambda name, **kw: run2(name, kw.pop("start_date", "2012-01-02"), kw.pop("end_date", "2026-11-10"), kw.pop("amount", 10000), **kw)
 
 full("long-default-with-benchmark", dates=d_long, closes=c_long, start_date="2007-01-02", end_date="2026-11-10", benchmark="NIFTY", benchmark_exchange="NSE_INDEX",
@@ -153,6 +159,10 @@ full("negative-slippage", dates=d_short, closes=c_short, start_date="2024-01-01"
 full("negative-charge-override", dates=d_short, closes=c_short, start_date="2024-01-01", end_date="2025-12-31", charge_overrides={"stt": {"rate": -1}})
 full("negative-step-up", dates=d_short, closes=c_short, start_date="2024-01-01", end_date="2025-12-31", step_up_percent=-5.0)
 full("non-positive-prices", dates=["2024-01-01", "2024-01-02", "2024-02-01"], closes=[100.0, 0.0, 101.0], start_date="2024-01-01", end_date="2024-03-01")
+
+full("heatmap-cell-cap-boundary", dates=d_170, closes=c_170, start_date="2012-09-03", end_date="2026-11-10", amount=12000)
+full("rising-prices-never-draw-down", dates=d_rise, closes=c_rise, start_date="2022-01-03", end_date="2023-12-29", amount=5000)
+full("crisis-with-short-runway", dates=d_covid, closes=c_covid, start_date="2018-02-01", end_date="2021-04-20", amount=10000)
 
 # Validation, in the order the service checks them
 v = dict(dates=d_short, closes=c_short)
