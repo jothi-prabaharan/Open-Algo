@@ -536,3 +536,118 @@ public sealed class FlowMarketInfoNodeTests
         Assert.Contains(run.Logs, l => l.Level == "error" && l.Message.Contains(field));
     }
 }
+
+public sealed class FlowOptionsOrderNodeTests
+{
+    private sealed class Api(params string[] expiries) : IFlowApi
+    {
+        public List<(string Api, JsonObject Body)> Calls { get; } = [];
+
+        public Task<JsonObject> CallAsync(string api, JsonObject body, CancellationToken ct)
+        {
+            Calls.Add((api, (JsonObject)body.DeepClone()));
+            return Task.FromResult(api == "expiry"
+                ? new JsonObject { ["status"] = "success", ["data"] = new JsonArray(expiries.Select(e => (JsonNode)e).ToArray()) }
+                : new JsonObject { ["status"] = "success" });
+        }
+    }
+
+    private static readonly DateTime Noon = new DateTime(2026, 11, 11, 12, 0, 0, DateTimeKind.Utc) - EPTradeBot.Core.Time.Ist.Offset;
+
+    private static async Task<(Api Api, FlowRun Run, FlowOutcome Outcome)> RunAsync(JsonObject data, LotSizeAnswer? lot = null, string[]? expiries = null)
+    {
+        var api = new Api(expiries ?? ["13-NOV-26", "20-NOV-26", "27-NOV-26", "29-DEC-26"]);
+        var host = new FlowHost(api, "t") { LotSizes = (_, _, _) => Task.FromResult(lot ?? LotSizeAnswer.Found(75)) };
+        var run = new FlowRun(() => Noon, host: host);
+        var outcome = await new FlowRunner(CoreFlowNodes.All().Concat(ApiFlowNodes.All())).RunAsync(new FlowGraph([new("s", "start", []), new("n", "optionsOrder", data)], [new("s", "n", "")]), run, default);
+        return (api, run, outcome);
+    }
+
+    [Fact]
+    public async Task Lots_become_units_the_expiry_is_looked_up_and_the_order_goes_to_the_options_endpoint()
+    {
+        var (api, _, outcome) = await RunAsync(new() { ["underlying"] = "nifty", ["quantity"] = 2, ["offset"] = "otm2", ["optionType"] = "pe", ["action"] = "sell" });
+        Assert.True(outcome.Succeeded, outcome.Message);
+        Assert.Equal("expiry", api.Calls[0].Api);
+        Assert.Equal("""{"symbol":"NIFTY","exchange":"NFO","instrumenttype":"options"}""", api.Calls[0].Body.ToJsonString());
+        var (name, body) = api.Calls[1];
+        Assert.Equal("optionsorder", name);
+        Assert.Equal("""{"underlying":"NIFTY","exchange":"NSE_INDEX","action":"SELL","quantity":150,"expiry_date":"13NOV26","offset":"OTM2","option_type":"PE","pricetype":"MARKET","product":"NRML","price":0,"trigger_price":0,"splitsize":0,"strategy":"t"}""", body.ToJsonString());
+    }
+
+    [Theory]
+    [InlineData("next_week", "20NOV26")]
+    [InlineData("current_month", "27NOV26")]
+    [InlineData("next_month", "29DEC26")]
+    public async Task A_relative_expiry_picks_the_nearest_second_nearest_or_last_of_the_month(string type, string expected)
+    {
+        var (api, _, _) = await RunAsync(new() { ["expiryType"] = type });
+        Assert.Equal(expected, api.Calls[1].Body["expiry_date"]!.GetValue<string>());
+    }
+
+    [Fact]
+    public async Task A_named_expiry_wins_and_nothing_is_looked_up()
+    {
+        var (api, _, _) = await RunAsync(new() { ["expiryType"] = "26dec26" });
+        var call = Assert.Single(api.Calls);
+        Assert.Equal(("optionsorder", "26DEC26"), (call.Api, call.Body["expiry_date"]!.GetValue<string>()));
+        (api, _, _) = await RunAsync(new() { ["expiryDate"] = "01JAN27", ["expiryType"] = "next_week" });
+        Assert.Equal("01JAN27", Assert.Single(api.Calls).Body["expiry_date"]!.GetValue<string>());
+    }
+
+    [Theory]
+    [InlineData("SENSEX", "BSE_INDEX")]
+    [InlineData("GOLDM", "MCX")]
+    [InlineData("RELIANCE", "NSE_INDEX")]
+    public async Task The_underlying_decides_where_it_is_quoted(string underlying, string quote)
+    {
+        var (api, _, _) = await RunAsync(new() { ["underlying"] = underlying, ["expiryDate"] = "26NOV26" });
+        Assert.Equal(quote, api.Calls[0].Body["exchange"]!.GetValue<string>());
+    }
+
+    [Theory]
+    [InlineData("expiryDate", "tomorrow", "DDMMMYY")]
+    [InlineData("offset", "OTM51", "offset must be ATM")]
+    [InlineData("optionType", "XX", "optionType must be one of")]
+    [InlineData("expiryType", "someday", "expiryType must be one of")]
+    [InlineData("quantity", 0, "quantity")]
+    public async Task A_bad_field_stops_the_node_before_anything_is_sent(string key, object value, string words)
+    {
+        var data = new JsonObject { [key] = value is int i ? JsonValue.Create(i) : JsonValue.Create(value.ToString()) };
+        var (api, run, outcome) = await RunAsync(data);
+        Assert.False(outcome.Succeeded);
+        Assert.Empty(api.Calls);
+        Assert.Contains(run.Logs, l => l.Level == "error" && l.Message.Contains(words));
+    }
+
+    [Theory]
+    [InlineData(LotSizeProblem.NotListed, "has no contract on NFO in the master contract")]
+    [InlineData(LotSizeProblem.Unreadable, "Refusing to size an order on a guess")]
+    public async Task An_unknown_lot_size_refuses_the_order_rather_than_guessing(LotSizeProblem problem, string words)
+    {
+        var (api, run, outcome) = await RunAsync(new(), new LotSizeAnswer(null, problem));
+        Assert.False(outcome.Succeeded);
+        Assert.Empty(api.Calls);
+        Assert.Contains(run.Logs, l => l.Message.Contains(words));
+    }
+
+    [Fact]
+    public async Task With_no_master_contract_loaded_only_an_underlying_with_a_built_in_lot_size_goes_ahead()
+    {
+        var (api, run, outcome) = await RunAsync(new() { ["expiryDate"] = "26NOV26" }, new LotSizeAnswer(null, LotSizeProblem.ExchangeEmpty));
+        Assert.True(outcome.Succeeded);
+        Assert.Equal(65, api.Calls[0].Body["quantity"]!.GetValue<long>());
+        Assert.Contains(run.Logs, l => l.Level == "warning");
+        (api, _, outcome) = await RunAsync(new() { ["underlying"] = "RELIANCE", ["expiryDate"] = "26NOV26" }, new LotSizeAnswer(null, LotSizeProblem.ExchangeEmpty));
+        Assert.False(outcome.Succeeded);
+        Assert.Empty(api.Calls);
+    }
+
+    [Fact]
+    public async Task No_matching_expiry_stops_the_node()
+    {
+        var (api, _, outcome) = await RunAsync(new() { ["expiryType"] = "next_month" }, expiries: ["13-NOV-26"]);
+        Assert.False(outcome.Succeeded);
+        Assert.Single(api.Calls);
+    }
+}

@@ -80,7 +80,8 @@ public sealed class FlowService(IDbContextFactory<EpTradeDbContext> contexts, Op
         await db.SaveChangesAsync(ct);
 
         var graph = FlowGraph.Parse(JsonNode.Parse(flow.NodesJson) as JsonArray, JsonNode.Parse(flow.EdgesJson) as JsonArray);
-        var host = new FlowHost(new FlowApi(api, account, ModeName(flow.ExecutionMode)), flow.Name);
+        var broker = account.Broker;
+        var host = new FlowHost(new FlowApi(api, account, ModeName(flow.ExecutionMode)), flow.Name) { LotSizes = (underlying, exchange, token) => LotSizeAsync(broker, underlying, exchange, token) };
         var run = new FlowRun(() => clock.GetUtcNow().UtcDateTime, host: host);
         if (triggerData is not null) run.Context.Set(trigger == "price_alert" ? "alert" : "webhook", triggerData.DeepClone());
         run.Log($"Starting workflow: {flow.Name}");
@@ -110,4 +111,32 @@ public sealed class FlowService(IDbContextFactory<EpTradeDbContext> contexts, Op
     }
 
     private static string Trim(string s, int max) => s.Length <= max ? s : s[..max];
+
+    /// <summary>An underlying's lot size from the symbol master of the account's broker: by the name column where the broker fills it, otherwise by the symbol's own underlying.</summary>
+    private async Task<LotSizeAnswer> LotSizeAsync(string broker, string underlying, string exchange, CancellationToken ct)
+    {
+        try
+        {
+            await using var db = await contexts.CreateDbContextAsync(ct);
+            var contracts = db.Set<EPTradeBot.Core.Entities.Legacy.Core.SymToken>().AsNoTracking().Where(t => t.Broker == broker && t.Exchange == exchange);
+            var named = await contracts.Where(t => t.Name == underlying && t.Lotsize > 0).Select(t => t.Lotsize).FirstOrDefaultAsync(ct);
+            if (named is > 0) return LotSizeAnswer.Found(named.Value);
+            var candidates = await contracts.Where(t => t.Symbol.StartsWith(underlying) && t.Lotsize > 0).Select(t => new { t.Symbol, t.Lotsize }).Take(2000).ToListAsync(ct);
+            foreach (var c in candidates)
+                if (UnderlyingOf(c.Symbol) == underlying) return LotSizeAnswer.Found(c.Lotsize!.Value);
+            return await contracts.AnyAsync(ct) ? new LotSizeAnswer(null, LotSizeProblem.NotListed) : new LotSizeAnswer(null, LotSizeProblem.ExchangeEmpty);
+        }
+        catch (Exception e) when (e is not OperationCanceledException)
+        {
+            logger.LogError(e, "Lot size lookup failed for {Underlying} on {Exchange}", underlying, exchange);
+            return new LotSizeAnswer(null, LotSizeProblem.Unreadable);
+        }
+    }
+
+    /// <summary>NIFTY26NOV2624000CE and NIFTYNXT5026NOVFUT both belong to their own roots: everything before the expiry.</summary>
+    internal static string UnderlyingOf(string symbol)
+    {
+        var m = System.Text.RegularExpressions.Regex.Match(symbol, @"^(.*?)\d{2}[A-Z]{3}\d{2}");
+        return m.Success ? m.Groups[1].Value : symbol;
+    }
 }

@@ -13,7 +13,33 @@ public interface IFlowApi
 }
 
 /// <summary>What a run is working for: how to reach the API, and the label its orders carry.</summary>
-public sealed record FlowHost(IFlowApi Api, string StrategyTag);
+/// <summary>What a lot size lookup found: the lot, or why there is none.</summary>
+public sealed record LotSizeAnswer(int? Lot, LotSizeProblem Problem = LotSizeProblem.None)
+{
+    public static LotSizeAnswer Found(int lot) => new(lot);
+}
+
+public enum LotSizeProblem
+{
+    None,
+
+    /// <summary>The exchange has contracts loaded, but none for this underlying.</summary>
+    NotListed,
+
+    /// <summary>No contracts are loaded for the exchange at all.</summary>
+    ExchangeEmpty,
+
+    /// <summary>The master contract could not be read.</summary>
+    Unreadable,
+}
+
+public delegate Task<LotSizeAnswer> LotSizeLookup(string underlying, string foExchange, CancellationToken ct);
+
+public sealed record FlowHost(IFlowApi Api, string StrategyTag)
+{
+    /// <summary>Finds an underlying's lot size in the master contract. Absent in a host that has no master contract to read.</summary>
+    public LotSizeLookup? LotSizes { get; init; }
+}
 
 public static class FlowApiResults
 {

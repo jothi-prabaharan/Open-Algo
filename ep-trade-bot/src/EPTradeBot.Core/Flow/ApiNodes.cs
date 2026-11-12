@@ -481,7 +481,7 @@ public sealed class CheckNodes : IFlowNode
 /// <summary>The node types that reach the platform's API.</summary>
 public static class ApiFlowNodes
 {
-    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode()];
+    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode(), new OptionsOrderNode()];
 }
 
 /// <summary>The nodes that look up instruments, expiries, option chains and the exchange calendar through the platform and keep the answer in a variable.</summary>
@@ -627,5 +627,178 @@ public sealed class SplitOrderNode : IFlowNode
         run.Log($"Split order result: {result.ToJsonString()}", ApiNodeSupport.Level(result));
         ApiNodeSupport.Store(node, run, result);
         return FlowApiResults.ToResult(result);
+    }
+}
+
+/// <summary>Where an options underlying is quoted and where its options trade, and how an expiry is chosen. Port of the helpers OpenAlgo's two options nodes share.</summary>
+public static class OptionVocabulary
+{
+    private static readonly string[] McxUnderlyings = ["GOLD", "GOLDM", "SILVER", "SILVERM", "CRUDEOIL", "CRUDEOILM", "NATURALGAS", "NATGASMINI", "COPPER", "ZINC", "MCXBULLDEX"];
+
+    public static readonly IReadOnlyDictionary<string, (string Quote, string Option)> ByUnderlying = new Dictionary<string, (string, string)>
+    {
+        ["SENSEX"] = ("BSE_INDEX", "BFO"), ["BANKEX"] = ("BSE_INDEX", "BFO"), ["SENSEX50"] = ("BSE_INDEX", "BFO"),
+    }.Concat(McxUnderlyings.Select(u => new KeyValuePair<string, (string, string)>(u, ("MCX", "MCX")))).ToDictionary(kv => kv.Key, kv => kv.Value);
+
+    public static readonly IReadOnlyDictionary<string, (string Quote, string Option)> ByDeclared = new Dictionary<string, (string, string)>
+    {
+        ["BFO"] = ("BSE_INDEX", "BFO"), ["BSE"] = ("BSE_INDEX", "BFO"), ["BSE_INDEX"] = ("BSE_INDEX", "BFO"), ["NFO"] = ("NSE_INDEX", "NFO"), ["NSE"] = ("NSE_INDEX", "NFO"), ["NSE_INDEX"] = ("NSE_INDEX", "NFO"),
+        ["MCX"] = ("MCX", "MCX"), ["CDS"] = ("CDS", "CDS"), ["BCD"] = ("BCD", "BCD"), ["NCDEX"] = ("NCDEX", "NCDEX"), ["NCO"] = ("NCO", "NCO"),
+    };
+
+    public static readonly IReadOnlyDictionary<string, int> FallbackLotSizes = new Dictionary<string, int>
+    {
+        ["NIFTY"] = 65, ["BANKNIFTY"] = 30, ["FINNIFTY"] = 60, ["MIDCPNIFTY"] = 120, ["NIFTYNXT50"] = 25, ["SENSEX"] = 20, ["BANKEX"] = 30, ["SENSEX50"] = 25,
+    };
+
+    public static readonly string[] ExpiryTypes = ["current_month", "current_week", "next_month", "next_week"];
+
+    /// <summary>A named underlying decides on its own; the node's declared exchange only matters for one the table does not name.</summary>
+    public static (string Quote, string Option) Exchanges(string underlying, string declared) =>
+        ByUnderlying.TryGetValue(underlying.Trim().ToUpperInvariant(), out var named) ? named
+        : ByDeclared.TryGetValue(declared.Trim().ToUpperInvariant(), out var d) ? d : ("NSE_INDEX", "NFO");
+
+    private static DateOnly? ParseExpiry(string value)
+    {
+        var text = value.Replace("-", "").ToUpperInvariant();
+        return DateTime.TryParseExact(text, "ddMMMyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var d) ? DateOnly.FromDateTime(d) : null;
+    }
+
+    /// <summary>The expiry a relative type resolves to, as DDMMMYY: the nearest or second nearest for the weekly types, the last in the month for the monthly ones; null when it cannot be satisfied.</summary>
+    public static string? SelectExpiry(IEnumerable<string> expiries, string type, DateOnly today)
+    {
+        var parsed = expiries.Select(e => (Value: e, When: ParseExpiry(e))).Where(p => p.When is not null).OrderBy(p => p.When).ToList();
+        if (parsed.Count == 0) return null;
+        static string Format(string v) => v.Replace("-", "").ToUpperInvariant();
+        switch (type)
+        {
+            case "current_week": return Format(parsed[0].Value);
+            case "next_week": return parsed.Count > 1 ? Format(parsed[1].Value) : null;
+            case "current_month":
+            case "next_month":
+                var month = today.Month;
+                var year = today.Year;
+                if (type == "next_month") (month, year) = month == 12 ? (1, year + 1) : (month + 1, year);
+                var matches = parsed.Where(p => p.When!.Value.Month == month && p.When.Value.Year == year).ToList();
+                return matches.Count > 0 ? Format(matches[^1].Value) : null;
+            default: return null;
+        }
+    }
+
+    /// <summary>The lot size for an underlying, or the sentence saying why it cannot be known; it never guesses for an exchange that has contracts.</summary>
+    public static async Task<(int? Lot, string? Error)> LotSizeAsync(FlowHost host, FlowRun run, string underlying, string foExchange, CancellationToken ct)
+    {
+        if (host.LotSizes is null) return (null, $"Could not read the lot size for {underlying} on {foExchange}. Refusing to size an order on a guess.");
+        var answer = await host.LotSizes(underlying, foExchange, ct);
+        switch (answer.Problem)
+        {
+            case LotSizeProblem.None when answer.Lot is { } lot: return (lot, null);
+            case LotSizeProblem.NotListed:
+                return (null, $"{underlying} has no contract on {foExchange} in the master contract. Check the symbol, or re-download the master contract.");
+            case LotSizeProblem.ExchangeEmpty:
+                if (!FallbackLotSizes.TryGetValue(underlying, out var fallback))
+                    return (null, $"The master contract has no {foExchange} contracts loaded and no built-in lot size for {underlying}. Download the master contract first.");
+                run.Log($"Master contract has no {foExchange} contracts loaded; using the built-in lot size {fallback} for {underlying}", "warning");
+                return (fallback, null);
+            default:
+                return (null, $"Could not read the lot size for {underlying} on {foExchange}. Refusing to size an order on a guess.");
+        }
+    }
+}
+
+/// <summary>Options order: an option picked by offset from the money, sized in lots, on a weekly, monthly or named expiry.</summary>
+public sealed class OptionsOrderNode : IFlowNode
+{
+    public IReadOnlyList<string> Types => ["optionsOrder"];
+
+    public async Task<FlowNodeResult?> ExecuteAsync(FlowNode node, FlowRun run, CancellationToken ct)
+    {
+        var host = ApiNodeSupport.HostOf(run);
+        var ctx = run.Context;
+        string underlying, expiryType, expiryInput, offset, optionType, action, priceType, product;
+        long lots, splitSize;
+        double price, trigger;
+        try
+        {
+            var v = new RuntimeOrderResolver(ctx, node.Data);
+            underlying = v.Text("underlying", "NIFTY").ToUpperInvariant();
+            expiryType = v.Text("expiryType", "current_week").ToLowerInvariant();
+            expiryInput = v.OptionalText("expiryDate").ToUpperInvariant();
+            if (expiryInput.Length == 0 && System.Text.RegularExpressions.Regex.IsMatch(expiryType.ToUpperInvariant(), Contracts.V1.ApiPatterns.ExpiryDdMmmYy)) expiryInput = expiryType.ToUpperInvariant();
+            if (expiryInput.Length > 0 && !System.Text.RegularExpressions.Regex.IsMatch(expiryInput, Contracts.V1.ApiPatterns.ExpiryDdMmmYy))
+                throw new ArgumentException($"expiryDate must be in DDMMMYY format such as 28OCT25, got '{expiryInput}'");
+            if (expiryInput.Length == 0 && !OptionVocabulary.ExpiryTypes.Contains(expiryType))
+                throw new ArgumentException($"expiryType must be one of {string.Join(", ", OptionVocabulary.ExpiryTypes)}, got '{expiryType}'");
+            lots = v.Integer("quantity", 1, 1);
+            offset = v.Text("offset", "ATM").ToUpperInvariant();
+            if (!System.Text.RegularExpressions.Regex.IsMatch(offset, Contracts.V1.ApiPatterns.OptionOffset)) throw new ArgumentException($"offset must be ATM, ITM1-ITM50, or OTM1-OTM50, got '{offset}'");
+            optionType = v.Enum("optionType", ["CE", "PE"], "CE");
+            action = v.Enum("action", OrderVocabulary.Actions, "BUY");
+            priceType = v.Enum("priceType", OrderVocabulary.PriceTypes, "MARKET");
+            product = v.Enum("product", OrderVocabulary.Products, "NRML");
+            splitSize = v.Integer("splitSize", 0, 0);
+            price = v.Number("price", 0.0);
+            trigger = v.Number("triggerPrice", 0.0);
+            if (node.Data.ContainsKey("exchange")) v.Enum("exchange", OrderVocabulary.Exchanges);
+            if (OrderVocabulary.InvalidPriceReason(priceType, price, trigger) is { } invalid) throw new ArgumentException(invalid);
+        }
+        catch (ArgumentException ex)
+        {
+            return ApiNodeSupport.RuntimeOrderError(run, "Options order", ex);
+        }
+
+        run.Log($"Placing options order: {underlying} {optionType} {offset}");
+        var (underlyingExchange, foExchange) = OptionVocabulary.Exchanges(underlying, node.Data.Str(ctx, "exchange", ""));
+        var (lot, lotError) = await OptionVocabulary.LotSizeAsync(host, run, underlying, foExchange, ct);
+        if (lot is null)
+        {
+            run.Log($"Options order failed: {lotError}", "error");
+            return FlowNodeResult.Fail(lotError!);
+        }
+
+        var total = lots * lot.Value;
+        run.Log($"Lot size for {underlying}: {lot} -> {lots} lot(s) = {total}");
+        var expiry = expiryInput;
+        if (expiry.Length == 0)
+        {
+            var (expiryDate, expiryError) = await ResolveExpiryAsync(host, run, underlying, foExchange, expiryType, ct);
+            if (expiryDate is null)
+            {
+                var message = $"Could not resolve expiry for {expiryType}";
+                run.Log($"Options order failed: {message}", "error");
+                return FlowNodeResult.Fail(expiryError ?? message);
+            }
+
+            expiry = expiryDate;
+        }
+
+        run.Log($"Resolved expiry: {(expiryInput.Length > 0 ? expiryInput : expiryType)} -> {expiry}");
+        var result = await host.Api.CallAsync("optionsorder", new JsonObject
+        {
+            ["underlying"] = underlying, ["exchange"] = underlyingExchange, ["action"] = action, ["quantity"] = total, ["expiry_date"] = expiry, ["offset"] = offset, ["option_type"] = optionType,
+            ["pricetype"] = priceType, ["product"] = product, ["price"] = price, ["trigger_price"] = trigger, ["splitsize"] = splitSize, ["strategy"] = ApiNodeSupport.Tag(node, run, host),
+        }, ct);
+        run.Log($"Options order result: {result.ToJsonString()}", ApiNodeSupport.Level(result));
+        ApiNodeSupport.Store(node, run, result);
+        return FlowApiResults.ToResult(result);
+    }
+
+    internal static async Task<(string? Date, string? Error)> ResolveExpiryAsync(FlowHost host, FlowRun run, string symbol, string exchange, string expiryType, CancellationToken ct)
+    {
+        try
+        {
+            var response = await host.Api.CallAsync("expiry", new JsonObject { ["symbol"] = symbol, ["exchange"] = exchange, ["instrumenttype"] = "options" }, ct);
+            if (!FlowApiResults.IsSuccess(response)) { run.Log($"Failed to fetch expiry: {response.ToJsonString()}", "error"); return (null, null); }
+            var list = (response["data"] as JsonArray)?.Select(x => x is JsonValue v && v.TryGetValue<string>(out var s) ? s : "").ToList() ?? [];
+            if (list.Count == 0) { run.Log($"No expiry dates found for {symbol} on {exchange}", "error"); return (null, null); }
+            var selected = OptionVocabulary.SelectExpiry(list, expiryType, DateOnly.FromDateTime(run.UtcNow() + EPTradeBot.Core.Time.Ist.Offset));
+            if (selected is null) run.Log($"No expiry matches {expiryType} for {symbol} on {exchange} among {list.Count} listed contract(s)", "error");
+            return (selected, null);
+        }
+        catch (Exception e) when (e is not OperationCanceledException)
+        {
+            run.Log($"Error resolving expiry: {e.Message}", "error");
+            return (null, null);
+        }
     }
 }

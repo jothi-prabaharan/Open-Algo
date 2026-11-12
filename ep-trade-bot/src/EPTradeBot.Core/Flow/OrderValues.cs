@@ -51,6 +51,15 @@ public sealed class RuntimeOrderResolver(FlowContext context, JsonObject data)
         return fallback;
     }
 
+    /// <summary>A text field that may be absent or blank, but must be text when given.</summary>
+    public string OptionalText(string key)
+    {
+        var v = Find(key, [], JsonValue.Create(""), false);
+        if (v is null) return "";
+        if (v is not JsonValue jv || !jv.TryGetValue<string>(out var text)) throw new ArgumentException($"{key} must resolve to text, got {FlowContext.PyStr(v)}");
+        return text.Trim();
+    }
+
     public string Text(string key, string? fallback = null, params string[] aliases)
     {
         var v = Find(key, aliases, fallback is null ? null : JsonValue.Create(fallback), fallback is null);
