@@ -1,0 +1,114 @@
+[
+ {
+  "name": "M1 token returned unmasked",
+  "file": "src/EPTradeBot.Infrastructure/Messaging/TelegramService.cs",
+  "old": "var masked = token is null ? null : token.Length > 10 ? token[..10] + \"...\" : token;",
+  "new": "var masked = token;",
+  "filter": "FullyQualifiedName~MessagingApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M2 webhook secret not compared",
+  "file": "src/EPTradeBot.Api/Endpoints/MessagingEndpoints.cs",
+  "old": "if (!string.Equals(received, expected, StringComparison.Ordinal))",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~MessagingApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M3 notify ignores a stopped bot",
+  "file": "src/EPTradeBot.Api/Endpoints/MessagingEndpoints.cs",
+  "old": "if (!await telegram.IsActiveAsync(c.RequestAborted))",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~MessagingApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M4 broadcast ignores the switch",
+  "file": "src/EPTradeBot.Api/Endpoints/MessagingEndpoints.cs",
+  "old": "if (!await telegram.BroadcastEnabledAsync(c.RequestAborted))",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~MessagingApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M5 broadcast reaches users who opted out",
+  "file": "src/EPTradeBot.Infrastructure/Messaging/TelegramService.cs",
+  "old": "u.IsActive == true && u.NotificationsEnabled == true).Select(u => u.TelegramId)",
+  "new": "u.IsActive == true).Select(u => u.TelegramId)",
+  "filter": "FullyQualifiedName~MessagingApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M6 stop twice succeeds",
+  "file": "src/EPTradeBot.Infrastructure/Messaging/TelegramService.cs",
+  "old": "if (!await IsActiveAsync(ct)) return (false, \"Bot is not running\");",
+  "new": "if (Environment.TickCount64 < 0) return (false, \"x\");",
+  "filter": "FullyQualifiedName~MessagingApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M7 rate limit upper bound",
+  "file": "src/EPTradeBot.Api/Endpoints/MessagingEndpoints.cs",
+  "old": "if (n is < 1 or > 120)",
+  "new": "if (n is < 1 or > 1200)",
+  "filter": "FullyQualifiedName~MessagingApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M8 whatsapp sends without a paired device",
+  "file": "src/EPTradeBot.Api/Endpoints/MessagingEndpoints.cs",
+  "old": "if (!transport.IsReady)",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~MessagingApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M9 whatsapp more than five phones",
+  "file": "src/EPTradeBot.Api/Endpoints/MessagingEndpoints.cs",
+  "old": "list.Take(5)",
+  "new": "list.Take(6)",
+  "filter": "FullyQualifiedName~MessagingApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M10 phone length floor",
+  "file": "src/EPTradeBot.Infrastructure/Messaging/WhatsAppService.cs",
+  "old": "digits.Length is >= 7 and <= 15",
+  "new": "digits.Length is >= 2 and <= 15",
+  "filter": "FullyQualifiedName~MessagingApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M11 undelivered send reported as success",
+  "file": "src/EPTradeBot.Api/Endpoints/MessagingEndpoints.cs",
+  "old": "if (report.Sent.Count == 0 && report.Failed.Count > 0)",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~MessagingApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M12 owner not recognised",
+  "file": "src/EPTradeBot.Infrastructure/Messaging/WhatsAppService.cs",
+  "old": "string.Equals(owner, username.Trim(), StringComparison.OrdinalIgnoreCase)",
+  "new": "Environment.TickCount64 < 0 && string.Equals(owner, username.Trim(), StringComparison.OrdinalIgnoreCase)",
+  "filter": "FullyQualifiedName~MessagingApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M13 attachment outside the allowed folder accepted",
+  "file": "src/EPTradeBot.Infrastructure/Messaging/WhatsAppService.cs",
+  "old": "if (!roots.Any(",
+  "new": "if (Environment.TickCount64 < 0 && !roots.Any(",
+  "filter": "FullyQualifiedName~MessagingApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M14 stats window ignored",
+  "file": "src/EPTradeBot.Infrastructure/Messaging/TelegramService.cs",
+  "old": "l.ExecutedAt >= since",
+  "new": "l.ExecutedAt >= DateTime.MinValue",
+  "filter": "FullyQualifiedName~MessagingApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

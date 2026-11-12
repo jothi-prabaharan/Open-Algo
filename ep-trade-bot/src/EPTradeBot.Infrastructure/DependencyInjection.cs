@@ -66,6 +66,9 @@ public static class DependencyInjection
         services.AddSingleton<ILiveOrderRouter, BrokerLiveOrderRouter>();
         services.AddSingleton<KeyedAsyncLock<string>>();
         services.AddSingleton<OpenAlgoApiService>();
+        services.AddSingleton<EPTradeBot.Infrastructure.Messaging.TelegramService>();
+        services.TryAddSingleton<EPTradeBot.Infrastructure.Messaging.IWhatsAppTransport, EPTradeBot.Infrastructure.Messaging.NoWhatsAppDevice>();
+        services.AddSingleton<EPTradeBot.Infrastructure.Messaging.WhatsAppService>();
 
         services.AddSingleton<OrderEvents>();
         services.AddSingleton<MarketDataPublisher>();
