@@ -481,7 +481,7 @@ public sealed class CheckNodes : IFlowNode
 /// <summary>The node types that reach the platform's API.</summary>
 public static class ApiFlowNodes
 {
-    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes()];
+    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode()];
 }
 
 /// <summary>The nodes that look up instruments, expiries, option chains and the exchange calendar through the platform and keep the answer in a variable.</summary>
@@ -595,6 +595,36 @@ public sealed class MarketInfoNodes : IFlowNode
 
         var result = await host.Api.CallAsync(api, body, ct);
         run.Log($"{node.Type} result: {result.ToJsonString()}", ApiNodeSupport.Level(result));
+        ApiNodeSupport.Store(node, run, result);
+        return FlowApiResults.ToResult(result);
+    }
+}
+
+/// <summary>Split order: one large order sent as a run of smaller ones of at most <c>splitSize</c> each.</summary>
+public sealed class SplitOrderNode : IFlowNode
+{
+    public IReadOnlyList<string> Types => ["splitOrder"];
+
+    public async Task<FlowNodeResult?> ExecuteAsync(FlowNode node, FlowRun run, CancellationToken ct)
+    {
+        var host = ApiNodeSupport.HostOf(run);
+        JsonObject body;
+        try
+        {
+            var order = PlaceOrderNodes.Resolve(node, run, allowZeroQuantity: false);
+            var splitSize = new RuntimeOrderResolver(run.Context, node.Data).Integer("splitSize", 10, 1);
+            body = ApiNodeSupport.Standard(order);
+            body["splitsize"] = splitSize;
+            run.Log($"Placing split order: {order.Symbol} qty={order.Quantity} split={splitSize}");
+        }
+        catch (ArgumentException ex)
+        {
+            return ApiNodeSupport.RuntimeOrderError(run, "Split order", ex);
+        }
+
+        body["strategy"] = ApiNodeSupport.Tag(node, run, host);
+        var result = await host.Api.CallAsync("splitorder", body, ct);
+        run.Log($"Split order result: {result.ToJsonString()}", ApiNodeSupport.Level(result));
         ApiNodeSupport.Store(node, run, result);
         return FlowApiResults.ToResult(result);
     }

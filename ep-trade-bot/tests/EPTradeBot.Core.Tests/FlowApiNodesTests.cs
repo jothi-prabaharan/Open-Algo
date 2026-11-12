@@ -513,4 +513,26 @@ public sealed class FlowMarketInfoNodeTests
         (api, _, _) = await RunAsync("timings", new() { ["date"] = "2026-12-25" });
         Assert.Equal("2026-12-25", api.Calls[0].Body["date"]!.GetValue<string>());
     }
+
+    [Fact]
+    public async Task A_split_order_sends_the_order_with_its_split_size_under_the_flows_name()
+    {
+        var (api, _, outcome) = await RunAsync("splitOrder", new() { ["symbol"] = "sbin", ["quantity"] = "{{q}}", ["action"] = "SELL", ["splitSize"] = 25 }, new() { ["q"] = 100 });
+        Assert.True(outcome.Succeeded, outcome.Message);
+        var (name, body) = Assert.Single(api.Calls);
+        Assert.Equal("splitorder", name);
+        Assert.Equal(("SBIN", "NSE", "SELL", 100L, 25L, "MARKET", "MIS", "t"), (body["symbol"]!.GetValue<string>(), body["exchange"]!.GetValue<string>(), body["action"]!.GetValue<string>(),
+            body["quantity"]!.GetValue<long>(), body["splitsize"]!.GetValue<long>(), body["pricetype"]!.GetValue<string>(), body["product"]!.GetValue<string>(), body["strategy"]!.GetValue<string>()));
+    }
+
+    [Theory]
+    [InlineData(0, "splitSize")]
+    [InlineData(-3, "splitSize")]
+    public async Task A_split_size_below_one_stops_the_node_before_anything_is_sent(int size, string field)
+    {
+        var (api, run, outcome) = await RunAsync("splitOrder", new() { ["symbol"] = "SBIN", ["quantity"] = 10, ["splitSize"] = size });
+        Assert.False(outcome.Succeeded);
+        Assert.Empty(api.Calls);
+        Assert.Contains(run.Logs, l => l.Level == "error" && l.Message.Contains(field));
+    }
 }
