@@ -11,14 +11,12 @@ namespace EPTradeBot.Infrastructure.OpenAlgoApi;
 
 /// <summary>
 /// /strategy/*: the multi-leg strategies, their runs, orders and risk events, as OpenAlgo's strategy API answers them. The platform has one operator, so every strategy is theirs and an unknown id is
-/// "not found". Listing and history read the stored strategies, runs, orders and events. Starting, stopping and closing legs need the module's run engine (leg resolution, entries, the risk
-/// monitor on live ticks), which EP Trade bot does not run yet; those routes check what they can and say so.
+/// "not found". Listing and history read the stored strategies, runs, orders and events. Starting, stopping and closing legs are the run engine, in OpenAlgoApiService.StrategyRun.cs.
 /// </summary>
 public sealed partial class OpenAlgoApiService
 {
     public const string StrategyNotFound = "Strategy not found";
     public const string StrategyNotRunning = "This strategy is not running";
-    public const string RunEngineMissing = "Starting, stopping and closing legs of a strategy run is not available in EP Trade bot yet. The strategy module's run engine has not been brought across, so a run could be opened here but nothing would watch its stops.";
 
     private static JsonNode? Num(decimal? value) => value is null ? null : (double)value.Value;
 
@@ -145,35 +143,5 @@ public sealed partial class OpenAlgoApiService
         if (!string.IsNullOrEmpty(r.Severity)) events = events.Where(e => e.Severity == r.Severity);
         var rows = await events.OrderByDescending(e => e.Ts).ThenByDescending(e => e.Id).Take(r.Limit).ToListAsync(ct);
         return StrategyOk(new JsonObject { ["data"] = new JsonArray(rows.Select(e => (JsonNode)EventRow(e)).ToArray()) });
-    }
-
-    public async Task<V1Result> StrategyStartAsync(BrokerAccount account, StrategyStartRequest r, CancellationToken ct)
-    {
-        _ = account;
-        await using var db = await contexts.CreateDbContextAsync(ct);
-        if (await FindStrategyAsync(db, r.StrategyId!.Value, ct) is not { } strategy) return V1Result.Error(404, StrategyNotFound);
-        if (r.Mode == "live" && !strategy.LiveEnabled)
-            return V1Result.Error(409, "This strategy is not enabled for live trading. Enable it on the strategy page, or start it with mode 'sandbox'.");
-        if (strategy.StrategyKind == "signal")
-            return V1Result.Error(400, "A signal strategy has no start. Its run opens on the first long_entry or short_entry signal after the session boundary.");
-        if (strategy.CurrentRunId is not null || strategy.Status == "running") return V1Result.Error(409, "This strategy is already running");
-        return V1Result.Error(501, RunEngineMissing);
-    }
-
-    /// <summary>Stop and close-all both end the current run, so both need one; close-leg ends one leg of it.</summary>
-    public async Task<V1Result> StrategyStopAsync(BrokerAccount account, StrategyRefRequest r, CancellationToken ct)
-    {
-        _ = account;
-        await using var db = await contexts.CreateDbContextAsync(ct);
-        if (await FindStrategyAsync(db, r.StrategyId!.Value, ct) is not { } strategy) return V1Result.Error(404, StrategyNotFound);
-        return strategy.CurrentRunId is null ? V1Result.Error(409, StrategyNotRunning) : V1Result.Error(501, RunEngineMissing);
-    }
-
-    public async Task<V1Result> StrategyCloseLegAsync(BrokerAccount account, StrategyCloseLegRequest r, CancellationToken ct)
-    {
-        _ = account;
-        await using var db = await contexts.CreateDbContextAsync(ct);
-        if (await FindStrategyAsync(db, r.StrategyId!.Value, ct) is not { } strategy) return V1Result.Error(404, StrategyNotFound);
-        return strategy.CurrentRunId is null ? V1Result.Error(409, StrategyNotRunning) : V1Result.Error(501, RunEngineMissing);
     }
 }

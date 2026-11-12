@@ -100,13 +100,16 @@ public sealed class ApiKeyService(IDbContextFactory<EpTradeDbContext> contexts, 
         return account is null ? null : (account, key.Id, key.OrderMode);
     }
 
+    /// <summary>
+    /// Revokes a key. One conditional update, so two callers revoking the same key at once (a strategy's exit watcher and the platform shutting down) both succeed instead of one failing on the row the other just
+    /// changed; a key that is already revoked keeps its first revocation time.
+    /// </summary>
     public async Task<bool> RevokeAsync(Guid accountId, Guid keyId, CancellationToken cancellationToken = default)
     {
         await using var db = await contexts.CreateDbContextAsync(cancellationToken);
-        var record = await db.AccountApiKeys.SingleOrDefaultAsync(k => k.Id == keyId && k.AccountId == accountId, cancellationToken);
-        if (record is null) return false;
-        record.RevokedAtUtc ??= DateTime.UtcNow;
-        await db.SaveChangesAsync(cancellationToken);
-        return true;
+        var now = DateTime.UtcNow;
+        var revoked = await db.AccountApiKeys.Where(k => k.Id == keyId && k.AccountId == accountId && k.RevokedAtUtc == null)
+            .ExecuteUpdateAsync(u => u.SetProperty(k => k.RevokedAtUtc, now), cancellationToken);
+        return revoked > 0 || await db.AccountApiKeys.AnyAsync(k => k.Id == keyId && k.AccountId == accountId, cancellationToken);
     }
 }

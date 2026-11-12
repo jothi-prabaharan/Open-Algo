@@ -429,4 +429,23 @@ public sealed class SupervisorTests
 
         Assert.False(await ProcessAliveAsync(pid, "alpha.py"));
     }
+
+    [PostgresFact]
+    public async Task Two_callers_revoking_the_same_key_at_once_both_succeed_and_the_first_time_is_kept()
+    {
+        await using var s = await NewAsync();
+        var account = await s.Host.CreateAccountAsync(AccountType.PAPER, "revoke-race");
+        var keys = s.Host.Get<EPTradeBot.Infrastructure.Security.ApiKeyService>();
+        var key = await keys.IssueAsync(account, "race");
+
+        // A strategy's exit watcher and the platform shutting down both end the same run, so both revoke its key.
+        var results = await Task.WhenAll(Enumerable.Range(0, 8).Select(_ => Task.Run(() => keys.RevokeAsync(account, key.Record.Id))));
+        Assert.All(results, Assert.True);
+        await using var db = s.Host.NewDb();
+        var first = (await db.AccountApiKeys.AsNoTracking().SingleAsync(k => k.Id == key.Record.Id)).RevokedAtUtc;
+        Assert.NotNull(first);
+        Assert.True(await keys.RevokeAsync(account, key.Record.Id));
+        Assert.Equal(first, (await db.AccountApiKeys.AsNoTracking().SingleAsync(k => k.Id == key.Record.Id)).RevokedAtUtc);
+        Assert.False(await keys.RevokeAsync(account, Guid.NewGuid()));
+    }
 }

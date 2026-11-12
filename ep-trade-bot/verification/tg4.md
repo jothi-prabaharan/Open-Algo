@@ -333,13 +333,24 @@ are all caught (one more, a blank WhatsApp recipient, cannot be seen because the
 
 **What was built.** The five read routes (`/strategy/list`, `/status`, `/runs`, `/orders`, `/events`) read the stored strategies, runs, orders and risk events, with OpenAlgo's shapes, limits and vocabulary; the platform has one operator,
 so every strategy is theirs and an unknown id is 404. `/start`, `/stop`, `/close_all` and `/close_leg` do their validation (a mode is required and never defaulted, live needs the strategy's opt-in, a signal strategy has no start,
-a second start is refused, stopping an idle strategy is refused) and then answer 501, because the module's run engine is not ported.
+a second start is refused, stopping an idle strategy is refused) and then run the batch engine described below.
 A per-strategy position book (`StrategyBookLedger`, weighted-average cost, flips through zero, partial-fill watermarks, fills that arrive before their order's tag) was checked against the real `strategy_book_db` on 12 recorded
 scenarios. The `strategyPnl` Flow node reads it, rebuilt from the sandbox account's fills; a live account's figures are reported as unavailable, not zero.
 
-**Not done, and why it matters.** The strategy module (OpenAlgo's `services/strategy_module/`, about 13,600 lines: leg resolution, entries and exits, the risk monitor on live ticks, recovery, webhooks, signals) is its own product
-in OpenAlgo's feature table and is not among the seven items of the TG4 plan. Opening a run without the monitor would place orders whose stops nothing watches, so the lifecycle routes refuse rather than pretend.
-`StrategyApiTests` (5) and `tools/mutation/tg4-strategy-api.json` (8 mutants, all caught); the book's mutants are in `tg4-strategy-book.json` (11, all caught; one cannot be seen because two guards cover the same case).
+**The batch run engine** (`OpenAlgoApiService.StrategyRun.cs`, `StrategyRunMonitor`). `/strategy/start` claims the strategy with one conditional update (two starts at once open one run), resolves each stored leg (option by
+ATM offset or strike interval and expiry rank with a recorded fallback, future, or cash), places every entry through the same order path as `/placeorder` (buys first, each order stored before the broker is called), and records
+the run, orders and events. A run that cannot open every leg closes what opened and ends with `entry_failed`; legs never sent are not part of it. A timer visits every open run: it settles orders still open, marks each leg
+(from the sandbox quote book for a sandbox account, the broker otherwise), and decides with the ported `Core/Risk` evaluators only: each leg's stop, target and trail (points or percent), trail-to-entry for the other legs when a stop
+fires, the combined stop and target, lock-profit, the exit time, and the daily loss limit (also checked before a start). A close claims the leg before the order is sent and releases the claim on a refusal, so a leg whose
+close was refused stays open and watched; `/stop` and `/close_all` then answer 502 saying so and the next visit retries. The working state (legs, ratchets, pending stop) lives in the run's checkpoint row, so a restart carries on.
+A mode must match the account (sandbox mode on a sandbox account, live on a live account), and entries and exits are market orders only.
+
+**Not done.** Signal strategies (a run per alert, flips), webhooks, the entry-time scheduler for strategies, pause and resume, tick-source switching and recovery events, and per-run broker binding beyond the account recorded
+on the run are not ported; `/strategy/start` refuses a signal strategy, as OpenAlgo's route does. Futures and options legs are resolved from the master contract as the option tools do, but the tests drive cash legs because the
+sandbox test host has no option chain; option resolution itself is covered by the option tools' tests.
+`StrategyApiTests` (5), `StrategyRunEngineTests` (11) and `tools/mutation/tg4-strategy-run.json` (17 mutants, all caught; two more were set aside as equivalent: the trailed stop is a pure function of the stored extremes, so
+not writing it back changes nothing, and excluding the triggering leg from trail-to-entry cannot be seen while the sandbox fills a close at once, since that leg is already closed). `tg4-strategy-api.json` (8 mutants, all caught);
+the book's mutants are in `tg4-strategy-book.json` (11, all caught; one cannot be seen because two guards cover the same case).
 
 ## The sandbox work deferred from TG2
 
@@ -369,13 +380,16 @@ the account's risk limits into the sandbox.
 
 The four chain tests were run five times in a row with no failure (they wait for the publisher to connect by ticking until the effect shows, as the existing price-alert test does).
 
+**A flaky test found on the way, fixed at its cause.** `SupervisorTests.Shutting_down_the_platform_stops_the_strategies_it_started` failed about half the time on the committed code too. A strategy's exit
+watcher and the platform's shutdown both end the same run and both revoked its API key with a read-then-update, so one lost the race on the row and threw. `ApiKeyService.RevokeAsync` is now one conditional update (both
+callers succeed; the first revocation time is kept), and `Two_callers_revoking_the_same_key_at_once_both_succeed_and_the_first_time_is_kept` fails on the old code. The shutdown test then passed 10 of 10 alone.
+
 **Full suite.** Each run is a clean build against PostgreSQL 17, all four test projects.
 
 | Run | Core | Contract | Architecture | Integration |
 | --- | --- | --- | --- | --- |
-| 1 | 1518 passed | 913 passed | 35 passed | 273 passed |
-| 2 | 1518 passed | 913 passed | 35 passed | 273 passed |
-| 3 | 1518 passed | 913 passed | 35 passed | 273 passed |
+| 1 | 1518 passed | 913 passed | 35 passed | 285 passed |
+| 2 | 1518 passed | 913 passed | 35 passed | 285 passed |
+| 3 | 1518 passed | 913 passed | 35 passed | 285 passed |
 
-**What Gate 4 does not cover.** The strategy module's run engine (above): `/strategy/start`, `/stop`, `/close_all` and `/close_leg` answer 501. Everything else the TG4 plan lists, and every other one of the 31 endpoint pairs,
-is built and held by tests.
+**What Gate 4 does not cover.** The strategy module's signal mode, webhooks and scheduler (see the strategy section). Everything else the TG4 plan lists, and every one of the 31 endpoint pairs, is built and held by tests.

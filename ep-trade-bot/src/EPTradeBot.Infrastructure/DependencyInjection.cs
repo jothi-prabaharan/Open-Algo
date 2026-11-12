@@ -87,6 +87,8 @@ public static class DependencyInjection
         services.AddSingleton<KeyedAsyncLock<Guid>>();
         services.AddSingleton<SandboxEngine>();
         services.AddHostedService<SandboxSquareOffService>();
+        services.AddSingleton<EPTradeBot.Infrastructure.OpenAlgoApi.StrategyRunMonitor>();
+        services.AddHostedService(sp => sp.GetRequiredService<EPTradeBot.Infrastructure.OpenAlgoApi.StrategyRunMonitor>());
         services.AddSingleton<AuditTrail>();
         services.AddSingleton<IAccountRiskManager, AccountRiskManager>();
         services.AddSingleton<IOrderDispatcher, OrderDispatcher>();

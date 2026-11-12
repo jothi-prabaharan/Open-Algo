@@ -59,7 +59,7 @@ internal static class OpenAlgoV1Endpoints
         Post<StrategyRefRequest>(v1, "/strategy/status", (s, a, r, ct) => s.StrategyStatusAsync(a, r, ct));
         Post<StrategyStartRequest>(v1, "/strategy/start", (s, a, r, ct) => s.StrategyStartAsync(a, r, ct));
         Post<StrategyRefRequest>(v1, "/strategy/stop", (s, a, r, ct) => s.StrategyStopAsync(a, r, ct));
-        Post<StrategyRefRequest>(v1, "/strategy/close_all", (s, a, r, ct) => s.StrategyStopAsync(a, r, ct));
+        Post<StrategyRefRequest>(v1, "/strategy/close_all", (s, a, r, ct) => s.StrategyCloseAllAsync(a, r, ct));
         Post<StrategyCloseLegRequest>(v1, "/strategy/close_leg", (s, a, r, ct) => s.StrategyCloseLegAsync(a, r, ct));
         Post<StrategyRunsRequest>(v1, "/strategy/runs", (s, a, r, ct) => s.StrategyRunsAsync(a, r, ct));
         Post<StrategyOrdersRequest>(v1, "/strategy/orders", (s, a, r, ct) => s.StrategyOrdersAsync(a, r, ct));

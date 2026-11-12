@@ -6,7 +6,7 @@ using EPTradeBot.Infrastructure.Security;
 
 namespace EPTradeBot.IntegrationTests;
 
-/// <summary>The strategy routes: what is read from the stored strategies, runs, orders and events, the refusals each route owes, and the honest answer for the routes that need a run engine.</summary>
+/// <summary>The strategy routes: what is read from the stored strategies, runs, orders and events, the refusals each route owes, and the refusals of the routes that act on a run.</summary>
 public sealed class StrategyApiTests
 {
     private static async Task<(TestHost Host, string Key)> HostAsync()
@@ -122,7 +122,7 @@ public sealed class StrategyApiTests
     }
 
     [PostgresFact]
-    public async Task Starting_needs_a_mode_respects_live_opt_in_and_says_plainly_what_the_platform_cannot_do_yet()
+    public async Task Starting_needs_a_mode_respects_live_opt_in_and_refuses_a_mode_that_does_not_match_the_account()
     {
         var (host, key) = await HostAsync();
         await using var _ = host;
@@ -144,13 +144,13 @@ public sealed class StrategyApiTests
         Assert.Equal("This strategy is already running", body["message"]!.GetValue<string>());
 
         (status, body) = await Post(client, "/api/v1/strategy/start", new { apikey = key, strategy_id = 2, mode = "sandbox" });
-        Assert.Equal(501, status);
-        Assert.Contains("run engine has not been brought across", body["message"]!.GetValue<string>());
+        Assert.Equal(409, status);
+        Assert.Contains("sandbox account", body["message"]!.GetValue<string>());
         Assert.Equal(404, (await Post(client, "/api/v1/strategy/start", new { apikey = key, strategy_id = 99, mode = "sandbox" })).Status);
     }
 
     [PostgresFact]
-    public async Task Stopping_and_closing_need_a_running_strategy_and_never_pretend_to_have_closed_anything()
+    public async Task Stopping_and_closing_need_a_running_strategy_and_an_account_to_close_on()
     {
         var (host, key) = await HostAsync();
         await using var _ = host;
@@ -160,12 +160,15 @@ public sealed class StrategyApiTests
             var idle = await Post(client, $"/api/v1/strategy/{route}", new { apikey = key, strategy_id = 2 });
             Assert.Equal(409, idle.Status);
             Assert.Equal("This strategy is not running", idle.Body["message"]!.GetValue<string>());
-            Assert.Equal(501, (await Post(client, $"/api/v1/strategy/{route}", new { apikey = key, strategy_id = 1 })).Status);
+            // The seeded run names no account, so nothing could be sent and nothing is claimed to be closed.
+            var orphan = await Post(client, $"/api/v1/strategy/{route}", new { apikey = key, strategy_id = 1 });
+            Assert.Equal(409, orphan.Status);
+            Assert.Contains("account this run trades on", orphan.Body["message"]!.GetValue<string>());
             Assert.Equal(404, (await Post(client, $"/api/v1/strategy/{route}", new { apikey = key, strategy_id = 99 })).Status);
         }
 
         Assert.Equal(409, (await Post(client, "/api/v1/strategy/close_leg", new { apikey = key, strategy_id = 2, leg_id = 1 })).Status);
-        Assert.Equal(501, (await Post(client, "/api/v1/strategy/close_leg", new { apikey = key, strategy_id = 1, leg_id = 1 })).Status);
+        Assert.Equal(409, (await Post(client, "/api/v1/strategy/close_leg", new { apikey = key, strategy_id = 1, leg_id = 1 })).Status);
         Assert.Equal(400, (await Post(client, "/api/v1/strategy/close_leg", new { apikey = key, strategy_id = 1 })).Status);
     }
 }

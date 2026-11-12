@@ -1,0 +1,138 @@
+[
+ {
+  "name": "R1 shorts placed before longs",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "OrderBy(l => l.Position == \"B\" ? 0 : 1)",
+  "new": "OrderBy(l => l.Position == \"S\" ? 0 : 1)",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R2 mode not matched to account",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "if ((r.Mode == \"sandbox\") != (account.AccountType == AccountType.PAPER) || r.Mode == \"live\" && account.AccountType != AccountType.LIVE)",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R3 non-market price type accepted",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "if (!string.Equals(found.Pricetype, \"MARKET\", StringComparison.OrdinalIgnoreCase))",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R4 exit sent for the same side",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "Action(leg.Position == \"B\" ? \"S\" : \"B\")",
+  "new": "Action(leg.Position)",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R5 refused exit leaves the leg claimed",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "            leg.ExitKind = null;\n            AddEvent(db, strategy, runId, \"leg_exit_rejected\", \"critical\", leg.LegId, $\"The order closing leg",
+  "new": "            AddEvent(db, strategy, runId, \"leg_exit_rejected\", \"critical\", leg.LegId, $\"The order closing leg",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R6 realised pnl sign flipped",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "leg.RealizedPnl = AggregateEvaluator.PositionPnl(SideOf(leg), leg.EntryAvg, leg.Qty, exitPrice);",
+  "new": "leg.RealizedPnl = -AggregateEvaluator.PositionPnl(SideOf(leg), leg.EntryAvg, leg.Qty, exitPrice);",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R7 stop breach ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "var stop = decision.Reason == BreachReason.Stop;",
+  "new": "var stop = decision.Reason != BreachReason.Stop;",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R9 combined limits skipped",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "var aggregate = AggregateEvaluator.Evaluate(ToAggregate(state, strategy), realized, unrealized);",
+  "new": "var aggregate = AggregateEvaluator.Evaluate(ToAggregate(state, strategy), 0, 0);",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R10 exit time ignored",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "strategy.ExitTime is { } exit && TimeOnly",
+  "new": "strategy.ExitTime is { } exit && Environment.TickCount64 < 0 && TimeOnly",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R11 daily loss ignores earlier runs",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "return (double)today.Sum() + openTotal <= -(double)limit;",
+  "new": "return openTotal <= -(double)limit;",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R12 half-open run finalised",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "if (state.Legs.Any(l => l.Status is \"open\" or \"pending\")) return false;",
+  "new": "if (state.Legs.Any(l => l.Status is \"pending\")) return false;",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R13 unsent legs keep the run open",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "foreach (var unsent in state.Legs.Where(l => l.Status == \"pending\" && l.EntryOrderId is null)) unsent.Status = \"failed\";",
+  "new": "",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R14 pending stop not retried",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "            state.PendingStop = stopReason;\n            await ExitAllAsync",
+  "new": "            await ExitAllAsync",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R15 manual stop not recorded as the reason",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "run.StopReason = state.PendingStop ?? \"all_legs_closed\";",
+  "new": "run.StopReason = \"all_legs_closed\";",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R16 second start allowed",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "if (claimed == 0) return V1Result.Error(409, \"This strategy is already running\");",
+  "new": "if (Environment.TickCount64 < 0) return V1Result.Error(409, \"This strategy is already running\");",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R18 trail to entry never applied",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "if (stop && strategy.TrailSlToEntry)",
+  "new": "if (stop && strategy.TrailSlToEntry && Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "R19 trail to entry moves nothing",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyRun.cs",
+  "old": "            leg.EffectiveSl = move.NewStop;\n            moved = true;",
+  "new": "            moved = true;",
+  "filter": "FullyQualifiedName~StrategyRunEngineTests|FullyQualifiedName~StrategyApiTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

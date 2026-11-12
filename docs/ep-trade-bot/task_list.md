@@ -76,7 +76,7 @@ Not started (30): fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, defin
 - [ ] Gate 7 artifact (per-broker verification status for all of the above)
 
 ## TG4: Strategy host, Flow, Action Center, agent, MCP, tools
-- [x] The 31 /api/v1 pairs that sit on TG4 features: option greeks (2), portfolio (4), SIP (2), sector rotation (2), Telegram (9), WhatsApp (1) are complete; strategy (9) has its 5 read routes complete and its 4 lifecycle routes (start, stop, close_all, close_leg) validated but answering 501, because the strategy module's run engine is not ported (see `verification/tg4.md`)
+- [x] The 31 /api/v1 pairs that sit on TG4 features: option greeks (2), portfolio (4), SIP (2), sector rotation (2), Telegram (9), WhatsApp (1) are complete; strategy (9) is complete for batch strategies: the 5 read routes and the 4 lifecycle routes, on a run engine with the ported risk core (signal mode, webhooks and the strategy scheduler are not ported; see `verification/tg4.md`)
 - [x] Quartz.NET with IST schedules and weekday controls (`Core/Scheduling`, `Infrastructure/Scheduling`; 55 tests, 33 mutants)
 - [x] Hosted strategy process supervisor (`Infrastructure/Scheduling/StrategySupervisor`; 38 tests, 27 mutants; resource limits left to TG6)
 - [x] Flow engine and all 61 node types (`Core/Flow`, `Infrastructure/Flow`; 110+ mutants)
@@ -86,7 +86,7 @@ Not started (30): fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, defin
 - [x] MCP stdio + HTTP/OAuth
 - [x] 20 tool back ends with numeric parity tests (`Core/Options`, `Core/Portfolio`; about 400 recorded cases, 100+ mutants); `/sip`, `/sectorrotation` and `/portfolio` routes (tearsheet answers 501)
 - [x] Gate 4 artifact (`ep-trade-bot/verification/tg4.md`)
-- [ ] Strategy module run engine (multi-leg runs, entry and exit orders, the risk monitor on live ticks): not part of the TG4 plan's seven items and not ported; the four lifecycle routes answer 501 until it is
+- [x] Strategy module batch run engine (multi-leg runs, entry and exit orders, the risk monitor with the ported risk core, daily loss limit, exit time); signal mode, webhooks and the strategy scheduler remain open
 
 ## TG5: Angular PWA (owned by Antigravity; not worked on in this session)
 - [ ] Angular 22 zoneless workspace, Tailwind 4, SignalStore
