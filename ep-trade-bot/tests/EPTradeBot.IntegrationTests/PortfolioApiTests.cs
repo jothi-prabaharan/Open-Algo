@@ -24,6 +24,7 @@ public sealed class PortfolioApiTests
             {
                 var ts = day.AddHours(-5.5);
                 db.Candles.Add(new Candle { Symbol = "INFY", Exchange = "NSE", Interval = "D", Ts = ts, Open = 1, High = 1, Low = 1, Close = 1500 + n * 0.8 + Math.Sin(n / 7.0) * 20 });
+                db.Candles.Add(new Candle { Symbol = "TCS", Exchange = "NSE", Interval = "D", Ts = ts, Open = 1, High = 1, Low = 1, Close = 3500 + n * 1.5 + Math.Cos(n / 5.0) * 40 });
                 db.Candles.Add(new Candle { Symbol = "NIFTY", Exchange = "NSE_INDEX", Interval = "D", Ts = ts, Open = 1, High = 1, Low = 1, Close = 24000 + n * 6 + Math.Sin(n / 11.0) * 150 });
                 db.Candles.Add(new Candle { Symbol = "NIFTYIT", Exchange = "NSE_INDEX", Interval = "D", Ts = ts, Open = 1, High = 1, Low = 1, Close = 36000 + n * 4 + Math.Cos(n / 9.0) * 300 });
                 n++;
@@ -82,7 +83,7 @@ public sealed class PortfolioApiTests
 
         var missing = await client.PostAsJsonAsync("/api/v1/sip/backtest", new { apikey = key, symbol = "NOSUCH", exchange = "NSE", start_date = "2026-01-01", end_date = "2026-10-30", amount = 5000, include_grids = false });
         Assert.Equal(422, (int)missing.StatusCode);
-        Assert.Contains("no D history in Historify", await missing.Content.ReadAsStringAsync());
+        Assert.Contains("Historify holds no D bars for NOSUCH between 2026-01-01 and 2026-10-30", await missing.Content.ReadAsStringAsync());
 
         var badAmount = await client.PostAsJsonAsync("/api/v1/sip/backtest", new { apikey = key, symbol = "INFY", start_date = "2026-01-01", end_date = "2026-10-30", amount = 0 });
         Assert.Equal(400, (int)badAmount.StatusCode);
@@ -115,5 +116,68 @@ public sealed class PortfolioApiTests
         var refused = await client.PostAsJsonAsync("/api/v1/sectorrotation", new { apikey = key, benchmark = "DOW" });
         Assert.Equal(400, (int)refused.StatusCode);
         Assert.StartsWith("These map settings were not accepted", JsonNode.Parse(await refused.Content.ReadAsStringAsync())!["message"]!.GetValue<string>());
+    }
+
+    [PostgresFact]
+    public async Task A_portfolio_backtest_runs_over_historify_closes_with_a_benchmark()
+    {
+        var (host, key) = await HostAsync();
+        await using var _ = host;
+        using var client = host.Anonymous();
+        var response = await client.PostAsJsonAsync("/api/v1/portfolio/backtest", new
+        {
+            apikey = key, holdings = new object[] { new { symbol = "INFY", exchange = "NSE", weight = 60 }, new { symbol = "TCS", exchange = "NSE", weight = 40 } },
+            start_date = "2026-01-01", end_date = "2026-10-30", benchmark = "NIFTY", benchmark_exchange = "NSE_INDEX", rebalance = "quarterly",
+        });
+        var text = await response.Content.ReadAsStringAsync();
+        Assert.True(response.IsSuccessStatusCode, text);
+        var body = JsonNode.Parse(text)!;
+        Assert.Equal("success", body["status"]!.GetValue<string>());
+        Assert.Equal("db", body["meta"]!["source"]!.GetValue<string>());
+        Assert.Equal(2, body["items"]!.AsArray().Count);
+        Assert.NotEmpty(body["equity"]!.AsArray());
+        Assert.NotEmpty(body["benchmark_equity"]!.AsArray());
+        Assert.NotNull(body["metrics"]!["alpha"]);
+        Assert.NotNull(body["health"]!["grade"]);
+        Assert.NotNull(body["insights"]);
+    }
+
+    [PostgresFact]
+    public async Task A_portfolio_backtest_refuses_what_it_cannot_run_in_plain_words()
+    {
+        var (host, key) = await HostAsync();
+        await using var _ = host;
+        using var client = host.Anonymous();
+        var holdings = new object[] { new { symbol = "INFY", exchange = "NSE", weight = 1 }, new { symbol = "NOSUCH", exchange = "NSE", weight = 1 } };
+        var window = new { start_date = "2026-01-01", end_date = "2026-10-30" };
+
+        var missing = await client.PostAsJsonAsync("/api/v1/portfolio/backtest", new { apikey = key, holdings, window.start_date, window.end_date });
+        Assert.Equal(422, (int)missing.StatusCode);
+        Assert.Contains("NOSUCH: no D history in Historify", await missing.Content.ReadAsStringAsync());
+
+        var badRule = await client.PostAsJsonAsync("/api/v1/portfolio/backtest", new { apikey = key, holdings, window.start_date, window.end_date, rebalance = "weekly" });
+        Assert.Equal(400, (int)badRule.StatusCode);
+
+        var wrongKey = await client.PostAsJsonAsync("/api/v1/portfolio/backtest", new { apikey = "nope", holdings, window.start_date, window.end_date });
+        Assert.Equal(403, (int)wrongKey.StatusCode);
+
+        var tearsheet = await client.PostAsJsonAsync("/api/v1/portfolio/tearsheet", new { apikey = key, holdings, window.start_date, window.end_date });
+        Assert.Equal(501, (int)tearsheet.StatusCode);
+        Assert.Contains("tearsheet is not available", await tearsheet.Content.ReadAsStringAsync());
+    }
+
+    [PostgresFact]
+    public async Task Live_holdings_analysis_needs_a_broker_session_and_benchmarks_list_the_indices()
+    {
+        var (host, key) = await HostAsync();
+        await using var _ = host;
+        using var client = host.Anonymous();
+        var analysis = await client.PostAsJsonAsync("/api/v1/portfolio/holdings", new { apikey = key });
+        Assert.Equal(403, (int)analysis.StatusCode);
+        Assert.Contains("Log in to your broker", await analysis.Content.ReadAsStringAsync());
+
+        var benchmarks = await client.GetAsync($"/api/v1/portfolio/benchmarks?apikey={key}");
+        Assert.Equal(200, (int)benchmarks.StatusCode);
+        Assert.Equal("success", JsonNode.Parse(await benchmarks.Content.ReadAsStringAsync())!["status"]!.GetValue<string>());
     }
 }

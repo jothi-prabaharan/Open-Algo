@@ -51,6 +51,10 @@ internal static class OpenAlgoV1Endpoints
         Post<MultiQuotesRequest>(v1, "/multiquotes", (s, a, r, ct) => s.MultiQuotesAsync(a, r, ct));
         Post<SyntheticFutureRequest>(v1, "/syntheticfuture", (s, a, r, ct) => s.SyntheticFutureAsync(a, r, ct), ValidationShape.Errors);
         Post<OptionChainRequest>(v1, "/optionchain", (s, a, r, ct) => s.OptionChainAsync(a, r, ct), ValidationShape.Errors);
+        Post<PortfolioBacktestRequest>(v1, "/portfolio/backtest", (s, a, r, ct) => s.PortfolioBacktestAsync(a, r, ct));
+        Post<PortfolioBacktestRequest>(v1, "/portfolio/tearsheet", (s, a, r, _) => Task.FromResult(s.PortfolioTearsheet(a, r)));
+        Post<PortfolioHoldingsRequest>(v1, "/portfolio/holdings", (s, a, r, ct) => s.PortfolioHoldingsAsync(a, r, ct));
+        v1.MapGet("/portfolio/benchmarks", (RequestDelegate)ServePortfolioBenchmarks).WithName("v1_portfolio_benchmarks");
         Post<SipBacktestRequest>(v1, "/sip/backtest", (s, a, r, ct) => s.SipBacktestAsync(a, r, ct));
         Post<SectorRotationRequest>(v1, "/sectorrotation", (s, a, r, ct) => s.SectorRotationAsync(a, r, ct), ValidationShape.RotationSentence);
         v1.MapGet("/sip/frequencies", (RequestDelegate)(context => Write(context, OpenAlgoApiService.SipFrequencies()))).WithName("v1_sip_frequencies");
@@ -85,7 +89,7 @@ internal static class OpenAlgoV1Endpoints
         "/placeorder", "/placesmartorder", "/modifyorder", "/cancelorder", "/cancelallorder", "/closeposition", "/orderbook", "/tradebook",
         "/positionbook", "/holdings", "/funds", "/orderstatus", "/openposition", "/quotes", "/depth", "/ping", "/analyzer", "/analyzer/toggle",
         "/symbol", "/search", "/expiry", "/optionsymbol", "/basketorder", "/splitorder", "/optionsorder", "/optionsmultiorder", "/instruments",
-        "/multiquotes", "/syntheticfuture", "/optionchain", "/optiongreeks", "/multioptiongreeks", "/sip/backtest", "/sip/frequencies", "/sectorrotation", "/sectorrotation/options", "/market/holidays", "/market/timings", "/pnl/symbols", "/chart", "/history", "/intervals", "/ticker/{symbol}", "/margin",
+        "/multiquotes", "/syntheticfuture", "/optionchain", "/optiongreeks", "/multioptiongreeks", "/portfolio/backtest", "/portfolio/tearsheet", "/portfolio/holdings", "/portfolio/benchmarks", "/sip/backtest", "/sip/frequencies", "/sectorrotation", "/sectorrotation/options", "/market/holidays", "/market/timings", "/pnl/symbols", "/chart", "/history", "/intervals", "/ticker/{symbol}", "/margin",
         "/placegttorder", "/modifygttorder", "/cancelgttorder", "/gttorderbook",
     ];
 
@@ -219,6 +223,9 @@ internal static class OpenAlgoV1Endpoints
 
         await Write(context, result);
     }
+
+    private static Task ServePortfolioBenchmarks(HttpContext context) =>
+        Handle<PortfolioBenchmarksRequest>(context, static (s, a, _, ct) => s.PortfolioBenchmarksAsync(a, ct), ValidationShape.Message, fromQuery: true);
 
     private static Task ServeInstruments(HttpContext context) =>
         Handle<InstrumentsRequest>(context, static (s, a, r, ct) => s.InstrumentsAsync(a, r, ct), ValidationShape.Message, fromQuery: true);

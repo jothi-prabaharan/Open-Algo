@@ -246,7 +246,7 @@ compile and was rewritten so it does).
 
 **Not done.** Tools for charts, strategy and OpenScript generation, and the Telegram and WhatsApp tools wait for their endpoints (next item). Consent for individual tools is by scope, not per call.
 
-## Tool back ends (18 of 20) with numeric parity
+## Tool back ends (20 of 20) with numeric parity
 
 **What was built.** The calculation behind each of OpenAlgo's `/tools` pages, as pure code in `Core/Options` and `Core/Portfolio` with the broker, the database and the clock passed in. Each was checked
 against OpenAlgo's own Python by recording its answers for a set of inputs (`tools/contract-fixtures/record_tools.py`, `record_sip.py`, `record_black76.py`) and replaying the same inputs here.
@@ -289,7 +289,31 @@ against OpenAlgo's own Python by recording its answers for a set of inputs (`too
 four equivalent: a time value of exactly zero (the next clause already catches it), `>=` for `>` between a strike and itself in max pain (adds zero), rounding a lumpsum up where the loop that follows
 steps it back down, and an installment dated after the SIP's end (the sessions were already cut to the window).
 
-**Not done.** Portfolio Backtester and Portfolio Analyzer (OpenAlgo's `portfolio_service`): they rest on the `openstatz` statistics library (about 28 functions) and the `portfolio` engine, which are next.
+## Portfolio Backtester and Portfolio Analyzer
+
+**What was built.** The portfolio engine (drift and reset, rebalance rules and drift bands, itemised costs, per-holding lines), the statistics OpenAlgo takes from `openstatz` (headline metrics, underwater curve and
+episodes, rolling Sharpe and volatility, month and week grids, seasonality, return quantiles, year on year), and every diagnostic around them: attribution, the rebalancing sweep, crisis windows, co-movement
+structure, the graded health score, the findings, walk-forward windows and a block-bootstrap Monte Carlo. The Monte Carlo draws from a port of numpy's `default_rng` (SeedSequence, PCG64, Lemire bounded integers),
+so the same seed gives the same paths as OpenAlgo. The Analyzer reads a broker's holdings and runs today's weights over past prices.
+
+| Piece | .NET | Recorded from |
+| --- | --- | --- |
+| Engine | `PortfolioEngine` | `portfolio.engine.run_backtest` (`record_portfolio_engine.py`): 15 cases |
+| Statistics | `ReturnStats`, `ReturnSeriesAnalytics` | `portfolio.analytics.summary`, `_series_analytics` (`record_portfolio_stats.py`): 8 cases |
+| Whole answer | `PortfolioBacktestService` | `run_portfolio_backtest` (`record_portfolio_backtest.py`): 17 cases, every section |
+| Random draws | `NumpyRandom` | numpy itself (3 sequences) |
+| Holdings reading | `PortfolioHoldings` | `portfolio.holdings` (`record_portfolio_holdings.py`): 7 cases |
+
+Routes: `POST /portfolio/backtest`, `POST /portfolio/holdings`, `GET /portfolio/benchmarks`, `POST /portfolio/tearsheet`; also `POST /sip/backtest`, `GET /sip/frequencies`, `POST /sectorrotation`, `GET /sectorrotation/options`.
+
+**How it is held.** Mutants in `tools/mutation/tg4-portfolio-engine.json`, `tg4-portfolio-stats.json`, `tg4-portfolio-backtest.json` and `tg4-portfolio-api.json`. Every mutant was caught except these, which cannot be seen:
+the engine never reads the first session as a rebalance, so removing that exclusion changes nothing; and the Monte Carlo CAGR sign guard, because 1 plus a return cannot be negative.
+
+**Differences from OpenAlgo.**
+- `POST /portfolio/tearsheet` answers 501. OpenAlgo renders openstatz's HTML report with matplotlib; there is no equivalent renderer here, and the Backtest tab shows the same figures.
+- The daily bar of a Historify candle is dated by the Indian calendar day it opens on, not by the UTC date of its stamp.
+- The Analyzer weights holdings from quantity and last price. The holdings rows this platform returns carry no price, so it answers "no holdings with a usable quantity and price" until a broker supplies one; OpenAlgo behaves the same on such rows.
+- The per-route rate limits (10 per minute) are not ported.
 
 ## Gate 4 (interim): what the chain has been shown to do
 
@@ -308,5 +332,5 @@ the account's risk limits into the sandbox.
 
 The four chain tests were run five times in a row with no failure (they wait for the publisher to connect by ticking until the effect shows, as the existing price-alert test does).
 
-**Gate 4 is not complete.** Still open in TG4: the Portfolio Backtester and Portfolio Analyzer back ends (18 of 20 tools are done), the 26 Flow node types that are refused by name, the 31 `/api/v1`
+**Gate 4 is not complete.** Still open in TG4: the strategy (9), Telegram (9) and WhatsApp (1) endpoints, the 3 Flow node types that are refused by name, the 31 `/api/v1`
 endpoint pairs on TG4 features, and the TG2 items that were deferred to this group (sandbox GTT, CNC holdings with T+1 settlement, catch-up after a restart, auto square-off timers).
