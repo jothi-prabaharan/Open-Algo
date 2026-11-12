@@ -936,6 +936,109 @@ def record_sector_rotation():
     return {"now": NOW.isoformat(), "end": end.isoformat(), "cases": cases, "options": sr.list_options()[1]}
 
 
+def record_iv_chart():
+    import services.iv_chart_service as ic
+    import services.strategy_chart_service as sc
+    from opengreeks import black76
+
+    sc.datetime = Frozen
+    midnight = int(NOW.replace(hour=0, minute=0, second=0).timestamp())
+    cases = []
+
+    def candle_ts(d, i, offset_min=0):
+        return midnight - d * 86400 + (9 * 60 + 15 + offset_min) * 60 - 19800 + i * 300
+
+    def expiry_epoch(code):
+        from datetime import datetime as dt
+        return dt.strptime(code, "%d%b%y").replace(hour=15, minute=30)
+
+    def spot_at(d, i, centre):
+        return round(centre + (d - 1) * 35 + i * 9 - (i % 4) * 17, 2)
+
+    def underlying(days, centre, n=14, ms=False, skip=(), key="close"):
+        rows = []
+        for d in days:
+            for i in range(n):
+                if (d, i) in skip:
+                    continue
+                ts = candle_ts(d, i)
+                rows.append({"timestamp": ts * 1000 if ms else ts, key: spot_at(d, i, centre)})
+        return rows
+
+    def option(days, centre, strike, flag, expiry, n=14, skip=(), shift=0, zero=(), junk=()):
+        rows = []
+        e = expiry_epoch(expiry)
+        for d in days:
+            for i in range(n):
+                if (d, i) in skip:
+                    continue
+                ts = candle_ts(d, i, shift)
+                spot = spot_at(d, i, centre)
+                from datetime import datetime as dt, timedelta as td
+                candle = dt.utcfromtimestamp(ts + 19800)
+                years = max((e - candle).total_seconds() / 86400 / 365, 0.0001) if e > candle else 0.0
+                sigma = 0.11 + 0.002 * i + 0.01 * d
+                if (d, i) in zero:
+                    close = 0.0
+                elif (d, i) in junk:
+                    close = round(abs(spot - strike) + 0.01, 2)  # at or under intrinsic once discounting is ignored
+                elif years > 0:
+                    close = round(black76.black(flag, spot, strike, years, 0.0, sigma), 2)
+                else:
+                    close = round(max(spot - strike, 0) if flag == "c" else max(strike - spot, 0), 2)
+                rows.append({"timestamp": ts, "close": close})
+        return rows
+
+    def run(name, strikes, days=1, expiry="26NOV26", under="NIFTY", exch="NSE_INDEX", centre=24000.0, interval="5m", u_hist=None, ce_hist=None, pe_hist=None, quote=("ok", 24057.5), n_days=3, atm=None, **kw):
+        calls = []
+        d_all = tuple(range(n_days))
+        atm_strike = atm if atm is not None else min(strikes, key=lambda s: abs(s - quote[1])) if strikes and quote[0] == "ok" else None
+        hist = {under: u_hist if u_hist is not None else underlying(d_all, centre, **{k: v for k, v in kw.items() if k in ("n", "ms", "skip", "key")})}
+        if atm_strike is not None:
+            hist[f"{under}{expiry.upper()}{int(atm_strike)}CE"] = ce_hist if ce_hist is not None else option(d_all, centre, atm_strike, "c", expiry, **{k: v for k, v in kw.items() if k in ("n", "shift", "zero", "junk") or k == "ce_skip" and False})
+            hist[f"{under}{expiry.upper()}{int(atm_strike)}PE"] = pe_hist if pe_hist is not None else option(d_all, centre, atm_strike, "p", expiry, **{k: v for k, v in kw.items() if k in ("n", "shift", "zero", "junk")})
+
+        def get_history(symbol, exchange, interval, start_date, end_date, api_key):
+            calls.append({"symbol": symbol, "exchange": exchange, "interval": interval, "start": start_date, "end": end_date})
+            v = hist.get(symbol, "missing")
+            if v == "missing":
+                return False, {"message": "no history"}, 404
+            if isinstance(v, dict):
+                return v["ok"], v["resp"], 200
+            return True, {"data": json.loads(json.dumps(v))}, 200
+
+        ic.get_available_strikes = lambda base, expiry_, opt, exch_: list(strikes)
+        ic.get_history = get_history
+        ic.get_quotes = (lambda **kw_: (True, {"data": {"ltp": quote[1]}}, 200)) if quote[0] == "ok" else (lambda **kw_: (False, {"message": quote[2] if len(quote) > 2 else None} if len(quote) > 2 else {}, 503))
+        ok, resp, code = ic.get_iv_chart_data(under, exch, expiry, interval, "key", days)
+        ok2, resp2, code2 = ic.get_default_symbols(under, exch, expiry, "key")
+        cases.append({"name": name, "underlying": under, "exchange": exch, "expiry": expiry, "interval": interval, "days": days, "strikes": list(strikes), "history": hist, "quote": list(quote),
+                      "calls": sorted(calls, key=lambda c: (c["symbol"], c["exchange"])), "ok": ok, "code": code, "response": resp, "defaults": {"ok": ok2, "code": code2, "response": resp2}})
+
+    strikes = [23700 + 50 * i for i in range(0, 14)]
+    run("one-day", strikes)
+    run("three-days", strikes, days=3)
+    run("two-days-ms", strikes, days=2, ms=True)
+    run("expiry-tomorrow", strikes, expiry="12NOV26")
+    run("expired", strikes, expiry="10NOV26")
+    run("zero-priced-candles", strikes, zero={(0, 3), (1, 5)})
+    run("at-intrinsic-candles", strikes, junk={(0, 2), (0, 9)})
+    run("option-offset-timestamps", strikes, shift=1)
+    run("leg-history-missing", strikes, ce_hist={"ok": False, "resp": {"message": "x"}})
+    run("both-legs-missing", strikes, ce_hist={"ok": False, "resp": {}}, pe_hist={"ok": True, "resp": {"data": []}})
+    run("underlying-fails", strikes, u_hist={"ok": False, "resp": {"message": "token expired"}})
+    run("underlying-fails-no-message", strikes, u_hist={"ok": False, "resp": {}})
+    run("underlying-empty", strikes, u_hist=[])
+    run("underlying-no-timestamp", strikes, u_hist=[{"close": 1}])
+    run("quote-fails", strikes, quote=("fail", 0, "Broker busy"))
+    run("quote-fails-silently", strikes, quote=("fail", 0))
+    run("quote-zero", strikes, quote=("ok", 0))
+    run("no-strikes", [])
+    run("banknifty", [51000 + 100 * i for i in range(10)], under="BANKNIFTY", centre=51500.0, quote=("ok", 51520.0))
+    run("sensex", [79000 + 100 * i for i in range(14)], under="SENSEX", exch="BSE_INDEX", centre=79500.0, quote=("ok", 79540.0))
+    return {"now": NOW.isoformat(), "cases": cases}
+
+
 def record_strategy_chart():
     return _strategy_chart_cases("strategy_chart")
 
@@ -944,7 +1047,7 @@ def record_multi_strike_oi():
     return _strategy_chart_cases("multi_strike_oi")
 
 
-RECORDERS = {"sector_rotation": record_sector_rotation, "strategy_pnl": record_strategy_pnl, "arbitrage": record_arbitrage, "custom_straddle": record_custom_straddle, "straddle_chart": record_straddle_chart, "strategy_chart": record_strategy_chart, "multi_strike_oi": record_multi_strike_oi, "oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
+RECORDERS = {"iv_chart": record_iv_chart, "sector_rotation": record_sector_rotation, "strategy_pnl": record_strategy_pnl, "arbitrage": record_arbitrage, "custom_straddle": record_custom_straddle, "straddle_chart": record_straddle_chart, "strategy_chart": record_strategy_chart, "multi_strike_oi": record_multi_strike_oi, "oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
 
 if __name__ == "__main__":
     out = {name: fn() for name, fn in RECORDERS.items()}

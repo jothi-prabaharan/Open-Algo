@@ -448,4 +448,44 @@ public sealed class ToolsParityTests
         AssertSame(c["loads"], new JsonArray(loads.Select(x => (JsonNode)x).ToArray()));
         AssertSame(c["response"], response);
     }
+
+    public static IEnumerable<object[]> IvChartCases() => Fixtures["iv_chart"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
+
+    [Theory]
+    [MemberData(nameof(IvChartCases))]
+    public void The_option_greeks_chart_matches_OpenAlgo_candle_by_candle(int index, string name)
+    {
+        _ = name;
+        var c = Fixtures["iv_chart"]!["cases"]![index]!;
+        var history = c["history"]!.AsObject();
+        var calls = new List<JsonObject>();
+        StraddleChartTool.HistoryFetch fetch = (symbol, exchange, interval, start, end) =>
+        {
+            calls.Add(new JsonObject { ["symbol"] = symbol, ["exchange"] = exchange, ["interval"] = interval, ["start"] = start, ["end"] = end });
+            var value = history[symbol];
+            if (value is null) return (false, new JsonObject { ["message"] = "no history" }, 404);
+            if (value is JsonObject o) return (o["ok"]!.GetValue<bool>(), (JsonObject)o["resp"]!.DeepClone(), 200);
+            return (true, new JsonObject { ["data"] = value.DeepClone() }, 200);
+        };
+        var q = c["quote"]!.AsArray();
+        var quoteOk = q[0]!.GetValue<string>() == "ok";
+        StraddleChartTool.QuoteFetch quote = (_, _) => quoteOk
+            ? (true, new JsonObject { ["data"] = new JsonObject { ["ltp"] = q[1]!.GetValue<double>() } }, 200)
+            : (false, q.Count > 2 ? new JsonObject { ["message"] = q[2]!.GetValue<string>() } : new JsonObject(), 503);
+        var strikes = c["strikes"]!.AsArray().Select(x => x!.GetValue<double>()).ToList();
+        var now = Now("iv_chart");
+
+        var (ok, response, code) = IvChartTool.Compute(c["underlying"]!.GetValue<string>(), c["exchange"]!.GetValue<string>(), c["expiry"]!.GetValue<string>(), c["interval"]!.GetValue<string>(),
+            c["days"]!.GetValue<int>(), strikes, fetch, quote, now);
+        Assert.Equal(c["ok"]!.GetValue<bool>(), ok);
+        Assert.Equal(c["code"]!.GetValue<int>(), code);
+        AssertSame(c["calls"], new JsonArray(calls.OrderBy(x => x["symbol"]!.GetValue<string>(), StringComparer.Ordinal).ThenBy(x => x["exchange"]!.GetValue<string>(), StringComparer.Ordinal).Select(x => (JsonNode)x).ToArray()));
+        // Greeks come from a volatility solved to a hair short of OpenAlgo's, which shows at the ninth digit of unrounded prices only; every rounded figure is exact.
+        AssertSame(c["response"], response, 1e-8);
+
+        var (okD, responseD, codeD) = IvChartTool.DefaultSymbols(c["underlying"]!.GetValue<string>(), c["exchange"]!.GetValue<string>(), c["expiry"]!.GetValue<string>(), strikes, quote);
+        Assert.Equal(c["defaults"]!["ok"]!.GetValue<bool>(), okD);
+        Assert.Equal(c["defaults"]!["code"]!.GetValue<int>(), codeD);
+        AssertSame(c["defaults"]!["response"], responseD);
+    }
 }
