@@ -246,4 +246,72 @@ public sealed class ToolsParityTests
         AssertSame(c["sleeps"], new JsonArray(sleeps.Select(x => (JsonNode)JsonValue.Create(x)!).ToArray()));
         AssertSame(c["response"], result.Response);
     }
+
+    public static IEnumerable<object[]> StrategyChartCases() => Fixtures["strategy_chart"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
+
+    public static IEnumerable<object[]> MultiStrikeOiCases() => Fixtures["multi_strike_oi"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
+
+    private static void RunTimeSeries(string tool, int index)
+    {
+        var c = Fixtures[tool]!["cases"]![index]!;
+        var history = c["history"]!.AsObject();
+        var calls = new List<JsonObject>();
+        StrategyChartTools.HistoryFetch fetch = (symbol, exchange, interval, start, end) =>
+        {
+            calls.Add(new JsonObject { ["symbol"] = symbol, ["exchange"] = exchange, ["interval"] = interval, ["start"] = start, ["end"] = end });
+            var value = history[symbol];
+            if (value is null || (value is JsonValue v && v.TryGetValue<string>(out var text) && text == "fail")) return (false, new JsonObject { ["status"] = "error", ["message"] = "no history" }, 404);
+            if (value is JsonValue w && w.TryGetValue<string>(out var t2) && t2 == "no-data-key") return (true, new JsonObject { ["status"] = "success" }, 200);
+            return (true, new JsonObject { ["status"] = "success", ["data"] = value.DeepClone() }, 200);
+        };
+        var quoteOk = c["quote"]![0]!.GetValue<string>() == "ok";
+        StrategyChartTools.QuoteFetch quote = (_, _) => quoteOk ? (true, new JsonObject { ["data"] = new JsonObject { ["ltp"] = c["quote"]![1]!.GetValue<double>() } }, 200) : (false, new JsonObject { ["message"] = "x" }, 500);
+        var reference = c["reference"] as JsonArray;
+        StrategyChartTools.ReferenceResolver resolve = (_, _, _, _) => c["reference_enabled"]!.GetValue<bool>() && reference is not null ? (reference[0]!.GetValue<string>(), reference[1]!.GetValue<string>()) : null;
+        var request = new StrategyChartTools.Request(c["underlying"]!.GetValue<string>(), c["exchange"]!.GetValue<string>(), c["legs"] as JsonArray, c["interval"]!.GetValue<string>(), c["days"]!.GetValue<int>(),
+            c["u_sym"]?.GetValue<string>(), c["u_exch"]?.GetValue<string>(), c["start"]?.GetValue<string>(), c["end"]?.GetValue<string>());
+        var now = Now(tool);
+        var (ok, response, code) = tool == "strategy_chart" ? StrategyChartTools.CombinedPremium(request, resolve, fetch, quote, now) : StrategyChartTools.MultiStrikeOi(request, resolve, fetch, quote, now);
+        Assert.Equal(c["ok"]!.GetValue<bool>(), ok);
+        Assert.Equal(c["code"]!.GetValue<int>(), code);
+        AssertSame(c["calls"], new JsonArray(calls.OrderBy(x => x["symbol"]!.GetValue<string>(), StringComparer.Ordinal).ThenBy(x => x["exchange"]!.GetValue<string>(), StringComparer.Ordinal).Select(x => (JsonNode)x).ToArray()));
+        AssertSame(c["response"], response);
+    }
+
+    [Theory]
+    [MemberData(nameof(StrategyChartCases))]
+    public void The_strategy_chart_matches_OpenAlgo_candle_by_candle(int index, string name)
+    {
+        _ = name;
+        RunTimeSeries("strategy_chart", index);
+    }
+
+    [Theory]
+    [MemberData(nameof(MultiStrikeOiCases))]
+    public void The_multi_strike_OI_series_match_OpenAlgo(int index, string name)
+    {
+        _ = name;
+        RunTimeSeries("multi_strike_oi", index);
+    }
+
+    [Fact]
+    public void A_candle_with_no_close_is_skipped_where_OpenAlgo_writes_NaN()
+    {
+        // Known, deliberate divergence. OpenAlgo reads a missing close as NaN (pandas fills the gap) and float(nan) does not raise, so its chart point carries "underlying": NaN, which is not
+        // valid JSON. The code around it plainly means to skip such a candle (it catches KeyError and continues), so this does.
+        var t = DateTimeOffset.Parse("2026-11-11T04:00:00Z").ToUnixTimeSeconds();
+        JsonArray Rows(bool close) => new(Enumerable.Range(0, 3).Select(i =>
+        {
+            var o = new JsonObject { ["timestamp"] = t + i * 300, ["close"] = 100.0 + i };
+            if (!close && i == 1) o.Remove("close");
+            return (JsonNode)o;
+        }).ToArray());
+        var leg = new JsonObject { ["symbol"] = "NIFTY26NOV2624050CE", ["exchange"] = "NFO", ["side"] = "SELL", ["price"] = 100 };
+        StrategyChartTools.HistoryFetch history = (symbol, _, _, _, _) => (true, new JsonObject { ["data"] = Rows(symbol != "NIFTY") }, 200);
+        var request = new StrategyChartTools.Request("NIFTY", "NSE_INDEX", new JsonArray(leg), "5m", 3, null, null, null, null);
+        var (ok, response, _) = StrategyChartTools.CombinedPremium(request, (_, _, _, _) => ("NIFTY", "NSE_INDEX"), history, (_, _) => (true, new JsonObject { ["data"] = new JsonObject { ["ltp"] = 1 } }, 200), Now("strategy_chart"));
+        Assert.True(ok);
+        Assert.Equal(2, response["data"]!["series"]!.AsArray().Count);
+        Assert.DoesNotContain("NaN", response.ToJsonString());
+    }
 }

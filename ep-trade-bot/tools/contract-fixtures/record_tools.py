@@ -464,7 +464,111 @@ def record_oi_profile():
     return {"now": NOW.isoformat(), "cases": cases}
 
 
-RECORDERS = {"oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
+def _strategy_chart_cases(which):
+    """Shared harness for the two time-series tools that merge per-leg history: the combined-premium chart and the per-leg open-interest chart."""
+    import services.multi_strike_oi_service as ms
+    import services.strategy_chart_service as sc
+
+    import services.strategy_builder_reference_service as ref
+
+    REAL_REFERENCE = ref.resolve_strategy_builder_reference
+    sc.datetime = Frozen
+    mod = sc if which == "strategy_chart" else ms
+    fn = sc.get_strategy_chart_data if which == "strategy_chart" else ms.get_multi_strike_oi_data
+    midnight = int(NOW.replace(hour=0, minute=0, second=0).timestamp())
+    cases = []
+
+    def series(days_back, n=8, base=100.0, step=1.5, ms_ts=False, skip=(), no_close=(), oi=None, start_min=9 * 60 + 15):
+        rows = []
+        for d in days_back:
+            t0 = midnight - d * 86400 + start_min * 60 - 19800
+            for i in range(n):
+                if (d, i) in skip:
+                    continue
+                ts = t0 + i * 300
+                row = {"timestamp": ts * 1000 if ms_ts else ts, "open": base + i, "high": base + i + 1, "low": base + i - 1, "close": round(base + i * step + d, 2), "volume": 100 + i}
+                if (d, i) in no_close:
+                    del row["close"]
+                if oi is not None:
+                    row["oi"] = oi + i * 10 + d
+                rows.append(row)
+        return rows
+
+    def run(name, history, legs, days=3, interval="5m", under="NIFTY", exch="NSE_INDEX", u_sym=None, u_exch=None, start=None, end=None, quote=("ok", 24057.5), reference="real"):
+        calls = []
+
+        def get_history(symbol, exchange, interval, start_date, end_date, api_key):
+            calls.append({"symbol": symbol, "exchange": exchange, "interval": interval, "start": start_date, "end": end_date})
+            value = history.get(symbol, "missing")
+            if value == "missing" or value == "fail":
+                return False, {"status": "error", "message": "no history"}, 404
+            if value == "no-data-key":
+                return True, {"status": "success"}, 200
+            return True, {"status": "success", "data": json.loads(json.dumps(value))}, 200
+
+        resolved = []
+
+        def resolve(*a, **k):
+            r = None if reference is None else REAL_REFERENCE(*a, **k)
+            resolved.append(r)
+            return r
+
+        mod.get_history = get_history
+        mod.get_quotes = (lambda **kw: (True, {"data": {"ltp": quote[1]}}, 200)) if quote[0] == "ok" else (lambda **kw: (False, {"message": "x"}, 500))
+        mod.resolve_strategy_builder_reference = resolve
+        ok, resp, code = fn(under, exch, legs, interval, "key", days=days, underlying_symbol=u_sym, underlying_exchange=u_exch, start_date=start, end_date=end)
+        cases.append({"name": name, "underlying": under, "exchange": exch, "legs": legs, "interval": interval, "days": days, "u_sym": u_sym, "u_exch": u_exch, "start": start, "end": end,
+                      "history": history, "quote": list(quote), "reference": resolved[-1] if resolved else None, "reference_enabled": reference is not None, "calls": sorted(calls, key=lambda c: (c["symbol"], c["exchange"])),
+                      "ok": ok, "code": code, "response": resp})
+
+    leg = lambda sym, side="SELL", price=100.0, **kw: {"symbol": sym, "exchange": "NFO", "side": side, "segment": "OPTION", "price": price, "strike": 24050, "optionType": "CE" if sym.endswith("CE") else "PE", "expiry": "26NOV26", **kw}
+    ce, pe, ce2 = "NIFTY26NOV2624050CE", "NIFTY26NOV2624050PE", "NIFTY26NOV2624100CE"
+    d3 = (0, 1, 2)
+    legs2 = [leg(ce, "SELL", 120.5), leg(pe, "SELL", 110.25)]
+    base = {"NIFTY": series(d3, base=24000, step=3), ce: series(d3, base=120, oi=50000), pe: series(d3, base=110, oi=60000)}
+    run("straddle-credit", base, legs2)
+    run("debit-spread", {**base, ce2: series(d3, base=60, oi=40000)}, [leg(ce, "BUY", 120.5), leg(ce2, "SELL", 60.0)])
+    run("flat-entry", base, [leg(ce, "BUY", 100), leg(pe, "SELL", 100)])
+    run("days-1", base, legs2, days=1)
+    run("days-2-ms-timestamps", {**base, ce: series(d3, base=120, ms_ts=True, oi=1), pe: series(d3, base=110, ms_ts=True, oi=1), "NIFTY": series(d3, base=24000, ms_ts=True)}, legs2, days=2)
+    run("leg-missing-candles", {**base, pe: series(d3, base=110, skip={(0, 1), (0, 3), (1, 5)}, oi=2)}, legs2)
+    run("underlying-missing-candles", {**base, "NIFTY": series(d3, base=24000, skip={(0, 2), (0, 4)})}, legs2)
+    run("underlying-history-fails", {k: v for k, v in base.items() if k != "NIFTY"}, legs2)
+    run("underlying-empty", {**base, "NIFTY": []}, legs2)
+    run("underlying-no-timestamp", {**base, "NIFTY": [{"close": 1}, {"close": 2}]}, legs2)
+    run("no-overlap", {**base, ce: series((5,), base=120), pe: series((6,), base=110)}, legs2)
+    run("no-underlying-no-overlap", {ce: series(d3), pe: series(d3, skip={(d, k) for d in d3 for k in range(8)})}, legs2)
+    run("leg-history-fails", {"NIFTY": base["NIFTY"], ce: "fail", pe: base[pe]}, legs2)
+    run("leg-history-without-data", {"NIFTY": base["NIFTY"], ce: "no-data-key", pe: base[pe]}, legs2)
+    run("duplicate-legs", base, [leg(ce, "SELL", 100), leg(ce, "SELL", 100), leg(pe, "BUY", 50)])
+    run("filtered-legs", base, [leg(ce, "SELL", 100), leg(pe, "SELL", 100, active=False), leg("NIFTY26NOVFUT", "BUY", 24000, segment="FUTURE"), leg("X", "HOLD"), {"symbol": "Y", "side": "BUY"}, "junk", None, leg(pe, "buy", "bad")])
+    run("string-price", base, [leg(ce, "SELL", "120.5"), leg(pe, "SELL", None)])
+    run("explicit-window", base, legs2, start="2026-11-01", end="2026-11-10")
+    run("explicit-window-open-end", base, legs2, start="2026-11-05")
+    run("explicit-window-bad-date", base, legs2, start="2026-02-31")
+    run("explicit-window-shape", base, legs2, start="11/05/2026")
+    run("explicit-window-before-2000", base, legs2, start="1999-12-31")
+    run("explicit-window-inverted", base, legs2, start="2026-11-10", end="2026-11-01")
+    run("explicit-window-too-wide", base, legs2, start="2025-01-01", end="2026-11-10")
+    run("no-legs", base, [])
+    run("no-underlying-name", base, legs2, under="  ")
+    run("no-reference", base, legs2, exch="NCDEX", reference=None)
+    run("given-reference", {**base, "NIFTY-X": series(d3, base=24000)}, legs2, u_sym="nifty-x", u_exch="nse_index")
+    run("banknifty", {"BANKNIFTY": series(d3, base=52000), ce: series(d3, base=500), pe: series(d3, base=480)}, legs2, under="BANKNIFTY")
+    run("quote-fails", base, legs2, quote=("fail", 0))
+    run("sensex-bse", {"SENSEX": series(d3, base=80000), ce: series(d3, base=500), pe: series(d3, base=480)}, [leg(ce, "SELL", 5, exchange="BFO"), leg(pe, "SELL", 5, exchange="BFO")], under="SENSEX", exch="BFO")
+    return {"now": NOW.isoformat(), "cases": cases}
+
+
+def record_strategy_chart():
+    return _strategy_chart_cases("strategy_chart")
+
+
+def record_multi_strike_oi():
+    return _strategy_chart_cases("multi_strike_oi")
+
+
+RECORDERS = {"strategy_chart": record_strategy_chart, "multi_strike_oi": record_multi_strike_oi, "oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
 
 if __name__ == "__main__":
     out = {name: fn() for name, fn in RECORDERS.items()}
