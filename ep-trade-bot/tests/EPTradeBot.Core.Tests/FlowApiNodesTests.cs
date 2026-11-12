@@ -1233,3 +1233,99 @@ public sealed class FlowHttpRequestNodeTests
         Assert.Null(run.Context.Get("res"));
     }
 }
+
+public sealed class FlowSubscribeNodeTests
+{
+    private sealed class Api(JsonObject answer) : IFlowApi
+    {
+        public List<(string Api, JsonObject Body)> Calls { get; } = [];
+
+        public Task<JsonObject> CallAsync(string api, JsonObject body, CancellationToken ct)
+        {
+            Calls.Add((api, (JsonObject)body.DeepClone()));
+            return Task.FromResult((JsonObject)answer.DeepClone());
+        }
+    }
+
+    private static readonly DateTime Noon = new DateTime(2026, 11, 11, 12, 0, 0, DateTimeKind.Utc) - EPTradeBot.Core.Time.Ist.Offset;
+
+    private static async Task<(Api Api, FlowRun Run, FlowOutcome Outcome)> RunAsync(string type, JsonObject data, JsonObject answer, JsonObject? tick = null)
+    {
+        var api = new Api(answer);
+        var host = new FlowHost(api, "t") { Stream = tick is null ? null : (_, _, _, _, _) => Task.FromResult<JsonObject?>(tick) };
+        var run = new FlowRun(() => Noon, host: host);
+        var outcome = await new FlowRunner(CoreFlowNodes.All().Concat(ApiFlowNodes.All())).RunAsync(new FlowGraph([new("s", "start", []), new("n", type, data)], [new("s", "n", "")]), run, default);
+        return (api, run, outcome);
+    }
+
+    private static JsonObject Ok(string data) => new() { ["status"] = "success", ["data"] = JsonNode.Parse(data) };
+
+    [Fact]
+    public async Task Without_a_live_stream_the_ltp_comes_from_the_broker_and_goes_to_the_variable_and_the_output()
+    {
+        var (api, run, outcome) = await RunAsync("subscribeLtp", new() { ["symbol"] = "SBIN", ["outputVariable"] = "px" }, Ok("""{"ltp":501.5}"""));
+        Assert.True(outcome.Succeeded, outcome.Message);
+        Assert.Equal(("quotes", """{"symbol":"SBIN","exchange":"NSE"}"""), (api.Calls[0].Api, api.Calls[0].Body.ToJsonString()));
+        // A named output variable receives the whole result (as in OpenAlgo, where storing the output follows setting the bare value).
+        Assert.Equal(501.5, run.Context.Get("px")!["ltp"]!.GetValue<double>());
+        Assert.Equal("rest_api", run.Context.Get("px")!["source"]!.GetValue<string>());
+        Assert.Contains(run.Logs, l => l.Message == "LTP for SBIN: 501.5 (via REST API)");
+    }
+
+    [Fact]
+    public async Task A_live_tick_is_used_when_there_is_one_and_the_broker_is_not_asked()
+    {
+        var (api, run, outcome) = await RunAsync("subscribeLtp", new() { ["symbol"] = "SBIN" }, Ok("{}"), JsonNode.Parse("""{"data":{"ltp":0},"ltp":7}""")!.AsObject());
+        Assert.True(outcome.Succeeded);
+        Assert.Empty(api.Calls);
+        Assert.Equal(0, run.Context.Get("ltp")!.GetValue<int>());   // a nested price of zero is still a price; the top level is only for a missing one
+    }
+
+    [Fact]
+    public async Task The_quote_has_a_fixed_shape_with_close_falling_back_to_the_previous_close()
+    {
+        var (_, run, _) = await RunAsync("subscribeQuote", new() { ["symbol"] = "SBIN" }, Ok("""{"ltp":10,"open":9,"high":11,"low":8,"prev_close":9.5,"volume":1000}"""));
+        Assert.Equal("""{"ltp":10,"open":9,"high":11,"low":8,"close":9.5,"volume":1000,"prev_close":9.5}""", run.Context.Get("quote")!.ToJsonString());
+        var (_, empty, _) = await RunAsync("subscribeQuote", new() { ["symbol"] = "SBIN" }, Ok("{}"));
+        Assert.Equal("{}", empty.Context.Get("quote")!.ToJsonString());
+    }
+
+    [Fact]
+    public async Task A_streamed_quote_takes_the_nested_values_first_and_skips_zeros()
+    {
+        var tick = JsonNode.Parse("""{"data":{"ltp":10,"open":0,"prev_close":9},"open":8,"high":12,"low":7,"volume":55}""")!.AsObject();
+        var (_, run, _) = await RunAsync("subscribeQuote", new() { ["symbol"] = "SBIN" }, Ok("{}"), tick);
+        Assert.Equal("""{"ltp":10,"open":8,"high":12,"low":7,"close":9,"volume":55,"prev_close":9}""", run.Context.Get("quote")!.ToJsonString());
+    }
+
+    [Fact]
+    public async Task Depth_from_the_broker_and_from_a_stream_have_the_same_fields()
+    {
+        var (api, run, _) = await RunAsync("subscribeDepth", new() { ["symbol"] = "SBIN" }, Ok("""{"bids":[{"price":10,"quantity":5}],"asks":[],"totalbuyqty":5,"ltp":10}"""));
+        Assert.Equal("depth", api.Calls[0].Api);
+        Assert.Equal("""{"bids":[{"price":10,"quantity":5}],"asks":[],"totalbuyqty":5,"totalsellqty":0,"ltp":10}""", run.Context.Get("depth")!.ToJsonString());
+
+        var tick = JsonNode.Parse("""{"depth":{"buy":[{"price":10,"volume":7}],"sell":[{"price":11,"quantity":3}]},"ltp":10.5}""")!.AsObject();
+        (_, run, _) = await RunAsync("subscribeDepth", new() { ["symbol"] = "SBIN" }, Ok("{}"), tick);
+        Assert.Equal("""{"bids":[{"price":10,"quantity":7}],"asks":[{"price":11,"quantity":3}],"totalbuyqty":0,"totalsellqty":0,"ltp":10.5}""", run.Context.Get("depth")!.ToJsonString());
+    }
+
+    [Fact]
+    public async Task A_broker_error_and_a_missing_symbol_fail_the_node_with_the_reason()
+    {
+        var (_, run, outcome) = await RunAsync("subscribeLtp", new() { ["symbol"] = "SBIN" }, new JsonObject { ["status"] = "error", ["error"] = "token expired" });
+        Assert.False(outcome.Succeeded);
+        Assert.Contains(run.Logs, l => l.Level == "error" && l.Message == "Subscribe LTP error: token expired");
+        (_, run, outcome) = await RunAsync("subscribeQuote", [], Ok("{}"));
+        Assert.False(outcome.Succeeded);
+        Assert.Contains(run.Logs, l => l.Message == "Subscribe Quote: No symbol specified");
+    }
+
+    [Fact]
+    public async Task Unsubscribing_succeeds_because_a_run_holds_no_stream()
+    {
+        var (api, _, outcome) = await RunAsync("unsubscribe", new() { ["streamType"] = "ltp", ["symbol"] = "SBIN" }, Ok("{}"));
+        Assert.True(outcome.Succeeded);
+        Assert.Empty(api.Calls);
+    }
+}

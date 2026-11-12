@@ -481,7 +481,7 @@ public sealed class CheckNodes : IFlowNode
 /// <summary>The node types that reach the platform's API.</summary>
 public static class ApiFlowNodes
 {
-    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode(), new OptionsOrderNode(), new OptionsMultiOrderNode(), new BasketOrderNode(), new HistoryNodes(), new MarginNode(), new HttpRequestNode()];
+    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode(), new OptionsOrderNode(), new OptionsMultiOrderNode(), new BasketOrderNode(), new HistoryNodes(), new MarginNode(), new HttpRequestNode(), new SubscribeNodes()];
 }
 
 /// <summary>The nodes that look up instruments, expiries, option chains and the exchange calendar through the platform and keep the answer in a variable.</summary>
@@ -1389,5 +1389,158 @@ public sealed class HttpRequestNode : IFlowNode
         var result = new JsonObject { ["status"] = response.IsSuccess ? "success" : "error", ["statusCode"] = response.Status, ["data"] = data };
         ApiNodeSupport.Store(node, run, result);
         return FlowApiResults.ToResult(result);
+    }
+}
+
+/// <summary>
+/// Subscribe LTP, quote and depth: the live value from the stream when there is one (within a few seconds), otherwise from the broker. The answer is kept in the node's variable as well as its output.
+/// Unsubscribe has nothing to release in a workflow run, which holds no stream of its own.
+/// </summary>
+public sealed class SubscribeNodes : IFlowNode
+{
+    public IReadOnlyList<string> Types => ["subscribeLtp", "subscribeQuote", "subscribeDepth", "unsubscribe"];
+
+    private static bool Truthy(JsonNode? n) => n is not null && !(n is JsonValue v && ((v.TryGetValue<bool>(out var b) && !b) || (FlowData.TryNumber(v, out var d) && d == 0) || (v.TryGetValue<string>(out var s) && s.Length == 0))) && !(n is JsonArray a && a.Count == 0) && !(n is JsonObject o && o.Count == 0);
+
+    /// <summary>The first truthy value among the candidates (Python's <c>a or b or c</c>), else the last one.</summary>
+    private static JsonNode? Or(params JsonNode?[] candidates) => candidates.FirstOrDefault(Truthy) ?? candidates[^1];
+
+    private static JsonNode? Num(JsonNode? n) => n?.DeepClone();
+
+    private static JsonNode? Get(JsonObject? o, string key) => o?[key]?.DeepClone();
+
+    public async Task<FlowNodeResult?> ExecuteAsync(FlowNode node, FlowRun run, CancellationToken ct)
+    {
+        var host = ApiNodeSupport.HostOf(run);
+        var ctx = run.Context;
+        var symbol = node.Data.Str(ctx, "symbol", "");
+        var exchange = node.Data.Str(ctx, "exchange", "NSE");
+
+        if (node.Type == "unsubscribe")
+        {
+            var stream = node.Data.Str(ctx, "streamType", "all");
+            run.Log($"Unsubscribing from {stream} stream: {(symbol.Length > 0 ? symbol : "all")} ({exchange})");
+            return FlowApiResults.ToResult(new JsonObject { ["status"] = "success", ["type"] = "unsubscribe", ["message"] = "No active WebSocket connection" });
+        }
+
+        var (kind, label, defaultVariable, timeout) = node.Type switch
+        {
+            "subscribeLtp" => ("ltp", "LTP", "ltp", 5.0),
+            "subscribeQuote" => ("quote", "Quote", "quote", 5.0),
+            _ => ("depth", "Depth", "depth", 3.0),
+        };
+        var variable = node.Data["outputVariable"] is JsonValue ov && ov.TryGetValue<string>(out var name) && name.Length > 0 ? name : defaultVariable;
+        if (symbol.Length == 0)
+        {
+            run.Log($"Subscribe {label}: No symbol specified", "error");
+            return FlowApiResults.ToResult(new JsonObject { ["status"] = "error", ["message"] = "No symbol specified" });
+        }
+
+        run.Log($"Subscribing to {label} stream: {symbol} ({exchange})");
+        JsonObject? tick = host.Stream is null ? null : await host.Stream(symbol, exchange, label, TimeSpan.FromSeconds(timeout), ct);
+        JsonNode value;
+        string source;
+        if (tick is not null && tick.Count > 0)
+        {
+            (value, source) = (kind switch { "ltp" => FromStreamLtp(tick), "quote" => FromStreamQuote(tick), _ => FromStreamDepth(tick) }, "websocket");
+        }
+        else
+        {
+            run.Log($"WebSocket timeout/failed, falling back to REST API for {symbol}");
+            JsonObject result;
+            try
+            {
+                result = await host.Api.CallAsync(kind == "depth" ? "depth" : "quotes", new JsonObject { ["symbol"] = symbol, ["exchange"] = exchange }, ct);
+            }
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                run.Log($"Subscribe {label} exception: {e.Message}", "error");
+                return FlowApiResults.ToResult(new JsonObject { ["status"] = "error", ["type"] = kind, ["symbol"] = symbol, ["exchange"] = exchange, ["error"] = e.Message });
+            }
+
+            if (!FlowApiResults.IsSuccess(result))
+            {
+                var error = result["error"]?.DeepClone() ?? JsonValue.Create($"Failed to get {(kind == "depth" ? "depth" : kind == "ltp" ? "LTP" : "quote")}");
+                run.Log($"Subscribe {label} error: {FlowContext.PyStr(error)}", "error");
+                return FlowApiResults.ToResult(new JsonObject { ["status"] = "error", ["type"] = kind, ["symbol"] = symbol, ["exchange"] = exchange, ["error"] = error });
+            }
+
+            var data = result["data"] as JsonObject;
+            (value, source) = (kind switch { "ltp" => Or(Get(data, "ltp"), JsonValue.Create(0)) ?? 0, "quote" => data is { Count: > 0 } ? QuoteFrom(data) : new JsonObject(), _ => data is { Count: > 0 } ? DepthFrom(data) : new JsonObject { ["bids"] = new JsonArray(), ["asks"] = new JsonArray() } }, "rest_api");
+        }
+
+        run.Context.Set(variable, value.DeepClone());
+        var streamed = new JsonObject { ["status"] = "success", ["type"] = kind, ["symbol"] = symbol, ["exchange"] = exchange };
+        streamed[kind == "ltp" ? "ltp" : "data"] = value.DeepClone();
+        streamed["source"] = source;
+        run.Log(kind switch
+        {
+            "ltp" => $"LTP for {symbol}: {FlowContext.PyStr(value)} (via {(source == "websocket" ? "WebSocket" : "REST API")})",
+            "quote" => $"Quote for {symbol}: LTP={FlowContext.PyStr(value["ltp"])} (via {(source == "websocket" ? "WebSocket" : "REST API")})",
+            _ => $"Depth for {symbol} via {(source == "websocket" ? "WebSocket" : "REST API")}",
+        });
+        ApiNodeSupport.Store(node, run, streamed);
+        return FlowApiResults.ToResult(streamed);
+    }
+
+    private static JsonNode FromStreamLtp(JsonObject ws)
+    {
+        var nested = ws["data"] as JsonObject;
+        return (nested?["ltp"] is not null ? nested["ltp"]!.DeepClone() : Get(ws, "ltp")) ?? JsonValue.Create(0)!;
+    }
+
+    private static JsonObject FromStreamQuote(JsonObject ws)
+    {
+        var n = ws["data"] as JsonObject;
+        JsonNode Zero() => JsonValue.Create(0)!;
+        return new JsonObject
+        {
+            ["ltp"] = (n?["ltp"] is not null ? n["ltp"]!.DeepClone() : Get(ws, "ltp")) ?? Zero(), ["open"] = (Truthy(Get(n, "open")) ? Get(n, "open") : Get(ws, "open")) ?? Zero(),
+            ["high"] = (Truthy(Get(n, "high")) ? Get(n, "high") : Get(ws, "high")) ?? Zero(), ["low"] = (Truthy(Get(n, "low")) ? Get(n, "low") : Get(ws, "low")) ?? Zero(),
+            ["close"] = Or(Get(n, "close"), Get(n, "prev_close"), Get(ws, "close") ?? Get(ws, "prev_close") ?? Zero()), ["volume"] = (Truthy(Get(n, "volume")) ? Get(n, "volume") : Get(ws, "volume")) ?? Zero(),
+            ["prev_close"] = (Truthy(Get(n, "prev_close")) ? Get(n, "prev_close") : Get(ws, "prev_close")) ?? Zero(),
+        };
+    }
+
+    private static JsonObject QuoteFrom(JsonObject data) => new()
+    {
+        ["ltp"] = Get(data, "ltp") ?? 0, ["open"] = Get(data, "open") ?? 0, ["high"] = Get(data, "high") ?? 0, ["low"] = Get(data, "low") ?? 0, ["close"] = Get(data, "close") ?? Get(data, "prev_close") ?? 0,
+        ["volume"] = Get(data, "volume") ?? 0, ["prev_close"] = Get(data, "prev_close") ?? 0,
+    };
+
+    private static JsonObject DepthFrom(JsonObject data) => new()
+    {
+        ["bids"] = Get(data, "bids") ?? new JsonArray(), ["asks"] = Get(data, "asks") ?? new JsonArray(), ["totalbuyqty"] = Get(data, "totalbuyqty") ?? 0, ["totalsellqty"] = Get(data, "totalsellqty") ?? 0, ["ltp"] = Get(data, "ltp") ?? 0,
+    };
+
+    private static JsonObject FromStreamDepth(JsonObject ws)
+    {
+        var n = ws["data"] as JsonObject;
+        var depth = (Truthy(ws["depth"]) ? ws["depth"] : n?["depth"]) as JsonObject;
+        JsonNode bids, asks;
+        if (depth is not null && (Truthy(depth["buy"]) || Truthy(depth["sell"])))
+        {
+            JsonNode Level(JsonNode? list)
+            {
+                if (list is not JsonArray a || a.Count == 0) return list?.DeepClone() ?? new JsonArray();
+                if (a[0] is JsonObject first && first.ContainsKey("price"))
+                    return new JsonArray(a.OfType<JsonObject>().Select(b => (JsonNode)new JsonObject { ["price"] = Get(b, "price") ?? 0, ["quantity"] = Get(b, "quantity") ?? Get(b, "volume") ?? 0 }).ToArray());
+                return a.DeepClone();
+            }
+
+            bids = Level(depth["buy"]);
+            asks = Level(depth["sell"]);
+        }
+        else
+        {
+            bids = (Truthy(Get(n, "bids")) ? Get(n, "bids") : Get(ws, "bids")) ?? new JsonArray();
+            asks = (Truthy(Get(n, "asks")) ? Get(n, "asks") : Get(ws, "asks")) ?? new JsonArray();
+        }
+
+        return new JsonObject
+        {
+            ["bids"] = bids, ["asks"] = asks, ["totalbuyqty"] = (Truthy(Get(n, "totalbuyqty")) ? Get(n, "totalbuyqty") : Get(ws, "totalbuyqty")) ?? 0,
+            ["totalsellqty"] = (Truthy(Get(n, "totalsellqty")) ? Get(n, "totalsellqty") : Get(ws, "totalsellqty")) ?? 0, ["ltp"] = (n?["ltp"] is not null ? n["ltp"]!.DeepClone() : Get(ws, "ltp")) ?? 0,
+        };
     }
 }

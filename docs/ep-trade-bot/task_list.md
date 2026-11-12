@@ -79,7 +79,7 @@ Not started (30): fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, defin
 - [ ] The 31 /api/v1 pairs that sit on TG4 features (option greeks, portfolio, SIP, sector rotation, strategy, Telegram, WhatsApp)
 - [x] Quartz.NET with IST schedules and weekday controls (`Core/Scheduling`, `Infrastructure/Scheduling`; 55 tests, 33 mutants)
 - [x] Hosted strategy process supervisor (`Infrastructure/Scheduling/StrategySupervisor`; 38 tests, 27 mutants; resource limits left to TG6)
-- [ ] Flow engine and node types: engine, persistence, triggers, endpoints and 54 of 61 node types done and verified (`Core/Flow`, `Infrastructure/Flow`; 100 mutants); 7 node types remain and are refused by name (strategy P&L, Telegram, WhatsApp, subscribe depth/LTP/quote, unsubscribe)
+- [ ] Flow engine and node types: engine, persistence, triggers, endpoints and 58 of 61 node types done and verified (`Core/Flow`, `Infrastructure/Flow`; 100 mutants); 3 node types remain and are refused by name (strategy P&L, Telegram alert, WhatsApp alert: they need the strategy book and the messaging services)
 - [x] 127 indicators with parity tests (`Core/Indicators`; 255 recorded cases against `openalgo.ta`, 21 mutation checks)
 - [x] Action Center Auto / Semi-Auto, re-check at approval
 - [x] Agent on Microsoft.Extensions.AI, proposal-only order tools (`Infrastructure/Agent`; 25 tests, 22 mutants; no tool can send an order)

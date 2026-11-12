@@ -42,7 +42,12 @@ public sealed record FlowHost(IFlowApi Api, string StrategyTag)
 
     /// <summary>Sends the HTTP request node's request. Absent in a host that must not reach the network.</summary>
     public IFlowHttp? Http { get; init; }
+
+    /// <summary>The latest streamed tick (LTP, quote or depth) for a symbol, waiting up to a timeout; null when there is no live stream, and the node falls back to asking the broker.</summary>
+    public StreamTickLookup? Stream { get; init; }
 }
+
+public delegate Task<JsonObject?> StreamTickLookup(string symbol, string exchange, string mode, TimeSpan timeout, CancellationToken ct);
 
 /// <summary>What came back from an outbound request.</summary>
 public sealed record FlowHttpResponse(int Status, bool IsSuccess, string Text);
