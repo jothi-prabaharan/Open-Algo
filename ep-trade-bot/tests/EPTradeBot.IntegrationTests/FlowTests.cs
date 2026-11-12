@@ -127,14 +127,14 @@ public sealed class FlowTests
     {
         var s = await NewAsync();
         await using var _ = s.Host;
-        var id = await CreateAsync(s, "basket", ([Node("s", "start"), Node("b", "telegramAlert")], [Edge("s", "b")]));
+        var id = await CreateAsync(s, "basket", ([Node("s", "start"), Node("b", "strategyPnl")], [Edge("s", "b")]));
 
         var (status, refused) = await SendAsync(s.Host.Admin, HttpMethod.Post, $"/api/v1/flows/{id}/activate");
         Assert.Equal(HttpStatusCode.BadRequest, status);
-        Assert.Contains("cannot run telegramAlert", refused["message"]!.GetValue<string>());
+        Assert.Contains("cannot run strategyPnl", refused["message"]!.GetValue<string>());
         var (runStatus, run) = await SendAsync(s.Host.Admin, HttpMethod.Post, $"/api/v1/flows/{id}/run");
         Assert.Equal(HttpStatusCode.Conflict, runStatus);
-        Assert.Contains("cannot run telegramAlert", run["message"]!.GetValue<string>());
+        Assert.Contains("cannot run strategyPnl", run["message"]!.GetValue<string>());
     }
 
     [PostgresFact]

@@ -481,7 +481,7 @@ public sealed class CheckNodes : IFlowNode
 /// <summary>The node types that reach the platform's API.</summary>
 public static class ApiFlowNodes
 {
-    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode(), new OptionsOrderNode(), new OptionsMultiOrderNode(), new BasketOrderNode(), new HistoryNodes(), new MarginNode(), new HttpRequestNode(), new SubscribeNodes()];
+    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode(), new OptionsOrderNode(), new OptionsMultiOrderNode(), new BasketOrderNode(), new HistoryNodes(), new MarginNode(), new HttpRequestNode(), new SubscribeNodes(), new AlertNodes()];
 }
 
 /// <summary>The nodes that look up instruments, expiries, option chains and the exchange calendar through the platform and keep the answer in a variable.</summary>
@@ -1542,5 +1542,34 @@ public sealed class SubscribeNodes : IFlowNode
             ["bids"] = bids, ["asks"] = asks, ["totalbuyqty"] = (Truthy(Get(n, "totalbuyqty")) ? Get(n, "totalbuyqty") : Get(ws, "totalbuyqty")) ?? 0,
             ["totalsellqty"] = (Truthy(Get(n, "totalsellqty")) ? Get(n, "totalsellqty") : Get(ws, "totalsellqty")) ?? 0, ["ltp"] = (n?["ltp"] is not null ? n["ltp"]!.DeepClone() : Get(ws, "ltp")) ?? 0,
         };
+    }
+}
+
+
+/// <summary>Telegram and WhatsApp alerts: the message is built from the workflow's variables and handed to the platform, which finds the person it goes to.</summary>
+public sealed class AlertNodes : IFlowNode
+{
+    public IReadOnlyList<string> Types => ["telegramAlert", "whatsappAlert"];
+
+    public async Task<FlowNodeResult?> ExecuteAsync(FlowNode node, FlowRun run, CancellationToken ct)
+    {
+        var host = ApiNodeSupport.HostOf(run);
+        var message = run.Context.Interpolate(node.Data["message"] is JsonValue m ? FlowContext.PyStr(m) : "");
+        JsonObject result;
+        if (node.Type == "telegramAlert")
+        {
+            run.Log($"Sending Telegram alert: {message}");
+            result = await host.Api.CallAsync("telegram", new JsonObject { ["message"] = message }, ct);
+            run.Log($"Telegram result: {result.ToJsonString()}", ApiNodeSupport.Level(result));
+        }
+        else
+        {
+            var to = run.Context.Interpolate(node.Data["to"] is JsonValue t ? FlowContext.PyStr(t) : "");
+            run.Log($"Sending WhatsApp alert to {(to.Length > 0 ? to : "self")}: {message}");
+            result = await host.Api.CallAsync("whatsapp", new JsonObject { ["message"] = message, ["to"] = to.Length > 0 ? to : null }, ct);
+            run.Log($"WhatsApp result: {result.ToJsonString()}", ApiNodeSupport.Level(result));
+        }
+
+        return FlowApiResults.ToResult(result);
     }
 }

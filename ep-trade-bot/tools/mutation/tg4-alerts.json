@@ -1,0 +1,58 @@
+[
+ {
+  "name": "A1 alert sent while the bot is stopped",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Alerts.cs",
+  "old": "if (!await telegram.IsActiveAsync(ct))",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~FlowAlertTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "A2 alerts sent to a person who turned them off",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Alerts.cs",
+  "old": "if (user.NotificationsEnabled != true)",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~FlowAlertTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "A3 header dropped",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Alerts.cs",
+  "old": "*Flow Alert*",
+  "new": "Alert",
+  "filter": "FullyQualifiedName~FlowAlertTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "A4 sent as plain text",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Alerts.cs",
+  "old": "CancellationToken.None, \"Markdown\"",
+  "new": "CancellationToken.None, null",
+  "filter": "FullyQualifiedName~FlowAlertTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "A5 phone not validated",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Alerts.cs",
+  "old": "if (digits.Length == 0)",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~FlowAlertTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "A6 failed delivery reported as success",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.Alerts.cs",
+  "old": "if (report.Failed.Count > 0)",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~FlowAlertTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "A7 message not built from workflow values",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "var message = run.Context.Interpolate(node.Data[\"message\"] is JsonValue m ? FlowContext.PyStr(m) : \"\");",
+  "new": "var message = node.Data[\"message\"] is JsonValue m ? FlowContext.PyStr(m) : \"\";",
+  "filter": "FullyQualifiedName~FlowAlertTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

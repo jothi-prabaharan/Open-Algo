@@ -68,6 +68,8 @@ public sealed class FlowApi(OpenAlgoApiService service, BrokerAccount account, s
             "splitorder" => service.SplitOrderAsync(account, Read<SplitOrderRequest>(), ct),
             "optionsorder" => service.OptionsOrderAsync(account, Read<OptionsOrderRequest>(), ct),
             "optionsmultiorder" => service.OptionsMultiOrderAsync(account, Read<OptionsMultiOrderRequest>(), ct),
+            "telegram" => service.TelegramAlertAsync(account, body["message"]?.GetValue<string>() ?? "", ct),
+            "whatsapp" => service.WhatsAppAlertAsync(account, body["message"]?.GetValue<string>() ?? "", body["to"]?.GetValue<string>(), ct),
             "analyzer" => Task.FromResult(service.Analyzer(account)),
             "intervals" => Task.FromResult(service.Intervals(account)),
             _ => Task.FromResult(V1Result.Error(404, $"Flow cannot call '{api}'.")),

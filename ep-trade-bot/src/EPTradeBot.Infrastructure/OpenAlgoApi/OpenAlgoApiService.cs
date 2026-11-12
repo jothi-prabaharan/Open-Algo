@@ -44,6 +44,8 @@ public sealed partial class OpenAlgoApiService(
     ActionCenterStore actionCenter,
     TimeProvider clock,
     IConfiguration configuration,
+    EPTradeBot.Infrastructure.Messaging.TelegramService telegram,
+    EPTradeBot.Infrastructure.Messaging.WhatsAppService whatsapp,
     ILogger<OpenAlgoApiService> logger)
 {
     // ---- orders ----------------------------------------------------------------------------------------------

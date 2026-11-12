@@ -144,14 +144,14 @@ public sealed class TelegramService(IDbContextFactory<EpTradeDbContext> contexts
     }
 
     /// <summary>Sends one message to a chat. False when Telegram refuses or cannot be reached.</summary>
-    public async Task<bool> SendAsync(long telegramId, string text, CancellationToken ct)
+    public async Task<bool> SendAsync(long telegramId, string text, CancellationToken ct, string? parseMode = null)
     {
         await using var db = await contexts.CreateDbContextAsync(ct);
         var token = Token(await LoadConfigAsync(db, ct));
         if (string.IsNullOrEmpty(token)) return false;
         try
         {
-            using var body = new StringContent(new JsonObject { ["chat_id"] = telegramId, ["text"] = text }.ToJsonString(), Encoding.UTF8, "application/json");
+            using var body = new StringContent(new JsonObject { ["chat_id"] = telegramId, ["text"] = text, ["parse_mode"] = parseMode }.ToJsonString(), Encoding.UTF8, "application/json");
             using var response = await Client().PostAsync($"https://api.telegram.org/bot{token}/sendMessage", body, ct);
             return response.IsSuccessStatusCode;
         }
@@ -193,6 +193,16 @@ public sealed class TelegramService(IDbContextFactory<EpTradeDbContext> contexts
     {
         await using var db = await contexts.CreateDbContextAsync(ct);
         return await db.Set<TelegramUser>().AsNoTracking().Where(u => u.OpenalgoUsername == username && u.IsActive == true).FirstOrDefaultAsync(ct);
+    }
+
+    /// <summary>The person a Flow alert goes to: the linked user named like the account, or the only one linked (this is a single-user platform).</summary>
+    public async Task<TelegramUser?> UserForAlertAsync(string accountName, CancellationToken ct)
+    {
+        await using var db = await contexts.CreateDbContextAsync(ct);
+        var active = db.Set<TelegramUser>().AsNoTracking().Where(u => u.IsActive == true);
+        if (await active.Where(u => u.OpenalgoUsername == accountName).FirstOrDefaultAsync(ct) is { } named) return named;
+        var all = await active.Take(2).ToListAsync(ct);
+        return all.Count == 1 ? all[0] : null;
     }
 
     public async Task<(int Sent, int Failed)> BroadcastAsync(string text, CancellationToken ct)
