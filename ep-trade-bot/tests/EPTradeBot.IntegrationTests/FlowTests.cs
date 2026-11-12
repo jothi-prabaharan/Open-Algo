@@ -122,19 +122,64 @@ public sealed class FlowTests
         Assert.Equal(HttpStatusCode.NotFound, (await SendAsync(s.Host.Admin, HttpMethod.Get, $"/api/v1/flows/{Guid.NewGuid()}")).Status);
     }
 
+    private static async Task PlaceAsync(Setup s, string action, int quantity, string strategy)
+    {
+        using var client = s.Host.Anonymous();
+        var (status, body) = await SendAsync(client, HttpMethod.Post, "/api/v1/placeorder", new { apikey = s.ReadKey, strategy, symbol = "SBIN", exchange = "NSE", action, quantity, pricetype = "MARKET", product = "MIS" });
+        Assert.True(status == HttpStatusCode.OK, body.ToJsonString());
+    }
+
+    private static async Task<(string Status, JsonArray Logs)> RunPnlFlowAsync(Setup s, string name, JsonObject? data = null)
+    {
+        var id = await CreateAsync(s, name, ([Node("s", "start"), Node("p", "strategyPnl", data ?? new() { ["strategy"] = "alpha", ["outputVariable"] = "pnl" })], [Edge("s", "p")]));
+        var (_, ran) = await SendAsync(s.Host.Admin, HttpMethod.Post, $"/api/v1/flows/{id}/run");
+        var (_, detail) = await SendAsync(s.Host.Admin, HttpMethod.Get, $"/api/v1/flows/{id}/runs/{ran["run_id"]!.GetValue<string>()}");
+        return (detail["status"]!.GetValue<string>(), (JsonArray)detail["logs"]!);
+    }
+
     [PostgresFact]
-    public async Task A_node_the_platform_cannot_run_yet_stops_the_workflow_at_switch_on_and_at_run()
+    public async Task The_strategy_pnl_node_reports_one_strategys_realized_unrealized_and_total()
     {
         var s = await NewAsync();
         await using var _ = s.Host;
-        var id = await CreateAsync(s, "basket", ([Node("s", "start"), Node("b", "strategyPnl")], [Edge("s", "b")]));
+        await PlaceAsync(s, "BUY", 10, "alpha");
+        s.Host.SetQuote("NSE", "SBIN", 510);
+        await PlaceAsync(s, "SELL", 4, "alpha");
+        await PlaceAsync(s, "BUY", 3, "beta");
 
-        var (status, refused) = await SendAsync(s.Host.Admin, HttpMethod.Post, $"/api/v1/flows/{id}/activate");
-        Assert.Equal(HttpStatusCode.BadRequest, status);
-        Assert.Contains("cannot run strategyPnl", refused["message"]!.GetValue<string>());
-        var (runStatus, run) = await SendAsync(s.Host.Admin, HttpMethod.Post, $"/api/v1/flows/{id}/run");
-        Assert.Equal(HttpStatusCode.Conflict, runStatus);
-        Assert.Contains("cannot run strategyPnl", run["message"]!.GetValue<string>());
+        var (status, logs) = await RunPnlFlowAsync(s, "pnl-alpha");
+        Assert.Equal("completed", status);
+        var line = Assert.Single(logs, l => l!["message"]!.GetValue<string>().StartsWith("Strategy P&L [alpha]:"))!["message"]!.GetValue<string>();
+        Assert.Contains("realized=40.0", line);
+        Assert.Contains("openQty=6.0", line);
+        Assert.Contains(logs, l => l!["message"]!.GetValue<string>() == "Stored result in variable: pnl");
+
+        // Another strategy's fills do not count, and a strategy with none is flat.
+        (status, logs) = await RunPnlFlowAsync(s, "pnl-none", new() { ["strategy"] = "gamma" });
+        Assert.Equal("completed", status);
+        Assert.Contains(logs, l => l!["message"]!.GetValue<string>().StartsWith("Strategy P&L [gamma]: realized=0.0"));
+    }
+
+    [PostgresFact]
+    public async Task A_live_accounts_strategy_pnl_is_unavailable_rather_than_zero()
+    {
+        var s = await NewAsync();
+        await using var _ = s.Host;
+        var result = await s.Host.Get<EPTradeBot.Infrastructure.OpenAlgoApi.OpenAlgoApiService>().StrategyPnlAsync(new BrokerAccount { DisplayName = "live", Broker = "zerodha", AccountType = AccountType.LIVE }, "alpha", default);
+        Assert.Equal(409, result.Status);
+        Assert.Contains("sandbox accounts only", result.Body["message"]!.GetValue<string>());
+    }
+
+    [PostgresFact]
+    public async Task The_strategy_pnl_node_defaults_to_the_workflows_own_tag()
+    {
+        var s = await NewAsync();
+        await using var _ = s.Host;
+        await PlaceAsync(s, "BUY", 5, "mine");
+        var id = await CreateAsync(s, "mine", ([Node("s", "start"), Node("p", "strategyPnl")], [Edge("s", "p")]));
+        var (_, ran) = await SendAsync(s.Host.Admin, HttpMethod.Post, $"/api/v1/flows/{id}/run");
+        var (_, detail) = await SendAsync(s.Host.Admin, HttpMethod.Get, $"/api/v1/flows/{id}/runs/{ran["run_id"]!.GetValue<string>()}");
+        Assert.Contains((JsonArray)detail["logs"]!, l => l!["message"]!.GetValue<string>().StartsWith("Strategy P&L [mine]:") && l["message"]!.GetValue<string>().Contains("openQty=5.0"));
     }
 
     [PostgresFact]

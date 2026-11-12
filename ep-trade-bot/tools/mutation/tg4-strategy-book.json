@@ -1,0 +1,90 @@
+[
+ {
+  "name": "L1 realized sign for a short",
+  "file": "src/EPTradeBot.Core/Options/StrategyBookLedger.cs",
+  "old": "var direction = qty > 0 ? 1.0 : -1.0;",
+  "new": "var direction = 1.0;",
+  "filter": "FullyQualifiedName~StrategyBookParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "L2 average not reset on a flip",
+  "file": "src/EPTradeBot.Core/Options/StrategyBookLedger.cs",
+  "old": "else if (remaining > 0)",
+  "new": "else if (remaining > 1e12)",
+  "filter": "FullyQualifiedName~StrategyBookParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "L3 duplicate fill booked twice",
+  "file": "src/EPTradeBot.Core/Options/StrategyBookLedger.cs",
+  "old": "if (delta <= 0) return null;",
+  "new": "if (delta < 0) return null;",
+  "filter": "FullyQualifiedName~StrategyBookParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "L4 cumulative average used for an increment",
+  "file": "src/EPTradeBot.Core/Options/StrategyBookLedger.cs",
+  "old": "var price = delta != 0 ? incrementalNotional / delta : averagePrice;",
+  "new": "var price = averagePrice;",
+  "filter": "FullyQualifiedName~StrategyBookParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "L5 early fill dropped",
+  "file": "src/EPTradeBot.Core/Options/StrategyBookLedger.cs",
+  "old": "if (pending.Remove(orderId, out var early))",
+  "new": "if (false && pending.Remove(orderId, out var early))",
+  "filter": "FullyQualifiedName~StrategyBookParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "L6 today kept across sessions",
+  "file": "src/EPTradeBot.Core/Options/StrategyBookLedger.cs",
+  "old": "if (leg.TradeDate != today)\n        {\n            leg.TodayRealized = 0.0;",
+  "new": "if (leg.TradeDate != today)\n        {\n            leg.TodayRealized += 0.0;",
+  "filter": "FullyQualifiedName~StrategyBookParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "L7 stale today reported",
+  "file": "src/EPTradeBot.Core/Options/StrategyBookLedger.cs",
+  "old": "l.TradeDate == today ? l.TodayRealized : 0.0",
+  "new": "l.TodayRealized",
+  "filter": "FullyQualifiedName~StrategyBookParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "L8 session rolls at midnight",
+  "file": "src/EPTradeBot.Core/Options/StrategyBookLedger.cs",
+  "old": "nowIst.TimeOfDay < TimeSpan.FromHours(3)",
+  "new": "nowIst.TimeOfDay < TimeSpan.Zero",
+  "filter": "FullyQualifiedName~StrategyBookParityTests|FullyQualifiedName~The_session_rolls_over",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "L9 empty strategy tagged",
+  "file": "src/EPTradeBot.Core/Options/StrategyBookLedger.cs",
+  "old": "if (string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(strategy)) return false;",
+  "new": "if (string.IsNullOrEmpty(orderId)) return false;",
+  "filter": "FullyQualifiedName~StrategyBookParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "P1 live account reported as zero",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.StrategyPnl.cs",
+  "old": "if (account.AccountType != AccountType.PAPER)",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~The_strategy_pnl_node|FullyQualifiedName~A_live_accounts_strategy_pnl",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "P3 node ignores the workflow tag",
+  "file": "src/EPTradeBot.Core/Flow/ApiNodes.cs",
+  "old": "if (strategy.Length == 0) strategy = host.StrategyTag;\n        var result = await host.Api.CallAsync(\"strategy_pnl\"",
+  "new": "var result = await host.Api.CallAsync(\"strategy_pnl\"",
+  "filter": "FullyQualifiedName~The_strategy_pnl_node|FullyQualifiedName~A_live_accounts_strategy_pnl",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

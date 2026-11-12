@@ -481,7 +481,7 @@ public sealed class CheckNodes : IFlowNode
 /// <summary>The node types that reach the platform's API.</summary>
 public static class ApiFlowNodes
 {
-    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode(), new OptionsOrderNode(), new OptionsMultiOrderNode(), new BasketOrderNode(), new HistoryNodes(), new MarginNode(), new HttpRequestNode(), new SubscribeNodes(), new AlertNodes()];
+    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode(), new OptionsOrderNode(), new OptionsMultiOrderNode(), new BasketOrderNode(), new HistoryNodes(), new MarginNode(), new HttpRequestNode(), new SubscribeNodes(), new AlertNodes(), new StrategyPnlNode()];
 }
 
 /// <summary>The nodes that look up instruments, expiries, option chains and the exchange calendar through the platform and keep the answer in a variable.</summary>
@@ -1570,6 +1570,34 @@ public sealed class AlertNodes : IFlowNode
             run.Log($"WhatsApp result: {result.ToJsonString()}", ApiNodeSupport.Level(result));
         }
 
+        return FlowApiResults.ToResult(result);
+    }
+}
+
+
+/// <summary>Strategy P&amp;L: realized, unrealized and total for one strategy, so a workflow can exit on its own performance rather than the account's. The strategy defaults to this workflow's tag.</summary>
+public sealed class StrategyPnlNode : IFlowNode
+{
+    public IReadOnlyList<string> Types => ["strategyPnl"];
+
+    public async Task<FlowNodeResult?> ExecuteAsync(FlowNode node, FlowRun run, CancellationToken ct)
+    {
+        var host = ApiNodeSupport.HostOf(run);
+        var strategy = node.Data.Str(run.Context, "strategy", "");
+        if (strategy.Length == 0) strategy = host.StrategyTag;
+        var result = await host.Api.CallAsync("strategy_pnl", new JsonObject { ["strategy"] = strategy }, ct);
+        if (!FlowApiResults.IsSuccess(result))
+        {
+            var message = result["message"] is JsonValue m && m.TryGetValue<string>(out var text) ? text : result["error"] is JsonValue e && e.TryGetValue<string>(out var err) ? err : "Unknown error";
+            run.Log($"Strategy P&L error: {message}", "error");
+            return FlowApiResults.ToResult(result);
+        }
+
+        string P(string key) => result[key] is { } n ? FlowContext.PyStr(n) : "None";
+        run.Log($"Strategy P&L [{strategy}]: realized={P("realized")} unrealized={P("unrealized")} total={P("total")} openQty={P("open_quantity")}");
+        if (result["unpriced_legs"] is JsonValue u && FlowData.TryNumber(u, out var unpriced) && unpriced != 0)
+            run.Log($"{FlowContext.PyStr(u)} open leg(s) had no live price and were excluded from unrealized P&L", "warning");
+        ApiNodeSupport.Store(node, run, result);
         return FlowApiResults.ToResult(result);
     }
 }

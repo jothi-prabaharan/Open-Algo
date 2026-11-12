@@ -68,6 +68,7 @@ public sealed class FlowApi(OpenAlgoApiService service, BrokerAccount account, s
             "splitorder" => service.SplitOrderAsync(account, Read<SplitOrderRequest>(), ct),
             "optionsorder" => service.OptionsOrderAsync(account, Read<OptionsOrderRequest>(), ct),
             "optionsmultiorder" => service.OptionsMultiOrderAsync(account, Read<OptionsMultiOrderRequest>(), ct),
+            "strategy_pnl" => service.StrategyPnlAsync(account, body["strategy"]?.GetValue<string>(), ct),
             "telegram" => service.TelegramAlertAsync(account, body["message"]?.GetValue<string>() ?? "", ct),
             "whatsapp" => service.WhatsAppAlertAsync(account, body["message"]?.GetValue<string>() ?? "", body["to"]?.GetValue<string>(), ct),
             "analyzer" => Task.FromResult(service.Analyzer(account)),
