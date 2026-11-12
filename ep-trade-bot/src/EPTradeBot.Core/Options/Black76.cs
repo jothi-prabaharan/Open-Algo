@@ -9,7 +9,7 @@ public static class Black76
     public const string AboveMaximum = "price exceeds theoretical maximum";
 
     private const double Lowest = 1e-6;
-    private const double Highest = 20.0;
+    private const double Highest = 5.0;
 
     public static double NormalCdf(double x) => 0.5 * Erfc(-x / Math.Sqrt(2.0));
 
