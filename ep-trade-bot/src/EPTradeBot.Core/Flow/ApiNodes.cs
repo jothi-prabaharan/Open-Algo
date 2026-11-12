@@ -481,7 +481,7 @@ public sealed class CheckNodes : IFlowNode
 /// <summary>The node types that reach the platform's API.</summary>
 public static class ApiFlowNodes
 {
-    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode(), new OptionsOrderNode(), new OptionsMultiOrderNode()];
+    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes(), new SplitOrderNode(), new OptionsOrderNode(), new OptionsMultiOrderNode(), new BasketOrderNode()];
 }
 
 /// <summary>The nodes that look up instruments, expiries, option chains and the exchange calendar through the platform and keep the answer in a variable.</summary>
@@ -998,5 +998,157 @@ public sealed class OptionsMultiOrderNode : IFlowNode
         }
 
         return result;
+    }
+}
+
+/// <summary>Basket order: several orders sent together, from lines of SYMBOL,EXCHANGE,ACTION,QTY or a list of order objects, each checked before any is sent.</summary>
+public sealed class BasketOrderNode : IFlowNode
+{
+    public IReadOnlyList<string> Types => ["basketOrder"];
+
+    private sealed class RowException(string message) : Exception(message);
+
+    private static string Repr(JsonNode? n) => n is JsonValue v && v.TryGetValue<string>(out var s) ? $"'{s}'" : n is null ? "None" : FlowContext.PyStr(n);
+
+    private static JsonNode? Resolve(FlowContext ctx, JsonNode? value, string field)
+    {
+        if (value is JsonValue v && v.TryGetValue<string>(out var text)) value = ctx.ResolveRaw(text);
+        if (value is JsonValue r && r.TryGetValue<string>(out var s) && FlowContext.HasUnresolved(s)) throw new RowException($"{field} has unresolved value {Repr(value)}");
+        return value;
+    }
+
+    private static double Number(FlowContext ctx, JsonNode? value, string field)
+    {
+        value = Resolve(ctx, value, field);
+        if (value is JsonValue v)
+        {
+            if (v.TryGetValue<bool>(out var b)) throw new RowException($"{field} must be numeric, got boolean {(b ? "True" : "False")}");
+            if (v.TryGetValue<string>(out var s))
+            {
+                if (s.Trim().Length == 0) throw new RowException($"{field} must not be blank");
+                if (!FlowData.TryParseFloat(s, out var parsed)) throw new RowException($"{field} must be numeric, got {Repr(value)}");
+                return Finite(parsed, field, value);
+            }
+
+            if (FlowData.TryNumber(v, out var n)) return Finite(n, field, value);
+        }
+
+        throw new RowException($"{field} must be numeric, got {Repr(value)}");
+    }
+
+    private static double Finite(double n, string field, JsonNode? value) => double.IsFinite(n) ? n : throw new RowException($"{field} must be finite, got {Repr(value)}");
+
+    private static string RequiredText(FlowContext ctx, JsonNode? value, string field)
+    {
+        value = Resolve(ctx, value, field);
+        if (value is null) throw new RowException($"{field} is required");
+        var text = FlowContext.PyStr(value).Trim();
+        if (text.Length == 0) throw new RowException($"{field} is required");
+        return text;
+    }
+
+    private static FlowNodeResult Error(FlowRun run, string message)
+    {
+        run.Log($"Basket order failed: {message}", "error");
+        return FlowApiResults.ToResult(new JsonObject { ["status"] = "error", ["message"] = message });
+    }
+
+    public async Task<FlowNodeResult?> ExecuteAsync(FlowNode node, FlowRun run, CancellationToken ct)
+    {
+        var host = ApiNodeSupport.HostOf(run);
+        var ctx = run.Context;
+        var raw = node.Data["orders"];
+        if (raw is JsonValue rv && rv.TryGetValue<string>(out var rawText)) raw = ctx.ResolveRaw(rawText);
+        var basketName = node.Data.Str(ctx, "basketName", "flow_basket");
+
+        string commonProduct, commonPriceType;
+        double commonPrice, commonTrigger;
+        try
+        {
+            JsonNode? Common(string key, JsonNode? fallback) => node.Data.ContainsKey(key) ? Resolve(ctx, node.Data[key], key) : fallback;
+            commonProduct = node.Data.ContainsKey("product") ? RequiredText(ctx, Common("product", null), "product").ToUpperInvariant() : "";
+            commonPriceType = RequiredText(ctx, Common("priceType", JsonValue.Create("MARKET")), "priceType").ToUpperInvariant();
+            if (commonProduct.Length > 0 && !OrderVocabulary.Products.Contains(commonProduct)) throw new RowException($"invalid product '{commonProduct}'");
+            if (!OrderVocabulary.PriceTypes.Contains(commonPriceType)) throw new RowException($"invalid pricetype '{commonPriceType}'");
+            commonPrice = Number(ctx, Common("price", JsonValue.Create(0.0)), "price");
+            commonTrigger = Number(ctx, Common("triggerPrice", JsonValue.Create(0.0)), "triggerPrice");
+        }
+        catch (RowException e)
+        {
+            return Error(run, $"Basket order row 1: {e.Message}");
+        }
+
+        var rows = new List<(int Index, JsonObject Order, bool Csv)>();
+        if (raw is JsonValue textValue && textValue.TryGetValue<string>(out var text))
+        {
+            var lines = text.Trim().Split('\n');
+            for (var i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i].Trim();
+                if (line.Length == 0) continue;
+                var parts = line.Split(',').Select(p => p.Trim()).ToArray();
+                if (parts.Length < 4) return Error(run, $"Basket order row {i + 1}: expected SYMBOL,EXCHANGE,ACTION,QTY");
+                rows.Add((i + 1, new JsonObject { ["symbol"] = parts[0], ["exchange"] = parts[1], ["action"] = parts[2], ["quantity"] = parts[3] }, true));
+            }
+        }
+        else if (raw is JsonArray list)
+        {
+            for (var i = 0; i < list.Count; i++)
+            {
+                if (list[i] is not JsonObject order) return Error(run, $"Basket order row {i + 1}: must be an order object");
+                rows.Add((i + 1, order, false));
+            }
+        }
+
+        if (rows.Count == 0)
+        {
+            run.Log("Basket order failed: No valid orders", "error");
+            return FlowApiResults.ToResult(new JsonObject { ["status"] = "error", ["message"] = "No valid orders to place" });
+        }
+
+        var orders = new JsonArray();
+        foreach (var (index, order, csv) in rows)
+        {
+            JsonNode? RowValue(string key, JsonNode? fallback, params string[] aliases)
+            {
+                if (csv) return fallback;
+                foreach (var candidate in new[] { key }.Concat(aliases))
+                    if (order.ContainsKey(candidate)) return Resolve(ctx, order[candidate], candidate);
+                return fallback;
+            }
+
+            try
+            {
+                var symbol = RequiredText(ctx, order["symbol"], "symbol");
+                var exchange = RequiredText(ctx, order["exchange"], "exchange").ToUpperInvariant();
+                var action = RequiredText(ctx, order["action"], "action").ToUpperInvariant();
+                var quantity = (long)Number(ctx, Resolve(ctx, order["quantity"], "quantity"), "quantity");
+                if (quantity <= 0) throw new RowException($"quantity must be positive, got {quantity}");
+                var product = RequiredText(ctx, RowValue("product", JsonValue.Create(commonProduct.Length > 0 ? commonProduct : OrderVocabulary.DefaultProduct(exchange))), "product").ToUpperInvariant();
+                var priceType = RequiredText(ctx, RowValue("pricetype", JsonValue.Create(commonPriceType), "priceType"), "pricetype").ToUpperInvariant();
+                if (!OrderVocabulary.Exchanges.Contains(exchange)) throw new RowException($"invalid exchange '{exchange}'");
+                if (!OrderVocabulary.Actions.Contains(action)) throw new RowException($"invalid action '{action}'");
+                if (!OrderVocabulary.Products.Contains(product)) throw new RowException($"invalid product '{product}'");
+                if (!OrderVocabulary.PriceTypes.Contains(priceType)) throw new RowException($"invalid pricetype '{priceType}'");
+                var price = Number(ctx, RowValue("price", JsonValue.Create(commonPrice)), "price");
+                var trigger = Number(ctx, RowValue("triggerprice", JsonValue.Create(commonTrigger), "triggerPrice"), "triggerprice");
+                if (OrderVocabulary.InvalidPriceReason(priceType, price, trigger) is { } invalid) throw new RowException(invalid);
+                orders.Add(new JsonObject
+                {
+                    ["symbol"] = symbol, ["exchange"] = exchange, ["action"] = action, ["quantity"] = quantity, ["product"] = product, ["pricetype"] = priceType, ["price"] = price, ["trigger_price"] = trigger,
+                });
+            }
+            catch (RowException e)
+            {
+                return Error(run, $"Basket order row {index}: {e.Message}");
+            }
+        }
+
+        run.Log($"Placing basket order '{basketName}' with {orders.Count} orders");
+        for (var i = 0; i < orders.Count; i++) run.Log($"  Order {i + 1}: {orders[i]!["symbol"]} {orders[i]!["exchange"]} {orders[i]!["action"]} qty={orders[i]!["quantity"]}");
+        var result = await host.Api.CallAsync("basketorder", new JsonObject { ["strategy"] = basketName, ["orders"] = orders }, ct);
+        run.Log($"Basket order result: {result.ToJsonString()}", ApiNodeSupport.Level(result));
+        ApiNodeSupport.Store(node, run, result);
+        return FlowApiResults.ToResult(result);
     }
 }

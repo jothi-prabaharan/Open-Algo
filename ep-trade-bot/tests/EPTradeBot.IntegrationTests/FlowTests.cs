@@ -127,14 +127,14 @@ public sealed class FlowTests
     {
         var s = await NewAsync();
         await using var _ = s.Host;
-        var id = await CreateAsync(s, "basket", ([Node("s", "start"), Node("b", "basketOrder")], [Edge("s", "b")]));
+        var id = await CreateAsync(s, "basket", ([Node("s", "start"), Node("b", "calendar")], [Edge("s", "b")]));
 
         var (status, refused) = await SendAsync(s.Host.Admin, HttpMethod.Post, $"/api/v1/flows/{id}/activate");
         Assert.Equal(HttpStatusCode.BadRequest, status);
-        Assert.Contains("cannot run basketOrder", refused["message"]!.GetValue<string>());
+        Assert.Contains("cannot run calendar", refused["message"]!.GetValue<string>());
         var (runStatus, run) = await SendAsync(s.Host.Admin, HttpMethod.Post, $"/api/v1/flows/{id}/run");
         Assert.Equal(HttpStatusCode.Conflict, runStatus);
-        Assert.Contains("cannot run basketOrder", run["message"]!.GetValue<string>());
+        Assert.Contains("cannot run calendar", run["message"]!.GetValue<string>());
     }
 
     [PostgresFact]

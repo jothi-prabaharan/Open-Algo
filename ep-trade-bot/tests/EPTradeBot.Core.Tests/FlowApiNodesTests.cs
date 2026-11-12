@@ -425,9 +425,10 @@ public sealed class FlowApiNodesTests
         var api = new FakeApi();
         var nodes = new List<FlowNode> { N("s", "start", []), N("o", "placeOrder", new() { ["symbol"] = "X", ["quantity"] = 1 }), N("b", "basketOrder", []), N("u", "madeUp", []) };
         var run = new FlowRun(() => Noon, host: new FlowHost(api, "t"));
-        var outcome = await Runner.RunAsync(new FlowGraph(nodes, [new("s", "o", ""), new("o", "b", "")]), run, default);
+        // An engine without the API nodes: whichever node types the platform gains, this engine cannot run an order node it was not given.
+        var outcome = await new FlowRunner(CoreFlowNodes.All()).RunAsync(new FlowGraph(nodes, [new("s", "o", ""), new("o", "b", "")]), run, default);
         Assert.False(outcome.Succeeded);
-        Assert.Contains("cannot run basketOrder nodes yet", outcome.Message);
+        Assert.Contains("cannot run basketOrder, placeOrder nodes yet", outcome.Message);
         Assert.Empty(api.Calls);
     }
 }
@@ -761,5 +762,99 @@ public sealed class FlowOptionsMultiOrderNodeTests
         Assert.Empty(api.Calls);
         Assert.Contains(run.Logs, l => l.Level == "warning" && l.Message.Contains("Unknown strategy type: butterfly"));
         Assert.Contains(run.Logs, l => l.Message.Contains("No legs generated for strategy: butterfly"));
+    }
+}
+
+
+public sealed class FlowBasketOrderNodeTests
+{
+    private sealed class Api : IFlowApi
+    {
+        public List<(string Api, JsonObject Body)> Calls { get; } = [];
+
+        public Task<JsonObject> CallAsync(string api, JsonObject body, CancellationToken ct)
+        {
+            Calls.Add((api, (JsonObject)body.DeepClone()));
+            return Task.FromResult(new JsonObject { ["status"] = "success" });
+        }
+    }
+
+    private static readonly DateTime Noon = new DateTime(2026, 11, 11, 12, 0, 0, DateTimeKind.Utc) - EPTradeBot.Core.Time.Ist.Offset;
+
+    private static async Task<(Api Api, FlowRun Run, FlowOutcome Outcome)> RunAsync(JsonObject data, JsonObject? vars = null)
+    {
+        var api = new Api();
+        var run = new FlowRun(() => Noon, host: new FlowHost(api, "t"));
+        foreach (var (k, v) in vars ?? []) run.Context.Set(k, v?.DeepClone());
+        var outcome = await new FlowRunner(CoreFlowNodes.All().Concat(ApiFlowNodes.All())).RunAsync(new FlowGraph([new("s", "start", []), new("n", "basketOrder", data)], [new("s", "n", "")]), run, default);
+        return (api, run, outcome);
+    }
+
+    [Fact]
+    public async Task Lines_of_text_make_orders_that_take_each_exchanges_default_product()
+    {
+        var (api, _, outcome) = await RunAsync(new() { ["orders"] = "sbin, NSE, buy, 10\n\nNIFTY26NOV2624000CE,nfo,SELL,75", ["basketName"] = "morning" });
+        Assert.True(outcome.Succeeded, outcome.Message);
+        var (name, body) = Assert.Single(api.Calls);
+        Assert.Equal("basketorder", name);
+        Assert.Equal("""{"strategy":"morning","orders":[{"symbol":"sbin","exchange":"NSE","action":"BUY","quantity":10,"product":"MIS","pricetype":"MARKET","price":0,"trigger_price":0},{"symbol":"NIFTY26NOV2624000CE","exchange":"NFO","action":"SELL","quantity":75,"product":"NRML","pricetype":"MARKET","price":0,"trigger_price":0}]}""", body.ToJsonString());
+    }
+
+    [Fact]
+    public async Task A_list_of_objects_can_set_its_own_price_type_and_fall_back_to_the_nodes()
+    {
+        var orders = JsonNode.Parse("""[{"symbol":"SBIN","exchange":"NSE","action":"BUY","quantity":"5","pricetype":"LIMIT","price":"{{p}}"},{"symbol":"INFY","exchange":"NSE","action":"SELL","quantity":1}]""")!;
+        var (api, _, outcome) = await RunAsync(new() { ["orders"] = orders, ["product"] = "cnc", ["priceType"] = "market" }, new() { ["p"] = 812.5 });
+        Assert.True(outcome.Succeeded, outcome.Message);
+        var rows = api.Calls.Single().Body["orders"]!.AsArray();
+        Assert.Equal(("LIMIT", 812.5, "CNC"), (rows[0]!["pricetype"]!.GetValue<string>(), rows[0]!["price"]!.GetValue<double>(), rows[0]!["product"]!.GetValue<string>()));
+        Assert.Equal(("MARKET", 0.0, "CNC"), (rows[1]!["pricetype"]!.GetValue<string>(), rows[1]!["price"]!.GetValue<double>(), rows[1]!["product"]!.GetValue<string>()));
+        Assert.Equal("flow_basket", api.Calls.Single().Body["strategy"]!.GetValue<string>());
+    }
+
+    [Fact]
+    public async Task The_orders_can_come_whole_from_a_variable()
+    {
+        var plan = new JsonObject { ["rows"] = JsonNode.Parse("""[{"symbol":"SBIN","exchange":"NSE","action":"BUY","quantity":3}]""") };
+        var (api, _, outcome) = await RunAsync(new() { ["orders"] = "{{plan.rows}}" }, new() { ["plan"] = plan });
+        Assert.True(outcome.Succeeded, outcome.Message);
+        Assert.Single(api.Calls.Single().Body["orders"]!.AsArray());
+    }
+
+    [Theory]
+    [InlineData("sbin,NSE,buy", "Basket order row 1: expected SYMBOL,EXCHANGE,ACTION,QTY")]
+    [InlineData("sbin,NSE,buy,10\nx,NSE,hold,1", "Basket order row 2: invalid action 'HOLD'")]
+    [InlineData("sbin,NSE,buy,0", "Basket order row 1: quantity must be positive, got 0")]
+    [InlineData("sbin,XYZ,buy,1", "invalid exchange 'XYZ'")]
+    [InlineData("sbin,NSE,buy,lots", "quantity must be numeric, got 'lots'")]
+    [InlineData("", "No valid orders to place")]
+    public async Task A_bad_row_stops_the_whole_basket_naming_the_row(string orders, string words)
+    {
+        var (api, run, outcome) = await RunAsync(new() { ["orders"] = orders });
+        Assert.False(outcome.Succeeded);
+        Assert.Empty(api.Calls);
+        Assert.Contains(run.Logs, l => l.Level == "error" && l.Message.Contains(words));
+    }
+
+    [Theory]
+    [InlineData("""[5]""", "Basket order row 1: must be an order object")]
+    [InlineData("""[{"symbol":"SBIN","exchange":"NSE","action":"BUY","quantity":"{{gone}}"}]""", "quantity has unresolved value")]
+    [InlineData("""[{"symbol":"SBIN","exchange":"NSE","action":"BUY","quantity":true}]""", "quantity must be numeric, got boolean True")]
+    [InlineData("""[{"symbol":"SBIN","exchange":"NSE","action":"BUY","quantity":1,"pricetype":"LIMIT"}]""", "LIMIT order needs a positive price")]
+    public async Task A_bad_object_row_stops_the_basket(string orders, string words)
+    {
+        var (api, run, outcome) = await RunAsync(new() { ["orders"] = JsonNode.Parse(orders) });
+        Assert.False(outcome.Succeeded);
+        Assert.Empty(api.Calls);
+        Assert.Contains(run.Logs, l => l.Level == "error" && l.Message.Contains(words));
+    }
+
+    [Fact]
+    public async Task A_bad_common_setting_is_reported_against_row_one()
+    {
+        var (api, run, outcome) = await RunAsync(new() { ["orders"] = "sbin,NSE,buy,1", ["product"] = "XX" });
+        Assert.False(outcome.Succeeded);
+        Assert.Empty(api.Calls);
+        Assert.Contains(run.Logs, l => l.Message.Contains("Basket order row 1: invalid product 'XX'"));
     }
 }
