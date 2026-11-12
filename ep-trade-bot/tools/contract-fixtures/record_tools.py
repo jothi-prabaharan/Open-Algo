@@ -135,7 +135,41 @@ def record_gex():
     return {"now": NOW.isoformat(), "cases": cases}
 
 
-RECORDERS = {"greeks": record_greeks, "gex": record_gex}
+def record_iv_smile():
+    import services.iv_smile_service as sm
+    import services.option_greeks_service as g
+
+    g.datetime = Frozen
+    cases = []
+    base = [("nifty", "NIFTY", 24050.0, 24050, 50, 12, "26NOV26", 75, 1), ("banknifty", "BANKNIFTY", 52110.0, 52100, 100, 12, "26NOV26", 30, 2), ("sensex", "SENSEX", 80200.0, 80200, 100, 12, "26NOV26", 20, 3)]
+    for name, underlying, spot, atm, step, count, expiry, lot, seed in base:
+        chain = make_chain(underlying, spot, atm, step, count, expiry, lot, seed)
+        sm.get_option_chain = lambda **kw: (True, chain, 200)
+        ok, resp, code = sm.get_iv_smile_data(underlying, "NFO", expiry, "key")
+        cases.append({"name": name, "exchange": "NFO", "expiry": expiry, "chain": chain, "ok": ok, "code": code, "response": resp})
+    # An ATM strike with no legs at all, and one with only a put
+    chain = make_chain("NIFTY", 24050.0, 24050, 50, 12, "26NOV26", 75, 5)
+    chain["chain"][12]["ce"] = None
+    chain["chain"][12]["pe"]["ltp"] = 0
+    sm.get_option_chain = lambda **kw: (True, chain, 200)
+    ok, resp, code = sm.get_iv_smile_data("NIFTY", "NFO", "26NOV26", "key")
+    cases.append({"name": "atm-without-legs", "exchange": "NFO", "expiry": "26NOV26", "chain": chain, "ok": ok, "code": code, "response": resp})
+    chain = make_chain("NIFTY", 24050.0, 24050, 50, 12, "26NOV26", 75, 6)
+    chain["chain"][12]["ce"]["ltp"] = 0
+    sm.get_option_chain = lambda **kw: (True, chain, 200)
+    ok, resp, code = sm.get_iv_smile_data("NIFTY", "NFO", "26NOV26", "key")
+    cases.append({"name": "atm-put-only", "exchange": "NFO", "expiry": "26NOV26", "chain": chain, "ok": ok, "code": code, "response": resp})
+    chain = make_chain("NIFTY", 0, 24050, 50, 3, "26NOV26", 75, 7)
+    sm.get_option_chain = lambda **kw: (True, chain, 200)
+    ok, resp, code = sm.get_iv_smile_data("NIFTY", "NFO", "26NOV26", "key")
+    cases.append({"name": "no-spot", "exchange": "NFO", "expiry": "26NOV26", "chain": chain, "ok": ok, "code": code, "response": resp})
+    sm.get_option_chain = lambda **kw: (False, {"status": "error", "message": "Option chain unavailable"}, 503)
+    ok, resp, code = sm.get_iv_smile_data("NIFTY", "NFO", "26NOV26", "key")
+    cases.append({"name": "chain-failed", "exchange": "NFO", "expiry": "26NOV26", "chain": None, "ok": ok, "code": code, "response": resp})
+    return {"now": NOW.isoformat(), "cases": cases}
+
+
+RECORDERS = {"greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile}
 
 if __name__ == "__main__":
     out = {name: fn() for name, fn in RECORDERS.items()}

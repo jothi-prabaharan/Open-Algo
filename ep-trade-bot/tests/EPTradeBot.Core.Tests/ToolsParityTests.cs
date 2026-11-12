@@ -83,4 +83,21 @@ public sealed class ToolsParityTests
         Assert.Equal(c["code"]!.GetValue<int>(), result.Code);
         Assert.Null(Difference(c["response"], result.Response));
     }
+
+    public static IEnumerable<object[]> IvSmileCases() => Fixtures["iv_smile"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
+
+    [Theory]
+    [MemberData(nameof(IvSmileCases))]
+    public void The_IV_smile_matches_OpenAlgo_including_ATM_level_and_skew(int index, string name)
+    {
+        _ = name;
+        var c = Fixtures["iv_smile"]!["cases"]![index]!;
+        var chain = c["chain"] as JsonObject;
+        (bool Ok, JsonObject Response, int Code) result = chain is null
+            ? (false, (JsonObject)c["response"]!.DeepClone(), c["code"]!.GetValue<int>())
+            : IvSmileTool.Compute(chain, "NIFTY", c["exchange"]!.GetValue<string>(), c["expiry"]!.GetValue<string>(), Now("iv_smile"));
+        Assert.Equal(c["ok"]!.GetValue<bool>(), result.Ok);
+        Assert.Equal(c["code"]!.GetValue<int>(), result.Code);
+        Assert.Null(Difference(c["response"], result.Response));
+    }
 }
