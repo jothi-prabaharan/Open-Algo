@@ -389,4 +389,27 @@ public sealed class ToolsParityTests
         Assert.Equal(c["code"]!.GetValue<int>(), code);
         AssertSame(c["response"], response);
     }
+
+    public static IEnumerable<object[]> StrategyPnlCases() => Fixtures["strategy_pnl"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
+
+    [Theory]
+    [MemberData(nameof(StrategyPnlCases))]
+    public void Strategy_profit_and_loss_matches_OpenAlgo(int index, string name)
+    {
+        _ = name;
+        var c = Fixtures["strategy_pnl"]!["cases"]![index]!;
+        var strategy = c["strategy"]?.GetValue<string>();
+        JsonObject actual;
+        if (c["kind"]!.GetValue<string>() == "book")
+            actual = StrategyPnlTool.FromBook((JsonArray)c["legs"]!.DeepClone(), (JsonArray?)c["positions"]?.DeepClone(), strategy);
+        else
+        {
+            var unavailable = c["unavailable"]?.GetValue<string>();
+            actual = StrategyPnlTool.Get(
+                () => unavailable is null ? (JsonArray)c["legs"]!.DeepClone() : throw new StrategyPnlTool.BookUnavailableException(unavailable),
+                () => (JsonObject?)c["reply"]?.DeepClone(), strategy);
+        }
+
+        AssertSame(c["response"], actual);
+    }
 }

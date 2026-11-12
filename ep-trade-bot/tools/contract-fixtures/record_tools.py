@@ -780,6 +780,75 @@ def record_arbitrage():
     return {"now": NOW.isoformat(), "cases": cases}
 
 
+def record_strategy_pnl():
+    import database.strategy_book_db as book
+    import services.strategy_pnl_service as sp
+
+    cases = []
+    legs = [
+        {"strategy": "alpha", "symbol": "NIFTY26NOV2624000CE", "exchange": "NFO", "product": "MIS", "quantity": -75, "average_price": 120.5, "realized_pnl": 1500.25, "today_realized_pnl": 300.0},
+        {"strategy": "alpha", "symbol": "NIFTY26NOV2624000PE", "exchange": "NFO", "product": "MIS", "quantity": -75, "average_price": 98.0, "realized_pnl": -200.0, "today_realized_pnl": 0},
+        {"strategy": "alpha", "symbol": "NIFTY26NOV2623500PE", "exchange": "NFO", "product": "MIS", "quantity": 0, "average_price": 0, "realized_pnl": 410.1234567, "today_realized_pnl": 410.1234567},
+        {"strategy": "beta", "symbol": "SBIN", "exchange": "NSE", "product": "CNC", "quantity": 100, "average_price": 812.4, "realized_pnl": 0, "today_realized_pnl": 0},
+        {"strategy": "beta", "symbol": "INFY", "exchange": "NSE", "product": "CNC", "quantity": 10, "average_price": 1500.0, "realized_pnl": 12.5, "today_realized_pnl": 0},
+        {"strategy": None, "symbol": "TCS", "exchange": "NSE", "product": "MIS", "quantity": "5", "average_price": "3500.5", "realized_pnl": "bad", "today_realized_pnl": None},
+        {"strategy": "", "symbol": "ITC", "exchange": "NSE", "product": "MIS", "quantity": 1e-12, "average_price": 400, "realized_pnl": 1, "today_realized_pnl": 1},
+        {"symbol": "HDFC", "exchange": "NSE", "product": "MIS", "quantity": -3, "average_price": 1600},
+        {"strategy": "gamma", "symbol": "ZEEL", "exchange": "NSE", "product": "MIS", "quantity": 0, "average_price": 0, "realized_pnl": -50, "today_realized_pnl": -50},
+        {"strategy": "gamma", "symbol": "WIPRO", "exchange": "NSE", "product": "MIS", "quantity": 20, "average_price": 450.0, "realized_pnl": 0, "today_realized_pnl": 0},
+    ]
+    positions = [
+        {"symbol": "NIFTY26NOV2624000CE", "exchange": "NFO", "product": "MIS", "ltp": 101.25},
+        {"symbol": "NIFTY26NOV2624000PE", "exchange": "NFO", "product": "MIS", "last_price": 130.0},
+        {"symbol": "SBIN", "exchange": "NSE", "product": "CNC", "ltp": 0},
+        {"symbol": "INFY", "exchange": "NSE", "product": "CNC"},
+        {"symbol": "TCS", "exchange": "NSE", "product": "MIS", "ltp": "3600.25"},
+        {"symbol": "WIPRO", "exchange": "NSE", "product": "MIS", "ltp": 455.5},
+        {"symbol": "WIPRO", "exchange": "NSE", "product": "MIS", "ltp": 460.0},
+    ]
+
+    def book_case(name, strategy=None, lg=legs, ps=positions):
+        cases.append({"name": name, "kind": "book", "strategy": strategy, "legs": lg, "positions": ps, "response": sp.pnl_from_book(lg, ps, strategy=strategy)})
+
+    book_case("all-strategies")
+    book_case("alpha", "alpha")
+    book_case("beta", "beta")
+    book_case("untagged", "untagged")
+    book_case("gamma-flat-leg-sorted-last", "gamma")
+    book_case("unknown-strategy", "nothing")
+    book_case("no-positions", None, legs, [])
+    book_case("no-legs", None, [], positions)
+    book_case("none-positions", None, legs, None)
+
+    class Client:
+        def __init__(self, reply):
+            self.reply = reply
+
+        def positionbook(self):
+            return self.reply
+
+    def get_case(name, strategy=None, reply=None, legs_result=None, unavailable=None):
+        def get_strategy_legs(user_id=None, strategy=None):
+            if unavailable:
+                raise book.StrategyBookUnavailable(unavailable)
+            return legs_result if legs_result is not None else legs
+
+        book.get_strategy_legs = get_strategy_legs
+        out = sp.get_strategy_pnl(Client(reply), strategy=strategy)
+        cases.append({"name": name, "kind": "get", "strategy": strategy, "legs": legs_result if legs_result is not None else legs, "reply": reply, "unavailable": unavailable, "response": out})
+
+    get_case("get-all", None, {"status": "success", "data": positions})
+    get_case("get-one", "alpha", {"status": "success", "data": positions})
+    get_case("get-empty-reply", "alpha", {})
+    get_case("get-none-reply", "alpha", None)
+    get_case("get-error-with-error", "alpha", {"status": "error", "error": "broker down", "message": "ignored"})
+    get_case("get-error-with-message", None, {"status": "error", "message": "token expired"})
+    get_case("get-error-bare", None, {"status": "error"})
+    get_case("get-data-not-a-list", "alpha", {"status": "success", "data": {"oops": 1}})
+    get_case("get-book-unavailable", None, {"status": "success", "data": positions}, unavailable="database locked")
+    return {"now": NOW.isoformat(), "cases": cases}
+
+
 def record_strategy_chart():
     return _strategy_chart_cases("strategy_chart")
 
@@ -788,7 +857,7 @@ def record_multi_strike_oi():
     return _strategy_chart_cases("multi_strike_oi")
 
 
-RECORDERS = {"arbitrage": record_arbitrage, "custom_straddle": record_custom_straddle, "straddle_chart": record_straddle_chart, "strategy_chart": record_strategy_chart, "multi_strike_oi": record_multi_strike_oi, "oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
+RECORDERS = {"strategy_pnl": record_strategy_pnl, "arbitrage": record_arbitrage, "custom_straddle": record_custom_straddle, "straddle_chart": record_straddle_chart, "strategy_chart": record_strategy_chart, "multi_strike_oi": record_multi_strike_oi, "oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
 
 if __name__ == "__main__":
     out = {name: fn() for name, fn in RECORDERS.items()}
