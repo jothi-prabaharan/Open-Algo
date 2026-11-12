@@ -1065,6 +1065,73 @@ def record_iv_chart():
     return {"now": NOW.isoformat(), "cases": cases}
 
 
+def record_chain_greeks():
+    import random
+
+    from opengreeks import black76
+
+    import services.option_chain_service as oc
+    import services.option_greeks_service as g
+
+    g.datetime = Frozen
+    cases = []
+    rng = random.Random(77)
+
+    def ladder(forward, years, rate, step=50, count=14, vol=0.14, zero_every=0, junk=False):
+        strikes = [24000 + step * i for i in range(-count, count + 1)]
+        ce, pe = [], []
+        for i, k in enumerate(strikes):
+            sigma = vol + 0.002 * abs(i - count)
+            ce.append(round(black76.black("c", forward, k, years, rate / 100, sigma), 2))
+            pe.append(round(black76.black("p", forward, k, years, rate / 100, sigma), 2))
+        ce = [0 if x != x else x for x in ce]
+        pe = [0 if x != x else x for x in pe]  # a price the generator could not make (deep out of the money, very short dated) is no price
+        if zero_every:
+            for i in range(0, len(strikes), zero_every):
+                ce[i] = 0
+                pe[(i + 1) % len(strikes)] = None
+        if junk:
+            ce[0] = round(max(forward - strikes[0], 0), 2)          # exactly intrinsic
+            pe[-1] = round(max(strikes[-1] - forward, 0) + 0.004, 2)  # a hair over intrinsic
+            ce[3] = 1e6                                             # impossible
+            pe[5] = 0.01
+        return strikes, ce, pe
+
+    def run(name, forward, years, rate, **kw):
+        strikes, ce, pe = ladder(forward, years, rate or 0, **kw)
+        out_ce, out_pe = g.calculate_chain_greeks(strikes, ce, pe, forward, years, rate)
+        cases.append({"name": name, "strikes": strikes, "ce": ce, "pe": pe, "forward": forward, "years": years, "rate": rate, "out_ce": out_ce, "out_pe": out_pe})
+
+    run("nifty-15-days", 24110.5, 15.2292 / 365, None)
+    run("with-rate", 24110.5, 0.25, 6.5)
+    run("short-dated", 24050.0, 1.2292 / 365, 0)
+    run("very-short", 24050.0, 0.0001, None)
+    run("gaps-and-zeros", 24110.5, 0.08, None, zero_every=4)
+    run("junk-prices", 24110.5, 0.05, None, junk=True)
+    run("wide-step", 52100.0, 0.04, None, step=200)
+    run("expired", 24050.0, 0.0, None)
+    run("no-forward", 0.0, 0.05, None)
+    cases.append({"name": "empty", "strikes": [], "ce": [], "pe": [], "forward": 24000.0, "years": 0.05, "rate": None, "out_ce": [], "out_pe": []})
+
+    chains = []
+    for label, atm, rows in [
+        ("priced", 24050, [{"strike": 24000, "ce": {"ltp": 120}, "pe": {"ltp": 55}}, {"strike": 24050, "ce": {"ltp": 95.5}, "pe": {"ltp": 80.25}}, {"strike": 24100, "ce": {"ltp": 70}, "pe": {"ltp": 110}}]),
+        ("unpriced-atm", 24050, [{"strike": 24050, "ce": {"ltp": 0}, "pe": {"ltp": 80}}]),
+        ("atm-missing", 24050, [{"strike": 24000, "ce": {"ltp": 120}, "pe": {"ltp": 55}}]),
+        ("legs-missing", 24050, [{"strike": 24050, "ce": None, "pe": {"ltp": 80}}]),
+    ]:
+        chains.append({"name": label, "atm": atm, "ltp": 24060.5, "chain": rows, "forward": oc._forward_from_chain(rows, atm, 24060.5)})
+
+    from datetime import datetime as dt
+
+    expired = []
+    for sym, exch, spot, price, rate in [("NIFTY10NOV2624000CE", "NFO", 24100.0, 150.0, None), ("NIFTY10NOV2624300PE", "NFO", 24100.0, 260.5, 7.0), ("NIFTY10NOV2624000PE", "NFO", 24100.0, 0.5, None)]:
+        base, expiry, strike, kind = g.parse_option_symbol(sym, exch)
+        expired.append({"symbol": sym, "exchange": exch, "base": base, "expiry": expiry.isoformat(), "strike": strike, "type": kind, "spot": spot, "price": price, "rate": rate,
+                        "response": g._expired_option_greeks_response(sym, exch, base, expiry, strike, kind, spot, price, rate)})
+    return {"now": NOW.isoformat(), "cases": cases, "forwards": chains, "expired": expired}
+
+
 def record_strategy_chart():
     return _strategy_chart_cases("strategy_chart")
 
@@ -1073,7 +1140,7 @@ def record_multi_strike_oi():
     return _strategy_chart_cases("multi_strike_oi")
 
 
-RECORDERS = {"iv_chart": record_iv_chart, "sector_rotation": record_sector_rotation, "strategy_pnl": record_strategy_pnl, "arbitrage": record_arbitrage, "custom_straddle": record_custom_straddle, "straddle_chart": record_straddle_chart, "strategy_chart": record_strategy_chart, "multi_strike_oi": record_multi_strike_oi, "oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
+RECORDERS = {"chain_greeks": record_chain_greeks, "iv_chart": record_iv_chart, "sector_rotation": record_sector_rotation, "strategy_pnl": record_strategy_pnl, "arbitrage": record_arbitrage, "custom_straddle": record_custom_straddle, "straddle_chart": record_straddle_chart, "strategy_chart": record_strategy_chart, "multi_strike_oi": record_multi_strike_oi, "oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
 
 if __name__ == "__main__":
     out = {name: fn() for name, fn in RECORDERS.items()}

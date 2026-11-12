@@ -51,6 +51,8 @@ internal static class OpenAlgoV1Endpoints
         Post<MultiQuotesRequest>(v1, "/multiquotes", (s, a, r, ct) => s.MultiQuotesAsync(a, r, ct));
         Post<SyntheticFutureRequest>(v1, "/syntheticfuture", (s, a, r, ct) => s.SyntheticFutureAsync(a, r, ct), ValidationShape.Errors);
         Post<OptionChainRequest>(v1, "/optionchain", (s, a, r, ct) => s.OptionChainAsync(a, r, ct), ValidationShape.Errors);
+        Post<OptionGreeksRequest>(v1, "/optiongreeks", (s, a, r, ct) => s.OptionGreeksAsync(a, r, ct), ValidationShape.Errors);
+        Post<MultiOptionGreeksRequest>(v1, "/multioptiongreeks", (s, a, r, ct) => s.MultiOptionGreeksAsync(a, r, ct), ValidationShape.Errors);
         Post<BasketOrderRequest>(v1, "/basketorder", (s, a, r, ct) => s.BasketOrderAsync(a, r, ct));
         Post<SplitOrderRequest>(v1, "/splitorder", (s, a, r, ct) => s.SplitOrderAsync(a, r, ct));
         Post<OptionsOrderRequest>(v1, "/optionsorder", (s, a, r, ct) => s.OptionsOrderAsync(a, r, ct), ValidationShape.Errors);
@@ -79,7 +81,7 @@ internal static class OpenAlgoV1Endpoints
         "/placeorder", "/placesmartorder", "/modifyorder", "/cancelorder", "/cancelallorder", "/closeposition", "/orderbook", "/tradebook",
         "/positionbook", "/holdings", "/funds", "/orderstatus", "/openposition", "/quotes", "/depth", "/ping", "/analyzer", "/analyzer/toggle",
         "/symbol", "/search", "/expiry", "/optionsymbol", "/basketorder", "/splitorder", "/optionsorder", "/optionsmultiorder", "/instruments",
-        "/multiquotes", "/syntheticfuture", "/optionchain", "/market/holidays", "/market/timings", "/pnl/symbols", "/chart", "/history", "/intervals", "/ticker/{symbol}", "/margin",
+        "/multiquotes", "/syntheticfuture", "/optionchain", "/optiongreeks", "/multioptiongreeks", "/market/holidays", "/market/timings", "/pnl/symbols", "/chart", "/history", "/intervals", "/ticker/{symbol}", "/margin",
         "/placegttorder", "/modifygttorder", "/cancelgttorder", "/gttorderbook",
     ];
 
@@ -169,7 +171,23 @@ internal static class OpenAlgoV1Endpoints
         {
             var messages = new JsonObject();
             foreach (var (field, list) in AnnotationValidator.ToProblemErrors(errors))
-                messages[field] = new JsonArray(list.Select(m => (JsonNode?)m).ToArray());
+            {
+                var array = new JsonArray(list.Select(m => (JsonNode?)m).ToArray());
+                // An error inside a list is nested as the schema library does: symbols[0].exchange is {"symbols": {"0": {"exchange": [...]}}}.
+                if (System.Text.RegularExpressions.Regex.Match(field, @"^(\w+)\[(\d+)\]\.(\w+)$") is { Success: true } nested)
+                {
+                    var outer = messages[nested.Groups[1].Value] as JsonObject ?? new JsonObject();
+                    messages[nested.Groups[1].Value] = outer;
+                    var item = outer[nested.Groups[2].Value] as JsonObject ?? new JsonObject();
+                    outer[nested.Groups[2].Value] = item;
+                    item[nested.Groups[3].Value] = array;
+                }
+                else
+                {
+                    messages[field] = array;
+                }
+            }
+
             await Write(context, Invalid(shape, messages));
             return;
         }

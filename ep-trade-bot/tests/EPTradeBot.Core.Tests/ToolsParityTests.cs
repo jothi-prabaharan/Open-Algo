@@ -495,4 +495,36 @@ public sealed class ToolsParityTests
         foreach (var row in Fixtures["sector_rotation"]!["quadrants"]!.AsArray())
             Assert.Equal(row![2]!.GetValue<string>(), SectorRotationTool.Quadrant(row[0]!.GetValue<double>(), row[1]!.GetValue<double>()));
     }
+
+    public static IEnumerable<object[]> ChainGreeksCases() => Fixtures["chain_greeks"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
+
+    [Theory]
+    [MemberData(nameof(ChainGreeksCases))]
+    public void Whole_ladder_greeks_match_OpenAlgo(int index, string name)
+    {
+        _ = name;
+        var c = Fixtures["chain_greeks"]!["cases"]![index]!;
+        double[] Prices(JsonNode? n) => n!.AsArray().Select(x => x is null ? 0.0 : x.GetValue<double>()).ToArray();
+        var (ce, pe) = ChainGreeks.Compute(c["strikes"]!.AsArray().Select(x => x!.GetValue<double>()).ToList(), Prices(c["ce"]), Prices(c["pe"]), c["forward"]!.GetValue<double>(), c["years"]!.GetValue<double>(), c["rate"]?.GetValue<double>());
+        AssertSame(c["out_ce"], new JsonArray(ce.Select(x => (JsonNode?)x).ToArray()), 1e-9);
+        AssertSame(c["out_pe"], new JsonArray(pe.Select(x => (JsonNode?)x).ToArray()), 1e-9);
+    }
+
+    [Fact]
+    public void The_forward_comes_from_the_money_pair_or_falls_back_to_the_underlying()
+    {
+        foreach (var f in Fixtures["chain_greeks"]!["forwards"]!.AsArray())
+            Assert.Equal(f!["forward"]!.GetValue<double>(), ChainGreeks.ForwardFromChain((JsonArray)f["chain"]!.DeepClone(), f["atm"]!.GetValue<double>(), f["ltp"]!.GetValue<double>()));
+    }
+
+    [Fact]
+    public void An_expired_leg_in_a_batch_gets_its_intrinsic_value_and_zero_greeks_as_OpenAlgo_gives()
+    {
+        foreach (var e in Fixtures["chain_greeks"]!["expired"]!.AsArray())
+        {
+            var actual = OptionGreeks.ExpiredResponse(e!["symbol"]!.GetValue<string>(), e["exchange"]!.GetValue<string>(), e["base"]!.GetValue<string>(), DateTime.Parse(e["expiry"]!.GetValue<string>(), System.Globalization.CultureInfo.InvariantCulture),
+                e["strike"]!.GetValue<double>(), e["type"]!.GetValue<string>(), e["spot"]!.GetValue<double>(), e["price"]!.GetValue<double>(), e["rate"]?.GetValue<double>());
+            AssertSame(e["response"], actual);
+        }
+    }
 }

@@ -123,12 +123,6 @@ public sealed partial class OpenAlgoApiService
 
     public async Task<V1Result> OptionChainAsync(BrokerAccount account, OptionChainRequest r, CancellationToken ct)
     {
-        if (r.WithGreeks)
-        {
-            return V1Result.Error(501, "Greeks on the option chain are not available in EP Trade bot yet. Ask for the chain without with_greeks; "
-                + "implied volatility and Greeks arrive with the option Greeks tools.");
-        }
-
         var (baseSymbol, embedded) = ParseUnderlying(r.Underlying);
         var expiry = embedded ?? r.ExpiryDate;
         if (string.IsNullOrEmpty(expiry)) return V1Result.Error(400, "Expiry date is required.");
@@ -212,12 +206,22 @@ public sealed partial class OpenAlgoApiService
             });
         }
 
+        var expiryTimestamp = ExpiryTimestamp(expiry, optionsExchange);
+        double? forward = null;
+        if (r.WithGreeks)
+        {
+            // Black-76 prices off the forward, and the money pair already in hand gives it by put-call parity.
+            forward = EPTradeBot.Core.Options.ChainGreeks.ForwardFromChain(chain, atm, ltp);
+            var expiryIst = expiryTimestamp is { } ts ? DateTimeOffset.FromUnixTimeSeconds(ts).UtcDateTime + EPTradeBot.Core.Time.Ist.Offset : (DateTime?)null;
+            EPTradeBot.Core.Options.ChainGreeks.Attach(chain, expiryIst, forward.Value, r.InterestRate, clock.GetUtcNow().UtcDateTime + EPTradeBot.Core.Time.Ist.Offset);
+        }
+
         return new V1Result(200, new JsonObject
         {
             ["status"] = "success", ["underlying"] = baseSymbol, ["underlying_symbol"] = quoteSymbol, ["underlying_exchange"] = quoteExchange,
             ["underlying_ltp"] = ltpNode.DeepClone(), ["underlying_prev_close"] = underlyingData.ContainsKey("prev_close") ? underlyingData["prev_close"]?.DeepClone() : 0,
-            ["expiry_date"] = expiry, ["expiry_ts"] = ExpiryTimestamp(expiry, optionsExchange), ["server_ts"] = clock.GetUtcNow().ToUnixTimeSeconds(),
-            ["atm_strike"] = atm, ["quotes_included"] = true, ["greeks_included"] = false, ["forward_price"] = null, ["chain"] = chain,
+            ["expiry_date"] = expiry, ["expiry_ts"] = expiryTimestamp, ["server_ts"] = clock.GetUtcNow().ToUnixTimeSeconds(),
+            ["atm_strike"] = atm, ["quotes_included"] = true, ["greeks_included"] = r.WithGreeks, ["forward_price"] = forward, ["chain"] = chain,
         });
     }
 

@@ -142,6 +142,27 @@ for row in SCENARIOS.SYMBOLS:
     db_session.add(SymToken(**row))
 db_session.commit()
 
+if getattr(SCENARIOS, "RECORDED_AT", None) and getattr(SCENARIOS, "FREEZE_CLOCK", False):
+    # Pin the clock the option maths reads, so a Greek that depends on time to expiry is the same whenever the fixture is replayed (the replay pins its clock to RECORDED_AT).
+    from datetime import datetime as _real_datetime
+
+    _at = _real_datetime.fromisoformat(SCENARIOS.RECORDED_AT)
+
+    class _Frozen(_real_datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return _at.replace(tzinfo=None) if tz is None else _at.astimezone(tz)
+
+        @classmethod
+        def utcnow(cls):
+            return _at.astimezone(__import__("datetime").timezone.utc).replace(tzinfo=None)
+
+    for _name in ("services.option_greeks_service", "services.option_chain_service", "services.synthetic_future_service"):
+        try:
+            importlib.import_module(_name).datetime = _Frozen
+        except Exception as exc:
+            print(f"skip clock freeze for {_name}: {exc}")
+
 if getattr(SCENARIOS, "FREEZE", None):
     import database.qty_freeze_db as qfd
 

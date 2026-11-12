@@ -106,7 +106,7 @@ public sealed class OptionGreeksRequest : ApiKeyRequest
     [Range(0, double.MaxValue)] [JsonPropertyName("forward_price")] public double? ForwardPrice { get; set; }
     [StringLength(64)] [JsonPropertyName("underlying_symbol")] public string? UnderlyingSymbol { get; set; }
     [RegularExpression(ApiPatterns.Exchange)] [JsonPropertyName("underlying_exchange")] public string? UnderlyingExchange { get; set; }
-    [RegularExpression(ApiPatterns.HourMinute)] [JsonPropertyName("expiry_time")] public string? ExpiryTime { get; set; }
+    [JsonPropertyName("expiry_time")] public string? ExpiryTime { get; set; }
 }
 
 public sealed class OptionSymbolItem
@@ -122,7 +122,7 @@ public sealed class MultiOptionGreeksRequest : ApiKeyRequest
 {
     [Required, Length(1, 50)] [JsonPropertyName("symbols")] public List<OptionSymbolItem> Symbols { get; set; } = [];
     [Range(0, 100)] [JsonPropertyName("interest_rate")] public double? InterestRate { get; set; }
-    [RegularExpression(ApiPatterns.HourMinute)] [JsonPropertyName("expiry_time")] public string? ExpiryTime { get; set; }
+    [JsonPropertyName("expiry_time")] public string? ExpiryTime { get; set; }
 }
 
 /// <summary>POST /api/v1/instruments</summary>

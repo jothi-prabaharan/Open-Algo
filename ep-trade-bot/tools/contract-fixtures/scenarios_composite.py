@@ -10,6 +10,9 @@ Expiries are far in the future (2030) or long past (2024), so the
 """
 
 BROKER = "zerodha"
+# The Greeks depend on time to expiry, so the clock the option maths reads is pinned to this instant (Wednesday 11 November 2026, 10:00 India time) and the replay's clock is pinned to the same.
+RECORDED_AT = "2026-11-11T10:00:00+05:30"
+FREEZE_CLOCK = True
 
 
 def _opt(strike, kind, expiry="30-DEC-30", code="30DEC30", br="30DEC", series=9):
@@ -150,6 +153,42 @@ SCENARIOS = [
     {"name": "optionchain_with_greeks", "path": "/api/v1/optionchain", "request": {"underlying": "NIFTY", "exchange": "NSE_INDEX", "expiry_date": "30DEC30", "strike_count": 1, "with_greeks": True},
      "broker": {"GET /quote": [NIFTY_24040, CHAIN_QUOTES]}},
     {"name": "optionchain_bad_count", "path": "/api/v1/optionchain", "request": {"underlying": "NIFTY", "exchange": "NSE_INDEX", "expiry_date": "30DEC30", "strike_count": 0}},
+    # Greeks of one option and of several: the forward is the synthetic future unless one is given, the spot otherwise.
+    {"name": "optiongreeks_given_forward", "path": "/api/v1/optiongreeks", "request": {"symbol": "NIFTY30DEC3024000CE", "exchange": "NFO", "forward_price": 24100.5},
+     "broker": {"GET /quote": _quotes({_k(24000, "CE"): (120.25, 2000)})}},
+    {"name": "optiongreeks_synthetic_forward", "path": "/api/v1/optiongreeks", "request": {"symbol": "NIFTY30DEC3024000PE", "exchange": "NFO"},
+     "broker": {"GET /quote": [NIFTY_24040, CHAIN_QUOTES, _quotes({_k(24000, "PE"): (80.15, 2500)})]}},
+    {"name": "optiongreeks_rate", "path": "/api/v1/optiongreeks", "request": {"symbol": "NIFTY30DEC3024000CE", "exchange": "NFO", "forward_price": 24100.5, "interest_rate": 6.5},
+     "broker": {"GET /quote": _quotes({_k(24000, "CE"): (120.25, 2000)})}},
+    {"name": "optiongreeks_spot_when_no_synthetic", "path": "/api/v1/optiongreeks", "request": {"symbol": "NIFTY30DEC3024100CE", "exchange": "NFO"},
+     "broker": {"GET /quote": [NIFTY_24040, REFUSED_403, NIFTY_24040, _quotes({_k(24100, "CE"): (75.0, 1500)})]}},
+    {"name": "optiongreeks_explicit_underlying", "path": "/api/v1/optiongreeks", "request": {"symbol": "NIFTY30DEC3024000CE", "exchange": "NFO", "underlying_symbol": "NIFTY30DEC30FUT", "underlying_exchange": "NFO"},
+     "broker": {"GET /quote": [_quote("NFO:NIFTY30DECFUT", 24120.0), _quotes({_k(24000, "CE"): (120.25, 2000)})]}},
+    {"name": "optiongreeks_deep_in_the_money", "path": "/api/v1/optiongreeks", "request": {"symbol": "NIFTY30DEC3023800CE", "exchange": "NFO", "forward_price": 24100.5},
+     "broker": {"GET /quote": _quotes({_k(23800, "CE"): (300.5, 100)})}},
+    {"name": "optiongreeks_expired", "path": "/api/v1/optiongreeks", "request": {"symbol": "NIFTY26DEC2424000CE", "exchange": "NFO", "forward_price": 24100.5},
+     "broker": {"GET /quote": _quotes({"NFO:NIFTY24DEC24000CE": (120.25, 2000)})}},
+    {"name": "optiongreeks_bad_symbol", "path": "/api/v1/optiongreeks", "request": {"symbol": "NOTANOPTION", "exchange": "NFO", "forward_price": 24100.5}},
+    {"name": "optiongreeks_bad_expiry_time", "path": "/api/v1/optiongreeks", "request": {"symbol": "NIFTY30DEC3024000CE", "exchange": "NFO", "forward_price": 24100.5, "expiry_time": "25:99"},
+     "broker": {"GET /quote": _quotes({_k(24000, "CE"): (120.25, 2000)})}},
+    {"name": "optiongreeks_option_quote_refused", "path": "/api/v1/optiongreeks", "request": {"symbol": "NIFTY30DEC3024000CE", "exchange": "NFO", "forward_price": 24100.5}, "broker": {"GET /quote": REFUSED_403}},
+    {"name": "optiongreeks_no_option_price", "path": "/api/v1/optiongreeks", "request": {"symbol": "NIFTY30DEC3024000CE", "exchange": "NFO", "forward_price": 24100.5}, "broker": {"GET /quote": _quotes({_k(24000, "CE"): (0, 0)})}},
+    {"name": "optiongreeks_underlying_quote_refused", "path": "/api/v1/optiongreeks", "request": {"symbol": "NIFTY30DEC3024000CE", "exchange": "NFO", "underlying_symbol": "FOO", "underlying_exchange": "NSE"}},
+    {"name": "optiongreeks_bad_exchange", "path": "/api/v1/optiongreeks", "request": {"symbol": "NIFTY30DEC3024000CE", "exchange": "NSE"}},
+    {"name": "optiongreeks_bad_rate", "path": "/api/v1/optiongreeks", "request": {"symbol": "NIFTY30DEC3024000CE", "exchange": "NFO", "interest_rate": 150}},
+    {"name": "optiongreeks_missing_symbol", "path": "/api/v1/optiongreeks", "request": {"exchange": "NFO"}},
+    {"name": "multioptiongreeks", "path": "/api/v1/multioptiongreeks",
+     "request": {"symbols": [{"symbol": "NIFTY30DEC3024000CE", "exchange": "NFO"}, {"symbol": "NIFTY30DEC3024100PE", "exchange": "NFO"}, {"symbol": "NIFTY30DEC3023900CE", "exchange": "NFO"}]},
+     "broker": {"GET /quote": [NIFTY_24040, CHAIN_QUOTES, NIFTY_24040, CHAIN_QUOTES]}},
+    {"name": "multioptiongreeks_partial", "path": "/api/v1/multioptiongreeks",
+     "request": {"symbols": [{"symbol": "NIFTY30DEC3024000CE", "exchange": "NFO"}, {"symbol": "BROKEN", "exchange": "NFO"}, {"symbol": "NIFTY30DEC3024200CE", "exchange": "NFO"}], "interest_rate": 6.5},
+     "broker": {"GET /quote": [NIFTY_24040, CHAIN_QUOTES, NIFTY_24040, CHAIN_QUOTES]}},
+    {"name": "multioptiongreeks_all_fail", "path": "/api/v1/multioptiongreeks", "request": {"symbols": [{"symbol": "BROKEN", "exchange": "NFO"}, {"symbol": "ALSOBROKEN", "exchange": "NFO"}]}},
+    {"name": "multioptiongreeks_expired_leg", "path": "/api/v1/multioptiongreeks",
+     "request": {"symbols": [{"symbol": "NIFTY26DEC2424000CE", "exchange": "NFO"}]},
+     "broker": {"GET /quote": [NIFTY_24040, NIFTY_24040, _quotes({"NFO:NIFTY24DEC24000CE": (120.25, 2000)})]}},
+    {"name": "multioptiongreeks_empty", "path": "/api/v1/multioptiongreeks", "request": {"symbols": []}},
+    {"name": "multioptiongreeks_bad_leg", "path": "/api/v1/multioptiongreeks", "request": {"symbols": [{"symbol": "NIFTY30DEC3024000CE", "exchange": "NSE"}]}},
     # Orders made of several orders.
     {"name": "basketorder_two", "path": "/api/v1/basketorder", "request": {"strategy": "t", "orders": [{"symbol": "INFY", "exchange": "NSE", "action": "sell", "quantity": 5, "pricetype": "MARKET", "product": "CNC"}, {"symbol": "SBIN", "exchange": "NSE", "action": "BUY", "quantity": "10", "pricetype": "LIMIT", "product": "MIS", "price": 800}]}, "broker": {"POST /orders/regular": ORDER_OK}},
     {"name": "basketorder_refused", "path": "/api/v1/basketorder", "request": {"strategy": "t", "orders": [{"symbol": "SBIN", "exchange": "NSE", "action": "BUY", "quantity": 1}]}, "broker": {"POST /orders/regular": ORDER_REFUSED}},

@@ -86,4 +86,19 @@ public static class OptionGreeks
         };
         return (true, response, 200);
     }
+
+    /// <summary>A stable answer for a leg that has expired in a batch: its intrinsic value and zero Greeks.</summary>
+    public static JsonObject ExpiredResponse(string optionSymbol, string exchange, string baseSymbol, DateTime expiry, double strike, string optionType, double spot, double optionPrice, double? interestRate)
+    {
+        var intrinsic = Math.Max(optionType == "CE" ? spot - strike : strike - spot, 0);
+        return new JsonObject
+        {
+            ["status"] = "success", ["symbol"] = optionSymbol, ["exchange"] = exchange, ["underlying"] = baseSymbol, ["strike"] = PyNumber.Round(strike, 2), ["option_type"] = optionType,
+            ["expiry_date"] = expiry.ToString("dd-MMM-yyyy", CultureInfo.InvariantCulture), ["days_to_expiry"] = 0, ["spot_price"] = PyNumber.Round(spot, 2), ["option_price"] = PyNumber.Round(optionPrice, 2),
+            ["intrinsic_value"] = PyNumber.Round(intrinsic, 2), ["time_value"] = PyNumber.Round(Math.Max(optionPrice - intrinsic, 0), 2), ["interest_rate"] = PyNumber.Round(interestRate ?? 0, 2),
+            ["implied_volatility"] = 0, ["greeks"] = new JsonObject { ["delta"] = 0, ["gamma"] = 0, ["theta"] = 0, ["vega"] = 0, ["rho"] = 0 }, ["note"] = "Option has expired - Greeks are no longer applicable",
+        };
+    }
+
+    public static bool IsExpiredResponse(JsonObject response) => (OptionChainReading.Text(response, "message") ?? "").Contains("option has expired", StringComparison.OrdinalIgnoreCase);
 }
