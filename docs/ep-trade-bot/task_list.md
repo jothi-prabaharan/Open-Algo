@@ -25,7 +25,7 @@ Task Groups 1 and 2 done; Task Group 3 in progress (passes 1 to 9 verified; acti
 - [x] Account and global kill-switch endpoints with append-only IST audit
 - [x] Audit immutability: SaveChanges interceptor + command interceptor (blocks ExecuteUpdate/ExecuteDelete)
 - [x] Gate 2 artifact (xUnit on PostgreSQL 17, 14 mutation checks)
-- [ ] Deferred to later groups: sandbox GTT, CNC holdings and T+1, catch-up after restart, auto square-off timers (TG4); admin token replaced by login (TG5)
+- [x] Sandbox GTT, CNC holdings and T+1, catch-up after restart and auto square-off timers, deferred from here, were done in TG4. Still open: admin token replaced by login (TG5)
 
 ## TG3: Brokers, /api/v1, streaming (active brokers: Zerodha, Angel One, Paytm Money)
 
@@ -76,16 +76,17 @@ Not started (30): fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, defin
 - [ ] Gate 7 artifact (per-broker verification status for all of the above)
 
 ## TG4: Strategy host, Flow, Action Center, agent, MCP, tools
-- [ ] The 31 /api/v1 pairs that sit on TG4 features (option greeks, portfolio, SIP, sector rotation, strategy, Telegram, WhatsApp)
+- [x] The 31 /api/v1 pairs that sit on TG4 features: option greeks (2), portfolio (4), SIP (2), sector rotation (2), Telegram (9), WhatsApp (1) are complete; strategy (9) has its 5 read routes complete and its 4 lifecycle routes (start, stop, close_all, close_leg) validated but answering 501, because the strategy module's run engine is not ported (see `verification/tg4.md`)
 - [x] Quartz.NET with IST schedules and weekday controls (`Core/Scheduling`, `Infrastructure/Scheduling`; 55 tests, 33 mutants)
 - [x] Hosted strategy process supervisor (`Infrastructure/Scheduling/StrategySupervisor`; 38 tests, 27 mutants; resource limits left to TG6)
-- [ ] Flow engine and node types: engine, persistence, triggers, endpoints and 58 of 61 node types done and verified (`Core/Flow`, `Infrastructure/Flow`; 100 mutants); 3 node types remain and are refused by name (strategy P&L, Telegram alert, WhatsApp alert: they need the strategy book and the messaging services)
+- [x] Flow engine and all 61 node types (`Core/Flow`, `Infrastructure/Flow`; 110+ mutants)
 - [x] 127 indicators with parity tests (`Core/Indicators`; 255 recorded cases against `openalgo.ta`, 21 mutation checks)
 - [x] Action Center Auto / Semi-Auto, re-check at approval
 - [x] Agent on Microsoft.Extensions.AI, proposal-only order tools (`Infrastructure/Agent`; 25 tests, 22 mutants; no tool can send an order)
 - [x] MCP stdio + HTTP/OAuth
 - [x] 20 tool back ends with numeric parity tests (`Core/Options`, `Core/Portfolio`; about 400 recorded cases, 100+ mutants); `/sip`, `/sectorrotation` and `/portfolio` routes (tearsheet answers 501)
-- [ ] Gate 4 artifact
+- [x] Gate 4 artifact (`ep-trade-bot/verification/tg4.md`)
+- [ ] Strategy module run engine (multi-leg runs, entry and exit orders, the risk monitor on live ticks): not part of the TG4 plan's seven items and not ported; the four lifecycle routes answer 501 until it is
 
 ## TG5: Angular PWA (owned by Antigravity; not worked on in this session)
 - [ ] Angular 22 zoneless workspace, Tailwind 4, SignalStore

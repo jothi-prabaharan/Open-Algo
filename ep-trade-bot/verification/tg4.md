@@ -1,7 +1,6 @@
-# Task Group 4: verification artifact (in progress)
+# Task Group 4: verification artifact
 
-Task Group 4 is built piece by piece, each held to the Python it replaces. This file grows as the pieces land. Gate 4's end-to-end test, the numeric
-parity report for the 20 tools, and the sign-off come when the last piece is in.
+Task Group 4 is built piece by piece, each held to the Python it replaces. Gate 4's end-to-end test is near the end of this file, the numeric parity report for the 20 tools is in the tool sections, and the one piece left out is named there.
 
 ## 1. The 127 indicators
 
@@ -315,7 +314,45 @@ the engine never reads the first session as a rebalance, so removing that exclus
 - The Analyzer weights holdings from quantity and last price. The holdings rows this platform returns carry no price, so it answers "no holdings with a usable quantity and price" until a broker supplies one; OpenAlgo behaves the same on such rows.
 - The per-route rate limits (10 per minute) are not ported.
 
-## Gate 4 (interim): what the chain has been shown to do
+## Telegram, WhatsApp and the alert nodes
+
+**What was built.** `TelegramService` (settings with the bot token encrypted at rest and never returned in full, the people linked to the bot, their preferences, command counts, sending through Telegram's Bot API,
+the webhook secret) behind the nine `/api/v1/telegram/*` routes, and `WhatsAppService` behind `/api/v1/whatsapp/notify`. WhatsApp sends through an `IWhatsAppTransport`; none ships, because a paired phone needs a WhatsApp
+Web session this platform does not run, so a send is refused with the instruction to pair first (409) until one is registered. The `telegramAlert` and `whatsappAlert` Flow nodes use the same services.
+
+**How it is held.** `MessagingApiTests` (9) and `FlowAlertTests` (4) run the routes and the nodes against a fake Telegram and a fake paired device; 14 mutants in `tools/mutation/tg4-messaging.json` and 7 in `tg4-alerts.json`
+are all caught (one more, a blank WhatsApp recipient, cannot be seen because the service treats an empty string as "self").
+
+**Differences from OpenAlgo.**
+- `/telegram/config` returns the token masked in both fields (OpenAlgo masks only `bot_token`).
+- `/telegram/broadcast` sends to every linked person who wants messages; OpenAlgo's route answers success with zero sent (its own comment says it is not implemented).
+- Starting the bot validates the token and turns alerts on; the interactive command bot (a person typing commands in the chat) is not part of EP Trade bot yet. The webhook checks its secret and accepts updates but does not process commands.
+- A Flow Telegram alert goes to the linked person named like the account, or to the only person linked.
+
+## Strategy: the routes, the book and the P&L node
+
+**What was built.** The five read routes (`/strategy/list`, `/status`, `/runs`, `/orders`, `/events`) read the stored strategies, runs, orders and risk events, with OpenAlgo's shapes, limits and vocabulary; the platform has one operator,
+so every strategy is theirs and an unknown id is 404. `/start`, `/stop`, `/close_all` and `/close_leg` do their validation (a mode is required and never defaulted, live needs the strategy's opt-in, a signal strategy has no start,
+a second start is refused, stopping an idle strategy is refused) and then answer 501, because the module's run engine is not ported.
+A per-strategy position book (`StrategyBookLedger`, weighted-average cost, flips through zero, partial-fill watermarks, fills that arrive before their order's tag) was checked against the real `strategy_book_db` on 12 recorded
+scenarios. The `strategyPnl` Flow node reads it, rebuilt from the sandbox account's fills; a live account's figures are reported as unavailable, not zero.
+
+**Not done, and why it matters.** The strategy module (OpenAlgo's `services/strategy_module/`, about 13,600 lines: leg resolution, entries and exits, the risk monitor on live ticks, recovery, webhooks, signals) is its own product
+in OpenAlgo's feature table and is not among the seven items of the TG4 plan. Opening a run without the monitor would place orders whose stops nothing watches, so the lifecycle routes refuse rather than pretend.
+`StrategyApiTests` (5) and `tools/mutation/tg4-strategy-api.json` (8 mutants, all caught); the book's mutants are in `tg4-strategy-book.json` (11, all caught; one cannot be seen because two guards cover the same case).
+
+## The sandbox work deferred from TG2
+
+| Item | .NET | What it does | Held by |
+| --- | --- | --- | --- |
+| Auto square-off | `SandboxEngine.SquareOffAsync`, `SandboxSquareOffService` | From each exchange's cut-off (NSE, BSE and F&O 15:15; CDS and BCD 16:45; NCDEX 17:00; MCX 23:30) open MIS orders are cancelled and MIS positions closed at market, every minute on weekdays | `SandboxSquareOffTests` (16), 6 mutants |
+| Catch-up after a restart | `SandboxEngine.CatchUpStaleMisAsync` | MIS positions left from before the last 03:00 IST boundary are settled at their last price into the all-time total only, margin released | same file, 4 mutants (one cannot be seen: two guards) |
+| CNC holdings and T+1 | `SettleT1Async`, `GetHoldingsAsync`, `/holdings` for sandbox accounts | Delivery positions of an earlier day become holdings: weighted-average on a purchase with its margin taken out of the reserved total, a sale reduces the holding and credits its proceeds; holdings are marked to the latest price | `SandboxHoldingsTests` (2), 6 mutants (one cannot be seen: two guards) |
+| Sandbox GTT | `SandboxEngine.Gtt.cs` and the four GTT routes | SINGLE and OCO triggers reserve margin (the larger leg for an OCO), fire once when the price reaches them, cancel an OCO's sibling, give margin back exactly once on cancel, fire or expiry | `SandboxGttTests` (12), 11 mutants |
+
+Differences from OpenAlgo: the sandbox timers use the platform's clock and the market calendar is not consulted for holidays (weekends are skipped); a GTT refused for lack of funds gives the platform's own wording.
+
+## Gate 4: what the chain has been shown to do
 
 `Gate4Tests` (integration, real host, PostgreSQL) drives the whole chain with a live tick on the bus: a price alert watches SBIN crossing up through 505; when it fires, an indicator node reads the
 three-bar average of the five-minute closes from the broker's history; a condition lets the order through only if that average is above 500; then the order goes through the environment guard and
@@ -332,5 +369,13 @@ the account's risk limits into the sandbox.
 
 The four chain tests were run five times in a row with no failure (they wait for the publisher to connect by ticking until the effect shows, as the existing price-alert test does).
 
-**Gate 4 is not complete.** Still open in TG4: the strategy (9), Telegram (9) and WhatsApp (1) endpoints, the 3 Flow node types that are refused by name, the 31 `/api/v1`
-endpoint pairs on TG4 features, and the TG2 items that were deferred to this group (sandbox GTT, CNC holdings with T+1 settlement, catch-up after a restart, auto square-off timers).
+**Full suite.** Each run is a clean build against PostgreSQL 17, all four test projects.
+
+| Run | Core | Contract | Architecture | Integration |
+| --- | --- | --- | --- | --- |
+| 1 | 1518 passed | 913 passed | 35 passed | 273 passed |
+| 2 | 1518 passed | 913 passed | 35 passed | 273 passed |
+| 3 | 1518 passed | 913 passed | 35 passed | 273 passed |
+
+**What Gate 4 does not cover.** The strategy module's run engine (above): `/strategy/start`, `/stop`, `/close_all` and `/close_leg` answer 501. Everything else the TG4 plan lists, and every other one of the 31 endpoint pairs,
+is built and held by tests.
