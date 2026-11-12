@@ -560,6 +560,98 @@ def _strategy_chart_cases(which):
     return {"now": NOW.isoformat(), "cases": cases}
 
 
+def record_straddle_chart():
+    import services.straddle_chart_service as st
+    import services.strategy_chart_service as sc
+
+    st.datetime = Frozen
+    sc.datetime = Frozen
+    midnight = int(NOW.replace(hour=0, minute=0, second=0).timestamp())
+    cases = []
+
+    def spot_at(d, i, centre):
+        return round(centre + (d - 1) * 40 + i * 13 - (i % 3) * 21, 2)
+
+    def underlying(days, n=14, centre=24000.0, ms=False, skip=(), key="close"):
+        rows = []
+        for d in days:
+            t0 = midnight - d * 86400 + (9 * 60 + 15) * 60 - 19800
+            for i in range(n):
+                if (d, i) in skip:
+                    continue
+                ts = t0 + i * 300
+                rows.append({"timestamp": ts * 1000 if ms else ts, "open": 1, "high": 1, "low": 1, key: spot_at(d, i, centre), "volume": 1})
+        return rows
+
+    def option(days, strike, kind, n=14, centre=24000.0, ms=False, skip=()):
+        rows = []
+        for d in days:
+            t0 = midnight - d * 86400 + (9 * 60 + 15) * 60 - 19800
+            for i in range(n):
+                if (d, i) in skip:
+                    continue
+                ts = t0 + i * 300
+                spot = spot_at(d, i, centre)
+                rows.append({"timestamp": ts * 1000 if ms else ts, "close": round(abs(spot - strike) * 0.35 + 55 + (3 if kind == "CE" else 5) + i * 0.1, 2)})
+        return rows
+
+    def run(name, strikes, days=3, expiry="26NOV26", interval="5m", under="NIFTY", exch="NSE_INDEX", u_hist="ok", opt_skip=None, ms=False, quote=("ok", 24057.5), centre=24000.0, drop_options=(), step=50):
+        calls = []
+        hist = {}
+        d3 = tuple(range(3))
+        quote_symbol = under
+        if u_hist == "ok":
+            hist[quote_symbol] = underlying(d3, centre=centre, ms=ms)
+        elif u_hist == "no-close":
+            hist[quote_symbol] = underlying(d3, centre=centre, key="px")
+        else:
+            hist[quote_symbol] = u_hist
+        for st_ in strikes:
+            for kind in ("CE", "PE"):
+                sym = f"{under}{expiry.upper()}{int(st_)}{kind}"
+                if sym in drop_options:
+                    continue
+                hist[sym] = option(d3, st_, kind, centre=centre, ms=ms, skip=(opt_skip or {}).get(sym, ()))
+
+        def get_history(symbol, exchange, interval, start_date, end_date, api_key):
+            calls.append({"symbol": symbol, "exchange": exchange, "interval": interval, "start": start_date, "end": end_date})
+            v = hist.get(symbol, "missing")
+            if v == "missing":
+                return False, {"status": "error", "message": "no history"}, 404
+            if isinstance(v, dict):
+                return v["ok"], v["resp"], 200
+            return True, {"data": json.loads(json.dumps(v))}, 200
+
+        st.get_available_strikes = lambda base, expiry_, opt, exch_: list(strikes)
+        st.get_history = get_history
+        st.get_quotes = (lambda **kw: (True, {"data": {"ltp": quote[1]}}, 200)) if quote[0] == "ok" else (lambda **kw: (False, {}, 500))
+        ok, resp, code = st.get_straddle_chart_data(under, exch, expiry, interval, "key", days)
+        cases.append({"name": name, "underlying": under, "exchange": exch, "expiry": expiry, "interval": interval, "days": days, "strikes": list(strikes), "history": hist, "quote": list(quote),
+                      "calls": sorted(calls, key=lambda c: (c["symbol"], c["exchange"])), "ok": ok, "code": code, "response": resp})
+
+    strikes = [23800 + 50 * i for i in range(0, 12)]
+    run("nifty", strikes)
+    run("days-1", strikes, days=1)
+    run("days-2-ms", strikes, days=2, ms=True)
+    run("lower-case-expiry", strikes, expiry="26nov26")
+    run("expired", strikes, expiry="10NOV26")
+    run("expiry-in-2-days", strikes, expiry="13NOV26")
+    run("option-gaps", strikes, opt_skip={f"NIFTY26NOV26{s}{k}": {(0, 3), (1, 5), (2, 7)} for s in strikes for k in ("CE", "PE")})
+    run("some-options-missing", strikes, drop_options={f"NIFTY26NOV26{s}PE" for s in strikes[:6]})
+    run("all-options-missing", strikes, drop_options={f"NIFTY26NOV26{s}{k}" for s in strikes for k in ("CE", "PE")})
+    run("no-strikes", [])
+    run("underlying-fails", strikes, u_hist={"ok": False, "resp": {"message": "token expired"}})
+    run("underlying-fails-no-message", strikes, u_hist={"ok": False, "resp": {}})
+    run("underlying-empty", strikes, u_hist=[])
+    run("underlying-no-timestamp", strikes, u_hist=[{"close": 1}])
+    run("underlying-no-close", strikes, u_hist="no-close")
+    run("banknifty-wide-step", [51000 + 100 * i for i in range(10)], under="BANKNIFTY", centre=51500.0)
+    run("sensex", [79000 + 100 * i for i in range(14)], under="SENSEX", exch="BSE_INDEX", centre=79500.0)
+    run("quote-fails", strikes, quote=("fail", 0))
+    run("fractional-strikes", [291.0 + 2.5 * i for i in range(8)], under="VEDL", exch="NFO", centre=295.0)
+    return {"now": NOW.isoformat(), "cases": cases}
+
+
 def record_strategy_chart():
     return _strategy_chart_cases("strategy_chart")
 
@@ -568,7 +660,7 @@ def record_multi_strike_oi():
     return _strategy_chart_cases("multi_strike_oi")
 
 
-RECORDERS = {"strategy_chart": record_strategy_chart, "multi_strike_oi": record_multi_strike_oi, "oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
+RECORDERS = {"straddle_chart": record_straddle_chart, "strategy_chart": record_strategy_chart, "multi_strike_oi": record_multi_strike_oi, "oi_profile": record_oi_profile, "gamma_density": record_gamma_density, "strike_profile": record_strike_profile, "vol_surface": record_vol_surface, "greeks": record_greeks, "gex": record_gex, "iv_smile": record_iv_smile, "oi": record_oi}
 
 if __name__ == "__main__":
     out = {name: fn() for name, fn in RECORDERS.items()}

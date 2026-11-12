@@ -314,4 +314,33 @@ public sealed class ToolsParityTests
         Assert.Equal(2, response["data"]!["series"]!.AsArray().Count);
         Assert.DoesNotContain("NaN", response.ToJsonString());
     }
+
+    public static IEnumerable<object[]> StraddleChartCases() => Fixtures["straddle_chart"]!["cases"]!.AsArray().Select((c, i) => new object[] { i, c!["name"]!.GetValue<string>() });
+
+    [Theory]
+    [MemberData(nameof(StraddleChartCases))]
+    public void The_straddle_chart_matches_OpenAlgo_candle_by_candle(int index, string name)
+    {
+        _ = name;
+        var c = Fixtures["straddle_chart"]!["cases"]![index]!;
+        var history = c["history"]!.AsObject();
+        var calls = new List<JsonObject>();
+        StraddleChartTool.HistoryFetch fetch = (symbol, exchange, interval, start, end) =>
+        {
+            calls.Add(new JsonObject { ["symbol"] = symbol, ["exchange"] = exchange, ["interval"] = interval, ["start"] = start, ["end"] = end });
+            var value = history[symbol];
+            if (value is null) return (false, new JsonObject { ["status"] = "error", ["message"] = "no history" }, 404);
+            if (value is JsonObject o) return (o["ok"]!.GetValue<bool>(), (JsonObject)o["resp"]!.DeepClone(), 200);
+            return (true, new JsonObject { ["data"] = value.DeepClone() }, 200);
+        };
+        var quoteOk = c["quote"]![0]!.GetValue<string>() == "ok";
+        StraddleChartTool.QuoteFetch quote = (_, _) => quoteOk ? (true, new JsonObject { ["data"] = new JsonObject { ["ltp"] = c["quote"]![1]!.GetValue<double>() } }, 200) : (false, new JsonObject(), 500);
+        var strikes = c["strikes"]!.AsArray().Select(x => x!.GetValue<double>()).ToList();
+        var (ok, response, code) = StraddleChartTool.Compute(c["underlying"]!.GetValue<string>(), c["exchange"]!.GetValue<string>(), c["expiry"]!.GetValue<string>(), c["interval"]!.GetValue<string>(),
+            c["days"]!.GetValue<int>(), strikes, c["underlying"]!.GetValue<string>(), fetch, quote, Now("straddle_chart"));
+        Assert.Equal(c["ok"]!.GetValue<bool>(), ok);
+        Assert.Equal(c["code"]!.GetValue<int>(), code);
+        AssertSame(c["calls"], new JsonArray(calls.OrderBy(x => x["symbol"]!.GetValue<string>(), StringComparer.Ordinal).ThenBy(x => x["exchange"]!.GetValue<string>(), StringComparer.Ordinal).Select(x => (JsonNode)x).ToArray()));
+        AssertSame(c["response"], response);
+    }
 }
