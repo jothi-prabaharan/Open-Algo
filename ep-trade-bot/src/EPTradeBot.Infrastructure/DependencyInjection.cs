@@ -103,6 +103,9 @@ public static class DependencyInjection
         }
         services.AddSingleton<EPTradeBot.Infrastructure.Scheduling.StrategyScheduleService>();
         services.AddSingleton<EPTradeBot.Infrastructure.Scheduling.ScheduleRegistry>();
+        services.AddOptions<Core.Configuration.AgentOptions>().Bind(configuration.GetSection(Core.Configuration.AgentOptions.Section)).ValidateDataAnnotations().ValidateOnStart();
+        services.TryAddSingleton<EPTradeBot.Infrastructure.Agent.IAgentChatClientFactory, EPTradeBot.Infrastructure.Agent.OpenAiCompatibleClientFactory>();
+        services.AddSingleton<EPTradeBot.Infrastructure.Agent.AgentService>();
         services.AddSingleton<EPTradeBot.Infrastructure.Flow.FlowService>();
         services.AddSingleton<EPTradeBot.Infrastructure.Flow.FlowScheduleRunner>();
         services.AddSingleton<EPTradeBot.Infrastructure.Flow.FlowPriceMonitor>();

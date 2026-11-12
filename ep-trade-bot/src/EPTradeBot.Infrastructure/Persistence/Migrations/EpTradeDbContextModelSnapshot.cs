@@ -383,6 +383,42 @@ namespace EPTradeBot.Infrastructure.Persistence.Migrations
                     b.ToTable("account_risk_settings", "core");
                 });
 
+            modelBuilder.Entity("EPTradeBot.Core.Entities.Core.AgentSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Endpoint")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("endpoint");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("model");
+
+                    b.Property<string>("ProtectedApiKey")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("protected_api_key");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
+                    b.HasKey("Id")
+                        .HasName("pk_agent_settings");
+
+                    b.ToTable("agent_settings", "core", t =>
+                        {
+                            t.HasCheckConstraint("ck_agent_settings_single_row", "id = 1");
+                        });
+                });
+
             modelBuilder.Entity("EPTradeBot.Core.Entities.Core.BrokerAccount", b =>
                 {
                     b.Property<Guid>("Id")

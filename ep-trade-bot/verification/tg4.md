@@ -196,3 +196,28 @@ idempotent; `A_late_release_on_a_closed_connection_leaves_the_newer_connection_a
 `tools/mutation/tg4-feed-race.json` (two mutants) reverts each half and turns it red. (2) The test hosts chose a "free" bus port by binding port 0 and releasing it; an outgoing connection
 could take that port before the host bound it. Ports now come from a range below the operating system's outgoing range, and are never handed out twice by one process. (3) The orphan-process
 test reconciled a process that had only just been forked, whose command line still showed its parent's; it now waits until the process has started, as an orphan from an earlier start has.
+
+## Agent (Microsoft.Extensions.AI)
+
+**What was built.** The assistant is a conversation with a language model on `Microsoft.Extensions.AI`: `AgentService` builds the chat client from the provider saved under Agent settings (an
+OpenAI-compatible service: address, model and key; the key is stored encrypted with the application key, never read back, and kept when a later save leaves it out; a plain-http address is refused
+unless it is on this computer), wraps it in the function-invocation loop (bounded in rounds, `Agent:MaxToolRounds`, and in time, `Agent:TimeoutSeconds`), and returns the answer, the tools it
+called and the orders it suggested. Endpoints: `GET` and `PUT /api/v1/agent/provider`, `POST /api/v1/agent/chat` (admin token).
+
+- **It can read, and it can only suggest.** Its tools are quote, depth, history, one indicator over recent candles (any of the 127), the list of indicators, funds, positions, holdings, orders and
+  trades, all through the platform's own API for the chosen account, and two order tools, `propose_order` and `propose_close`. A proposal is validated in the words an order node uses (a limit
+  order without a price is not even suggested), refused if the environment guard would refuse the account's orders, and then put in the Action Center as a pending order marked `agent`. Nothing is sent:
+  the trader approves or rejects it, and approval decides again with the guard, the kill switches and the risk limits as of that moment (the Action Center's own rule). There is no tool that
+  places, modifies or cancels, which a test pins by name against the tools the model is actually given.
+- **Limits that bound a mistaken model:** at most `Agent:MaxProposalsPerAnswer` (3) suggestions per answer, tool answers cut at 6,000 characters, history capped at 100 candles, the conversation
+  limited to the trader's and the assistant's own turns (a `system`, `tool` or `developer` message in the request is refused, so the caller cannot write the model's instructions) and ending on
+  the trader's turn. The system prompt tells the model that everything its tools return is data, not instructions; the test with a quote whose payload says "sell everything" shows that even a model
+  that obeys it can only add a pending suggestion.
+- **Provider refusals are explained, not coded:** a refused key, an unknown model, no credit or too many requests, an unreachable service, and a missing key or model each have a sentence saying what
+  to check, and none shows a status code.
+
+**How it is held.** `AgentTests` (25, with a scripted language model so the loop is deterministic, and the real OpenAI-compatible client against a fake service for the request it sends and the
+errors it gets back). 22 mutants in `tools/mutation/tg4-agent.json`, all red; two first survived (the exchange check and the default product by segment) and needed a test.
+
+**Not done.** Streaming answers, saved conversations, voice, and the chart, option-visualisation, web-search, strategy and OpenScript generation tools of OpenAlgo's agent. The tools that exist are the
+ones the Gate 4 rule needs (read, and propose only); more are additive.

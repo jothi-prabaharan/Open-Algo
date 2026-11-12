@@ -1,0 +1,178 @@
+[
+ {
+  "name": "G1 no limit on proposals",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentToolbox.cs",
+  "old": "if (proposed >= maxProposals)",
+  "new": "if (proposed >= maxProposals + 100)",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G2 proposals are not counted",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentToolbox.cs",
+  "old": "        proposed++;\n",
+  "new": "        proposed += 0;\n",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G3 any action is accepted",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentToolbox.cs",
+  "old": "if (!OrderVocabulary.Actions.Contains(act)) return",
+  "new": "if (!OrderVocabulary.Actions.Contains(act) && act.Length < 0) return",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G4 a zero quantity is accepted",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentToolbox.cs",
+  "old": "if (quantity < 1)",
+  "new": "if (quantity < -5)",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G5 a limit order with no price is accepted",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentToolbox.cs",
+  "old": "is { } invalid) return invalid;",
+  "new": "is { } invalid && type.Length < 0) return invalid;",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G6 a suggestion is not marked as the assistant's",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentToolbox.cs",
+  "old": "Strategy = \"agent\" }",
+  "new": "Strategy = \"tv\" }",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G7 a close goes the same way as the position",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentToolbox.cs",
+  "old": "quantity > 0 ? \"SELL\" : \"BUY\"",
+  "new": "quantity > 0 ? \"BUY\" : \"SELL\"",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G8 a close with no position is suggested",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentToolbox.cs",
+  "old": "if (held is null) return Failure($\"There is no open position in {sym} to close.\");",
+  "new": "held ??= new JsonObject { [\"quantity\"] = 5, [\"product\"] = \"MIS\" };",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G9 a tool answer is not cut short",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentToolbox.cs",
+  "old": "if (text.Length > MaxReplyChars)",
+  "new": "if (text.Length > MaxReplyChars * 1000)",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G10 the default exchange is unchecked",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentToolbox.cs",
+  "old": "if (!OrderVocabulary.Exchanges.Contains(exch)) return",
+  "new": "if (!OrderVocabulary.Exchanges.Contains(exch) && exch.Length < 0) return",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G11 a product is not defaulted by segment",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentToolbox.cs",
+  "old": "OrderVocabulary.DefaultProduct(exch) : product.Trim().ToUpperInvariant()",
+  "new": "\"MIS\" : product.Trim().ToUpperInvariant()",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G12 the round limit is raised",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentService.cs",
+  "old": "c.MaximumIterationsPerRequest = settings.MaxToolRounds;",
+  "new": "c.MaximumIterationsPerRequest = 1000;",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G13 a switched-off account is served",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentService.cs",
+  "old": "if (!account.IsEnabled) return Fail",
+  "new": "if (!account.IsEnabled && account.Id == Guid.Empty) return Fail",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G14 a missing key is not noticed",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentService.cs",
+  "old": "if (string.IsNullOrEmpty(key)) return (",
+  "new": "key ??= \"\"; if (key.Length < 0) return (",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G15 a refused key is not explained",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentService.cs",
+  "old": "401 or 403 =>",
+  "new": "999 =>",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G16 an out-of-credit answer is not explained",
+  "file": "src/EPTradeBot.Infrastructure/Agent/AgentService.cs",
+  "old": "429 =>",
+  "new": "998 =>",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G17 the caller may write system turns",
+  "file": "src/EPTradeBot.Core/Contracts/Management/AgentRequests.cs",
+  "old": "\"^(user|assistant)$\"",
+  "new": "\"^(user|assistant|system|tool|developer)$\"",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G18 the last turn need not be the trader's",
+  "file": "src/EPTradeBot.Api/Endpoints/AgentEndpoints.cs",
+  "old": "if (r.Messages[^1].Role != \"user\")",
+  "new": "if (r.Messages[^1].Role != \"user\" && r.Messages.Count < 0)",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G19 a plain-http provider address is accepted",
+  "file": "src/EPTradeBot.Api/Endpoints/AgentEndpoints.cs",
+  "old": "(uri.Scheme != Uri.UriSchemeHttps && !(uri.Scheme == Uri.UriSchemeHttp && uri.IsLoopback))",
+  "new": "(uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp)",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G20 the key is stored in the clear",
+  "file": "src/EPTradeBot.Api/Endpoints/AgentEndpoints.cs",
+  "old": "protector.Protect(Guid.Empty, OpenAiCompatibleClientFactory.KeyField, r.ApiKey.Trim())",
+  "new": "r.ApiKey.Trim()",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G21 a key left out wipes the saved one",
+  "file": "src/EPTradeBot.Api/Endpoints/AgentEndpoints.cs",
+  "old": "if (!string.IsNullOrWhiteSpace(r.ApiKey)) s.ProtectedApiKey = protector.Protect(Guid.Empty, OpenAiCompatibleClientFactory.KeyField, r.ApiKey.Trim());",
+  "new": "s.ProtectedApiKey = string.IsNullOrWhiteSpace(r.ApiKey) ? null : protector.Protect(Guid.Empty, OpenAiCompatibleClientFactory.KeyField, r.ApiKey!.Trim());",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G22 a suggestion ignores the environment guard",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.ActionCenter.cs",
+  "old": "if (guard.Check(account) is { } refused) return Refusal(account, refused);\n        var body = JsonSerializer.SerializeToNode(request, StoredRequest)!.AsObject();\n        body.Remove(\"apikey\");\n        var id = await actionCenter.QueueAsync(account.Id, \"placeorder\", body.ToJsonString(), ct);\n        return new V1Result(200, new JsonObject\n        {\n            [\"status\"] = \"success\", [\"message\"] = \"Order proposed",
+  "new": "var body = JsonSerializer.SerializeToNode(request, StoredRequest)!.AsObject();\n        body.Remove(\"apikey\");\n        var id = await actionCenter.QueueAsync(account.Id, \"placeorder\", body.ToJsonString(), ct);\n        return new V1Result(200, new JsonObject\n        {\n            [\"status\"] = \"success\", [\"message\"] = \"Order proposed",
+  "filter": "FullyQualifiedName~AgentTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

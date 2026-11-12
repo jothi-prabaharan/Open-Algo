@@ -173,3 +173,20 @@ public sealed class StrategyHostOptions
     /// <summary>Starts the supervisor in place of the placeholder controller. Off only in tests that supply their own.</summary>
     public bool Enabled { get; set; } = true;
 }
+
+/// <summary>Bound from <c>Agent</c>.</summary>
+public sealed class AgentOptions
+{
+    public const string Section = "Agent";
+
+    /// <summary>The most rounds of tool calls one question may take before the assistant must answer.</summary>
+    [Range(1, 20)]
+    public int MaxToolRounds { get; set; } = 8;
+
+    /// <summary>The most orders the assistant may propose in one answer, so a confused model cannot flood the Action Center.</summary>
+    [Range(0, 20)]
+    public int MaxProposalsPerAnswer { get; set; } = 3;
+
+    [Range(5, 600)]
+    public int TimeoutSeconds { get; set; } = 90;
+}

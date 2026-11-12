@@ -35,6 +35,22 @@ public sealed partial class OpenAlgoApiService
         });
     }
 
+    /// <summary>
+    /// Puts an order a person or a program only suggested in the Action Center, whatever mode the caller is in. Nothing is sent: it waits for approval, and the guard,
+    /// the kill switches and the risk limits are decided again at that moment. An order the environment would refuse anyway is not queued.
+    /// </summary>
+    public async Task<V1Result> ProposeAsync(BrokerAccount account, PlaceOrderRequest request, CancellationToken ct)
+    {
+        if (guard.Check(account) is { } refused) return Refusal(account, refused);
+        var body = JsonSerializer.SerializeToNode(request, StoredRequest)!.AsObject();
+        body.Remove("apikey");
+        var id = await actionCenter.QueueAsync(account.Id, "placeorder", body.ToJsonString(), ct);
+        return new V1Result(200, new JsonObject
+        {
+            ["status"] = "success", ["message"] = "Order proposed and waiting for approval in the Action Center", ["mode"] = "semi_auto", ["pending_order_id"] = id,
+        });
+    }
+
     private static V1Result? SemiAutoBlocked(string operation, string verb) =>
         ApiCallContext.Get().IsSemiAuto ? V1Result.Error(403, $"{operation} operation is not allowed in Semi-Auto mode. Please switch to Auto mode to {verb}.") : null;
 

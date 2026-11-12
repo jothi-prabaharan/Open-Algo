@@ -82,7 +82,7 @@ Not started (30): fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, defin
 - [ ] Flow engine and node types: engine, persistence, triggers, endpoints and 35 of 61 node types done and verified (`Core/Flow`, `Infrastructure/Flow`; 100 mutants); 26 node types remain and are refused by name
 - [x] 127 indicators with parity tests (`Core/Indicators`; 255 recorded cases against `openalgo.ta`, 21 mutation checks)
 - [x] Action Center Auto / Semi-Auto, re-check at approval
-- [ ] Agent on Microsoft.Extensions.AI, proposal-only order tools
+- [x] Agent on Microsoft.Extensions.AI, proposal-only order tools (`Infrastructure/Agent`; 25 tests, 22 mutants; no tool can send an order)
 - [ ] MCP stdio + HTTP/OAuth
 - [ ] 20 tool back ends with numeric parity tests
 - [ ] Gate 4 artifact

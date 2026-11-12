@@ -22,6 +22,8 @@ public sealed class EpTradeDbContext(DbContextOptions<EpTradeDbContext> options)
     public DbSet<FlowDefinition> FlowDefinitions => Set<FlowDefinition>();
 
     public DbSet<FlowRunRecord> FlowRuns => Set<FlowRunRecord>();
+
+    public DbSet<AgentSetting> AgentSettings => Set<AgentSetting>();
     public DbSet<OrderAuditLog> OrderAuditLogs => Set<OrderAuditLog>();
     public DbSet<KillSwitchEvent> KillSwitchEvents => Set<KillSwitchEvent>();
     public DbSet<ActionCenterDecision> ActionCenterDecisions => Set<ActionCenterDecision>();
