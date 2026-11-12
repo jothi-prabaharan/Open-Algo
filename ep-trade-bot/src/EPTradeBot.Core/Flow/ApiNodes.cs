@@ -481,5 +481,121 @@ public sealed class CheckNodes : IFlowNode
 /// <summary>The node types that reach the platform's API.</summary>
 public static class ApiFlowNodes
 {
-    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes()];
+    public static IEnumerable<IFlowNode> All() => [new PlaceOrderNodes(), new IndicatorNode(), new ModifyOrderNode(), new CancelOrderNodes(), new ClosePositionsNode(), new DataNodes(), new CheckNodes(), new MarketInfoNodes()];
+}
+
+/// <summary>The nodes that look up instruments, expiries, option chains and the exchange calendar through the platform and keep the answer in a variable.</summary>
+public sealed class MarketInfoNodes : IFlowNode
+{
+    public IReadOnlyList<string> Types => ["symbol", "optionSymbol", "expiry", "intervals", "multiQuotes", "optionChain", "syntheticFuture", "holidays", "timings"];
+
+    /// <summary>An integer field: a number as given, text read as a number (and the default when it is not one), the default when empty.</summary>
+    public static long Int(FlowNode node, FlowContext ctx, string key, long fallback)
+    {
+        var raw = node.Data[key];
+        if (raw is null || raw is JsonValue e && e.TryGetValue<string>(out var empty) && empty.Length == 0) return fallback;
+        if (raw is JsonValue v && v.TryGetValue<string>(out var text))
+            return FlowData.TryParseFloat(ctx.Interpolate(text), out var d) ? (long)d : fallback;
+        return raw is JsonValue n && FlowData.TryNumber(n, out var number) ? (long)number : fallback;
+    }
+
+    public async Task<FlowNodeResult?> ExecuteAsync(FlowNode node, FlowRun run, CancellationToken ct)
+    {
+        var host = ApiNodeSupport.HostOf(run);
+        var ctx = run.Context;
+        string api;
+        JsonObject body;
+        switch (node.Type)
+        {
+            case "symbol":
+            {
+                var symbol = node.Data.Str(ctx, "symbol", "");
+                var exchange = node.Data.Str(ctx, "exchange", "NSE");
+                run.Log($"Getting symbol info for: {symbol} ({exchange})");
+                (api, body) = ("symbol", new JsonObject { ["symbol"] = symbol, ["exchange"] = exchange });
+                break;
+            }
+
+            case "optionSymbol":
+            {
+                var underlying = node.Data.Str(ctx, "underlying", "NIFTY");
+                var offset = node.Data.Str(ctx, "offset", "ATM");
+                var type = node.Data.Str(ctx, "optionType", "CE");
+                run.Log($"Resolving option symbol: {underlying} {type} {offset}");
+                (api, body) = ("optionsymbol", new JsonObject
+                {
+                    ["underlying"] = underlying, ["exchange"] = node.Data.Str(ctx, "exchange", "NSE_INDEX"), ["expiry_date"] = node.Data.Str(ctx, "expiryDate", ""), ["offset"] = offset, ["option_type"] = type,
+                });
+                break;
+            }
+
+            case "expiry":
+            {
+                var symbol = node.Data.Str(ctx, "symbol", "NIFTY");
+                var type = node.Data.Str(ctx, "instrumenttype", "options").ToLowerInvariant();
+                if (type is not ("options" or "futures")) type = "options";
+                run.Log($"Getting {type} expiry dates for: {symbol}");
+                (api, body) = ("expiry", new JsonObject { ["symbol"] = symbol, ["exchange"] = node.Data.Str(ctx, "exchange", "NFO"), ["instrumenttype"] = type });
+                break;
+            }
+
+            case "intervals":
+                run.Log("Getting available intervals");
+                (api, body) = ("intervals", []);
+                break;
+
+            case "multiQuotes":
+            {
+                var raw = node.Data.Str(ctx, "symbols", "");
+                var exchange = node.Data.Str(ctx, "exchange", "NSE");
+                var symbols = new JsonArray();
+                foreach (var s in raw.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0)) symbols.Add(new JsonObject { ["symbol"] = s, ["exchange"] = exchange });
+                run.Log($"Getting quotes for {symbols.Count} symbols");
+                (api, body) = ("multiquotes", new JsonObject { ["symbols"] = symbols });
+                break;
+            }
+
+            case "optionChain":
+            {
+                var underlying = node.Data.Str(ctx, "underlying", "NIFTY");
+                var expiry = node.Data.Str(ctx, "expiryDate", "");
+                run.Log($"Fetching option chain for: {underlying} expiry={expiry}");
+                (api, body) = ("optionchain", new JsonObject
+                {
+                    ["underlying"] = underlying, ["exchange"] = node.Data.Str(ctx, "exchange", "NSE_INDEX"), ["expiry_date"] = expiry, ["strike_count"] = Int(node, ctx, "strikeCount", 10),
+                });
+                break;
+            }
+
+            case "syntheticFuture":
+            {
+                var underlying = node.Data.Str(ctx, "underlying", "NIFTY");
+                run.Log($"Calculating synthetic future for: {underlying}");
+                (api, body) = ("syntheticfuture", new JsonObject { ["underlying"] = underlying, ["exchange"] = node.Data.Str(ctx, "exchange", "NSE_INDEX"), ["expiry_date"] = node.Data.Str(ctx, "expiryDate", "") });
+                break;
+            }
+
+            case "holidays":
+            {
+                var year = Int(node, ctx, "year", 0);
+                run.Log($"Fetching holidays for year: {(year == 0 ? "current" : year.ToString(System.Globalization.CultureInfo.InvariantCulture))}");
+                (api, body) = ("holidays", year == 0 ? [] : new JsonObject { ["year"] = year });
+                break;
+            }
+
+            default:
+            {
+                var date = node.Data.Str(ctx, "date", "");
+                if (date.Length == 0) date = (run.UtcNow() + EPTradeBot.Core.Time.Ist.Offset).ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                run.Log($"Fetching market timings for date: {date}");
+                (api, body) = ("timings", new JsonObject { ["date"] = date });
+                break;
+            }
+        }
+
+        var result = await host.Api.CallAsync(api, body, ct);
+        run.Log($"{node.Type} result: {result.ToJsonString()}", ApiNodeSupport.Level(result));
+        ApiNodeSupport.Store(node, run, result);
+        return FlowApiResults.ToResult(result);
+    }
 }

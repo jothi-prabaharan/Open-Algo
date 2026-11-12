@@ -431,3 +431,86 @@ public sealed class FlowApiNodesTests
         Assert.Empty(api.Calls);
     }
 }
+
+public sealed class FlowMarketInfoNodeTests
+{
+    private sealed class Api : IFlowApi
+    {
+        public List<(string Api, JsonObject Body)> Calls { get; } = [];
+
+        public Task<JsonObject> CallAsync(string api, JsonObject body, CancellationToken ct)
+        {
+            Calls.Add((api, (JsonObject)body.DeepClone()));
+            return Task.FromResult(new JsonObject { ["status"] = "success", ["data"] = new JsonObject { ["api"] = api } });
+        }
+    }
+
+    private static readonly DateTime Noon = new DateTime(2026, 11, 11, 12, 0, 0, DateTimeKind.Utc) - EPTradeBot.Core.Time.Ist.Offset;
+
+    private static async Task<(Api Api, FlowRun Run, FlowOutcome Outcome)> RunAsync(string type, JsonObject data, JsonObject? vars = null)
+    {
+        var api = new Api();
+        data["outputVariable"] = "out";
+        var run = new FlowRun(() => Noon, host: new FlowHost(api, "t"));
+        foreach (var (k, v) in vars ?? []) run.Context.Set(k, v?.DeepClone());
+        var outcome = await new FlowRunner(CoreFlowNodes.All().Concat(ApiFlowNodes.All())).RunAsync(new FlowGraph([new("s", "start", []), new("n", type, data)], [new("s", "n", "")]), run, default);
+        return (api, run, outcome);
+    }
+
+    [Fact]
+    public async Task Each_lookup_node_asks_for_what_it_describes_and_keeps_the_answer()
+    {
+        var (api, run, outcome) = await RunAsync("symbol", new() { ["symbol"] = "{{s}}", ["exchange"] = "BSE" }, new() { ["s"] = "SBIN" });
+        Assert.True(outcome.Succeeded, outcome.Message);
+        Assert.Equal(("symbol", "SBIN", "BSE"), (api.Calls[0].Api, api.Calls[0].Body["symbol"]!.GetValue<string>(), api.Calls[0].Body["exchange"]!.GetValue<string>()));
+        Assert.Equal("symbol", run.Context.Get("out")!["data"]!["api"]!.GetValue<string>());
+
+        (api, _, _) = await RunAsync("optionSymbol", []);
+        Assert.Equal("""{"underlying":"NIFTY","exchange":"NSE_INDEX","expiry_date":"","offset":"ATM","option_type":"CE"}""", api.Calls[0].Body.ToJsonString());
+
+        (api, _, _) = await RunAsync("expiry", new() { ["instrumenttype"] = "FUTURES" });
+        Assert.Equal("""{"symbol":"NIFTY","exchange":"NFO","instrumenttype":"futures"}""", api.Calls[0].Body.ToJsonString());
+        (api, _, _) = await RunAsync("expiry", new() { ["instrumenttype"] = "swaps" });
+        Assert.Equal("options", api.Calls[0].Body["instrumenttype"]!.GetValue<string>());
+
+        (api, _, _) = await RunAsync("intervals", []);
+        Assert.Equal(("intervals", "{}"), (api.Calls[0].Api, api.Calls[0].Body.ToJsonString()));
+
+        (api, _, _) = await RunAsync("syntheticFuture", new() { ["expiryDate"] = "26NOV26" });
+        Assert.Equal("""{"underlying":"NIFTY","exchange":"NSE_INDEX","expiry_date":"26NOV26"}""", api.Calls[0].Body.ToJsonString());
+    }
+
+    [Fact]
+    public async Task Multi_quotes_splits_the_comma_list_and_drops_blanks()
+    {
+        var (api, _, _) = await RunAsync("multiQuotes", new() { ["symbols"] = " SBIN, ,INFY ,", ["exchange"] = "NSE" });
+        Assert.Equal("""{"symbols":[{"symbol":"SBIN","exchange":"NSE"},{"symbol":"INFY","exchange":"NSE"}]}""", api.Calls[0].Body.ToJsonString());
+    }
+
+    [Theory]
+    [InlineData(null, 10)]
+    [InlineData("", 10)]
+    [InlineData("7", 7)]
+    [InlineData("{{n}}", 12)]
+    [InlineData("many", 10)]
+    public async Task The_option_chain_strike_count_is_read_the_way_OpenAlgo_reads_an_integer(string? given, int expected)
+    {
+        var data = new JsonObject { ["expiryDate"] = "26NOV26" };
+        if (given is not null) data["strikeCount"] = given;
+        var (api, _, _) = await RunAsync("optionChain", data, new() { ["n"] = 12 });
+        Assert.Equal(expected, api.Calls[0].Body["strike_count"]!.GetValue<long>());
+    }
+
+    [Fact]
+    public async Task Holidays_ask_for_the_current_year_unless_one_is_given_and_timings_default_to_today_in_india()
+    {
+        var (api, _, _) = await RunAsync("holidays", []);
+        Assert.Equal("{}", api.Calls[0].Body.ToJsonString());
+        (api, _, _) = await RunAsync("holidays", new() { ["year"] = 2026 });
+        Assert.Equal(2026, api.Calls[0].Body["year"]!.GetValue<long>());
+        (api, _, _) = await RunAsync("timings", []);
+        Assert.Equal("2026-11-11", api.Calls[0].Body["date"]!.GetValue<string>());
+        (api, _, _) = await RunAsync("timings", new() { ["date"] = "2026-12-25" });
+        Assert.Equal("2026-12-25", api.Calls[0].Body["date"]!.GetValue<string>());
+    }
+}
