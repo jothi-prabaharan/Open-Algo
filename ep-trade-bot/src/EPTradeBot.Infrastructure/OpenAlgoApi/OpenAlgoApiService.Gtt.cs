@@ -15,8 +15,12 @@ namespace EPTradeBot.Infrastructure.OpenAlgoApi;
 /// </summary>
 public sealed partial class OpenAlgoApiService
 {
-    private static V1Result SandboxGtt(BrokerAccount account) =>
-        Mark(account, V1Result.Error(400, "GTT orders are not available on sandbox accounts yet. Use a live account."));
+    private static V1Result GttFailure(BrokerAccount account, Sandbox.GttResult r) =>
+        Mark(account, r.Ok ? new V1Result(200, new JsonObject { ["status"] = "success", ["trigger_id"] = r.TriggerId })
+            : V1Result.Error(r.Code, r.Message ?? "The sandbox could not complete the GTT request."));
+
+    private static Sandbox.GttPlacement SandboxPlacement(GttOrderRequest r, string? expiresAt) => new(r.TriggerType ?? "", r.Symbol, r.Exchange, r.Action, r.Product, (int)r.Quantity, r.PriceType, (decimal)(r.Price ?? 0),
+        (decimal)(r.TriggerPriceSl ?? 0), (decimal)(r.TriggerPriceTg ?? 0), (decimal)(r.StopLoss ?? 0), (decimal)(r.Target ?? 0), r.Strategy, expiresAt);
 
     private async Task<(GttOrder? Order, V1Result? Refused)> GttOrderAsync(BrokerAccount account, GttOrderRequest r, string? triggerId, IBrokerGtt gtt, CancellationToken ct)
     {
@@ -35,7 +39,13 @@ public sealed partial class OpenAlgoApiService
     public async Task<V1Result> PlaceGttOrderAsync(BrokerAccount account, PlaceGttOrderRequest r, CancellationToken ct)
     {
         if (await QueueIfSemiAutoAsync(account, "placegttorder", r, ct) is { } queued) return queued;
-        if (account.AccountType == AccountType.PAPER) return SandboxGtt(account);
+        if (account.AccountType == AccountType.PAPER)
+        {
+            if (account.KillSwitchEngaged) return Refusal(account, new Refusal("kill_switch_engaged", $"The kill switch is on for {account.DisplayName}, so GTT orders cannot be placed. Release it first."));
+            var last = sandbox.LastPrice(r.Exchange, r.Symbol) ?? 0m;
+            return GttFailure(account, await sandbox.PlaceGttAsync(account.Id, SandboxPlacement(r, r.ExpiresAt), last, ct));
+        }
+
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
         if (account.KillSwitchEngaged) return Refusal(account, new Refusal("kill_switch_engaged", $"The kill switch is on for {account.DisplayName}, so GTT orders cannot be placed. Release it first."));
         if (!Broker<IBrokerGtt>(account, out var gtt, out var session, out var missing)) return missing!;
@@ -54,7 +64,12 @@ public sealed partial class OpenAlgoApiService
     public async Task<V1Result> ModifyGttOrderAsync(BrokerAccount account, ModifyGttOrderRequest r, CancellationToken ct)
     {
         if (SemiAutoBlocked("Modify GTT order", "modify GTT orders") is { } blocked) return blocked;
-        if (account.AccountType == AccountType.PAPER) return SandboxGtt(account);
+        if (account.AccountType == AccountType.PAPER)
+        {
+            if (account.KillSwitchEngaged) return Refusal(account, new Refusal("kill_switch_engaged", $"The kill switch is on for {account.DisplayName}, so GTT orders cannot be changed. Release it first."));
+            return GttFailure(account, await sandbox.ModifyGttAsync(account.Id, r.TriggerId, SandboxPlacement(r, null), ct));
+        }
+
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
         if (account.KillSwitchEngaged) return Refusal(account, new Refusal("kill_switch_engaged", $"The kill switch is on for {account.DisplayName}, so GTT orders cannot be changed. Release it first."));
         if (!Broker<IBrokerGtt>(account, out var gtt, out var session, out var missing)) return missing!;
@@ -73,7 +88,8 @@ public sealed partial class OpenAlgoApiService
     public async Task<V1Result> CancelGttOrderAsync(BrokerAccount account, CancelGttOrderRequest r, CancellationToken ct)
     {
         if (SemiAutoBlocked("Cancel GTT order", "cancel GTT orders") is { } blocked) return blocked;
-        if (account.AccountType == AccountType.PAPER) return SandboxGtt(account);
+        // Cancelling only reduces what is live, so the kill switch does not stop it.
+        if (account.AccountType == AccountType.PAPER) return GttFailure(account, await sandbox.CancelGttAsync(account.Id, r.TriggerId, ct));
         // A write to a live broker, so the environment guard applies (Development never reaches one). The kill switch does not stop a cancel: it only reduces what is live.
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
         if (!Broker<IBrokerGtt>(account, out var gtt, out var session, out var missing)) return missing!;
@@ -88,7 +104,8 @@ public sealed partial class OpenAlgoApiService
 
     public async Task<V1Result> GttOrderBookAsync(BrokerAccount account, GttOrderBookRequest r, CancellationToken ct)
     {
-        if (account.AccountType == AccountType.PAPER) return SandboxGtt(account);
+        if (account.AccountType == AccountType.PAPER)
+            return Mark(account, new V1Result(200, new JsonObject { ["status"] = "success", ["data"] = await sandbox.ListGttsAsync(account.Id, !string.Equals(r.Status, "all", StringComparison.OrdinalIgnoreCase), ct) }));
         if (!Broker<IBrokerGtt>(account, out var gtt, out var session, out var missing)) return missing!;
         return await Guarded(async () =>
         {

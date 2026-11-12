@@ -26,7 +26,7 @@ namespace EPTradeBot.Infrastructure.Sandbox;
 /// positions with average price and realised P&amp;L, cancel, square-off. Not yet ported:
 /// GTT. Intraday (MIS) positions and orders are closed by the square-off sweep, delivery (CNC) positions become holdings the next day, and a restart settles what it missed.
 /// </summary>
-public sealed class SandboxEngine(
+public sealed partial class SandboxEngine(
     IDbContextFactory<EpTradeDbContext> contexts,
     IQuoteSource quotes,
     IOptions<SandboxOptions> options,
@@ -35,6 +35,9 @@ public sealed class SandboxEngine(
 {
     private const int MaxAttempts = 8;
     private readonly SandboxLeverage _leverage = new();
+
+    /// <summary>The latest price the sandbox holds for an instrument.</summary>
+    public decimal? LastPrice(string exchange, string symbol) => quotes.Get(exchange, symbol)?.Ltp;
 
     public static string UserId(Guid accountId) => accountId.ToString("N");
 
@@ -178,6 +181,8 @@ public sealed class SandboxEngine(
             if (done) filled++;
         }
 
+        // The same price may have crossed a GTT trigger.
+        await MatchGttAsync(exchange, symbol, quote.Ltp.Value, cancellationToken);
         return filled;
     }
 

@@ -86,22 +86,4 @@ public sealed class GttApiTests
         Assert.Equal(200, status);
         Assert.Contains(broker.Sent, s => s.Method == "DELETE" && s.Path == "/gtt/triggers/77");
     }
-
-    [PostgresFact]
-    public async Task A_sandbox_account_is_told_plainly_that_GTT_is_not_there_yet_and_nothing_is_sent()
-    {
-        var broker = new FakeBroker();
-        await using var host = new TestHost("Development", b => b.ConfigureServices(s => s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => broker))));
-        var account = await host.CreateAccountAsync(AccountType.PAPER, "paper");
-        var key = (await host.Get<EPTradeBot.Infrastructure.Security.ApiKeyService>().IssueAsync(account, "gtt")).Key;
-
-        foreach (var path in new[] { "/api/v1/placegttorder", "/api/v1/modifygttorder", "/api/v1/cancelgttorder", "/api/v1/gttorderbook" })
-        {
-            var (status, answer) = await PostAsync(host, path, Gtt(key));
-            Assert.Equal(400, status);
-            Assert.Contains("sandbox", answer["message"]!.GetValue<string>());
-        }
-
-        Assert.Empty(broker.Sent);
-    }
 }

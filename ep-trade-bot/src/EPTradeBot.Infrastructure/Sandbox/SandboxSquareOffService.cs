@@ -28,6 +28,10 @@ public sealed class SandboxSquareOffService(SandboxEngine engine, IOptions<Sandb
                 catch (Exception ex) when (ex is not OperationCanceledException) { logger.LogError(ex, "T+1 settlement of the sandbox's delivery positions failed; it will be retried at the next start."); }
             }
 
+            // A GTT runs out of time on any day, a weekend included.
+            try { await engine.ExpireDueGttsAsync(stoppingToken); }
+            catch (Exception ex) when (ex is not OperationCanceledException) { logger.LogError(ex, "Expiring the sandbox's resting GTTs failed; it will run again next minute."); }
+
             // Nothing trades at the weekend, so there is nothing to close.
             if (now.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday) continue;
             try

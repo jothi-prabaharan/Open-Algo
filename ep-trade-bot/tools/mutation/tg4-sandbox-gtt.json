@@ -1,0 +1,90 @@
+[
+ {
+  "name": "G1 OCO reserves the sum",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.Gtt.cs",
+  "old": "triggerType == \"two-leg\" ? margins.Max() : margins.Sum()",
+  "new": "margins.Sum()",
+  "filter": "FullyQualifiedName~SandboxGttTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G2 market leg sized at zero",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.Gtt.cs",
+  "old": "leg.Price > 0 ? leg.Price : leg.Trigger > 0 ? leg.Trigger : lastPrice",
+  "new": "leg.Price",
+  "filter": "FullyQualifiedName~SandboxGttTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G3 above trigger fires early",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.Gtt.cs",
+  "old": "? ltp >= trigger : ltp <= trigger",
+  "new": "? ltp > trigger : ltp < trigger",
+  "filter": "FullyQualifiedName~SandboxGttTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G4 margin kept after cancel",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.Gtt.cs",
+  "old": "await ReleaseGttMarginAsync(db, userId, gtt.MarginBlocked, ct);\n            await db.SaveChangesAsync(ct);\n            return new GttResult(true, 200, triggerId);",
+  "new": "await db.SaveChangesAsync(ct);\n            return new GttResult(true, 200, triggerId);",
+  "filter": "FullyQualifiedName~SandboxGttTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G5 sibling leg left resting",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.Gtt.cs",
+  "old": "l.GttId == gttId && l.Id != legId && (l.LegStatus == \"pending\"",
+  "new": "l.GttId == gttId && l.Id == legId && (l.LegStatus == \"pending\"",
+  "filter": "FullyQualifiedName~SandboxGttTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G6 margin not released at fire",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.Gtt.cs",
+  "old": "await ReleaseGttMarginAsync(db, gtt.UserId, released, ct);\n            await db.Set<SandboxGttLeg>().Where(l => l.Id == legId)",
+  "new": "await db.Set<SandboxGttLeg>().Where(l => l.Id == legId)",
+  "filter": "FullyQualifiedName~SandboxGttTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G7 expiry leaves margin",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.Gtt.cs",
+  "old": "await ReleaseGttMarginAsync(db, gtt.UserId, gtt.MarginBlocked, ct);\n                await db.SaveChangesAsync(ct);\n                return true;",
+  "new": "await db.SaveChangesAsync(ct);\n                return true;",
+  "filter": "FullyQualifiedName~SandboxGttTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G8 action change allowed",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.Gtt.cs",
+  "old": "if (!string.IsNullOrEmpty(p.Action) && !string.Equals(p.Action, existing[0].Action, StringComparison.OrdinalIgnoreCase))",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~SandboxGttTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G9 funds not checked on place",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.Gtt.cs",
+  "old": "if (blocked > (funds.AvailableBalance ?? 0)) return new GttResult(false, 400, Message: Insufficient(blocked, funds.AvailableBalance));",
+  "new": "if (Environment.TickCount64 < 0) return null!;",
+  "filter": "FullyQualifiedName~SandboxGttTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G10 modify margin delta ignored",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.Gtt.cs",
+  "old": "funds.AvailableBalance -= delta;\n            funds.UsedMargin += delta;",
+  "new": "funds.UsedMargin += 0m;",
+  "filter": "FullyQualifiedName~SandboxGttTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "G11 default expiry a day",
+  "file": "src/EPTradeBot.Infrastructure/Sandbox/SandboxEngine.Gtt.cs",
+  "old": "UtcNow.AddDays(DefaultGttExpiryDays)",
+  "new": "UtcNow.AddDays(-1)",
+  "filter": "FullyQualifiedName~SandboxGttTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

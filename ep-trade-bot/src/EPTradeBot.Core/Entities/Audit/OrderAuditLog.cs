@@ -13,6 +13,7 @@ public enum OrderSource
     KillSwitch = 7,
     StrategyModule = 8,
     SquareOff = 9,
+    Gtt = 10,
 }
 
 public enum OrderOutcome
