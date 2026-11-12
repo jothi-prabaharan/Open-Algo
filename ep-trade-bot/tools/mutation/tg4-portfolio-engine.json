@@ -1,0 +1,58 @@
+[
+ {
+  "name": "E1 turnover not halved",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioEngine.cs",
+  "old": "var traded = moved.Sum() / 2.0 / value;",
+  "new": "var traded = moved.Sum() / value;",
+  "filter": "FullyQualifiedName~PortfolioEngineParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "E3 drift compared with >= band",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioEngine.cs",
+  "old": "Max() > policy.DriftBand",
+  "new": "Max() >= policy.DriftBand * 0.5",
+  "filter": "FullyQualifiedName~PortfolioEngineParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "E4 cost not deducted from value",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioEngine.cs",
+  "old": "value -= charge;",
+  "new": "",
+  "filter": "FullyQualifiedName~PortfolioEngineParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "E5 cost attributed to the wrong share",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioEngine.cs",
+  "old": "costPaid[j] += charge * (movedSum > 0 ? moved[j] / movedSum : moved[j]);",
+  "new": "costPaid[j] += charge / n;",
+  "filter": "FullyQualifiedName~PortfolioEngineParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "E6 gross twin skips the reset",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioEngine.cs",
+  "old": "grossSleeve = target.Select(w => w * grossTotal).ToArray();",
+  "new": "",
+  "filter": "FullyQualifiedName~PortfolioEngineParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "E7 orders counted for every holding",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioEngine.cs",
+  "old": "var orders = moved.Count(m => m > 1e-9);",
+  "new": "var orders = n;",
+  "filter": "FullyQualifiedName~PortfolioEngineParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ },
+ {
+  "name": "E8 quarters keyed by month",
+  "file": "src/EPTradeBot.Core/Portfolio/PortfolioEngine.cs",
+  "old": "\"quarterly\" => (d.Year, (d.Month - 1) / 3)",
+  "new": "\"quarterly\" => (d.Year, d.Month)",
+  "filter": "FullyQualifiedName~PortfolioEngineParityTests",
+  "project": "EPTradeBot.Core.Tests"
+ }
+]
