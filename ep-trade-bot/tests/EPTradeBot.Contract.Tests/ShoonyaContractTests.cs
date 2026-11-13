@@ -232,3 +232,60 @@ public sealed class ZebuHistoryContractTests(ZebuHistoryHost host, ITestOutputHe
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class FlattradeHost : ShoonyaBaseHost
+{
+    public override string BrokerName => "flattrade";
+    public override string FixtureFile => "flattrade.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "FA12345:::flattrade-api-key", ["ApiSecret"] = "flattrade-secret" };
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>
+    {
+        ["POST /PiConnectAPI/PositionBook"] = """{"stat":"Not_Ok","emsg":"no data"}""",
+    };
+}
+
+/// <summary>Flattrade against the Python implementation (tools/contract-fixtures/flattrade.fixtures.json).</summary>
+public sealed class FlattradeContractTests(FlattradeHost host, ITestOutputHelper output) : IClassFixture<FlattradeHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = ShoonyaContractTests.For("Flattrade");
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("flattrade.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class FlattradeDataHost : ShoonyaBaseHost
+{
+    public override string BrokerName => "flattrade";
+    public override string FixtureFile => "flattrade_data.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "FA12345:::flattrade-api-key", ["ApiSecret"] = "flattrade-secret" };
+}
+
+/// <summary>Flattrade quotes, depth and several quotes (tools/contract-fixtures/flattrade_data.fixtures.json).</summary>
+public sealed class FlattradeDataContractTests(FlattradeDataHost host, ITestOutputHelper output) : IClassFixture<FlattradeDataHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = Build();
+
+    private static Dictionary<string, Deviation> Build()
+    {
+        const string unchecked_ = "OpenAlgo's Flattrade plugin takes whatever quote comes back, even another instrument's, so a trader could see a wrong price. EP Trade bot checks it is for the instrument asked about, as it does for Shoonya, and asks again.";
+        var d = ShoonyaDataContractTests.For("Flattrade");
+        JsonNode Quotes(string name) => BrokerContractHost.Load("flattrade_data.fixtures.json")["fixtures"]!.AsArray().OfType<JsonObject>().Single(x => x["name"]!.GetValue<string>() == "quotes_equity")["expected"]!.DeepClone();
+        d["quotes_other_instruments_answer_is_asked_again"] = new(unchecked_, f => f["expected"] = Quotes("quotes_equity"));
+        d["multiquotes_other_instrument_every_time"] = new(unchecked_, f =>
+        {
+            var row = f["expected"]!["body"]!["results"]![0]!.AsObject();
+            row.Remove("data");
+            row["error"] = "Flattrade sent the quote of another instrument (NSE|26000) on all 3 tries. Try again in a moment.";
+        });
+        return d;
+    }
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("flattrade_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}

@@ -18,15 +18,16 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | RMoney (XTS) | yes | yes | yes | yes | yes | no | yes | no |
 | Shoonya | yes | yes | yes | yes | yes | no | yes | no |
 | Zebu | yes | yes | yes | yes | n/a (no calculator) | no | yes | no |
+| Flattrade | yes | yes | yes | no | no | no | yes | no |
 
-The other 21 brokers in the task list are not started (Shoonya and Zebu are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
+The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
 ## Not done, and why Gate 7 is open
 
 - Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **The 21 brokers not started** (fivepaisa, aliceblue, arrow, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rupeezy, sahi, samco, tradejini, tradesmart), and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **The 20 brokers not started** (fivepaisa, aliceblue, arrow, definedge, firstock, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rupeezy, sahi, samco, tradejini, tradesmart), and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
 ## Upstox sign-in
 
@@ -238,3 +239,10 @@ The other 21 brokers in the task list are not started (Shoonya and Zebu are part
 - Ported from `broker/zebu/api/data.py` `get_history`: one EODChartData or TPSeries call for the whole range (no windows), intraday bars read by their time text (IST), daily bars by their epoch second, and today's candle built from a quote when a daily range includes today and the history does not hold it. 16 recorded cases (`history_zebu.fixtures.json`), the clock stopped at the recording.
 - Deviations: OpenAlgo's Zebu plugin passes bars on as received, so a bar whose range leaves out its own open or close, a negative volume or two bars with one timestamp reach the chart (which rejects the whole series, as seen on Shoonya); EP Trade bot sorts, keeps one bar per timestamp, widens and zeroes as it does for Shoonya. When the chart answers with an error or with something that is not a list OpenAlgo fails with an internal error; EP Trade bot says Zebu did not send the candles, and for a daily range still builds today's bar from a quote. An unsupported interval is a 400 naming the choices.
 - Mutation: `tools/mutation/tg7-zebu-history.json`, 11 mutants, all caught (one needed a rewritten pattern).
+
+## Flattrade (Noren API at piconnect.flattrade.in)
+
+- Same Noren base class as Shoonya and Zebu (the base now takes the path, the way a call is sent and the books as overridable parts), held to `broker/flattrade`: 40 recorded cases for orders, books and funds (`flattrade.fixtures.json`), 18 for quotes and depth (`flattrade_data.fixtures.json`) and 7 for sign-in (`login_flattrade.fixtures.json`).
+- Differences, recorded: the token travels in the body (`jData=<json>&jKey=<token>`), as a form for orders, holdings, funds and quotes and as JSON for the books; the recorder and the test fake read that body whatever type it declares. A read the broker turns away for going over its rate limit is asked again after 2, 4 and 8 seconds (never an order); the pacing windows OpenAlgo keeps in front of every call are not reproduced. An order shows filled and pending quantity and its average price, and a market order the broker reports a price for shows that price; a position shows realised and unrealised profit (from the broker's figures, else last price against average price); trades are rounded to two places; depth carries the number of orders per level and the open interest; holdings carry their average price. Sign-in is at `auth.flattrade.in` and the code is exchanged at `authapi.flattrade.in/trade/apitoken` with the SHA-256 of the app key, the code and the secret.
+- Same deviations as Shoonya (refusals carry the broker's reason; an empty book is an empty book; a position whose symbol is not in the master contract is named as still open); and, as for Zebu, a quote for another instrument is refused and asked for again where OpenAlgo takes it.
+- Not yet ported for Flattrade: history, margin and the feed, and the mutation set (the base is covered by Shoonya's).

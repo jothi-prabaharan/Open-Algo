@@ -77,7 +77,11 @@ def _handler(request: httpx.Request) -> httpx.Response:
     url = urlsplit(str(request.url))
     body = request.content.decode() if request.content else ""
     ctype = request.headers.get("content-type", "")
-    if "application/x-www-form-urlencoded" in ctype:
+    if body.startswith("jData=") and "&jKey=" in body:
+        # Flattrade and Shoonya's chart endpoints: the JSON and the token in one body, whatever the declared type.
+        data, _, key = body[len("jData="):].partition("&jKey=")
+        parsed_body = {"json": json.loads(data), "form": {"jKey": key}}
+    elif "application/x-www-form-urlencoded" in ctype:
         parsed_body = {"form": dict(parse_qsl(body, keep_blank_values=True))}
         if "jData" in parsed_body["form"]:
             # The Noren API (Shoonya, Flattrade, ...) sends its JSON as a jData value beside a jKey token.

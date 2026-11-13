@@ -18,7 +18,8 @@ namespace EPTradeBot.Infrastructure.Brokers.Shoonya;
 public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger logger)
     : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerLogin
 {
-    private const string Api = "/NorenWClientAPI";
+    /// <summary>The path every call lives under (Shoonya and Zebu: /NorenWClientAPI; Flattrade: /PiConnectAPI).</summary>
+    protected virtual string Api => "/NorenWClientAPI";
     private const int QuoteAttempts = 3;
 
     public abstract string Name { get; }
@@ -51,7 +52,7 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
     /// <summary>The jData value. Shoonya splits the body on "&amp;" before it reads the JSON, so a literal ampersand is sent as the JSON escape.</summary>
     private static string JData(JsonObject payload) => payload.ToJsonString(new System.Text.Json.JsonSerializerOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }).Replace("&", "\\u0026", StringComparison.Ordinal);
 
-    private async Task<JsonNode?> PostAsync(BrokerSession session, string endpoint, JsonObject payload, CancellationToken cancellationToken)
+    protected virtual async Task<JsonNode?> PostAsync(BrokerSession session, string endpoint, JsonObject payload, CancellationToken cancellationToken, bool book = false)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, sessions.BaseUrl(Name, Host) + Api + endpoint)
         {
@@ -88,6 +89,8 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
 
 
     protected IHttpClientFactory Http => http;
+
+    protected ISymbolMaster Symbols => symbols;
 
     protected BrokerSessionFactory Sessions => sessions;
 
@@ -205,14 +208,14 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
     /// <summary>A list answer is the book; the "no data" refusal Shoonya gives an empty book is an empty list; a lapsed session is an error.</summary>
     protected async Task<JsonArray> BookAsync(BrokerSession session, string endpoint, JsonObject payload, CancellationToken cancellationToken)
     {
-        var reply = await PostAsync(session, endpoint, payload, cancellationToken);
+        var reply = await PostAsync(session, endpoint, payload, cancellationToken, book: true);
         if (reply is JsonArray rows) return rows;
         var message = Str((reply as JsonObject)?["emsg"]);
         if (SessionExpired(message)) throw new BrokerException($"{DisplayName} says the session has expired. Log in to {DisplayName} again.", 403);
         return [];
     }
 
-    private static string NormalizeStatus(string? raw)
+    protected static string NormalizeStatus(string? raw)
     {
         var status = (raw ?? "").Trim().ToUpperInvariant().Replace('_', ' ');
         return status switch
@@ -225,18 +228,18 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
         };
     }
 
-    private static readonly HashSet<string> Derivatives = ["NFO", "MCX", "BFO", "CDS"];
+    protected static readonly HashSet<string> Derivatives = ["NFO", "MCX", "BFO", "CDS"];
 
-    private static string BookProduct(string exchange, string product) =>
+    protected static string BookProduct(string exchange, string product) =>
         (exchange is "NSE" or "BSE") && product == "C" ? "CNC" : product == "I" ? "MIS" : Derivatives.Contains(exchange) && product == "M" ? "NRML" : product;
 
-    private async Task<string?> SymbolByTokenAsync(string token, string exchange, CancellationToken cancellationToken) =>
+    protected async Task<string?> SymbolByTokenAsync(string token, string exchange, CancellationToken cancellationToken) =>
         token.Length == 0 ? null : (await symbols.FindByTokenAsync(Name, token, exchange, cancellationToken))?.Symbol;
 
     protected async Task<string?> SymbolByBrokerSymbolAsync(string brokerSymbol, string exchange, CancellationToken cancellationToken) =>
         (await symbols.FindByBrokerSymbolAsync(Name, brokerSymbol, exchange, cancellationToken))?.Symbol;
 
-    public async Task<BrokerBook> GetOrderBookAsync(BrokerSession session, CancellationToken cancellationToken)
+    public virtual async Task<BrokerBook> GetOrderBookAsync(BrokerSession session, CancellationToken cancellationToken)
     {
         int buy = 0, sell = 0, completed = 0, open = 0, rejected = 0;
         var orders = new JsonArray();
@@ -269,7 +272,7 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
         });
     }
 
-    public async Task<JsonArray> GetTradeBookAsync(BrokerSession session, CancellationToken cancellationToken)
+    public virtual async Task<JsonArray> GetTradeBookAsync(BrokerSession session, CancellationToken cancellationToken)
     {
         var trades = new JsonArray();
         foreach (var t in (await BookAsync(session, "/TradeBook", Account(session), cancellationToken)).OfType<JsonObject>())
@@ -289,7 +292,7 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
         return trades;
     }
 
-    public async Task<JsonArray> GetPositionsAsync(BrokerSession session, CancellationToken cancellationToken)
+    public virtual async Task<JsonArray> GetPositionsAsync(BrokerSession session, CancellationToken cancellationToken)
     {
         var positions = new JsonArray();
         foreach (var p in (await BookAsync(session, "/PositionBook", Account(session), cancellationToken)).OfType<JsonObject>())
@@ -349,7 +352,7 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
 
     // ---- funds -----------------------------------------------------------------------------------------------
 
-    public async Task<JsonObject> GetFundsAsync(BrokerSession session, CancellationToken cancellationToken)
+    public virtual async Task<JsonObject> GetFundsAsync(BrokerSession session, CancellationToken cancellationToken)
     {
         var limits = await PostAsync(session, "/Limits", Account(session), cancellationToken) as JsonObject;
         if (Str(limits?["stat"]) != "Ok")
@@ -378,7 +381,7 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
         JsonObject? reply = null;
         for (var attempt = 1; attempt <= QuoteAttempts; attempt++)
         {
-            reply = await PostAsync(session, "/GetQuotes", new JsonObject { ["exch"] = DataExchange(exchange), ["token"] = token, ["uid"] = UserId(session) }, cancellationToken) as JsonObject
+            reply = await PostAsync(session, "/GetQuotes", QuoteBody(session, DataExchange(exchange), token), cancellationToken) as JsonObject
                 ?? throw new BrokerException($"{DisplayName} sent a reply EP Trade bot could not read. Try again in a moment.", 502);
             if (Str(reply["stat"]) != "Ok")
             {
@@ -402,7 +405,10 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
         return (record, await QuoteAsync(session, record.Exchange, record.Token, cancellationToken));
     }
 
-    private static JsonObject QuoteData(JsonObject q) => new()
+    /// <summary>The body of a quote call: the exchange, the token and the user (Flattrade adds the account too).</summary>
+    protected virtual JsonObject QuoteBody(BrokerSession session, string exchange, string token) => new() { ["exch"] = exchange, ["token"] = token, ["uid"] = UserId(session) };
+
+    protected virtual JsonObject QuoteData(JsonObject q) => new()
     {
         ["bid"] = Float(q["bp1"]), ["ask"] = Float(q["sp1"]), ["open"] = Float(q["o"]), ["high"] = Float(q["h"]), ["low"] = Float(q["l"]), ["ltp"] = Float(q["lp"]),
         ["prev_close"] = Float(q["c"]), ["volume"] = Int(q["v"]), ["oi"] = Int(q["oi"]),
@@ -416,7 +422,7 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
         return data;
     }
 
-    public async Task<JsonObject> GetDepthAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken)
+    public virtual async Task<JsonObject> GetDepthAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken)
     {
         var q = (await FindAndQuoteAsync(session, symbol, exchange, cancellationToken)).Quote;
         var bids = new JsonArray();
@@ -869,5 +875,284 @@ public sealed class ZebuPlugin(IHttpClientFactory http, BrokerSessionFactory ses
         {
             ["totalholdingvalue"] = held, ["totalinvvalue"] = invested, ["totalprofitandloss"] = 0, ["totalpnlpercentage"] = 0,
         });
+    }
+}
+
+/// <summary>
+/// Flattrade (broker/flattrade), piconnect.flattrade.in: the Noren API under /PiConnectAPI, with the token in the body (<c>jData=&lt;json&gt;&amp;jKey=&lt;token&gt;</c>)
+/// instead of a bearer header. A call the broker turns away for going over its rate limit is asked again (reads only, never an order): after 2, 4 and 8 seconds.
+/// Its books carry more than the others: filled and pending quantity and the average price on an order, the realised and unrealised profit on a position.
+/// </summary>
+[BrokerPlugin]
+public sealed class FlattradePlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<FlattradePlugin> logger)
+    : NorenPluginBase(http, sessions, symbols, logger)
+{
+    public override string Name => "flattrade";
+    public override string DisplayName => "Flattrade";
+    protected override string Host => "https://piconnect.flattrade.in";
+    protected override string Api => "/PiConnectAPI";
+
+    // ---- sign-in -----------------------------------------------------------------------------------------------
+
+    /// <summary>The trader signs in on Flattrade's page (the app key is the part of the saved key after ":::"), which sends back a code.</summary>
+    public override string? LoginUrl(IReadOnlyDictionary<string, string> keys, string state) =>
+        ClientId(keys) is { } appKey ? $"https://auth.flattrade.in/?app_key={Uri.EscapeDataString(appKey)}" : null;
+
+    /// <summary>The code is exchanged at authapi.flattrade.in for a token with the SHA-256 of the app key, the code and the secret.</summary>
+    public override async Task<BrokerLoginResult> LoginAsync(IReadOnlyDictionary<string, string> keys, IReadOnlyDictionary<string, string> input, CancellationToken cancellationToken)
+    {
+        if (ClientId(keys) is not { } appKey)
+            return BrokerLoginResult.Refused($"The {DisplayName} key must be saved as the user id, \":::\" and the app key. Fix it in the server's settings, then sign in again.", 409);
+        if (!keys.TryGetValue("ApiSecret", out var secret) || string.IsNullOrWhiteSpace(secret))
+            return BrokerLoginResult.Refused($"The {DisplayName} secret is not set on this server. Add it to the server's settings, then sign in again.", 409);
+        if (!input.TryGetValue("code", out var code) || string.IsNullOrWhiteSpace(code))
+            return BrokerLoginResult.Refused($"{DisplayName} did not send the sign-in back. Start the sign-in again.");
+
+        var hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(appKey + code + secret.Trim()))).ToLowerInvariant();
+        using var request = new HttpRequestMessage(HttpMethod.Post, Sessions.BaseUrl(Name + "_auth", "https://authapi.flattrade.in") + "/trade/apitoken")
+        {
+            Content = new StringContent(new JsonObject { ["api_key"] = appKey, ["request_code"] = code, ["api_secret"] = hash }.ToJsonString(), System.Text.Encoding.UTF8, "application/json"),
+        };
+        try
+        {
+            using var response = await Http.CreateClient(Name).SendAsync(request, cancellationToken);
+            var body = await JsonRead.ReadAsync(response, cancellationToken) as JsonObject;
+            if (response.IsSuccessStatusCode && JsonRead.Str(body?["stat"]) == "Ok" && JsonRead.Str(body?["token"]) is { Length: > 0 } token) return BrokerLoginResult.Success(token, null);
+            return JsonRead.Str(body?["emsg"]) is { Length: > 0 } reason
+                ? BrokerLoginResult.Refused($"{DisplayName} did not accept the sign-in: {reason}")
+                : BrokerLoginResult.Refused($"{DisplayName} did not accept the sign-in. Start it again from the beginning.");
+        }
+        catch (HttpRequestException)
+        {
+            return BrokerLoginResult.Refused($"{DisplayName} did not answer. Check your connection, then try again.", 502);
+        }
+    }
+
+    private static bool IsOrderCall(string endpoint) => endpoint is "/PlaceOrder" or "/ModifyOrder" or "/CancelOrder";
+
+    protected override async Task<JsonNode?> PostAsync(BrokerSession session, string endpoint, JsonObject payload, CancellationToken cancellationToken, bool book = false)
+    {
+        for (var attempt = 0; ; attempt++)
+        {
+            // The books go as JSON and the holdings, orders and the rest as a form; the broker reads the same body either way.
+            var type = book && endpoint != "/Holdings" ? "application/json" : "application/x-www-form-urlencoded";
+            using var request = new HttpRequestMessage(HttpMethod.Post, Sessions.BaseUrl(Name, Host) + Api + endpoint)
+            {
+                Content = new StringContent("jData=" + payload.ToJsonString(new System.Text.Json.JsonSerializerOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }) + "&jKey=" + session.AuthToken, System.Text.Encoding.UTF8, type),
+            };
+            JsonNode? reply;
+            try
+            {
+                using var response = await Http.CreateClient(Name).SendAsync(request, cancellationToken);
+                reply = await JsonRead.ReadAsync(response, cancellationToken);
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new BrokerException($"{DisplayName} did not answer. Check your connection, then try again.", 502, ex);
+            }
+
+            var overLimit = reply is JsonObject o && JsonRead.Str(o["stat"]) == "Not_Ok" && (JsonRead.Str(o["emsg"]) ?? "").Contains("exceeds limit", StringComparison.OrdinalIgnoreCase);
+            if (!overLimit || IsOrderCall(endpoint) || attempt >= 3) return reply;
+            await Task.Delay(Sessions.RetryBackoff(Name, TimeSpan.FromSeconds(2 * (1 << attempt))), cancellationToken);
+        }
+    }
+
+    protected override JsonObject QuoteBody(BrokerSession session, string exchange, string token) => new() { ["uid"] = UserIdOf(session), ["exch"] = exchange, ["token"] = token, ["actid"] = UserIdOf(session) };
+
+    protected override JsonObject QuoteData(JsonObject q)
+    {
+        var data = base.QuoteData(q);
+        data["volume"] = (long)Math.Truncate(JsonRead.Float(q["v"]));
+        data["tick_size"] = JsonRead.Truthy(q["ti"]) ? JsonRead.Float(q["ti"]) : null;
+        return data;
+    }
+
+    /// <summary>Five levels a side, each with the number of orders, and the open interest.</summary>
+    public override async Task<JsonObject> GetDepthAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken)
+    {
+        var record = await Symbols.FindAsync(Name, symbol, exchange, cancellationToken)
+            ?? throw new BrokerException($"{symbol} on {exchange} is not in the {DisplayName} master contract. Check the symbol, or download the master contract again.", 400);
+        var q = await QuoteForMarginAsync(session, record, cancellationToken);
+        var bids = new JsonArray();
+        var asks = new JsonArray();
+        long totalBuy = 0, totalSell = 0;
+        for (var i = 1; i <= 5; i++)
+        {
+            bids.Add(new JsonObject { ["price"] = JsonRead.Float(q[$"bp{i}"]), ["quantity"] = JsonRead.Int(q[$"bq{i}"]), ["orders"] = JsonRead.Int(q[$"bo{i}"]) });
+            asks.Add(new JsonObject { ["price"] = JsonRead.Float(q[$"sp{i}"]), ["quantity"] = JsonRead.Int(q[$"sq{i}"]), ["orders"] = JsonRead.Int(q[$"so{i}"]) });
+            totalBuy += JsonRead.Int(q[$"bq{i}"]);
+            totalSell += JsonRead.Int(q[$"sq{i}"]);
+        }
+
+        return new JsonObject
+        {
+            ["bids"] = bids, ["asks"] = asks, ["totalbuyqty"] = totalBuy, ["totalsellqty"] = totalSell, ["high"] = JsonRead.Float(q["h"]), ["low"] = JsonRead.Float(q["l"]),
+            ["ltp"] = JsonRead.Float(q["lp"]), ["ltq"] = JsonRead.Int(q["ltq"]), ["open"] = JsonRead.Float(q["o"]), ["prev_close"] = JsonRead.Float(q["c"]),
+            ["volume"] = (long)Math.Truncate(JsonRead.Float(q["v"])), ["oi"] = JsonRead.Int(q["oi"]),
+        };
+    }
+
+    // ---- books -----------------------------------------------------------------------------------------------
+
+    public override async Task<BrokerBook> GetOrderBookAsync(BrokerSession session, CancellationToken cancellationToken)
+    {
+        int buy = 0, sell = 0, completed = 0, open = 0, rejected = 0;
+        var orders = new JsonArray();
+        foreach (var o in (await BookAsync(session, "/OrderBook", Account(session), cancellationToken)).OfType<JsonObject>())
+        {
+            var exchange = JsonRead.Str(o["exch"]) ?? "";
+            var symbol = await SymbolByTokenAsync(JsonRead.Str(o["token"]) ?? "", exchange, cancellationToken) ?? JsonRead.Str(o["tsym"]) ?? "";
+            var side = JsonRead.Str(o["trantype"]);
+            if (side == "B") buy++;
+            else if (side == "S") sell++;
+            var status = NormalizeStatus(JsonRead.Str(o["status"]));
+            if (status == "complete") completed++;
+            else if (status == "open") open++;
+            else if (status == "rejected") rejected++;
+            var priceType = (JsonRead.Str(o["prctyp"]) ?? "").ToUpperInvariant() switch
+            {
+                "MKT" => "MARKET", "LMT" => "LIMIT", "SL-MKT" or "SLMKT" => "SL-M", "SL-LMT" or "SLLMT" => "SL", _ => JsonRead.Str(o["prctyp"]) ?? "",
+            };
+            // An order that has traded shows its average price; a market order that has not shows the price the broker reports back.
+            JsonNode? price = JsonRead.Get(o, "prc", 0.0);
+            if (JsonRead.Truthy(o["instname"]) && JsonRead.Truthy(o["avgprc"]))
+            {
+                if (JsonRead.Float(o["avgprc"]) > 0) price = o["avgprc"]!.DeepClone();
+            }
+            else if (priceType is "MARKET" or "SL-M" && JsonRead.Float(o["prc"]) == 0.0 && JsonRead.Truthy(o["rprc"]) && JsonRead.Float(o["rprc"]) > 0)
+            {
+                price = o["rprc"]!.DeepClone();
+            }
+
+            var quantity = JsonRead.Int(o["qty"]);
+            var filled = JsonRead.Int(o["fillshares"]);
+            orders.Add(new JsonObject
+            {
+                ["symbol"] = symbol, ["exchange"] = exchange, ["action"] = side == "B" ? "BUY" : side == "S" ? "SELL" : JsonRead.Str(o["trantype"]) ?? "",
+                ["quantity"] = JsonRead.Get(o, "qty", 0), ["price"] = price, ["trigger_price"] = JsonRead.Get(o, "trgprc", 0.0), ["pricetype"] = priceType,
+                ["product"] = BookProduct(exchange, JsonRead.Str(o["prd"]) ?? ""), ["orderid"] = JsonRead.Get(o, "norenordno", ""), ["order_status"] = status,
+                ["timestamp"] = JsonRead.Get(o, "norentm", ""), ["filled_quantity"] = filled, ["pending_quantity"] = Math.Max(quantity - filled, 0),
+                ["average_price"] = JsonRead.Float(o["avgprc"]),
+            });
+        }
+
+        return new BrokerBook(orders, new JsonObject
+        {
+            ["total_buy_orders"] = buy, ["total_sell_orders"] = sell, ["total_completed_orders"] = completed, ["total_open_orders"] = open, ["total_rejected_orders"] = rejected,
+        });
+    }
+
+    public override async Task<JsonArray> GetTradeBookAsync(BrokerSession session, CancellationToken cancellationToken)
+    {
+        var trades = new JsonArray();
+        foreach (var t in (await BookAsync(session, "/TradeBook", Account(session), cancellationToken)).OfType<JsonObject>())
+        {
+            var exchange = JsonRead.Str(t["exch"]) ?? "";
+            var known = await SymbolByBrokerSymbolAsync(JsonRead.Str(t["tsym"]) ?? "", exchange, cancellationToken);
+            var side = JsonRead.Str(t["trantype"]) ?? "";
+            var average = BookFormatting.Round2(JsonRead.Float(t["avgprc"]));
+            var quantity = JsonRead.Int(t["qty"]);
+            trades.Add(new JsonObject
+            {
+                ["symbol"] = known ?? JsonRead.Str(t["tsym"]) ?? "", ["exchange"] = exchange, ["product"] = known is null ? JsonRead.Get(t, "prd", "") : BookProduct(exchange, JsonRead.Str(t["prd"]) ?? ""),
+                ["action"] = known is not null ? (side == "B" ? "BUY" : side == "S" ? "SELL" : side) : side, ["quantity"] = quantity, ["average_price"] = average,
+                ["trade_value"] = BookFormatting.Round2(average * quantity), ["orderid"] = JsonRead.Get(t, "norenordno", ""), ["timestamp"] = JsonRead.Get(t, "norentm", ""),
+            });
+        }
+
+        return trades;
+    }
+
+    /// <summary>The realised and unrealised profit of a position row: the broker's own figures, else last price against average price over the net quantity.</summary>
+    private static (double Realised, double Unrealised) Pnl(JsonObject p)
+    {
+        var realised = JsonRead.Float(p["rpnl"]);
+        var unrealised = JsonRead.Float(p["urmtom"]);
+        if (unrealised == 0 && JsonRead.Float(p["netqty"]) != 0)
+        {
+            var factor = p.ContainsKey("prcftr") ? JsonRead.Float(p["prcftr"]) : 1;
+            unrealised = (JsonRead.Float(p["lp"]) - JsonRead.Float(p["netavgprc"])) * JsonRead.Float(p["netqty"]) * factor;
+        }
+
+        return (realised, unrealised);
+    }
+
+    public override async Task<JsonArray> GetPositionsAsync(BrokerSession session, CancellationToken cancellationToken)
+    {
+        var positions = new JsonArray();
+        foreach (var p in (await BookAsync(session, "/PositionBook", Account(session), cancellationToken)).OfType<JsonObject>())
+        {
+            var exchange = JsonRead.Str(p["exch"]) ?? "";
+            var known = await SymbolByBrokerSymbolAsync(JsonRead.Str(p["tsym"]) ?? "", exchange, cancellationToken);
+            var product = JsonRead.Str(p["prd"]) ?? "";
+            if (known is not null) product = BookProduct(exchange, product);
+            var (realised, unrealised) = Pnl(p);
+            positions.Add(new JsonObject
+            {
+                ["symbol"] = known ?? JsonRead.Str(p["tsym"]) ?? "", ["exchange"] = exchange, ["product"] = product, ["quantity"] = JsonRead.Get(p, "netqty", 0),
+                ["average_price"] = JsonRead.Get(p, "netavgprc", 0.0), ["realized_pnl"] = realised, ["unrealized_pnl"] = unrealised, ["ltp"] = JsonRead.Get(p, "lp", 0.0),
+                ["pnl"] = BookFormatting.Round2(realised + unrealised),
+            });
+        }
+
+        return positions;
+    }
+
+    public override async Task<BrokerBook> GetHoldingsAsync(BrokerSession session, CancellationToken cancellationToken)
+    {
+        var holdings = new JsonArray();
+        double held = 0, invested = 0;
+        foreach (var h in (await BookAsync(session, "/Holdings", Account(session, holdings: true), cancellationToken)).OfType<JsonObject>())
+        {
+            var entries = (h["exch_tsym"] as JsonArray ?? []).OfType<JsonObject>().Where(e => JsonRead.Str(e["exch"]) == "NSE").ToList();
+            var quantity = JsonRead.Int(h["holdqty"]) + Math.Max(JsonRead.Int(h["npoadqty"]), JsonRead.Int(h["dpqty"]));
+            foreach (var entry in entries)
+            {
+                var brokerSymbol = JsonRead.Str(entry["tsym"]) ?? "";
+                holdings.Add(new JsonObject
+                {
+                    ["symbol"] = await SymbolByBrokerSymbolAsync(brokerSymbol, "NSE", cancellationToken) ?? brokerSymbol, ["exchange"] = JsonRead.Str(entry["exch"]),
+                    ["quantity"] = quantity, ["product"] = JsonRead.Get(entry, "product", "CNC"), ["avg_price"] = JsonRead.Float(h["upldprc"]), ["pnl"] = 0.0, ["pnlpercent"] = 0.0,
+                });
+            }
+
+            if (JsonRead.Str(h["stat"]) != "Ok" || entries.Count == 0) continue;
+            var price = JsonRead.Float(h["upldprc"]);
+            invested += (JsonRead.Float(h["holdqty"]) + Math.Max(JsonRead.Float(h["npoadqty"]), JsonRead.Float(h["dpqty"]))) * price;
+            held += (JsonRead.Float(h["btstqty"]) + JsonRead.Float(h["holdqty"]) + JsonRead.Float(h["brkcolqty"]) + JsonRead.Float(h["unplgdqty"]) + JsonRead.Float(h["benqty"])
+                + Math.Max(JsonRead.Float(h["npoadqty"]), JsonRead.Float(h["dpqty"])) - JsonRead.Float(h["usedqty"])) * price;
+        }
+
+        return new BrokerBook(holdings, new JsonObject { ["totalholdingvalue"] = held, ["totalinvvalue"] = invested, ["totalprofitandloss"] = 0, ["totalpnlpercentage"] = 0 });
+    }
+
+    public override async Task<JsonObject> GetFundsAsync(BrokerSession session, CancellationToken cancellationToken)
+    {
+        var limits = await PostAsync(session, "/Limits", Account(session), cancellationToken) as JsonObject;
+        if (JsonRead.Str(limits?["stat"]) != "Ok")
+        {
+            if (SessionLapsed(JsonRead.Str(limits?["emsg"]))) throw new BrokerException($"{DisplayName} says the session has expired. Log in to {DisplayName} again.", 403);
+            throw new BrokerException($"{DisplayName} could not report funds: {(JsonRead.Str(limits?["emsg"]) is { Length: > 0 } m ? m : "try again in a moment.")}");
+        }
+
+        double realised = 0, unrealised = 0;
+        if (await PostAsync(session, "/PositionBook", Account(session), cancellationToken) is JsonArray rows)
+        {
+            foreach (var p in rows.OfType<JsonObject>())
+            {
+                var (r, u) = Pnl(p);
+                realised += r;
+                unrealised += u;
+            }
+        }
+
+        var used = JsonRead.Float(limits!["marginused"]);
+        var collateral = JsonRead.Float(limits["collateral"]);
+        if (collateral == 0) collateral = JsonRead.Float(limits["brkcollamt"]);
+        return new JsonObject
+        {
+            ["availablecash"] = BookFormatting.Fixed2(JsonRead.Float(limits["cash"]) + JsonRead.Float(limits["payin"]) - used), ["collateral"] = BookFormatting.Fixed2(collateral),
+            ["m2munrealized"] = BookFormatting.Fixed2(unrealised), ["m2mrealized"] = BookFormatting.Fixed2(realised), ["utiliseddebits"] = BookFormatting.Fixed2(used),
+        };
     }
 }

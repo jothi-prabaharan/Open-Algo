@@ -484,3 +484,33 @@ public sealed class LoginZebuContractTests(LoginZebuHost host, ITestOutputHelper
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginFlattradeHost : BrokerContractHost
+{
+    public override string BrokerName => "flattrade";
+    public override string FixtureFile => "login_flattrade.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "FA12345:::flattrade-app-key", ["ApiSecret"] = "flattrade-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginFlattradeContractTests(LoginFlattradeHost host, ITestOutputHelper output) : IClassFixture<LoginFlattradeHost>
+{
+    private const string Again = "Flattrade did not accept the sign-in. Start it again from the beginning.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_with_a_message"] = LoginDeviations.Refused("Flattrade did not accept the sign-in: Invalid Input : Wrong code"),
+        ["login_refused_without_a_message"] = LoginDeviations.Refused(Again),
+        ["login_ok_without_a_token"] = LoginDeviations.Refused(Again),
+        ["login_token_without_ok_status"] = LoginDeviations.Refused(Again),
+        ["login_http_error_with_a_message"] = LoginDeviations.Refused("Flattrade did not accept the sign-in: Bad request"),
+        ["login_http_error_without_a_message"] = LoginDeviations.Refused(Again),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_flattrade.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

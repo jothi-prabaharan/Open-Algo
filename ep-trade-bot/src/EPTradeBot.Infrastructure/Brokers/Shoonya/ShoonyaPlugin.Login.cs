@@ -19,10 +19,10 @@ public abstract partial class NorenPluginBase
     protected static string? ClientId(IReadOnlyDictionary<string, string> keys) =>
         keys.TryGetValue("ApiKey", out var key) && key.Split(":::", 2) is { Length: 2 } parts && !string.IsNullOrWhiteSpace(parts[1]) ? parts[1].Trim() : null;
 
-    public string? LoginUrl(IReadOnlyDictionary<string, string> keys, string state) =>
+    public virtual string? LoginUrl(IReadOnlyDictionary<string, string> keys, string state) =>
         ClientId(keys) is { } id ? $"{Host}/OAuthlogin/authorize/oauth?client_id={Uri.EscapeDataString(id)}" : null;
 
-    public async Task<BrokerLoginResult> LoginAsync(IReadOnlyDictionary<string, string> keys, IReadOnlyDictionary<string, string> input, CancellationToken cancellationToken)
+    public virtual async Task<BrokerLoginResult> LoginAsync(IReadOnlyDictionary<string, string> keys, IReadOnlyDictionary<string, string> input, CancellationToken cancellationToken)
     {
         if (ClientId(keys) is not { } clientId)
             return BrokerLoginResult.Refused($"The {DisplayName} key must be saved as the user id, \":::\" and the client id. Fix it in the server's settings, then sign in again.", 409);

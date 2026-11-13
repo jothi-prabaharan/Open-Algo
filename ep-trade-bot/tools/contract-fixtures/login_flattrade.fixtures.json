@@ -1,0 +1,320 @@
+{
+  "broker": "flattrade",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "req-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /trade/apitoken": {
+          "body": {
+            "stat": "Ok",
+            "token": "flattrade-token-777"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "flattrade-token-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "authapi.flattrade.in",
+          "path": "/trade/apitoken",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "api_key": "flattrade-app-key",
+            "request_code": "req-code-abc",
+            "api_secret": "b59d4db77c02e18ab02aa8434fa75866fac4e7f309391a60c06f0ab216115d54"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "req-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /trade/apitoken": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Invalid Input : Wrong code"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid Input : Wrong code"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "authapi.flattrade.in",
+          "path": "/trade/apitoken",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "api_key": "flattrade-app-key",
+            "request_code": "req-code-abc",
+            "api_secret": "b59d4db77c02e18ab02aa8434fa75866fac4e7f309391a60c06f0ab216115d54"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "req-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /trade/apitoken": {
+          "body": {
+            "stat": "Not_Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed without specific error"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "authapi.flattrade.in",
+          "path": "/trade/apitoken",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "api_key": "flattrade-app-key",
+            "request_code": "req-code-abc",
+            "api_secret": "b59d4db77c02e18ab02aa8434fa75866fac4e7f309391a60c06f0ab216115d54"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_ok_without_a_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "req-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /trade/apitoken": {
+          "body": {
+            "stat": "Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed without specific error"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "authapi.flattrade.in",
+          "path": "/trade/apitoken",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "api_key": "flattrade-app-key",
+            "request_code": "req-code-abc",
+            "api_secret": "b59d4db77c02e18ab02aa8434fa75866fac4e7f309391a60c06f0ab216115d54"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_token_without_ok_status",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "req-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /trade/apitoken": {
+          "body": {
+            "token": "x"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed without specific error"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "authapi.flattrade.in",
+          "path": "/trade/apitoken",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "api_key": "flattrade-app-key",
+            "request_code": "req-code-abc",
+            "api_secret": "b59d4db77c02e18ab02aa8434fa75866fac4e7f309391a60c06f0ab216115d54"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_http_error_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "req-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /trade/apitoken": {
+          "status": 400,
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Bad request"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Bad request"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "authapi.flattrade.in",
+          "path": "/trade/apitoken",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "api_key": "flattrade-app-key",
+            "request_code": "req-code-abc",
+            "api_secret": "b59d4db77c02e18ab02aa8434fa75866fac4e7f309391a60c06f0ab216115d54"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_http_error_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "req-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /trade/apitoken": {
+          "status": 500,
+          "body": {
+            "error": "down"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Unknown error"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "authapi.flattrade.in",
+          "path": "/trade/apitoken",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "api_key": "flattrade-app-key",
+            "request_code": "req-code-abc",
+            "api_secret": "b59d4db77c02e18ab02aa8434fa75866fac4e7f309391a60c06f0ab216115d54"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

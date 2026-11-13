@@ -75,7 +75,14 @@ public sealed class FakeBroker : HttpMessageHandler
             var text = await request.Content.ReadAsStringAsync(cancellationToken);
             raw = text;
             var type = request.Content.Headers.ContentType?.MediaType ?? "";
-            if (type == "application/x-www-form-urlencoded")
+            if (text.StartsWith("jData=", StringComparison.Ordinal) && text.Contains("&jKey=", StringComparison.Ordinal))
+            {
+                // The JSON and the token in one body, whatever the declared type (Flattrade; Shoonya's chart calls).
+                var at = text.IndexOf("&jKey=", StringComparison.Ordinal);
+                json = JsonNode.Parse(text["jData=".Length..at]);
+                form = [new("jKey", text[(at + "&jKey=".Length)..])];
+            }
+            else if (type == "application/x-www-form-urlencoded")
             {
                 form = [];
                 foreach (var pair in text.Split('&', StringSplitOptions.RemoveEmptyEntries))
