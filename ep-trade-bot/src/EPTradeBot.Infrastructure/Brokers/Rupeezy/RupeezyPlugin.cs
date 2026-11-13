@@ -9,10 +9,10 @@ namespace EPTradeBot.Infrastructure.Brokers.Rupeezy;
 /// <summary>
 /// Rupeezy (Vortex API, vortex-api.rupeezy.in/v2). Port of broker/rupeezy: api/order_api.py, api/funds.py, mapping/exchange.py, mapping/order_data.py and
 /// mapping/transform_data.py. A ticker is "NSE:SBIN" (the first three letters of the exchange, a colon, the broker symbol); MCX orders and books count lots, not
-/// units. Not ported yet: quotes and depth, history, margin, GTT, sign-in and the feed.
+/// units. Not ported yet: margin, GTT and the feed.
 /// </summary>
 [BrokerPlugin]
-public sealed class RupeezyPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory
+public sealed partial class RupeezyPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerLogin
 {
     private const string DefaultBaseUrl = "https://vortex-api.rupeezy.in/v2";
     private const int OrderPage = 500;

@@ -1,0 +1,237 @@
+{
+  "broker": "rupeezy",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_auth_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v2/user/session": {
+          "body": {
+            "status": "success",
+            "data": {
+              "access_token": "rupeezy-access-777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "rupeezy-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "token": "auth-code-abc",
+            "applicationId": "rupeezy-app-id",
+            "checksum": "7c6e0b541a8fc455487d6432199c3c67a743202bc68b9b71a0ec55f376ae8354"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v2/user/session": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "Invalid checksum"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Invalid checksum"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "token": "auth-code-abc",
+            "applicationId": "rupeezy-app-id",
+            "checksum": "7c6e0b541a8fc455487d6432199c3c67a743202bc68b9b71a0ec55f376ae8354"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v2/user/session": {
+          "status": 500,
+          "body": {
+            "x": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Server error '500 Internal Server Error' for url 'https://vortex-api.rupeezy.in/v2/user/session'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "token": "auth-code-abc",
+            "applicationId": "rupeezy-app-id",
+            "checksum": "7c6e0b541a8fc455487d6432199c3c67a743202bc68b9b71a0ec55f376ae8354"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_ok_without_a_token_with_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v2/user/session": {
+          "body": {
+            "status": "error",
+            "message": "Auth code expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Auth code expired"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "token": "auth-code-abc",
+            "applicationId": "rupeezy-app-id",
+            "checksum": "7c6e0b541a8fc455487d6432199c3c67a743202bc68b9b71a0ec55f376ae8354"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_ok_without_a_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v2/user/session": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed: no access token returned."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "token": "auth-code-abc",
+            "applicationId": "rupeezy-app-id",
+            "checksum": "7c6e0b541a8fc455487d6432199c3c67a743202bc68b9b71a0ec55f376ae8354"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

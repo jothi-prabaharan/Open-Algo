@@ -20,7 +20,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Zebu | yes | yes | yes | yes | n/a (no calculator) | no | yes | yes |
 | Flattrade | yes | yes | yes | yes | yes | no | yes | yes |
 | TradeSmart (Noren v2) | yes | yes | yes | yes | yes | no | yes | yes |
-| Rupeezy (Vortex) | yes | yes | yes | yes | no | no | no | no |
+| Rupeezy (Vortex) | yes | yes | yes | yes | no | no | yes | no |
 
 The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -244,7 +244,8 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Recorded differences from OpenAlgo: an empty balance when Rupeezy refuses the funds call there, a refusal here; a success with no order id there, a refusal here; the wording of the refusals.
 - Quotes, depth and several quotes (`rupeezy_data.fixtures.json`, 17 cases; several quotes go out in batches of 1000 with the full mode) and history (`history_rupeezy.fixtures.json`, 23 cases; 30-day chunks for minute bars, 1000-day chunks for daily bars, daily bars stamped at the IST midnight, a repeated timestamp keeps its first bar). Rupeezy has no 20m candle: the refusal names the intervals it does offer.
 - Mutation set `tools/mutation/tg7-rupeezy.json`: 73 mutants, 60 turned a test red. Thirteen survived and are open, not explained away: BSE_FO shown as BFO (V9), the MCX quotation multiplier (V14), a lot size of one skipping the lot check (V18), a MARKET order price sent as zero (V20; platform formatting zeroes it, so likely unobservable), the default strategy name (V23), the EXECUTED and TRIGGER PENDING status spellings (V33, V35), the lot size read from a row (V37), a trade's fields completed from its order (V38, V39), the average-price guard in the funds split (V54), a missing history volume (V70) and the x-api-key header name (V72; the harness does not check request headers). Each needs a recorded scenario or a unit test before this row is complete.
-- Not yet ported for Rupeezy: margin, GTT, sign-in and the feed.
+- Sign-in (`login_rupeezy.fixtures.json`, 5 cases): the auth code Rupeezy's page returns is exchanged at /user/session with a SHA-256 checksum of application id, code and secret (the recorded request body pins the checksum). Differences: the refusals are plain sentences naming Rupeezy, not the raw broker text with an "API error" prefix; a success with no token is a 502 here, 400 there. No mutation set yet for the sign-in.
+- Not yet ported for Rupeezy: margin, GTT and the feed.
 
 ## Shoonya sign-in
 

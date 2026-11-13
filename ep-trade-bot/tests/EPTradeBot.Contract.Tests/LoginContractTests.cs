@@ -543,3 +543,29 @@ public sealed class LoginTradesmartContractTests(LoginTradesmartHost host, ITest
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginRupeezyHost : BrokerContractHost
+{
+    public override string BrokerName => "rupeezy";
+    public override string FixtureFile => "login_rupeezy.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "rupeezy-app-id", ["ApiSecret"] = "rupeezy-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginRupeezyContractTests(LoginRupeezyHost host, ITestOutputHelper output) : IClassFixture<LoginRupeezyHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_with_a_message"] = LoginDeviations.Refused("Rupeezy did not accept the sign-in: Invalid checksum"),
+        ["login_refused_without_a_message"] = LoginDeviations.Refused("Rupeezy did not accept the sign-in. Start it again from the beginning."),
+        ["login_ok_without_a_token_with_message"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error("Rupeezy did not accept the sign-in: Auth code expired"))),
+        ["login_ok_without_a_token"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error("Rupeezy accepted the sign-in but sent no access token. Start the sign-in again."))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_rupeezy.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
