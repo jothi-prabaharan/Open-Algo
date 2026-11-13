@@ -21,6 +21,13 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
     /// <summary>The address of the broker's XTS server, without the /interactive path.</summary>
     protected abstract string DefaultBaseUrl { get; }
 
+    /// <summary>Where the market-data service lives under the address: most XTS servers use /apimarketdata, some /apibinarymarketdata.</summary>
+    protected virtual string MarketDataPath => "/apimarketdata";
+
+    /// <summary>The price type and price an order is sent with. Most brokers send what was asked; iBulls turns a market order into a limit order.</summary>
+    protected virtual Task<(string PriceType, decimal Price)> PriceAsync(BrokerSession session, BrokerOrder order, CancellationToken cancellationToken) =>
+        Task.FromResult((order.PriceType, order.Price));
+
     public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret", "ApiKeyMarket", "ApiSecretMarket"];
 
@@ -44,17 +51,18 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
         var instrument = await symbols.FindAsync(Name, order.Symbol, order.Exchange, cancellationToken);
         if (instrument is null) return BrokerCallResult.Refused(400, UnknownSymbol(order.Symbol, order.Exchange));
         if (!Segments.TryGetValue(order.Exchange, out var segment)) return BrokerCallResult.Refused(400, $"{DisplayName} does not take orders on {order.Exchange}.");
+        var (priceType, price) = await PriceAsync(session, order, cancellationToken);
         return await SendOrderAsync(session, new JsonObject
         {
             ["exchangeSegment"] = segment,
             ["exchangeInstrumentID"] = instrument.Token,
             ["productType"] = order.Product,
-            ["orderType"] = OrderType(order.PriceType),
+            ["orderType"] = OrderType(priceType),
             ["orderSide"] = order.Action.ToUpperInvariant(),
             ["timeInForce"] = "DAY",
             ["disclosedQuantity"] = order.DisclosedQuantity,
             ["orderQuantity"] = order.Quantity,
-            ["limitPrice"] = (double)order.Price,
+            ["limitPrice"] = (double)price,
             ["stopPrice"] = (double)order.TriggerPrice,
             ["orderUniqueIdentifier"] = "openalgo",
         }, cancellationToken);
@@ -263,7 +271,7 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
     private async Task<(List<JsonObject> Quotes, string? Refusal)> QuotesAsync(BrokerSession session, JsonArray instruments, int code, CancellationToken cancellationToken)
     {
         var body = new JsonObject { ["instruments"] = instruments, ["xtsMessageCode"] = code, ["publishFormat"] = "JSON" };
-        using var request = new HttpRequestMessage(HttpMethod.Post, sessions.BaseUrl(Name, DefaultBaseUrl) + "/apimarketdata/instruments/quotes");
+        using var request = new HttpRequestMessage(HttpMethod.Post, sessions.BaseUrl(Name, DefaultBaseUrl) + MarketDataPath + "/instruments/quotes");
         request.Headers.TryAddWithoutValidation("authorization", string.IsNullOrEmpty(session.FeedToken) ? session.AuthToken : session.FeedToken);
         request.Content = new StringContent(body.ToJsonString(), Encoding.UTF8, "application/json");
         using var response = await SendAsync(request, cancellationToken);
@@ -394,7 +402,7 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
             var to = from.AddDays(6) < end ? from.AddDays(6) : end;
             var query = $"exchangeSegment={segment}&exchangeInstrumentID={Uri.EscapeDataString(instrument.Token)}"
                 + $"&startTime={Uri.EscapeDataString(Stamp(from, "000000"))}&endTime={Uri.EscapeDataString(Stamp(to, "235959"))}&compressionValue={compression.Compression}";
-            using var request = new HttpRequestMessage(HttpMethod.Get, sessions.BaseUrl(Name, DefaultBaseUrl) + "/apimarketdata/instruments/ohlc?" + query);
+            using var request = new HttpRequestMessage(HttpMethod.Get, sessions.BaseUrl(Name, DefaultBaseUrl) + MarketDataPath + "/instruments/ohlc?" + query);
             request.Headers.TryAddWithoutValidation("authorization", string.IsNullOrEmpty(session.FeedToken) ? session.AuthToken : session.FeedToken);
             using var response = await SendAsync(request, cancellationToken);
             var reply = await ReadAsync(response, cancellationToken) as JsonObject;
@@ -511,4 +519,45 @@ public sealed class IiflPlugin(IHttpClientFactory http, BrokerSessionFactory ses
     public override string Name => "iifl";
     public override string DisplayName => "IIFL";
     protected override string DefaultBaseUrl => "https://ttblaze.iifl.com";
+}
+
+/// <summary>
+/// iBulls Securities' XTS server (broker/ibulls). A market order is turned into a limit order priced 0.1 percent through the book (bid plus 0.1 percent
+/// to buy, ask minus 0.1 percent to sell) so that it fills like a market order without taking any price. If no quote can be had the order goes as a market order.
+/// </summary>
+[BrokerPlugin]
+public sealed class IbullsPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<IbullsPlugin> logger)
+    : XtsPluginBase(http, sessions, symbols, logger)
+{
+    private readonly ILogger log = logger;
+
+    public override string Name => "ibulls";
+    public override string DisplayName => "iBulls";
+    protected override string DefaultBaseUrl => "https://xts.ibullssecurities.com";
+    protected override string MarketDataPath => "/apibinarymarketdata";
+
+    protected override async Task<(string PriceType, decimal Price)> PriceAsync(BrokerSession session, BrokerOrder order, CancellationToken cancellationToken)
+    {
+        if (order.PriceType != "MARKET" || string.IsNullOrEmpty(session.FeedToken)) return (order.PriceType, order.Price);
+        try
+        {
+            var quote = await GetQuoteAsync(session, order.Symbol, order.Exchange, cancellationToken);
+            if (order.Action.Equals("BUY", StringComparison.OrdinalIgnoreCase))
+            {
+                var bid = JsonRead.Float(quote["bid"]);
+                if (bid > 0) return ("LIMIT", (decimal)BookFormatting.Round2(bid * 1.001));
+            }
+            else if (order.Action.Equals("SELL", StringComparison.OrdinalIgnoreCase))
+            {
+                var ask = JsonRead.Float(quote["ask"]);
+                if (ask > 0) return ("LIMIT", (decimal)BookFormatting.Round2(ask * 0.999));
+            }
+        }
+        catch (Exception ex) when (ex is BrokerException or HttpRequestException)
+        {
+            log.LogWarning(ex, "Could not price the iBulls market order from a quote; it goes as a market order.");
+        }
+
+        return (order.PriceType, order.Price);
+    }
 }

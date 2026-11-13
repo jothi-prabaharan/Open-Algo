@@ -28,7 +28,7 @@ public abstract partial class XtsPluginBase
         if (refusal is not null) return BrokerLoginResult.Refused($"{DisplayName} did not accept the sign-in: {refusal}");
         if (token is null) return BrokerLoginResult.Refused($"{DisplayName} accepted the sign-in but sent no access token. Start the sign-in again.", 502);
 
-        var (feed, feedRefusal) = await TokenAsync("/apimarketdata/auth/login", Key("ApiKeyMarket"), Key("ApiSecretMarket"), cancellationToken);
+        var (feed, feedRefusal) = await TokenAsync(MarketDataPath + "/auth/login", Key("ApiKeyMarket"), Key("ApiSecretMarket"), cancellationToken);
         if (feedRefusal is not null) return BrokerLoginResult.Refused($"{DisplayName} accepted the sign-in but refused the market data login: {feedRefusal}");
         return BrokerLoginResult.Success(token, feed);
     }

@@ -1,0 +1,82 @@
+[
+ {
+  "name": "B1 buy margin wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "bid * 1.001",
+  "new": "bid * 1.002",
+  "filter": "FullyQualifiedName~IbullsContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B2 sell margin wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "ask * 0.999",
+  "new": "ask * 0.998",
+  "filter": "FullyQualifiedName~IbullsContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B3 buy uses ask",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "var bid = JsonRead.Float(quote[\"bid\"]);",
+  "new": "var bid = JsonRead.Float(quote[\"ask\"]);",
+  "filter": "FullyQualifiedName~IbullsContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B4 sell uses bid",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "var ask = JsonRead.Float(quote[\"ask\"]);",
+  "new": "var ask = JsonRead.Float(quote[\"bid\"]);",
+  "filter": "FullyQualifiedName~IbullsContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B5 zero bid still priced",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (bid > 0) return",
+  "new": "if (bid >= 0) return",
+  "filter": "FullyQualifiedName~IbullsContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B6 zero ask still priced",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (ask > 0) return",
+  "new": "if (ask >= 0) return",
+  "filter": "FullyQualifiedName~IbullsContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B7 limit orders priced too",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (order.PriceType != \"MARKET\" || string.IsNullOrEmpty(session.FeedToken)) return",
+  "new": "if (string.IsNullOrEmpty(session.FeedToken)) return",
+  "filter": "FullyQualifiedName~IbullsContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B8 not rounded",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "(decimal)BookFormatting.Round2(bid * 1.001)",
+  "new": "(decimal)(bid * 1.001)",
+  "filter": "FullyQualifiedName~IbullsContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B9 refusal fails the order",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "catch (Exception ex) when (ex is BrokerException or HttpRequestException)",
+  "new": "catch (Exception ex) when (ex is InvalidOperationException)",
+  "filter": "FullyQualifiedName~IbullsContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B10 binary path lost",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "protected override string MarketDataPath => \"/apibinarymarketdata\";",
+  "new": "protected override string MarketDataPath => \"/apimarketdata\";",
+  "filter": "FullyQualifiedName~IbullsContract",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

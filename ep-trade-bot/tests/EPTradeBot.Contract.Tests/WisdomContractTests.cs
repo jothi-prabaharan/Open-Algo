@@ -46,6 +46,8 @@ internal static class XtsDeviations
 {
     private const string AsText = "The broker sends the order number as a number and OpenAlgo passes it on as one. EP Trade bot's order ids are text on every broker.";
 
+    public static Action<JsonObject> OrderIdAsText => IdAsText;
+
     private static Action<JsonObject> IdAsText => f =>
     {
         if (f["expected"]!["body"]!["orderid"] is { } id) f["expected"]!["body"]!["orderid"] = id.ToString();
@@ -395,3 +397,113 @@ public sealed class IiflHistoryContractTests(IiflHistoryHost host, ITestOutputHe
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class IbullsHost : XtsHost
+{
+    public override string BrokerName => "ibulls";
+    public override string FixtureFile => "ibulls.fixtures.json";
+}
+
+/// <summary>iBulls against the Python implementation (tools/contract-fixtures/ibulls.fixtures.json).</summary>
+public sealed class IbullsContractTests(IbullsHost host, ITestOutputHelper output) : IClassFixture<IbullsHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = Build();
+
+    private static Dictionary<string, Deviation> Build()
+    {
+        var d = XtsDeviations.WithCrashes("iBulls");
+        foreach (var name in new[]
+        {
+            "placeorder_market_buy_priced_from_the_bid", "placeorder_market_sell_priced_from_the_ask", "placeorder_market_bid_is_zero",
+            "placeorder_market_ask_is_zero", "placeorder_market_quote_refused", "placeorder_limit_is_not_priced_again", "placeorder_market_priced_cheap_share",
+        })
+        {
+            d[name] = new("The broker sends the order number as a number and OpenAlgo passes it on as one. EP Trade bot's order ids are text on every broker.", XtsDeviations.OrderIdAsText);
+        }
+
+
+
+        return d;
+    }
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("ibulls.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class IbullsDataHost : XtsHost
+{
+    public override string BrokerName => "ibulls";
+    public override string FixtureFile => "ibulls_data.fixtures.json";
+}
+
+/// <summary>iBulls market data against the Python implementation (tools/contract-fixtures/ibulls_data.fixtures.json).</summary>
+public sealed class IbullsDataContractTests(IbullsDataHost host, ITestOutputHelper output) : IClassFixture<IbullsDataHost>
+{
+    private const string Words = "OpenAlgo answers a refused or empty quote with \"Failed to fetch market data\"; EP Trade bot names the broker and passes its reason on.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["quotes_market_data_refused"] = new(Words, f => Expect(f, 500, Error("iBulls could not send the quote: Market data not enabled"))),
+        ["quotes_empty_list"] = new(Words, f => Expect(f, 500, Error("iBulls has no quote for SBIN right now."))),
+        ["multiquotes_refused"] = new(Words, f => Expect(f, 500, Error("iBulls could not send the quotes: Market data not enabled"))),
+        ["depth_market_data_refused"] = new(
+            "OpenAlgo answers success with a depth of zeros when the broker refuses, which reads as a market with no orders. EP Trade bot reports the refusal.",
+            f => Expect(f, 500, Error("iBulls could not send the quote: Market data not enabled"))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("ibulls_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+
+public sealed class IbullsHistoryHost : XtsHost
+{
+    public override string BrokerName => "ibulls";
+    public override string FixtureFile => "history_ibulls.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>iBulls history against the Python implementation (tools/contract-fixtures/history_ibulls.fixtures.json).</summary>
+public sealed class IbullsHistoryContractTests(IbullsHistoryHost host, ITestOutputHelper output) : IClassFixture<IbullsHistoryHost>
+{
+    private const string Quiet = "OpenAlgo fails with \"No objects to concatenate\" when no candle came back, which looks like a fault; EP Trade bot answers success with no candles.";
+
+    private static void Refused(JsonObject f, string from, string to) =>
+        Expect(f, 500, Error($"iBulls could not send the candles for {from} to {to}: Invalid Token"));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_nothing_traded"] = new(Quiet, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray() })),
+        ["history_end_before_start"] = new(Quiet, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray() })),
+        ["history_refused"] = new("OpenAlgo shows an internal-looking message; EP Trade bot says which days were refused and why.", f => Refused(f, "2026-11-02", "2026-11-02")),
+        ["history_unsupported_interval"] = new(
+            "OpenAlgo answers 500 with \"Unsupported timeframe: 4h\". EP Trade bot answers 400 and names what iBulls offers.",
+            f => Expect(f, 400, Error("iBulls does not offer 4h candles. Choose one of: 1s, 1m, 2m, 3m, 5m, 10m, 15m, 30m, 60m, D."))),
+        ["history_chunked_in_weeks"] = new(
+            "OpenAlgo ends every week but the last at midnight of its seventh day and starts the next on the day after, so the seventh day's trading is never asked for. EP Trade bot asks for the whole of each day.",
+            f =>
+            {
+                var sent = f["sent"]!.AsArray();
+                sent[0]!["query"]!.AsArray()[3]!.AsArray()[1] = "Oct 25 2026 235959";
+                sent[1]!["query"]!.AsArray()[3]!.AsArray()[1] = "Nov 01 2026 235959";
+            }),
+        ["history_one_chunk_refused"] = new("OpenAlgo shows an internal-looking message; EP Trade bot says which days were refused and why.", f =>
+        {
+            Refused(f, "2026-11-02", "2026-11-02");
+            f["sent"]!.AsArray()[0]!["query"]!.AsArray()[3]!.AsArray()[1] = "Nov 01 2026 235959";
+        }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_ibulls.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
