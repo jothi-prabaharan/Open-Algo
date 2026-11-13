@@ -238,3 +238,65 @@ public sealed class LoginWisdomContractTests(LoginWisdomHost host, ITestOutputHe
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginFivepaisaHost : BrokerContractHost
+{
+    public override string BrokerName => "fivepaisaxts";
+    public override string FixtureFile => "login_fivepaisaxts.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string>
+    {
+        ["ApiKey"] = "wisdom-app-key", ["ApiSecret"] = "wisdom-app-secret", ["ApiKeyMarket"] = "wisdom-market-key", ["ApiSecretMarket"] = "wisdom-market-secret",
+    };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginFivepaisaContractTests(LoginFivepaisaHost host, ITestOutputHelper output) : IClassFixture<LoginFivepaisaHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_with_a_message"] = LoginDeviations.Refused("5paisa XTS did not accept the sign-in: Invalid App Key"),
+        ["login_refused_with_an_ok_status_and_an_error_type"] = LoginDeviations.Refused("5paisa XTS did not accept the sign-in: Invalid user"),
+        ["login_ok_body_with_an_error_status"] = LoginDeviations.Refused("5paisa XTS did not accept the sign-in: Gateway trouble"),
+        ["login_session_without_a_token_field"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error("5paisa XTS accepted the sign-in but sent no access token. Start the sign-in again."))),
+        ["login_market_data_refused"] = LoginDeviations.Refused("5paisa XTS accepted the sign-in but refused the market data login: Invalid market data key"),
+        ["login_market_data_ok_status_error_type"] = LoginDeviations.Refused("5paisa XTS accepted the sign-in but refused the market data login: Market data login not enabled"),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_fivepaisaxts.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
+
+public sealed class LoginIiflHost : BrokerContractHost
+{
+    public override string BrokerName => "iifl";
+    public override string FixtureFile => "login_iifl.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string>
+    {
+        ["ApiKey"] = "wisdom-app-key", ["ApiSecret"] = "wisdom-app-secret", ["ApiKeyMarket"] = "wisdom-market-key", ["ApiSecretMarket"] = "wisdom-market-secret",
+    };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginIiflContractTests(LoginIiflHost host, ITestOutputHelper output) : IClassFixture<LoginIiflHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_with_a_message"] = LoginDeviations.Refused("IIFL did not accept the sign-in: Invalid App Key"),
+        ["login_refused_with_an_ok_status_and_an_error_type"] = LoginDeviations.Refused("IIFL did not accept the sign-in: Invalid user"),
+        ["login_ok_body_with_an_error_status"] = LoginDeviations.Refused("IIFL did not accept the sign-in: Gateway trouble"),
+        ["login_session_without_a_token_field"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error("IIFL accepted the sign-in but sent no access token. Start the sign-in again."))),
+        ["login_market_data_refused"] = LoginDeviations.Refused("IIFL accepted the sign-in but refused the market data login: Invalid market data key"),
+        ["login_market_data_ok_status_error_type"] = LoginDeviations.Refused("IIFL accepted the sign-in but refused the market data login: Market data login not enabled"),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_iifl.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

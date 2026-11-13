@@ -12,7 +12,9 @@ MARKET_OK = {"body": {"type": "success", "code": "s-user-0001", "description": "
 
 
 def sign_in_steps(_unused):
-    from broker.wisdom.api.auth_api import authenticate_broker
+    import importlib
+
+    authenticate_broker = importlib.import_module(f"broker.{BROKER}.api.auth_api").authenticate_broker
 
     token, feed, _user, error = authenticate_broker(_unused)
     return token, feed, error, 400

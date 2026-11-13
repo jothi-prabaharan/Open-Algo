@@ -1,0 +1,469 @@
+{
+  "broker": "iifl",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_returns_session_and_feed_tokens",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "success",
+            "code": "s-user-0001",
+            "description": "Login Successful",
+            "result": {
+              "token": "wisdom-session-token",
+              "userID": "WC001",
+              "isInvestorClient": false
+            }
+          }
+        },
+        "POST /apimarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "code": "s-user-0001",
+            "description": "Login Successful",
+            "result": {
+              "token": "wisdom-feed-token",
+              "userID": "WC001_MD"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "wisdom-session-token",
+        "feed_token": "wisdom-feed-token"
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "ttblaze.iifl.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "wisdom-app-key",
+            "secretKey": "wisdom-app-secret",
+            "source": "WebAPI"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "ttblaze.iifl.com",
+          "path": "/apimarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "wisdom-market-secret",
+            "appKey": "wisdom-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /interactive/user/session": {
+          "status": 401,
+          "body": {
+            "type": "error",
+            "code": "e-apikey-0002",
+            "description": "Invalid appKey",
+            "message": "Invalid App Key"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Invalid App Key"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "ttblaze.iifl.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "wisdom-app-key",
+            "secretKey": "wisdom-app-secret",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_an_ok_status_and_an_error_type",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "error",
+            "code": "e-user-0001",
+            "description": "Invalid user"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication succeeded but no access token was returned. Please check the response."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "ttblaze.iifl.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "wisdom-app-key",
+            "secretKey": "wisdom-app-secret",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_ok_body_with_an_error_status",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /interactive/user/session": {
+          "status": 500,
+          "body": {
+            "type": "success",
+            "message": "Gateway trouble",
+            "result": {
+              "token": "should-not-be-used"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Gateway trouble"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "ttblaze.iifl.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "wisdom-app-key",
+            "secretKey": "wisdom-app-secret",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_session_without_a_token_field",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "success",
+            "result": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Error during authentication: 'token'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "ttblaze.iifl.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "wisdom-app-key",
+            "secretKey": "wisdom-app-secret",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_market_data_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "success",
+            "code": "s-user-0001",
+            "description": "Login Successful",
+            "result": {
+              "token": "wisdom-session-token",
+              "userID": "WC001",
+              "isInvestorClient": false
+            }
+          }
+        },
+        "POST /apimarketdata/auth/login": {
+          "status": 401,
+          "body": {
+            "type": "error",
+            "code": "e-apikey-0002",
+            "description": "Invalid market data key"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Feed token error: API Error (Feed): Invalid market data key"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "ttblaze.iifl.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "wisdom-app-key",
+            "secretKey": "wisdom-app-secret",
+            "source": "WebAPI"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "ttblaze.iifl.com",
+          "path": "/apimarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "wisdom-market-secret",
+            "appKey": "wisdom-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_market_data_ok_status_error_type",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "success",
+            "code": "s-user-0001",
+            "description": "Login Successful",
+            "result": {
+              "token": "wisdom-session-token",
+              "userID": "WC001",
+              "isInvestorClient": false
+            }
+          }
+        },
+        "POST /apimarketdata/auth/login": {
+          "body": {
+            "type": "error",
+            "description": "Market data login not enabled"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Feed token error: Feed token request failed. Please check the response."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "ttblaze.iifl.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "wisdom-app-key",
+            "secretKey": "wisdom-app-secret",
+            "source": "WebAPI"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "ttblaze.iifl.com",
+          "path": "/apimarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "wisdom-market-secret",
+            "appKey": "wisdom-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_market_data_without_a_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "success",
+            "code": "s-user-0001",
+            "description": "Login Successful",
+            "result": {
+              "token": "wisdom-session-token",
+              "userID": "WC001",
+              "isInvestorClient": false
+            }
+          }
+        },
+        "POST /apimarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "userID": "X"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "wisdom-session-token",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "ttblaze.iifl.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "wisdom-app-key",
+            "secretKey": "wisdom-app-secret",
+            "source": "WebAPI"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "ttblaze.iifl.com",
+          "path": "/apimarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "wisdom-market-secret",
+            "appKey": "wisdom-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

@@ -10,15 +10,17 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Fyers | yes | yes | yes | yes | yes | yes | yes | yes |
 | Delta Exchange | yes | yes | yes | yes | yes | no | yes | yes |
 | Wisdom Capital (XTS) | yes | yes | no | no | no | no | yes | no |
+| 5paisa XTS | yes | yes | no | no | no | no | yes | no |
+| IIFL (XTS) | yes | yes | no | no | no | no | yes | no |
 
-The other 29 brokers in the task list are not started. The six other XTS brokers (ibulls, jainamxts, fivepaisaxts, iifl, compositedge, rmoney) are next: they share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
+The other 27 brokers in the task list are not started. The four other XTS brokers (ibulls, jainamxts, compositedge, rmoney) are next: they share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
 ## Not done, and why Gate 7 is open
 
 - Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **The 29 brokers not started** (fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, ibulls, iifl, iiflcapital, indmoney, jainamxts, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, zebu). Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **The 27 brokers not started** (fivepaisa, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, ibulls, iiflcapital, indmoney, jainamxts, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, zebu). Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
 ## Upstox sign-in
 
@@ -131,3 +133,10 @@ The other 29 brokers in the task list are not started. The six other XTS brokers
   - An expired session on funds is reported as an expired session; OpenAlgo shows an empty balance.
 - Mutation: `tools/mutation/tg7-wisdom.json`, 29 mutants, all caught (ten survived the first run; each got a recorded case or a unit test, and one equivalent product default was removed).
 - Not ported, and refused rather than guessed: quotes, depth and history (a separate market-data service), margin, and the feed. Position and holding profit and loss are zero, as in OpenAlgo (the XTS position reply carries no last price).
+
+## 5paisa XTS and IIFL (XTS): orders, books, funds and sign-in
+
+- Same XTS base class as Wisdom Capital, each held to its own Python plugin: 36 recorded cases each for orders, books and funds (`fivepaisaxts.fixtures.json`, `iifl.fixtures.json`) and 8 each for sign-in. The recording uses the broker's address without a trailing slash (5paisa's OpenAlgo address ends in one, which would make every path start with a double slash).
+- Extra deviations for these two: OpenAlgo fails with an internal error on a trade that has no price and on a position reply without a result; EP Trade bot answers as it does for a well-formed reply. Order status reads the average price from the trade book, so it differs for the same reason.
+- Not mutation-tested again: the mapping code is the shared Wisdom base, whose 29 mutants are all caught; what is specific to these two (display name, address) is held by the contract paths and hosts.
+- iBulls is not done: its Python plugin turns a market order into a limit order priced from a quote (bid plus 0.1 percent to buy, ask minus 0.1 percent to sell), so it needs the XTS market-data service ported first.

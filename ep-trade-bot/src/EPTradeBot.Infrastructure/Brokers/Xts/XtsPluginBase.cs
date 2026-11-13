@@ -311,3 +311,23 @@ public sealed class WisdomPlugin(IHttpClientFactory http, BrokerSessionFactory s
     public override string DisplayName => "Wisdom Capital";
     protected override string DefaultBaseUrl => "https://trade.wisdomcapital.in";
 }
+
+/// <summary>5paisa's XTS server (broker/fivepaisaxts).</summary>
+[BrokerPlugin]
+public sealed class FivepaisaXtsPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<FivepaisaXtsPlugin> logger)
+    : XtsPluginBase(http, sessions, symbols, logger)
+{
+    public override string Name => "fivepaisaxts";
+    public override string DisplayName => "5paisa XTS";
+    protected override string DefaultBaseUrl => "https://xtsmum.5paisa.com";
+}
+
+/// <summary>IIFL's XTS server (broker/iifl).</summary>
+[BrokerPlugin]
+public sealed class IiflPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<IiflPlugin> logger)
+    : XtsPluginBase(http, sessions, symbols, logger)
+{
+    public override string Name => "iifl";
+    public override string DisplayName => "IIFL";
+    protected override string DefaultBaseUrl => "https://ttblaze.iifl.com";
+}
