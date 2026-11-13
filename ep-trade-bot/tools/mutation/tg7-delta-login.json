@@ -1,0 +1,58 @@
+[
+ {
+  "name": "L1 path changed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.Login.cs",
+  "old": "\"/v2/profile\"",
+  "new": "\"/v2/me\"",
+  "filter": "FullyQualifiedName~LoginDelta",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L2 success flag ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.Login.cs",
+  "old": "case 200 when JsonRead.Truthy(body?[\"success\"]):",
+  "new": "case 200 when Environment.TickCount64 > 0:",
+  "filter": "FullyQualifiedName~LoginDelta",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L3 401 not told apart",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.Login.cs",
+  "old": "case 401:",
+  "new": "case 4010:",
+  "filter": "FullyQualifiedName~LoginDelta",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L4 403 not told apart",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.Login.cs",
+  "old": "case 403:",
+  "new": "case 4030:",
+  "filter": "FullyQualifiedName~LoginDelta",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L5 token is the secret",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.Login.cs",
+  "old": "BrokerLoginResult.Success(apiKey, null)",
+  "new": "BrokerLoginResult.Success(secret, null)",
+  "filter": "FullyQualifiedName~LoginDelta",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L6 unexpected status as success",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.Login.cs",
+  "old": "default:\n                return BrokerLoginResult.Refused(\"Delta Exchange could not confirm",
+  "new": "default:\n                return BrokerLoginResult.Success(apiKey, null);\n            case 1:\n                return BrokerLoginResult.Refused(\"Delta Exchange could not confirm",
+  "filter": "FullyQualifiedName~LoginDelta",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L7 missing secret allowed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.Login.cs",
+  "old": "apiKey.Length == 0 || secret.Length == 0",
+  "new": "apiKey.Length == 0",
+  "filter": "FullyQualifiedName~Delta_sign_in",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

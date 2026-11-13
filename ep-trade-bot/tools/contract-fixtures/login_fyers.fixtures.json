@@ -1,0 +1,285 @@
+{
+  "broker": "fyers",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_auth_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "fy-auth-code",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /api/v3/validate-authcode": {
+          "body": {
+            "s": "ok",
+            "code": 200,
+            "message": "",
+            "access_token": "fyers-access-777",
+            "refresh_token": "r"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "fyers-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/validate-authcode",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "grant_type": "authorization_code",
+            "appIdHash": "7e3b6e8000f29877043c3e7d6d732d943b95d178806380fe96bd142d105da91c",
+            "code": "fy-auth-code"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_by_status",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "fy-auth-code",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /api/v3/validate-authcode": {
+          "body": {
+            "s": "error",
+            "code": -413,
+            "message": "Invalid auth code"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Invalid auth code"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/validate-authcode",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "grant_type": "authorization_code",
+            "appIdHash": "7e3b6e8000f29877043c3e7d6d732d943b95d178806380fe96bd142d105da91c",
+            "code": "fy-auth-code"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_by_http_error",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "fy-auth-code",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /api/v3/validate-authcode": {
+          "status": 401,
+          "body": {
+            "s": "error",
+            "code": -413,
+            "message": "Invalid auth code"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed: Client error '401 Unauthorized' for url 'https://api-t1.fyers.in/api/v3/validate-authcode'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/validate-authcode",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "grant_type": "authorization_code",
+            "appIdHash": "7e3b6e8000f29877043c3e7d6d732d943b95d178806380fe96bd142d105da91c",
+            "code": "fy-auth-code"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_no_access_token_in_the_answer",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "fy-auth-code",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /api/v3/validate-authcode": {
+          "body": {
+            "s": "ok",
+            "code": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication succeeded but no access token was returned"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/validate-authcode",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "grant_type": "authorization_code",
+            "appIdHash": "7e3b6e8000f29877043c3e7d6d732d943b95d178806380fe96bd142d105da91c",
+            "code": "fy-auth-code"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_http_error_with_an_ok_looking_body",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "fy-auth-code",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /api/v3/validate-authcode": {
+          "status": 500,
+          "body": {
+            "s": "ok",
+            "access_token": "fyers-access-777"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed: Server error '500 Internal Server Error' for url 'https://api-t1.fyers.in/api/v3/validate-authcode'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/validate-authcode",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "grant_type": "authorization_code",
+            "appIdHash": "7e3b6e8000f29877043c3e7d6d732d943b95d178806380fe96bd142d105da91c",
+            "code": "fy-auth-code"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_empty_access_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "fy-auth-code",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /api/v3/validate-authcode": {
+          "body": {
+            "s": "ok",
+            "access_token": ""
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication succeeded but no access token was returned"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/validate-authcode",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "grant_type": "authorization_code",
+            "appIdHash": "7e3b6e8000f29877043c3e7d6d732d943b95d178806380fe96bd142d105da91c",
+            "code": "fy-auth-code"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

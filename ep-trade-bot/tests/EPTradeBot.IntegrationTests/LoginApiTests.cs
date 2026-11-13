@@ -96,6 +96,52 @@ public sealed class LoginApiTests
     }
 
     [PostgresFact]
+    public async Task Fyers_start_names_the_app_and_redirect_address_and_complete_exchanges_the_auth_code()
+    {
+        var broker = new FakeBroker();
+        broker.Reset(new Dictionary<string, (int, string)> { ["POST /api/v3/validate-authcode"] = (200, """{"s":"ok","access_token":"fyers-new-token"}""") });
+        await using var host = new TestHost("Production", b =>
+        {
+            b.UseSetting("Brokers:Enabled:0", "fyers");
+            b.UseSetting("Brokers:Keys:fyers:ApiKey", "FY-100");
+            b.UseSetting("Brokers:Keys:fyers:ApiSecret", "fy-secret");
+            b.UseSetting("Brokers:Keys:fyers:RedirectUrl", "https://bot.example/fyers/callback");
+            b.ConfigureServices(s => s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => broker)));
+        });
+        var account = await host.CreateAccountAsync(AccountType.LIVE, "fy", broker: "fyers");
+
+        var (status, started) = await PostAsync(host, $"/api/v1/accounts/{account}/broker-login/start");
+        Assert.Equal(200, status);
+        var state = started["state"]!.GetValue<string>();
+        Assert.Equal(
+            $"https://api-t1.fyers.in/api/v3/generate-authcode?client_id=FY-100&redirect_uri={Uri.EscapeDataString("https://bot.example/fyers/callback")}&response_type=code&state={Uri.EscapeDataString(state)}",
+            started["login_url"]!.GetValue<string>());
+
+        (status, _) = await PostAsync(host, $"/api/v1/accounts/{account}/broker-login/complete", new { request_token = "c1", state });
+        Assert.Equal(200, status);
+        Assert.Single(broker.Sent);
+    }
+
+    [PostgresFact]
+    public async Task Delta_sign_in_without_both_keys_set_is_refused_and_says_so_before_calling_the_broker()
+    {
+        var broker = new FakeBroker();
+        broker.Reset(new Dictionary<string, (int, string)> { ["GET /v2/profile"] = (200, """{"success":true,"result":{}}""") });
+        await using var host = new TestHost("Production", b =>
+        {
+            b.UseSetting("Brokers:Enabled:0", "deltaexchange");
+            b.UseSetting("Brokers:Keys:deltaexchange:ApiKey", "delta-key");
+            b.ConfigureServices(s => s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => broker)));
+        });
+        var account = await host.CreateAccountAsync(AccountType.LIVE, "dl", broker: "deltaexchange");
+
+        var (status, answer) = await PostAsync(host, $"/api/v1/accounts/{account}/broker-login/complete");
+        Assert.Equal(409, status);
+        Assert.Contains("key and secret", answer["message"]!.GetValue<string>());
+        Assert.Empty(broker.Sent);
+    }
+
+    [PostgresFact]
     public async Task An_answer_without_a_state_started_here_is_refused_and_reaches_no_broker()
     {
         var broker = new FakeBroker();

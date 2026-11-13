@@ -13,11 +13,11 @@ namespace EPTradeBot.Infrastructure.Brokers.Fyers;
 /// depth, mapping/transform_data.py, mapping/order_data.py), held to
 /// tools/contract-fixtures/fyers.fixtures.json. Fyers reports exchanges as numeric codes and
 /// orders, sides and states as numbers; they are translated as OpenAlgo does. Not ported yet,
-/// and refused rather than guessed: history, GTT, margin, login and the Fyers feed.
+/// and refused rather than guessed: GTT and the Fyers feed.
 /// </summary>
 [BrokerPlugin]
-public sealed class FyersPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<FyersPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerOptionChain, IBrokerHistory, IBrokerMargin
+public sealed partial class FyersPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<FyersPlugin> logger)
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerOptionChain, IBrokerHistory, IBrokerMargin, IBrokerLogin
 {
     private const string BaseUrl = "https://api-t1.fyers.in";
 

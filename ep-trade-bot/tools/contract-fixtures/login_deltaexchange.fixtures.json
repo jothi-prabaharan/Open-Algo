@@ -1,0 +1,207 @@
+{
+  "broker": "deltaexchange",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_proves_the_key_with_a_signed_profile_call",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /v2/profile": {
+          "body": {
+            "success": true,
+            "result": {
+              "email": "t@example.com",
+              "id": 1
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "delta-api-key",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/profile",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_profile_says_not_successful",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /v2/profile": {
+          "body": {
+            "success": false,
+            "error": {
+              "code": "bad"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Delta Exchange API error: {'code': 'bad'}"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/profile",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_key_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /v2/profile": {
+          "status": 401,
+          "body": {
+            "success": false,
+            "error": {
+              "code": "invalid_api_key"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid API key or signature \u2014 check BROKER_API_KEY and BROKER_API_SECRET"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/profile",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_blocked_by_ip_whitelist",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /v2/profile": {
+          "status": 403,
+          "body": {
+            "success": false
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Request forbidden by Delta Exchange CDN. This may be an IP whitelist issue \u2014 verify your IP is whitelisted for this API key in the Delta Exchange dashboard."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/profile",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_unexpected_status",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /v2/profile": {
+          "status": 500,
+          "body": {
+            "error": "x"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Unexpected HTTP 500 from Delta Exchange: {\"error\":\"x\"}"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/profile",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

@@ -18,15 +18,15 @@ namespace EPTradeBot.Infrastructure.Brokers.Delta;
 /// HMAC-SHA256 over method, timestamp, path, query and body. Order ids are
 /// "product_id:order_id", as OpenAlgo forms them, so a cancel needs no lookup.
 /// Not ported yet, and refused rather than guessed: fractional (spot) quantities,
-/// leverage setting, bracket orders, history, margin, login and the Delta feed.
+/// leverage setting, bracket orders and the Delta feed.
 /// </summary>
 [BrokerPlugin]
-public sealed class DeltaExchangePlugin(
+public sealed partial class DeltaExchangePlugin(
     IHttpClientFactory http,
     BrokerSessionFactory sessions,
     ISymbolMaster symbols,
     TimeProvider clock,
-    ILogger<DeltaExchangePlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerQuotes, IBrokerHistory, IBrokerMargin
+    ILogger<DeltaExchangePlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerQuotes, IBrokerHistory, IBrokerMargin, IBrokerLogin
 {
     private const string BaseUrl = "https://api.india.delta.exchange";
     private const string Crypto = "CRYPTO";

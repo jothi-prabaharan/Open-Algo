@@ -47,6 +47,27 @@ public sealed class LoginUpstoxHost : BrokerContractHost
     public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
 }
 
+public sealed class LoginFyersHost : BrokerContractHost
+{
+    public override string BrokerName => "fyers";
+    public override string FixtureFile => "login_fyers.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string>
+    {
+        ["ApiKey"] = "FYAPP-100", ["ApiSecret"] = "fyers-secret", ["RedirectUrl"] = "http://127.0.0.1:5000/fyers/callback",
+    };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginDeltaHost : BrokerContractHost
+{
+    public override string BrokerName => "deltaexchange";
+    public override string FixtureFile => "login_deltaexchange.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "delta-api-key", ["ApiSecret"] = "delta-api-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
 internal static class LoginDeviations
 {
     public const string Words = "OpenAlgo shows the broker's raw error text, prefixed with \"API error\" or not at all. EP Trade bot says in a sentence which broker refused and what to do next.";
@@ -113,6 +134,41 @@ public sealed class LoginUpstoxContractTests(LoginUpstoxHost host, ITestOutputHe
     };
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("login_upstox.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
+
+public sealed class LoginFyersContractTests(LoginFyersHost host, ITestOutputHelper output) : IClassFixture<LoginFyersHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_by_status"] = LoginDeviations.Refused("Fyers did not accept the sign-in: Invalid auth code"),
+        ["login_refused_by_http_error"] = LoginDeviations.Refused("Fyers did not accept the sign-in: Invalid auth code"),
+        ["login_http_error_with_an_ok_looking_body"] = LoginDeviations.Refused("Fyers did not accept the sign-in. Start it again from the beginning."),
+        ["login_empty_access_token"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error("Fyers accepted the sign-in but sent no access token. Start the sign-in again."))),
+        ["login_no_access_token_in_the_answer"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error("Fyers accepted the sign-in but sent no access token. Start the sign-in again."))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_fyers.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
+
+public sealed class LoginDeltaContractTests(LoginDeltaHost host, ITestOutputHelper output) : IClassFixture<LoginDeltaHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_profile_says_not_successful"] = LoginDeviations.Refused("Delta Exchange did not accept the API key. Check the key and secret in the server's settings, then sign in again."),
+        ["login_key_refused"] = LoginDeviations.Refused("Delta Exchange did not accept the API key or secret. Check both in the server's settings, then sign in again."),
+        ["login_blocked_by_ip_whitelist"] = LoginDeviations.Refused("Delta Exchange blocked this server. Add this server's address to the API key's allowed addresses in your Delta Exchange account, then sign in again."),
+        ["login_unexpected_status"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error("Delta Exchange could not confirm the API key right now. Try again in a minute."))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_deltaexchange.fixtures.json");
 
     [PostgresTheory]
     [MemberData(nameof(Names))]

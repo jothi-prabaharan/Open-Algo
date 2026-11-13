@@ -230,6 +230,9 @@ for sc in SCENARIOS.SCENARIOS:
         auth_api = importlib.import_module(f"broker.{BROKER}.api.auth_api")
         result = tuple(auth_api.authenticate_broker(*sc["login"]))
         token, feed, error = (result[0], None, result[1]) if len(result) == 2 else result
+        if isinstance(error, dict):
+            # Fyers returns its whole answer; a refusal is the message inside it.
+            error = None if token else error.get("message")
         out.append(
             {
                 "name": sc["name"],
