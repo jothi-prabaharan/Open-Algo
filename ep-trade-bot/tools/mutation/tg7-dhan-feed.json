@@ -1,0 +1,210 @@
+[
+ {
+  "name": "D1 ticker code",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "[\"TICKER\"] = 15, [\"QUOTE\"] = 17, [\"FULL\"] = 21",
+  "new": "[\"TICKER\"] = 17, [\"QUOTE\"] = 15, [\"FULL\"] = 21",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D2 stop code",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "[\"TICKER\"] = 16, [\"QUOTE\"] = 18, [\"FULL\"] = 22",
+  "new": "[\"TICKER\"] = 16, [\"QUOTE\"] = 18, [\"FULL\"] = 21",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D3 batch of fifty",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "MaxInstrumentsPerRequest = 100",
+  "new": "MaxInstrumentsPerRequest = 50",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D4 index segment",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "[\"NSE_INDEX\"] = \"IDX_I\", [\"BSE_INDEX\"] = \"IDX_I\"",
+  "new": "[\"NSE_INDEX\"] = \"IDX_I\", [\"BSE_INDEX\"] = \"NSE_EQ\"",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D5 mode count wrong",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "[\"InstrumentCount\"] = batch.Count,",
+  "new": "[\"InstrumentCount\"] = 1,",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D6 invalid mode sent",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "if (mode is < 1 or > 3) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D7 unknown exchange sent",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "if (!Segments.TryGetValue(r.Exchange, out var segment)) continue;",
+  "new": "var segment = Segments.GetValueOrDefault(r.Exchange, \"NSE_EQ\");",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D8 modes not grouped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "foreach (var group in queue.GroupBy(q => q.Mode))",
+  "new": "foreach (var group in queue.Select(q => new[] { q }.GroupBy(x => x.Mode).First()))",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D9 unsubscribe by the asked mode",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "messages.Add(Request(Unsubscribes[found.Mode], [(segment, target.Token)]));",
+  "new": "messages.Add(Request(Unsubscribes[DhanMode(m)], [(segment, target.Token)]));",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D10 untracked instrument stopped anyway",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "if (found is null) continue;",
+  "new": "if (found is null) found = new Tracked(key, DhanMode(m), segment, target.Token);",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D11 unknown subscription stopped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "if (at < 0) continue;\n                subs.RemoveAt(at);",
+  "new": "if (at >= 0) subs.RemoveAt(at);",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D12 tracking kept after stop",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "tracked.Remove(found);",
+  "new": "",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D13 reconnect forgets tracking",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "foreach (var group in tracked.GroupBy(t => t.Mode))",
+  "new": "foreach (var group in new List<Tracked>().GroupBy(t => t.Mode))",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D14 token-only match dropped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "?? subs.Select(s => s.Sub).FirstOrDefault(s => s.Token == securityId);",
+  "new": "?? null;",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D15 segment ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "s.Token == securityId && SegmentCodes.GetValueOrDefault(s.Exchange, -1) == segment)",
+  "new": "s.Token == securityId)",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D16 bse index segment",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "[\"NSE_INDEX\"] = 0, [\"BSE_INDEX\"] = 0,",
+  "new": "[\"NSE_INDEX\"] = 0, [\"BSE_INDEX\"] = 9,",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D17 header length wrong",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "var end = offset + length;",
+  "new": "var end = offset + length + 1;",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D18 packet past the frame read",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "if (end > frame.Length) break;",
+  "new": "",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D19 quote too short accepted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "if (p.Length < 42) return null;",
+  "new": "if (p.Length < 30) return null;",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D20 full too short accepted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "if (p.Length < 154) return null;",
+  "new": "if (p.Length < 100) return null;",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D21 ticker too short accepted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "if (p.Length < 8) return null;\n        return new JsonObject { [\"type\"] = \"ticker\"",
+  "new": "if (p.Length < 4) return null;\n        return new JsonObject { [\"type\"] = \"ticker\"",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D22 depth sides swapped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "buy.Add(new JsonObject { [\"price\"] = Single(p, at + 12)",
+  "new": "buy.Add(new JsonObject { [\"price\"] = Single(p, at + 16)",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D23 depth orders swapped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "[\"orders\"] = BinaryPrimitives.ReadUInt16LittleEndian(p[(at + 8)..]) });\n            sell",
+  "new": "[\"orders\"] = BinaryPrimitives.ReadUInt16LittleEndian(p[(at + 10)..]) });\n            sell",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D25 quote volume wrong",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "[\"volume\"] = BinaryPrimitives.ReadUInt32LittleEndian(p[14..]),\n            [\"total_sell_quantity\"] = BinaryPrimitives.ReadUInt32LittleEndian(p[18..]), [\"total_buy_quantity\"] = BinaryPrimitives.ReadUInt32LittleEndian(p[22..]),\n            [\"open\"] = Single(p, 26)",
+  "new": "[\"volume\"] = BinaryPrimitives.ReadUInt32LittleEndian(p[18..]),\n            [\"total_sell_quantity\"] = BinaryPrimitives.ReadUInt32LittleEndian(p[18..]), [\"total_buy_quantity\"] = BinaryPrimitives.ReadUInt32LittleEndian(p[22..]),\n            [\"open\"] = Single(p, 26)",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D26 depth level marker",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "tick[\"depth_level\"] = 5;",
+  "new": "tick[\"depth_level\"] = 20;",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D27 timestamp",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DhanFeedCodec.cs",
+  "old": "[\"timestamp\"] = nowMs };",
+  "new": "[\"timestamp\"] = 0 };",
+  "filter": "FullyQualifiedName~DhanFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

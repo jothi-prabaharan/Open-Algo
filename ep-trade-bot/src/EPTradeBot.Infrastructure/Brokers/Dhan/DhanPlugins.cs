@@ -5,6 +5,7 @@ using System.Text.Json.Nodes;
 using EPTradeBot.Core.Brokers;
 using EPTradeBot.Core.Brokers.Dhan;
 using EPTradeBot.Core.Brokers.Gtt;
+using EPTradeBot.Core.Streaming.Feeds;
 using EPTradeBot.Core.Calendar;
 using EPTradeBot.Core.Time;
 using Microsoft.Extensions.Logging;
@@ -15,8 +16,26 @@ namespace EPTradeBot.Infrastructure.Brokers.Dhan;
 /// <summary>Dhan v2 (broker/dhan). Request and response mapping held to tools/contract-fixtures/dhan.fixtures.json.</summary>
 [BrokerPlugin]
 public sealed class DhanPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, IMarketSessions calendar, TimeProvider clock, ILogger<DhanPlugin> logger)
-    : DhanPluginBase(http, sessions, symbols, calendar, clock, logger), IBrokerLoginStart, IBrokerGtt
+    : DhanPluginBase(http, sessions, symbols, calendar, clock, logger), IBrokerLoginStart, IBrokerGtt, IBrokerFeed
 {
+    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.Gtt | BrokerCapability.Streaming;
+
+    public IFeedCodec CreateFeedCodec() => new DhanFeedCodec();
+
+    /// <summary>Dhan's 5-level socket: the access token and the client id ride on the address. The client id is the one saved with the key, else the account's.</summary>
+    public FeedEndpoint? FeedEndpoint(BrokerSession session, string? overrideUrl)
+    {
+        var clientId = session.Key("ApiKey") is { } key && key.Contains(":::", StringComparison.Ordinal) ? key.Split(":::", 2)[0] : session.ClientId;
+        if (string.IsNullOrWhiteSpace(session.AuthToken) || string.IsNullOrWhiteSpace(clientId)) return null;
+        var root = overrideUrl ?? "wss://api-feed.dhan.co";
+        return new FeedEndpoint(new Uri($"{root}?version=2&token={Uri.EscapeDataString(session.AuthToken)}&clientId={Uri.EscapeDataString(clientId)}&authType=2"), new Dictionary<string, string>());
+    }
+
+    // The server pings and the socket answers.
+    public string? FeedKeepAliveText => null;
+
+    public TimeSpan FeedKeepAliveEvery => TimeSpan.Zero;
+
     public Task<GttResult> PlaceGttAsync(BrokerSession session, GttOrder order, CancellationToken cancellationToken) => PlaceForeverAsync(session, order, cancellationToken);
 
     public Task<GttResult> ModifyGttAsync(BrokerSession session, GttOrder order, CancellationToken cancellationToken) => ModifyForeverAsync(session, order, cancellationToken);
@@ -62,7 +81,7 @@ public sealed class DhanSandboxPlugin(IHttpClientFactory http, BrokerSessionFact
 /// <summary>
 /// The Dhan family. Port of broker/dhan and broker/dhan_sandbox: order_api.py, funds.py,
 /// data.py (quotes, depth), mapping/transform_data.py and mapping/order_data.py.
-/// Not ported yet, and refused rather than guessed: the feed. Sign-in is the live Dhan's only.
+/// Not ported yet, and refused rather than guessed: the 20-level depth feed. Sign-in, GTT and the 5-level feed are the live Dhan's only.
 /// </summary>
 public abstract partial class DhanPluginBase(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, IMarketSessions calendar, TimeProvider clock, ILogger logger)
     : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin
@@ -74,7 +93,7 @@ public abstract partial class DhanPluginBase(IHttpClientFactory http, BrokerSess
     /// <summary>The sandbox variant: client-id on every call, fuller order payloads, more order states, UTC times, quotes from candles.</summary>
     protected abstract bool Sandbox { get; }
 
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin;
+    public virtual BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ClientId"];
 
     // ---- orders ----------------------------------------------------------------------------------------------

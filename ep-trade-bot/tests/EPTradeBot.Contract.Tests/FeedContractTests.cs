@@ -22,7 +22,7 @@ public static class FeedRunner
         BrokerContractHost.Load(file)["scenarios"]!.AsArray().Select(s => new object[] { s!["name"]!.GetValue<string>() });
 
     /// <param name="adjust">A deliberate difference: the recorded scenario is changed to the answer EP Trade bot gives instead, then compared in full.</param>
-    public static void Run(string file, string name, Func<IFeedCodec> codec, Action<JsonObject>? adjust = null, bool anyOrderAcrossInstruments = false)
+    public static void Run(string file, string name, Func<IFeedCodec> codec, Action<JsonObject>? adjust = null, bool anyOrderAcrossInstruments = false, bool dropRepeatedRequests = false)
     {
         var fixtures = BrokerContractHost.Load(file);
         var now = fixtures["now_ms"]!.GetValue<long>();
@@ -71,6 +71,12 @@ public static class FeedRunner
 
             // The messages: JSON, compared by value and in order.
             var expectedSent = result["sent"]!.AsArray();
+            if (kind == "reconnect" && dropRepeatedRequests)
+            {
+                // OpenAlgo sends each request twice on a reconnect (once from the socket client's list, once from the adapter's); one of each is the same state.
+                expectedSent = new JsonArray(expectedSent.GroupBy(x => x!.ToJsonString()).Select(g => g.First()!.DeepClone()).ToArray());
+            }
+
             if (kind == "reconnect")
             {
                 // OpenAlgo walks a Python set to repeat its subscriptions, whose order means nothing: the same messages, in any order, are the same.
@@ -189,4 +195,13 @@ public sealed class UpstoxFeedContractTests
     [Theory]
     [MemberData(nameof(Names))]
     public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_upstox.fixtures.json", name, () => new UpstoxFeedCodec(), anyOrderAcrossInstruments: true);
+}
+
+public sealed class DhanFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_dhan.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_dhan.fixtures.json", name, () => new DhanFeedCodec(), dropRepeatedRequests: true);
 }
