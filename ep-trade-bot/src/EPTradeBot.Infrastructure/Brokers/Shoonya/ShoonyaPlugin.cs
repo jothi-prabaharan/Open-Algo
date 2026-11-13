@@ -13,11 +13,11 @@ namespace EPTradeBot.Infrastructure.Brokers.Shoonya;
 /// Shoonya (broker/shoonya), a Noren API broker: every call is a POST of <c>jData=&lt;json&gt;</c> in a text/plain body with a bearer token.
 /// Port of api/order_api.py, api/funds.py, api/data.py (quotes and depth) and mapping/. Held to tools/contract-fixtures/shoonya.fixtures.json.
 /// Market and stop-market orders are priced like OpenAlgo's market price protection (Shoonya refuses both types over the API).
-/// Not ported yet, and refused rather than guessed: history, margin, the feed and the sign-in.
+/// Not ported yet, and refused rather than guessed: history, margin and the feed.
 /// </summary>
 [BrokerPlugin]
-public sealed class ShoonyaPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<ShoonyaPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
+public sealed partial class ShoonyaPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<ShoonyaPlugin> logger)
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerLogin
 {
     private const string Host = "https://api.shoonya.com";
     private const string Api = "/NorenWClientAPI";

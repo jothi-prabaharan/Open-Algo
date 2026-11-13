@@ -16,7 +16,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Jainam (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | CompositEdge (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | RMoney (XTS) | yes | yes | yes | yes | yes | no | yes | no |
-| Shoonya | yes | yes | yes | no | no | no | no | no |
+| Shoonya | yes | yes | yes | no | no | no | yes | no |
 
 The other 22 brokers in the task list are not started (Shoonya is partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -25,7 +25,7 @@ The other 22 brokers in the task list are not started (Shoonya is partly done). 
 - Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **The 22 brokers not started** (fivepaisa, aliceblue, arrow, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rupeezy, sahi, samco, tradejini, tradesmart, zebu), and Shoonya's history, margin, feed and sign-in. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **The 22 brokers not started** (fivepaisa, aliceblue, arrow, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rupeezy, sahi, samco, tradejini, tradesmart, zebu), and Shoonya's history, margin and feed. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
 ## Upstox sign-in
 
@@ -203,4 +203,10 @@ The other 22 brokers in the task list are not started (Shoonya is partly done). 
 - Platform fix found by this broker: order status read the trade's average price only when it was a JSON number; a broker that sends it as text ("1499.95") showed 0. It is now read as OpenAlgo reads it.
 - Held as OpenAlgo has them (not corrected, flagged): a holding's quantity counts held shares and the demat quantity both (it takes the larger of the two other quantities and adds the held ones), as the Python plugin does.
 - Mutation: `tools/mutation/tg7-shoonya.json`, 34 mutants, all caught (three first needed recorded cases; two equivalent ones were dropped: a spelling that falls through to the same text, and a short-position formula that is algebraically the same).
-- Not yet ported for Shoonya: history, margin, the feed and the sign-in.
+- Not yet ported for Shoonya: history, margin and the feed. The sign-in is below.
+
+## Shoonya sign-in
+
+- Ported from `broker/shoonya/api/auth_api.py` and the address `blueprints/brlogin.py` builds: the trader signs in on Shoonya's OAuth page (`.../OAuthlogin/authorize/oauth?client_id=...`, the client id being the part of the saved key after ":::"), which sends back a code; the code is exchanged at GenAcsTok with the SHA-256 (lower-case hex) of the client id, the secret and the code. There is no feed token.
+- Contract: 7 recorded cases (`login_shoonya.fixtures.json`) check the exchange body field by field (the checksum included) and the token stored; 5 integration tests cover the address and the keys. Refusals are worded for the trader; an HTTP error from Shoonya and an answer with no token say the sign-in was not accepted.
+- Mutation: `tools/mutation/tg7-shoonya-login.json`, 10 mutants, all caught (one equivalent mutant, an HTTP status check whose refusal reads the same as the check after it, was dropped).

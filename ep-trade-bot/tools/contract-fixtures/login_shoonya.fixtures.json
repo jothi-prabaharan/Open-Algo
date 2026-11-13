@@ -1,0 +1,316 @@
+{
+  "broker": "shoonya",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GenAcsTok": {
+          "body": {
+            "stat": "Ok",
+            "access_token": "shoonya-access-777",
+            "request_time": "10:20:30 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "shoonya-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "2bafe5a88107ad1f6035c2ffb418ce8f190b970938ec07ca06cd191f18a7e7b3"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_code_with_odd_characters",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "a/b+c=d&e",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GenAcsTok": {
+          "body": {
+            "stat": "Ok",
+            "access_token": "shoonya-access-777",
+            "request_time": "10:20:30 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "shoonya-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "a/b+c=d&e",
+            "checksum": "cec20517bfe8fc76370df7bfcf0dc082b4b51ddd7e623c4fae4df0dda5e54a15"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GenAcsTok": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Invalid code"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid code"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "2bafe5a88107ad1f6035c2ffb418ce8f190b970938ec07ca06cd191f18a7e7b3"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GenAcsTok": {
+          "body": {
+            "stat": "Not_Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed. Please try again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "2bafe5a88107ad1f6035c2ffb418ce8f190b970938ec07ca06cd191f18a7e7b3"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_ok_without_a_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GenAcsTok": {
+          "body": {
+            "stat": "Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed. Please try again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "2bafe5a88107ad1f6035c2ffb418ce8f190b970938ec07ca06cd191f18a7e7b3"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_token_without_ok_status",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GenAcsTok": {
+          "body": {
+            "access_token": "x"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed. Please try again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "2bafe5a88107ad1f6035c2ffb418ce8f190b970938ec07ca06cd191f18a7e7b3"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_http_error",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GenAcsTok": {
+          "status": 500,
+          "body": {
+            "error": "down"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Error: 500, {\"error\":\"down\"}"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "2bafe5a88107ad1f6035c2ffb418ce8f190b970938ec07ca06cd191f18a7e7b3"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

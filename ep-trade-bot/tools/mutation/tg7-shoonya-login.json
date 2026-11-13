@@ -1,0 +1,82 @@
+[
+ {
+  "name": "L1 checksum without secret",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.Login.cs",
+  "old": "clientId + secret.Trim() + code",
+  "new": "clientId + code",
+  "filter": "FullyQualifiedName~LoginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L2 checksum without client id",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.Login.cs",
+  "old": "clientId + secret.Trim() + code",
+  "new": "secret.Trim() + code",
+  "filter": "FullyQualifiedName~LoginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L3 checksum upper case",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.Login.cs",
+  "old": ".ToLowerInvariant();",
+  "new": ".ToUpperInvariant();",
+  "filter": "FullyQualifiedName~LoginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L4 ok status not required",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.Login.cs",
+  "old": "if (Str(body?[\"stat\"]) == \"Ok\" && Str(body?[\"access_token\"]) is { Length: > 0 } token)",
+  "new": "if (Str(body?[\"access_token\"]) is { Length: > 0 } token)",
+  "filter": "FullyQualifiedName~LoginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L6 emsg dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.Login.cs",
+  "old": "Str(body![\"emsg\"])}\"",
+  "new": "\"x\"}\"",
+  "filter": "FullyQualifiedName~LoginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L7 url client id",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.Login.cs",
+  "old": "client_id={Uri.EscapeDataString(id)}",
+  "new": "client_id={Uri.EscapeDataString(id)}x",
+  "filter": "FullyQualifiedName~ShoonyaLoginTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "L8 client id from first part",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.Login.cs",
+  "old": "parts[1].Trim() : null",
+  "new": "parts[0].Trim() : null",
+  "filter": "FullyQualifiedName~ShoonyaLoginTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "L9 empty client id accepted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.Login.cs",
+  "old": "!string.IsNullOrWhiteSpace(parts[1])",
+  "new": "true",
+  "filter": "FullyQualifiedName~ShoonyaLoginTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "L10 secret not required",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.Login.cs",
+  "old": "if (!keys.TryGetValue(\"ApiSecret\", out var secret) || string.IsNullOrWhiteSpace(secret))",
+  "new": "if (!keys.TryGetValue(\"ApiSecret\", out var secret))",
+  "filter": "FullyQualifiedName~ShoonyaLoginTests",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "L11 code not required",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.Login.cs",
+  "old": "if (!input.TryGetValue(\"code\", out var code) || string.IsNullOrWhiteSpace(code))",
+  "new": "if (!input.TryGetValue(\"code\", out var code))",
+  "filter": "FullyQualifiedName~ShoonyaLoginTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

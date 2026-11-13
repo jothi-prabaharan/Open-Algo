@@ -426,3 +426,32 @@ public sealed class LoginRmoneyContractTests(LoginRmoneyHost host, ITestOutputHe
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginShoonyaHost : BrokerContractHost
+{
+    public override string BrokerName => "shoonya";
+    public override string FixtureFile => "login_shoonya.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "FA12345:::shoonya-client-id", ["ApiSecret"] = "shoonya-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginShoonyaContractTests(LoginShoonyaHost host, ITestOutputHelper output) : IClassFixture<LoginShoonyaHost>
+{
+    private const string Again = "Shoonya did not accept the sign-in. Start it again from the beginning.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_with_a_message"] = LoginDeviations.Refused("Shoonya did not accept the sign-in: Invalid code"),
+        ["login_refused_without_a_message"] = LoginDeviations.Refused(Again),
+        ["login_ok_without_a_token"] = LoginDeviations.Refused(Again),
+        ["login_token_without_ok_status"] = LoginDeviations.Refused(Again),
+        ["login_http_error"] = LoginDeviations.Refused(Again),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_shoonya.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
