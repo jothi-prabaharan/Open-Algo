@@ -1,0 +1,82 @@
+[
+ {
+  "name": "C1 account check off",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.Login.cs",
+  "old": "if (RequiresSameAccount && ",
+  "new": "if (false && ",
+  "filter": "FullyQualifiedName~LoginCompositEdge",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C2 case sensitive",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.Login.cs",
+  "old": "StringComparison.OrdinalIgnoreCase))\n            return BrokerLoginResult.Refused($\"This {DisplayName} sign-in",
+  "new": "StringComparison.Ordinal))\n            return BrokerLoginResult.Refused($\"This {DisplayName} sign-in",
+  "filter": "FullyQualifiedName~LoginCompositEdge",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C3 blank session account refused",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.Login.cs",
+  "old": "!string.IsNullOrWhiteSpace(sessionUser) && !string.IsNullOrWhiteSpace(feedUser)",
+  "new": "sessionUser is not null && !string.IsNullOrWhiteSpace(feedUser)",
+  "filter": "FullyQualifiedName~LoginCompositEdge",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C4 blank market account refused",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.Login.cs",
+  "old": "!string.IsNullOrWhiteSpace(sessionUser) && !string.IsNullOrWhiteSpace(feedUser)",
+  "new": "!string.IsNullOrWhiteSpace(sessionUser) && feedUser is not null",
+  "filter": "FullyQualifiedName~LoginCompositEdge",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C5 spaces not trimmed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.Login.cs",
+  "old": "!string.Equals(sessionUser.Trim(), feedUser.Trim(),",
+  "new": "!string.Equals(sessionUser, feedUser,",
+  "filter": "FullyQualifiedName~LoginCompositEdge",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C6 mismatch status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.Login.cs",
+  "old": "for {DisplayName}. Sign in with that account, or check the keys under Broker Configuration.\", 409)",
+  "new": "for {DisplayName}. Sign in with that account, or check the keys under Broker Configuration.\", 400)",
+  "filter": "FullyQualifiedName~LoginCompositEdge",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C7 session json not read",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (given.StartsWith('{') || given.StartsWith('\"'))",
+  "new": "if (Environment.TickCount64 < 0 && (given.StartsWith('{') || given.StartsWith('\"')))",
+  "filter": "FullyQualifiedName~CompositEdgeLogin",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "C8 return address not encoded",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "var returnUrl = Uri.EscapeDataString($\"{redirect.Trim()}?state={state}\");",
+  "new": "var returnUrl = $\"{redirect.Trim()}?state={state}\";",
+  "filter": "FullyQualifiedName~CompositEdgeLogin",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "C9 key not encoded",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "Uri.EscapeDataString(key.Trim())}&returnURL",
+  "new": "key.Trim()}&returnURL",
+  "filter": "FullyQualifiedName~CompositEdgeLogin",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "C10 double encoded json not read",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (node is JsonValue v && v.TryGetValue<string>(out var inner)) node = JsonNode.Parse(inner);",
+  "new": "",
+  "filter": "FullyQualifiedName~CompositEdgeLogin",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

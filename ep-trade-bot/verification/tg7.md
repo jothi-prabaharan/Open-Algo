@@ -14,15 +14,16 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | IIFL (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | iBulls (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | Jainam (XTS) | yes | yes | yes | yes | no | no | yes | no |
+| CompositEdge (XTS) | yes | yes | yes | yes | no | no | yes | no |
 
-The other 25 brokers in the task list are not started. The two other XTS brokers (compositedge, rmoney) are next: they share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
+The other 24 brokers in the task list are not started. The last XTS broker, RMoney, is next: they share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
 ## Not done, and why Gate 7 is open
 
 - Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **The 25 brokers not started** (fivepaisa, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, zebu). Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **The 24 brokers not started** (fivepaisa, aliceblue, arrow, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, zebu). Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
 ## Upstox sign-in
 
@@ -149,7 +150,7 @@ The other 25 brokers in the task list are not started. The two other XTS brokers
 - Deviations: a refused or empty quote is an error naming the broker and its reason (OpenAlgo says "Failed to fetch market data"); a refused depth is an error (OpenAlgo answers success with a depth of zeros, which reads as an empty market).
 - Not modelled: OpenAlgo refreshes an expired feed token itself (a market-data sign-in in the middle of a quote). EP Trade bot's plugin cannot store a new token, so an expired market-data session shows as the broker's refusal until the next sign-in.
 - Mutation: `tools/mutation/tg7-xts-data.json`, 11 mutants, all caught (three equivalent ones removed or simplified).
-- Still not ported for XTS: margin, the feed, and CompositEdge and RMoney (different sign-in).
+- Still not ported for XTS: margin, the feed, and RMoney (different sign-in).
 
 ## XTS history
 
@@ -170,3 +171,10 @@ The other 25 brokers in the task list are not started. The two other XTS brokers
 - Its interactive sign-in sends an `accessToken` with the fixed word "jainamxts" instead of a source (the sign-in handler in OpenAlgo passes that word); the market-data sign-in is the usual one. Like IIFL, Jainam signs in to market data again when told the token is invalid; EP Trade bot reports the refusal instead.
 - OpenAlgo's Jainam plugin fails with an internal error on a trade with no price and on a position reply with no result (as 5paisa XTS and IIFL do); EP Trade bot answers as for a well-formed reply.
 - Mutation: `tools/mutation/tg7-jainam.json`, 2 mutants, both caught (the rest is the shared base).
+
+## CompositEdge (XTS)
+
+- Same XTS base class. Held to `broker/compositedge`: 36 recorded cases for orders, books and funds, 17 for quotes and depth, 19 for history, and 10 for sign-in (82 in all), plus 6 integration tests for the sign-in address and the session the page sends back.
+- A redirect sign-in: the trader signs in on CompositEdge's page (`.../interactive/thirdparty?appKey=...&returnURL=...`, with the state on the return address), which sends the session back holding an access token; that token is exchanged for the interactive session and the market-data session is signed in with its own keys. The two sessions must name the same account (compared without regard to letters or spaces; if either does not name one, no check is made, as in OpenAlgo); otherwise the sign-in is refused with a plain sentence and a conflict status. The return address is a server setting, `Brokers:Keys:compositedge:RedirectUrl`.
+- The complete call takes the access token as `request_token`, or the session JSON (also when it is a JSON string holding JSON), from which the token is read.
+- Mutation: `tools/mutation/tg7-compositedge.json`, 10 mutants, all caught (three first needed a rewritten pattern).

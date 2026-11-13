@@ -1,0 +1,3198 @@
+{
+  "broker": "compositedge",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "wisdom-session-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSECM",
+      "token": "22",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSECM",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSEFO",
+      "token": "35001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSEFO",
+      "token": "40001",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "OPTIDX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "CRUDEOIL",
+      "brsymbol": "CRUDEOIL",
+      "name": "CRUDEOIL",
+      "exchange": "MCX",
+      "brexchange": "MCXFO",
+      "token": "50001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 100,
+      "instrumenttype": "FUTCOM",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "USDINR25NOV26FUT",
+      "brsymbol": "USDINR",
+      "name": "USDINR",
+      "exchange": "CDS",
+      "brexchange": "NSECD",
+      "token": "60001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 1000,
+      "instrumenttype": "FUTCUR",
+      "tick_size": 0.0025
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_missing_fields",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'strategy': ['Missing data for required field.'], 'exchange': ['Missing data for required field.'], 'action': ['Missing data for required field.'], 'quantity': ['Missing data for required field.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders": {
+          "body": {
+            "type": "success",
+            "code": "s-orders-0001",
+            "description": "Request sent",
+            "result": {
+              "AppOrderID": 1100000001,
+              "ClientID": "WC001",
+              "OrderUniqueIdentifier": "openalgo"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": 1100000001,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchangeSegment": "NSECM",
+            "exchangeInstrumentID": "22",
+            "productType": "MIS",
+            "orderType": "MARKET",
+            "orderSide": "BUY",
+            "timeInForce": "DAY",
+            "disclosedQuantity": 0,
+            "orderQuantity": 10,
+            "limitPrice": 0.0,
+            "stopPrice": 0.0,
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit_cnc",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "INFY",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": 5,
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": 1500.5,
+        "trigger_price": "0",
+        "disclosed_quantity": "2",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders": {
+          "body": {
+            "type": "success",
+            "code": "s-orders-0001",
+            "description": "Request sent",
+            "result": {
+              "AppOrderID": 1100000001,
+              "ClientID": "WC001",
+              "OrderUniqueIdentifier": "openalgo"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": 1100000001,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchangeSegment": "NSECM",
+            "exchangeInstrumentID": "1594",
+            "productType": "CNC",
+            "orderType": "LIMIT",
+            "orderSide": "SELL",
+            "timeInForce": "DAY",
+            "disclosedQuantity": 2,
+            "orderQuantity": 5,
+            "limitPrice": 1500.5,
+            "stopPrice": 0.0,
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_sl_futures",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "SL",
+        "product": "NRML",
+        "price": "24010",
+        "trigger_price": "24000",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders": {
+          "body": {
+            "type": "success",
+            "code": "s-orders-0001",
+            "description": "Request sent",
+            "result": {
+              "AppOrderID": 1100000001,
+              "ClientID": "WC001",
+              "OrderUniqueIdentifier": "openalgo"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": 1100000001,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchangeSegment": "NSEFO",
+            "exchangeInstrumentID": "35001",
+            "productType": "NRML",
+            "orderType": "STOPLIMIT",
+            "orderSide": "BUY",
+            "timeInForce": "DAY",
+            "disclosedQuantity": 0,
+            "orderQuantity": 75,
+            "limitPrice": 24010.0,
+            "stopPrice": 24000.0,
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_slm_option",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV2624000CE",
+        "exchange": "NFO",
+        "action": "SELL",
+        "quantity": "75",
+        "pricetype": "SL-M",
+        "product": "NRML",
+        "price": "0",
+        "trigger_price": "120.3",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders": {
+          "body": {
+            "type": "success",
+            "code": "s-orders-0001",
+            "description": "Request sent",
+            "result": {
+              "AppOrderID": 1100000001,
+              "ClientID": "WC001",
+              "OrderUniqueIdentifier": "openalgo"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": 1100000001,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchangeSegment": "NSEFO",
+            "exchangeInstrumentID": "40001",
+            "productType": "NRML",
+            "orderType": "STOPMARKET",
+            "orderSide": "SELL",
+            "timeInForce": "DAY",
+            "disclosedQuantity": 0,
+            "orderQuantity": 75,
+            "limitPrice": 0.0,
+            "stopPrice": 120.3,
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_mcx",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "CRUDEOIL",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "6500",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders": {
+          "body": {
+            "type": "success",
+            "code": "s-orders-0001",
+            "description": "Request sent",
+            "result": {
+              "AppOrderID": 1100000001,
+              "ClientID": "WC001",
+              "OrderUniqueIdentifier": "openalgo"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": 1100000001,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchangeSegment": "MCXFO",
+            "exchangeInstrumentID": "50001",
+            "productType": "NRML",
+            "orderType": "LIMIT",
+            "orderSide": "BUY",
+            "timeInForce": "DAY",
+            "disclosedQuantity": 0,
+            "orderQuantity": 1,
+            "limitPrice": 6500.0,
+            "stopPrice": 0.0,
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_currency",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "USDINR25NOV26FUT",
+        "exchange": "CDS",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "84.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders": {
+          "body": {
+            "type": "success",
+            "code": "s-orders-0001",
+            "description": "Request sent",
+            "result": {
+              "AppOrderID": 1100000001,
+              "ClientID": "WC001",
+              "OrderUniqueIdentifier": "openalgo"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": 1100000001,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchangeSegment": "NSECD",
+            "exchangeInstrumentID": "60001",
+            "productType": "NRML",
+            "orderType": "LIMIT",
+            "orderSide": "BUY",
+            "timeInForce": "DAY",
+            "disclosedQuantity": 0,
+            "orderQuantity": 1,
+            "limitPrice": 84.5,
+            "stopPrice": 0.0,
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders": {
+          "status": 400,
+          "body": {
+            "type": "error",
+            "code": "e-orders-0005",
+            "description": "Insufficient funds",
+            "result": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchangeSegment": "NSECM",
+            "exchangeInstrumentID": "22",
+            "productType": "MIS",
+            "orderType": "MARKET",
+            "orderSide": "BUY",
+            "timeInForce": "DAY",
+            "disclosedQuantity": 0,
+            "orderQuantity": 10,
+            "limitPrice": 0.0,
+            "stopPrice": 0.0,
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders": {
+          "body": {
+            "type": "success",
+            "code": "s-orders-0001",
+            "description": "Request sent",
+            "result": {
+              "AppOrderID": 1100000001,
+              "ClientID": "WC001",
+              "OrderUniqueIdentifier": "openalgo"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": 1100000001,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchangeSegment": "NSECM",
+            "exchangeInstrumentID": null,
+            "productType": "MIS",
+            "orderType": "MARKET",
+            "orderSide": "BUY",
+            "timeInForce": "DAY",
+            "disclosedQuantity": 0,
+            "orderQuantity": 10,
+            "limitPrice": 0.0,
+            "stopPrice": 0.0,
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "2001",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /interactive/orders": {
+          "body": {
+            "type": "success",
+            "code": "s-orders-0001",
+            "description": "Request sent",
+            "result": {
+              "AppOrderID": 1100000001,
+              "ClientID": "WC001",
+              "OrderUniqueIdentifier": "openalgo"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appOrderID": "2001",
+            "modifiedProductType": "MIS",
+            "modifiedOrderType": "LIMIT",
+            "modifiedOrderQuantity": 12,
+            "modifiedDisclosedQuantity": 0,
+            "modifiedLimitPrice": 801.0,
+            "modifiedStopPrice": 0.0,
+            "modifiedTimeInForce": "DAY",
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_error_type_carrying_an_order_number",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders": {
+          "body": {
+            "type": "error",
+            "description": "Rejected by risk",
+            "result": {
+              "AppOrderID": 1100000009
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchangeSegment": "NSECM",
+            "exchangeInstrumentID": "22",
+            "productType": "MIS",
+            "orderType": "MARKET",
+            "orderSide": "BUY",
+            "timeInForce": "DAY",
+            "disclosedQuantity": 0,
+            "orderQuantity": 10,
+            "limitPrice": 0.0,
+            "stopPrice": 0.0,
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "orderid": "2003",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "SL",
+        "product": "NRML",
+        "price": "24020",
+        "disclosed_quantity": "5",
+        "trigger_price": "24005",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /interactive/orders": {
+          "body": {
+            "type": "success",
+            "code": "s-orders-0001",
+            "description": "Request sent",
+            "result": {
+              "AppOrderID": 1100000001,
+              "ClientID": "WC001",
+              "OrderUniqueIdentifier": "openalgo"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2003",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appOrderID": "2003",
+            "modifiedProductType": "NRML",
+            "modifiedOrderType": "STOPLIMIT",
+            "modifiedOrderQuantity": 75,
+            "modifiedDisclosedQuantity": 5,
+            "modifiedLimitPrice": 24020.0,
+            "modifiedStopPrice": 24005.0,
+            "modifiedTimeInForce": "DAY",
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_market_cnc",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "INFY",
+        "exchange": "NSE",
+        "orderid": "2012",
+        "action": "SELL",
+        "quantity": "5",
+        "pricetype": "SL-M",
+        "product": "CNC",
+        "price": "0",
+        "disclosed_quantity": "0",
+        "trigger_price": "1490.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /interactive/orders": {
+          "body": {
+            "type": "success",
+            "code": "s-orders-0001",
+            "description": "Request sent",
+            "result": {
+              "AppOrderID": 1100000001,
+              "ClientID": "WC001",
+              "OrderUniqueIdentifier": "openalgo"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2012",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appOrderID": "2012",
+            "modifiedProductType": "CNC",
+            "modifiedOrderType": "STOPMARKET",
+            "modifiedOrderQuantity": 5,
+            "modifiedDisclosedQuantity": 0,
+            "modifiedLimitPrice": 0.0,
+            "modifiedStopPrice": 1490.5,
+            "modifiedTimeInForce": "DAY",
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "2002",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /interactive/orders": {
+          "status": 400,
+          "body": {
+            "type": "error",
+            "code": "e-orders-0004",
+            "description": "Order already filled",
+            "result": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to modify order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appOrderID": "2002",
+            "modifiedProductType": "MIS",
+            "modifiedOrderType": "LIMIT",
+            "modifiedOrderQuantity": 12,
+            "modifiedDisclosedQuantity": 0,
+            "modifiedLimitPrice": 801.0,
+            "modifiedStopPrice": 0.0,
+            "modifiedTimeInForce": "DAY",
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "2001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /interactive/orders": {
+          "body": {
+            "type": "success",
+            "code": "s-orders-0001",
+            "description": "Request sent",
+            "result": {
+              "AppOrderID": 1100000001,
+              "ClientID": "WC001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "2001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [
+            [
+              "appOrderID",
+              "2001"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "2002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /interactive/orders": {
+          "status": 400,
+          "body": {
+            "type": "error",
+            "code": "e-orders-0004",
+            "description": "Order cannot be cancelled",
+            "result": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to cancel order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [
+            [
+              "appOrderID",
+              "2002"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/orders": {
+          "body": {
+            "type": "success",
+            "result": [
+              {
+                "AppOrderID": 2001,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 10,
+                "OrderPrice": 800.5,
+                "OrderStopPrice": 0,
+                "OrderStatus": "New",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 10,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:20:01",
+                "OrderGeneratedDateTime": "2026-11-03T09:20:01"
+              },
+              {
+                "AppOrderID": 2002,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 1594,
+                "TradingSymbol": "INFY-EQ",
+                "OrderSide": "SELL",
+                "OrderType": "Market",
+                "ProductType": "CNC",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 5,
+                "OrderPrice": 1499.95,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Filled",
+                "OrderAverageTradedPrice": "1499.95",
+                "LeavesQuantity": 0,
+                "CumulativeQuantity": 5,
+                "LastUpdateDateTime": "2026-11-03T09:21:11",
+                "OrderGeneratedDateTime": "2026-11-03T09:21:11"
+              },
+              {
+                "AppOrderID": 2003,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSEFO",
+                "ExchangeInstrumentID": 35001,
+                "TradingSymbol": "NIFTY",
+                "OrderSide": "BUY",
+                "OrderType": "StopLimit",
+                "ProductType": "NRML",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 75,
+                "OrderPrice": 24010,
+                "OrderStopPrice": 24000,
+                "OrderStatus": "Trigger Pending",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 75,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:22:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:22:00"
+              },
+              {
+                "AppOrderID": 2004,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "SELL",
+                "OrderType": "StopMarket",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 1,
+                "OrderPrice": 0,
+                "OrderStopPrice": 790.5,
+                "OrderStatus": "Rejected",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 1,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:23:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:23:00"
+              },
+              {
+                "AppOrderID": 2005,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 2,
+                "OrderPrice": 700,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Cancelled",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 2,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:24:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:24:00"
+              },
+              {
+                "AppOrderID": 2006,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 99999,
+                "TradingSymbol": "UNLISTED",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "NRML",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 1,
+                "OrderPrice": 10,
+                "OrderStopPrice": 0,
+                "OrderStatus": "PartiallyFilled",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 1,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:25:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:25:00"
+              },
+              {
+                "AppOrderID": 2007,
+                "ClientID": "WC001",
+                "ExchangeSegment": "MCXFO",
+                "ExchangeInstrumentID": 50001,
+                "TradingSymbol": "CRUDEOIL",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "NRML",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 1,
+                "OrderPrice": 6500,
+                "OrderStopPrice": 0,
+                "OrderStatus": "New",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 1,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:26:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:26:00"
+              },
+              {
+                "AppOrderID": "2010.0",
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "SELL",
+                "OrderType": "Limit",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 4,
+                "OrderPrice": 802,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Cancelled",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 4,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:28:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:28:00"
+              },
+              {
+                "AppOrderID": 2011,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "SELL",
+                "OrderType": "Limit",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 4,
+                "OrderPrice": 803,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Cancelled",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 4,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:29:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:29:00"
+              }
+            ]
+          }
+        },
+        "DELETE /interactive/orders": {
+          "body": {
+            "type": "success",
+            "code": "s-orders-0001",
+            "description": "Request sent",
+            "result": {
+              "AppOrderID": 1100000001,
+              "ClientID": "WC001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            2001,
+            2003,
+            2007
+          ],
+          "failed_cancellations": [],
+          "message": "Canceled 3 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [
+            [
+              "appOrderID",
+              "2001"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [
+            [
+              "appOrderID",
+              "2003"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [
+            [
+              "appOrderID",
+              "2007"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/portfolio/positions": {
+          "body": {
+            "type": "success",
+            "result": {
+              "positionList": [
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSECM",
+                  "ExchangeInstrumentId": 22,
+                  "ProductType": "MIS",
+                  "Quantity": "10",
+                  "BuyAveragePrice": "801.1234",
+                  "SellAveragePrice": "0",
+                  "TradingSymbol": "SBIN-EQ",
+                  "MTM": "12.5"
+                },
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSEFO",
+                  "ExchangeInstrumentId": 35001,
+                  "ProductType": "NRML",
+                  "Quantity": "-75",
+                  "BuyAveragePrice": "0",
+                  "SellAveragePrice": "24005.5",
+                  "TradingSymbol": "NIFTY",
+                  "MTM": "12.5"
+                },
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSECM",
+                  "ExchangeInstrumentId": 1594,
+                  "ProductType": "CNC",
+                  "Quantity": "0",
+                  "BuyAveragePrice": "1500",
+                  "SellAveragePrice": "1499.5",
+                  "TradingSymbol": "INFY-EQ",
+                  "MTM": "12.5"
+                },
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSECM",
+                  "ExchangeInstrumentId": 99999,
+                  "ProductType": "NRML",
+                  "Quantity": "3",
+                  "BuyAveragePrice": "12.0",
+                  "SellAveragePrice": "0",
+                  "TradingSymbol": "UNLISTED",
+                  "MTM": "12.5"
+                }
+              ]
+            }
+          }
+        },
+        "POST /interactive/orders": {
+          "body": {
+            "type": "success",
+            "code": "s-orders-0001",
+            "description": "Request sent",
+            "result": {
+              "AppOrderID": 1100000001,
+              "ClientID": "WC001",
+              "OrderUniqueIdentifier": "openalgo"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/portfolio/positions",
+          "query": [
+            [
+              "dayOrNet",
+              "NetWise"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchangeSegment": "NSECM",
+            "exchangeInstrumentID": 22,
+            "productType": "MIS",
+            "orderType": "MARKET",
+            "orderSide": "SELL",
+            "timeInForce": "DAY",
+            "disclosedQuantity": "0",
+            "orderQuantity": "10",
+            "limitPrice": "0",
+            "stopPrice": "0",
+            "orderUniqueIdentifier": "openalgo"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchangeSegment": "NSEFO",
+            "exchangeInstrumentID": 35001,
+            "productType": "NRML",
+            "orderType": "MARKET",
+            "orderSide": "BUY",
+            "timeInForce": "DAY",
+            "disclosedQuantity": "0",
+            "orderQuantity": "75",
+            "limitPrice": "0",
+            "stopPrice": "0",
+            "orderUniqueIdentifier": "openalgo"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchangeSegment": "NSECM",
+            "exchangeInstrumentID": 99999,
+            "productType": "NRML",
+            "orderType": "MARKET",
+            "orderSide": "SELL",
+            "timeInForce": "DAY",
+            "disclosedQuantity": "0",
+            "orderQuantity": "3",
+            "limitPrice": "0",
+            "stopPrice": "0",
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_reduce",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/portfolio/positions": {
+          "body": {
+            "type": "success",
+            "result": {
+              "positionList": [
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSECM",
+                  "ExchangeInstrumentId": 22,
+                  "ProductType": "MIS",
+                  "Quantity": "10",
+                  "BuyAveragePrice": "801.1234",
+                  "SellAveragePrice": "0",
+                  "TradingSymbol": "SBIN-EQ",
+                  "MTM": "12.5"
+                },
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSEFO",
+                  "ExchangeInstrumentId": 35001,
+                  "ProductType": "NRML",
+                  "Quantity": "-75",
+                  "BuyAveragePrice": "0",
+                  "SellAveragePrice": "24005.5",
+                  "TradingSymbol": "NIFTY",
+                  "MTM": "12.5"
+                },
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSECM",
+                  "ExchangeInstrumentId": 1594,
+                  "ProductType": "CNC",
+                  "Quantity": "0",
+                  "BuyAveragePrice": "1500",
+                  "SellAveragePrice": "1499.5",
+                  "TradingSymbol": "INFY-EQ",
+                  "MTM": "12.5"
+                },
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSECM",
+                  "ExchangeInstrumentId": 99999,
+                  "ProductType": "NRML",
+                  "Quantity": "3",
+                  "BuyAveragePrice": "12.0",
+                  "SellAveragePrice": "0",
+                  "TradingSymbol": "UNLISTED",
+                  "MTM": "12.5"
+                }
+              ]
+            }
+          }
+        },
+        "POST /interactive/orders": {
+          "body": {
+            "type": "success",
+            "code": "s-orders-0001",
+            "description": "Request sent",
+            "result": {
+              "AppOrderID": 1100000001,
+              "ClientID": "WC001",
+              "OrderUniqueIdentifier": "openalgo"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": 1100000001,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/portfolio/positions",
+          "query": [
+            [
+              "dayOrNet",
+              "NetWise"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchangeSegment": "NSECM",
+            "exchangeInstrumentID": "22",
+            "productType": "MIS",
+            "orderType": "MARKET",
+            "orderSide": "BUY",
+            "timeInForce": "DAY",
+            "disclosedQuantity": 0,
+            "orderQuantity": "4",
+            "limitPrice": 0.0,
+            "stopPrice": 0.0,
+            "orderUniqueIdentifier": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/orders": {
+          "body": {
+            "type": "success",
+            "result": [
+              {
+                "AppOrderID": 2001,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 10,
+                "OrderPrice": 800.5,
+                "OrderStopPrice": 0,
+                "OrderStatus": "New",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 10,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:20:01",
+                "OrderGeneratedDateTime": "2026-11-03T09:20:01"
+              },
+              {
+                "AppOrderID": 2002,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 1594,
+                "TradingSymbol": "INFY-EQ",
+                "OrderSide": "SELL",
+                "OrderType": "Market",
+                "ProductType": "CNC",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 5,
+                "OrderPrice": 1499.95,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Filled",
+                "OrderAverageTradedPrice": "1499.95",
+                "LeavesQuantity": 0,
+                "CumulativeQuantity": 5,
+                "LastUpdateDateTime": "2026-11-03T09:21:11",
+                "OrderGeneratedDateTime": "2026-11-03T09:21:11"
+              },
+              {
+                "AppOrderID": 2003,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSEFO",
+                "ExchangeInstrumentID": 35001,
+                "TradingSymbol": "NIFTY",
+                "OrderSide": "BUY",
+                "OrderType": "StopLimit",
+                "ProductType": "NRML",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 75,
+                "OrderPrice": 24010,
+                "OrderStopPrice": 24000,
+                "OrderStatus": "Trigger Pending",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 75,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:22:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:22:00"
+              },
+              {
+                "AppOrderID": 2004,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "SELL",
+                "OrderType": "StopMarket",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 1,
+                "OrderPrice": 0,
+                "OrderStopPrice": 790.5,
+                "OrderStatus": "Rejected",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 1,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:23:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:23:00"
+              },
+              {
+                "AppOrderID": 2005,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 2,
+                "OrderPrice": 700,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Cancelled",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 2,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:24:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:24:00"
+              },
+              {
+                "AppOrderID": 2006,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 99999,
+                "TradingSymbol": "UNLISTED",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "NRML",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 1,
+                "OrderPrice": 10,
+                "OrderStopPrice": 0,
+                "OrderStatus": "PartiallyFilled",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 1,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:25:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:25:00"
+              },
+              {
+                "AppOrderID": 2007,
+                "ClientID": "WC001",
+                "ExchangeSegment": "MCXFO",
+                "ExchangeInstrumentID": 50001,
+                "TradingSymbol": "CRUDEOIL",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "NRML",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 1,
+                "OrderPrice": 6500,
+                "OrderStopPrice": 0,
+                "OrderStatus": "New",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 1,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:26:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:26:00"
+              },
+              {
+                "AppOrderID": "2010.0",
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "SELL",
+                "OrderType": "Limit",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 4,
+                "OrderPrice": 802,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Cancelled",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 4,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:28:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:28:00"
+              },
+              {
+                "AppOrderID": 2011,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "SELL",
+                "OrderType": "Limit",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 4,
+                "OrderPrice": 803,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Cancelled",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 4,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:29:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:29:00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "2001",
+                "price": 800.5,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 10,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03T09:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "2002",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": 5,
+                "symbol": "INFY",
+                "timestamp": "2026-11-03T09:21:11",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NFO",
+                "order_status": "Trigger Pending",
+                "orderid": "2003",
+                "price": 24010.0,
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": 75,
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "2026-11-03T09:22:00",
+                "trigger_price": 24000.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "rejected",
+                "orderid": "2004",
+                "price": 0.0,
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": 1,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03T09:23:00",
+                "trigger_price": 790.5
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "cancelled",
+                "orderid": "2005",
+                "price": 700.0,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 2,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03T09:24:00",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "PartiallyFilled",
+                "orderid": "2006",
+                "price": 10.0,
+                "pricetype": "LIMIT",
+                "product": "NRML",
+                "quantity": 1,
+                "symbol": "UNLISTED",
+                "timestamp": "2026-11-03T09:25:00",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "MCX",
+                "order_status": "open",
+                "orderid": "2007",
+                "price": 6500.0,
+                "pricetype": "LIMIT",
+                "product": "NRML",
+                "quantity": 1,
+                "symbol": "CRUDEOIL",
+                "timestamp": "2026-11-03T09:26:00",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "cancelled",
+                "orderid": "2010",
+                "price": 802.0,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 4,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03T09:28:00",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "cancelled",
+                "orderid": "2011",
+                "price": 803.0,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 4,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03T09:29:00",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 5,
+              "total_completed_orders": 1,
+              "total_open_orders": 2,
+              "total_rejected_orders": 1,
+              "total_sell_orders": 4
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_empty",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/orders": {
+          "body": {
+            "type": "success",
+            "result": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/orders/trades": {
+          "body": {
+            "type": "success",
+            "result": [
+              {
+                "AppOrderID": 2002,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 1594,
+                "TradingSymbol": "INFY-EQ",
+                "OrderSide": "SELL",
+                "OrderType": "Market",
+                "ProductType": "CNC",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 5,
+                "OrderPrice": 1499.95,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Filled",
+                "OrderAverageTradedPrice": "1499.95",
+                "LeavesQuantity": 0,
+                "CumulativeQuantity": 5,
+                "LastUpdateDateTime": "2026-11-03T09:21:11",
+                "OrderGeneratedDateTime": "2026-11-03T09:21:11"
+              },
+              {
+                "AppOrderID": 2008,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSEFO",
+                "ExchangeInstrumentID": 35001,
+                "TradingSymbol": "NIFTY",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "NRML",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 75,
+                "OrderPrice": 24005.55,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Filled",
+                "OrderAverageTradedPrice": "24005.555",
+                "LeavesQuantity": 0,
+                "CumulativeQuantity": 75,
+                "LastUpdateDateTime": "2026-11-03T09:25:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:25:00"
+              },
+              {
+                "AppOrderID": 2009,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 3,
+                "OrderPrice": 801,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Filled",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 0,
+                "CumulativeQuantity": 3,
+                "LastUpdateDateTime": "2026-11-03T09:27:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:27:00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "could not convert string to float: ''",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders/trades",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/portfolio/positions": {
+          "body": {
+            "type": "success",
+            "result": {
+              "positionList": [
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSECM",
+                  "ExchangeInstrumentId": 22,
+                  "ProductType": "MIS",
+                  "Quantity": "10",
+                  "BuyAveragePrice": "801.1234",
+                  "SellAveragePrice": "0",
+                  "TradingSymbol": "SBIN-EQ",
+                  "MTM": "12.5"
+                },
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSEFO",
+                  "ExchangeInstrumentId": 35001,
+                  "ProductType": "NRML",
+                  "Quantity": "-75",
+                  "BuyAveragePrice": "0",
+                  "SellAveragePrice": "24005.5",
+                  "TradingSymbol": "NIFTY",
+                  "MTM": "12.5"
+                },
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSECM",
+                  "ExchangeInstrumentId": 1594,
+                  "ProductType": "CNC",
+                  "Quantity": "0",
+                  "BuyAveragePrice": "1500",
+                  "SellAveragePrice": "1499.5",
+                  "TradingSymbol": "INFY-EQ",
+                  "MTM": "12.5"
+                },
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSECM",
+                  "ExchangeInstrumentId": 99999,
+                  "ProductType": "NRML",
+                  "Quantity": "3",
+                  "BuyAveragePrice": "12.0",
+                  "SellAveragePrice": "0",
+                  "TradingSymbol": "UNLISTED",
+                  "MTM": "12.5"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "801.12",
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "MIS",
+              "quantity": "10",
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": "24005.50",
+              "exchange": "NFO",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "NRML",
+              "quantity": "-75",
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": "0.00",
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "CNC",
+              "quantity": "0",
+              "symbol": "INFY"
+            },
+            {
+              "average_price": "12.00",
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "NRML",
+              "quantity": "3",
+              "symbol": "UNLISTED"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/portfolio/positions",
+          "query": [
+            [
+              "dayOrNet",
+              "NetWise"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_empty",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/portfolio/positions": {
+          "body": {
+            "type": "success",
+            "result": {
+              "positionList": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/portfolio/positions",
+          "query": [
+            [
+              "dayOrNet",
+              "NetWise"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_no_result",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/portfolio/positions": {
+          "body": {
+            "type": "success",
+            "result": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "'list' object has no attribute 'get'",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/portfolio/positions",
+          "query": [
+            [
+              "dayOrNet",
+              "NetWise"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_empty",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/orders/trades": {
+          "body": {
+            "type": "success",
+            "result": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders/trades",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_empty",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/portfolio/holdings": {
+          "body": {
+            "type": "success",
+            "result": {
+              "RMSHoldings": {
+                "Holdings": {}
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/portfolio/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/portfolio/holdings": {
+          "body": {
+            "type": "success",
+            "result": {
+              "RMSHoldings": {
+                "Holdings": {
+                  "INE009A01021": {
+                    "ExchangeNSEInstrumentId": 1594,
+                    "HoldingQuantity": 20,
+                    "BuyAvgPrice": 1400.0
+                  },
+                  "INE111111111": {
+                    "ExchangeNSEInstrumentId": 77777,
+                    "HoldingQuantity": 4,
+                    "BuyAvgPrice": 250.5
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "exchange": "NSE",
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 20,
+                "symbol": "INFY"
+              },
+              {
+                "exchange": "NSE",
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 4,
+                "symbol": "INE111111111"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 29002.0,
+              "totalinvvalue": 29002.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/portfolio/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/user/balance": {
+          "body": {
+            "type": "success",
+            "result": {
+              "BalanceList": [
+                {
+                  "limitObject": {
+                    "RMSSubLimits": {
+                      "netMarginAvailable": 101500.456,
+                      "collateral": 1500,
+                      "UnrealizedMTM": -12.5,
+                      "RealizedMTM": 30,
+                      "marginUtilized": 274.949
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "101500.46",
+            "collateral": "1500.00",
+            "m2mrealized": "30.00",
+            "m2munrealized": "-12.50",
+            "utiliseddebits": "274.95"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/balance",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_nan_and_missing_figures",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/user/balance": {
+          "body": {
+            "type": "success",
+            "result": {
+              "BalanceList": [
+                {
+                  "limitObject": {
+                    "RMSSubLimits": {
+                      "netMarginAvailable": "nan",
+                      "collateral": "NaN",
+                      "UnrealizedMTM": "n/a",
+                      "RealizedMTM": 7.005,
+                      "marginUtilized": null
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "0.00",
+            "collateral": "0.00",
+            "m2mrealized": "7.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "0.00"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/balance",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_session_expired",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/user/balance": {
+          "status": 401,
+          "body": {
+            "type": "error",
+            "code": "e-session-0002",
+            "description": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/balance",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_session_code_on_a_bad_request",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/user/balance": {
+          "status": 400,
+          "body": {
+            "type": "error",
+            "code": "e-session-0001",
+            "description": "Invalid token"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/balance",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_empty",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/user/balance": {
+          "body": {
+            "type": "success",
+            "result": {
+              "BalanceList": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/balance",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderstatus_complete",
+      "method": "POST",
+      "path": "/api/v1/orderstatus",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "2002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/orders": {
+          "body": {
+            "type": "success",
+            "result": [
+              {
+                "AppOrderID": 2001,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 10,
+                "OrderPrice": 800.5,
+                "OrderStopPrice": 0,
+                "OrderStatus": "New",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 10,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:20:01",
+                "OrderGeneratedDateTime": "2026-11-03T09:20:01"
+              },
+              {
+                "AppOrderID": 2002,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 1594,
+                "TradingSymbol": "INFY-EQ",
+                "OrderSide": "SELL",
+                "OrderType": "Market",
+                "ProductType": "CNC",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 5,
+                "OrderPrice": 1499.95,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Filled",
+                "OrderAverageTradedPrice": "1499.95",
+                "LeavesQuantity": 0,
+                "CumulativeQuantity": 5,
+                "LastUpdateDateTime": "2026-11-03T09:21:11",
+                "OrderGeneratedDateTime": "2026-11-03T09:21:11"
+              },
+              {
+                "AppOrderID": 2003,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSEFO",
+                "ExchangeInstrumentID": 35001,
+                "TradingSymbol": "NIFTY",
+                "OrderSide": "BUY",
+                "OrderType": "StopLimit",
+                "ProductType": "NRML",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 75,
+                "OrderPrice": 24010,
+                "OrderStopPrice": 24000,
+                "OrderStatus": "Trigger Pending",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 75,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:22:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:22:00"
+              },
+              {
+                "AppOrderID": 2004,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "SELL",
+                "OrderType": "StopMarket",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 1,
+                "OrderPrice": 0,
+                "OrderStopPrice": 790.5,
+                "OrderStatus": "Rejected",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 1,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:23:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:23:00"
+              },
+              {
+                "AppOrderID": 2005,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 2,
+                "OrderPrice": 700,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Cancelled",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 2,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:24:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:24:00"
+              },
+              {
+                "AppOrderID": 2006,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 99999,
+                "TradingSymbol": "UNLISTED",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "NRML",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 1,
+                "OrderPrice": 10,
+                "OrderStopPrice": 0,
+                "OrderStatus": "PartiallyFilled",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 1,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:25:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:25:00"
+              },
+              {
+                "AppOrderID": 2007,
+                "ClientID": "WC001",
+                "ExchangeSegment": "MCXFO",
+                "ExchangeInstrumentID": 50001,
+                "TradingSymbol": "CRUDEOIL",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "NRML",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 1,
+                "OrderPrice": 6500,
+                "OrderStopPrice": 0,
+                "OrderStatus": "New",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 1,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:26:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:26:00"
+              },
+              {
+                "AppOrderID": "2010.0",
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "SELL",
+                "OrderType": "Limit",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 4,
+                "OrderPrice": 802,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Cancelled",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 4,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:28:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:28:00"
+              },
+              {
+                "AppOrderID": 2011,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "SELL",
+                "OrderType": "Limit",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 4,
+                "OrderPrice": 803,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Cancelled",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 4,
+                "CumulativeQuantity": 0,
+                "LastUpdateDateTime": "2026-11-03T09:29:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:29:00"
+              }
+            ]
+          }
+        },
+        "GET /interactive/orders/trades": {
+          "body": {
+            "type": "success",
+            "result": [
+              {
+                "AppOrderID": 2002,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 1594,
+                "TradingSymbol": "INFY-EQ",
+                "OrderSide": "SELL",
+                "OrderType": "Market",
+                "ProductType": "CNC",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 5,
+                "OrderPrice": 1499.95,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Filled",
+                "OrderAverageTradedPrice": "1499.95",
+                "LeavesQuantity": 0,
+                "CumulativeQuantity": 5,
+                "LastUpdateDateTime": "2026-11-03T09:21:11",
+                "OrderGeneratedDateTime": "2026-11-03T09:21:11"
+              },
+              {
+                "AppOrderID": 2008,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSEFO",
+                "ExchangeInstrumentID": 35001,
+                "TradingSymbol": "NIFTY",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "NRML",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 75,
+                "OrderPrice": 24005.55,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Filled",
+                "OrderAverageTradedPrice": "24005.555",
+                "LeavesQuantity": 0,
+                "CumulativeQuantity": 75,
+                "LastUpdateDateTime": "2026-11-03T09:25:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:25:00"
+              },
+              {
+                "AppOrderID": 2009,
+                "ClientID": "WC001",
+                "ExchangeSegment": "NSECM",
+                "ExchangeInstrumentID": 22,
+                "TradingSymbol": "SBIN-EQ",
+                "OrderSide": "BUY",
+                "OrderType": "Limit",
+                "ProductType": "MIS",
+                "TimeInForce": "DAY",
+                "OrderQuantity": 3,
+                "OrderPrice": 801,
+                "OrderStopPrice": 0,
+                "OrderStatus": "Filled",
+                "OrderAverageTradedPrice": "",
+                "LeavesQuantity": 0,
+                "CumulativeQuantity": 3,
+                "LastUpdateDateTime": "2026-11-03T09:27:00",
+                "OrderGeneratedDateTime": "2026-11-03T09:27:00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "action": "SELL",
+            "average_price": 0.0,
+            "exchange": "NSE",
+            "order_status": "complete",
+            "orderid": "2002",
+            "price": 0.0,
+            "pricetype": "MARKET",
+            "product": "CNC",
+            "quantity": 5,
+            "symbol": "INFY",
+            "timestamp": "2026-11-03T09:21:11",
+            "trigger_price": 0.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/orders/trades",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_short",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /interactive/portfolio/positions": {
+          "body": {
+            "type": "success",
+            "result": {
+              "positionList": [
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSECM",
+                  "ExchangeInstrumentId": 22,
+                  "ProductType": "MIS",
+                  "Quantity": "10",
+                  "BuyAveragePrice": "801.1234",
+                  "SellAveragePrice": "0",
+                  "TradingSymbol": "SBIN-EQ",
+                  "MTM": "12.5"
+                },
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSEFO",
+                  "ExchangeInstrumentId": 35001,
+                  "ProductType": "NRML",
+                  "Quantity": "-75",
+                  "BuyAveragePrice": "0",
+                  "SellAveragePrice": "24005.5",
+                  "TradingSymbol": "NIFTY",
+                  "MTM": "12.5"
+                },
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSECM",
+                  "ExchangeInstrumentId": 1594,
+                  "ProductType": "CNC",
+                  "Quantity": "0",
+                  "BuyAveragePrice": "1500",
+                  "SellAveragePrice": "1499.5",
+                  "TradingSymbol": "INFY-EQ",
+                  "MTM": "12.5"
+                },
+                {
+                  "AccountID": "WC001",
+                  "ExchangeSegment": "NSECM",
+                  "ExchangeInstrumentId": 99999,
+                  "ProductType": "NRML",
+                  "Quantity": "3",
+                  "BuyAveragePrice": "12.0",
+                  "SellAveragePrice": "0",
+                  "TradingSymbol": "UNLISTED",
+                  "MTM": "12.5"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": "-75",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/portfolio/positions",
+          "query": [
+            [
+              "dayOrNet",
+              "NetWise"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

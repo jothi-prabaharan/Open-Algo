@@ -12,11 +12,14 @@ namespace EPTradeBot.Infrastructure.Brokers.Xts;
 /// </summary>
 public abstract partial class XtsPluginBase
 {
-    public LoginMethod LoginMethod => LoginMethod.Credentials;
+    public virtual LoginMethod LoginMethod => LoginMethod.Credentials;
 
-    public IReadOnlyList<string> LoginFields { get; } = [];
+    public virtual IReadOnlyList<string> LoginFields { get; } = [];
 
-    public string? LoginUrl(IReadOnlyDictionary<string, string> keys, string state) => null;
+    public virtual string? LoginUrl(IReadOnlyDictionary<string, string> keys, string state) => null;
+
+    /// <summary>Brokers that name the account on both sessions refuse a sign-in whose two sessions are for different accounts.</summary>
+    protected virtual bool RequiresSameAccount => false;
 
     public async Task<BrokerLoginResult> LoginAsync(IReadOnlyDictionary<string, string> keys, IReadOnlyDictionary<string, string> input, CancellationToken cancellationToken)
     {
@@ -24,22 +27,25 @@ public abstract partial class XtsPluginBase
         if (Key("ApiKey").Length == 0 || Key("ApiSecret").Length == 0 || Key("ApiKeyMarket").Length == 0 || Key("ApiSecretMarket").Length == 0)
             return BrokerLoginResult.Refused($"The {DisplayName} interactive and market data keys and secrets are not all set on this server. Add them to the server's settings, then sign in again.", 409);
 
-        var (token, refusal) = await TokenAsync("/interactive/user/session", SessionBody(Key("ApiKey"), Key("ApiSecret")), cancellationToken);
+        var (token, refusal, sessionUser) = await TokenAsync("/interactive/user/session", SessionBody(Key("ApiKey"), Key("ApiSecret"), input), cancellationToken);
         if (refusal is not null) return BrokerLoginResult.Refused($"{DisplayName} did not accept the sign-in: {refusal}");
         if (token is null) return BrokerLoginResult.Refused($"{DisplayName} accepted the sign-in but sent no access token. Start the sign-in again.", 502);
 
-        var (feed, feedRefusal) = await TokenAsync(MarketDataPath + "/auth/login", KeyBody(Key("ApiKeyMarket"), Key("ApiSecretMarket")), cancellationToken);
+        var (feed, feedRefusal, feedUser) = await TokenAsync(MarketDataPath + "/auth/login", KeyBody(Key("ApiKeyMarket"), Key("ApiSecretMarket")), cancellationToken);
         if (feedRefusal is not null) return BrokerLoginResult.Refused($"{DisplayName} accepted the sign-in but refused the market data login: {feedRefusal}");
+        if (RequiresSameAccount && !string.IsNullOrWhiteSpace(sessionUser) && !string.IsNullOrWhiteSpace(feedUser)
+            && !string.Equals(sessionUser.Trim(), feedUser.Trim(), StringComparison.OrdinalIgnoreCase))
+            return BrokerLoginResult.Refused($"This {DisplayName} sign-in is for a different account than the market data keys saved for {DisplayName}. Sign in with that account, or check the keys under Broker Configuration.", 409);
         return BrokerLoginResult.Success(token, feed);
     }
 
     private static JsonObject KeyBody(string appKey, string secretKey) => new() { ["appKey"] = appKey, ["secretKey"] = secretKey, ["source"] = "WebAPI" };
 
     /// <summary>What the interactive sign-in sends. Jainam names no source and sends an access token instead.</summary>
-    protected virtual JsonObject SessionBody(string appKey, string secretKey) => KeyBody(appKey, secretKey);
+    protected virtual JsonObject SessionBody(string appKey, string secretKey, IReadOnlyDictionary<string, string> input) => KeyBody(appKey, secretKey);
 
     /// <summary>One XTS session request. The token, or the reason it was refused; both null when the answer carried no token.</summary>
-    private async Task<(string? Token, string? Refusal)> TokenAsync(string path, JsonObject payload, CancellationToken cancellationToken)
+    private async Task<(string? Token, string? Refusal, string? UserId)> TokenAsync(string path, JsonObject payload, CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, sessions.BaseUrl(Name, DefaultBaseUrl) + path)
         {
@@ -48,7 +54,7 @@ public abstract partial class XtsPluginBase
         using var response = await SendAsync(request, cancellationToken);
         var body = await ReadAsync(response, cancellationToken) as JsonObject;
         if (!response.IsSuccessStatusCode || Str(body?["type"]) != "success")
-            return (null, Str(body?["message"]) ?? Str(body?["description"]) ?? "no reason was given.");
-        return (Str(body?["result"]?["token"]) is { Length: > 0 } t ? t : null, null);
+            return (null, Str(body?["message"]) ?? Str(body?["description"]) ?? "no reason was given.", null);
+        return (Str(body?["result"]?["token"]) is { Length: > 0 } t ? t : null, null, Str(body?["result"]?["userID"]));
     }
 }

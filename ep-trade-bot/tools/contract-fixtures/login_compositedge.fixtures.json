@@ -1,0 +1,674 @@
+{
+  "broker": "compositedge",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_same_account",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "ce-access-token",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "ce-session-token",
+              "userID": "AB123"
+            }
+          }
+        },
+        "POST /apimarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "ce-feed-token",
+              "userID": "AB123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "ce-session-token",
+        "feed_token": "ce-feed-token"
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "ce-app-key",
+            "secretKey": "ce-app-secret",
+            "accessToken": "ce-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/apimarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "ce-market-secret",
+            "appKey": "ce-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_same_account_other_letter_case",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "ce-access-token",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "ce-session-token",
+              "userID": "ab123"
+            }
+          }
+        },
+        "POST /apimarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "ce-feed-token",
+              "userID": "AB123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "ce-session-token",
+        "feed_token": "ce-feed-token"
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "ce-app-key",
+            "secretKey": "ce-app-secret",
+            "accessToken": "ce-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/apimarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "ce-market-secret",
+            "appKey": "ce-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_account_with_spaces",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "ce-access-token",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "ce-session-token",
+              "userID": " AB123 "
+            }
+          }
+        },
+        "POST /apimarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "ce-feed-token",
+              "userID": "AB123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "ce-session-token",
+        "feed_token": "ce-feed-token"
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "ce-app-key",
+            "secretKey": "ce-app-secret",
+            "accessToken": "ce-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/apimarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "ce-market-secret",
+            "appKey": "ce-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_different_accounts",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "ce-access-token",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "ce-session-token",
+              "userID": "AB123"
+            }
+          }
+        },
+        "POST /apimarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "ce-feed-token",
+              "userID": "XY999"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "account_mismatch"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "ce-app-key",
+            "secretKey": "ce-app-secret",
+            "accessToken": "ce-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/apimarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "ce-market-secret",
+            "appKey": "ce-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_session_names_no_account",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "ce-access-token",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "ce-session-token",
+              "userID": ""
+            }
+          }
+        },
+        "POST /apimarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "ce-feed-token",
+              "userID": "XY999"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "ce-session-token",
+        "feed_token": "ce-feed-token"
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "ce-app-key",
+            "secretKey": "ce-app-secret",
+            "accessToken": "ce-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/apimarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "ce-market-secret",
+            "appKey": "ce-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_market_data_names_no_account",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "ce-access-token",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "ce-session-token",
+              "userID": "AB123"
+            }
+          }
+        },
+        "POST /apimarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "ce-feed-token",
+              "userID": ""
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "ce-session-token",
+        "feed_token": "ce-feed-token"
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "ce-app-key",
+            "secretKey": "ce-app-secret",
+            "accessToken": "ce-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/apimarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "ce-market-secret",
+            "appKey": "ce-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_session_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "ce-access-token",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /interactive/user/session": {
+          "status": 401,
+          "body": {
+            "type": "error",
+            "description": "Invalid access token",
+            "message": "Invalid access token"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Invalid access token"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "ce-app-key",
+            "secretKey": "ce-app-secret",
+            "accessToken": "ce-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_session_error_type_with_ok_status",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "ce-access-token",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "error",
+            "description": "Expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication succeeded but no access token was returned. Please check the response."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "ce-app-key",
+            "secretKey": "ce-app-secret",
+            "accessToken": "ce-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_market_data_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "ce-access-token",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "ce-session-token",
+              "userID": "AB123"
+            }
+          }
+        },
+        "POST /apimarketdata/auth/login": {
+          "status": 401,
+          "body": {
+            "type": "error",
+            "description": "Bad market key"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Feed token error: API Error (Feed): Bad market key"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "ce-app-key",
+            "secretKey": "ce-app-secret",
+            "accessToken": "ce-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/apimarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "ce-market-secret",
+            "appKey": "ce-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_market_data_error_type_with_ok_status",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "ce-access-token",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /interactive/user/session": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "ce-session-token",
+              "userID": "AB123"
+            }
+          }
+        },
+        "POST /apimarketdata/auth/login": {
+          "body": {
+            "type": "error"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Feed token error: Feed token request failed. Please check the response."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/interactive/user/session",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "appKey": "ce-app-key",
+            "secretKey": "ce-app-secret",
+            "accessToken": "ce-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.compositedge.com",
+          "path": "/apimarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "ce-market-secret",
+            "appKey": "ce-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

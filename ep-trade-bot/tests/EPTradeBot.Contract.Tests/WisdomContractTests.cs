@@ -620,3 +620,95 @@ public sealed class JainamXtsHistoryContractTests(JainamXtsHistoryHost host, ITe
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class CompositEdgeHost : XtsHost
+{
+    public override string BrokerName => "compositedge";
+    public override string FixtureFile => "compositedge.fixtures.json";
+}
+
+/// <summary>CompositEdge against the Python implementation (tools/contract-fixtures/compositedge.fixtures.json).</summary>
+public sealed class CompositEdgeContractTests(CompositEdgeHost host, ITestOutputHelper output) : IClassFixture<CompositEdgeHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = XtsDeviations.WithCrashes("CompositEdge");
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("compositedge.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class CompositEdgeDataHost : XtsHost
+{
+    public override string BrokerName => "compositedge";
+    public override string FixtureFile => "compositedge_data.fixtures.json";
+}
+
+/// <summary>CompositEdge market data against the Python implementation (tools/contract-fixtures/compositedge_data.fixtures.json).</summary>
+public sealed class CompositEdgeDataContractTests(CompositEdgeDataHost host, ITestOutputHelper output) : IClassFixture<CompositEdgeDataHost>
+{
+    private const string Words = "OpenAlgo answers a refused or empty quote with \"Failed to fetch market data\"; EP Trade bot names the broker and passes its reason on.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["quotes_market_data_refused"] = new(Words, f => Expect(f, 500, Error("CompositEdge could not send the quote: Market data not enabled"))),
+        ["quotes_empty_list"] = new(Words, f => Expect(f, 500, Error("CompositEdge has no quote for SBIN right now."))),
+        ["multiquotes_refused"] = new(Words, f => Expect(f, 500, Error("CompositEdge could not send the quotes: Market data not enabled"))),
+        ["depth_market_data_refused"] = new(
+            "OpenAlgo answers success with a depth of zeros when the broker refuses, which reads as a market with no orders. EP Trade bot reports the refusal.",
+            f => Expect(f, 500, Error("CompositEdge could not send the quote: Market data not enabled"))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("compositedge_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class CompositEdgeHistoryHost : XtsHost
+{
+    public override string BrokerName => "compositedge";
+    public override string FixtureFile => "history_compositedge.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>CompositEdge history against the Python implementation (tools/contract-fixtures/history_compositedge.fixtures.json).</summary>
+public sealed class CompositEdgeHistoryContractTests(CompositEdgeHistoryHost host, ITestOutputHelper output) : IClassFixture<CompositEdgeHistoryHost>
+{
+    private const string Quiet = "OpenAlgo fails with \"No objects to concatenate\" when no candle came back, which looks like a fault; EP Trade bot answers success with no candles.";
+
+    private static void Refused(JsonObject f, string from, string to) =>
+        Expect(f, 500, Error($"CompositEdge could not send the candles for {from} to {to}: Invalid Token"));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_nothing_traded"] = new(Quiet, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray() })),
+        ["history_end_before_start"] = new(Quiet, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray() })),
+        ["history_refused"] = new("OpenAlgo shows an internal-looking message; EP Trade bot says which days were refused and why.", f => Refused(f, "2026-11-02", "2026-11-02")),
+        ["history_unsupported_interval"] = new(
+            "OpenAlgo answers 500 with \"Unsupported timeframe: 4h\". EP Trade bot answers 400 and names what CompositEdge offers.",
+            f => Expect(f, 400, Error("CompositEdge does not offer 4h candles. Choose one of: 1s, 1m, 2m, 3m, 5m, 10m, 15m, 30m, 60m, D."))),
+        ["history_chunked_in_weeks"] = new(
+            "OpenAlgo ends every week but the last at midnight of its seventh day and starts the next on the day after, so the seventh day's trading is never asked for. EP Trade bot asks for the whole of each day.",
+            f =>
+            {
+                var sent = f["sent"]!.AsArray();
+                sent[0]!["query"]!.AsArray()[3]!.AsArray()[1] = "Oct 25 2026 235959";
+                sent[1]!["query"]!.AsArray()[3]!.AsArray()[1] = "Nov 01 2026 235959";
+            }),
+        ["history_one_chunk_refused"] = new("OpenAlgo shows an internal-looking message; EP Trade bot says which days were refused and why.", f =>
+        {
+            Refused(f, "2026-11-02", "2026-11-02");
+            f["sent"]!.AsArray()[0]!["query"]!.AsArray()[3]!.AsArray()[1] = "Nov 01 2026 235959";
+        }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_compositedge.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+

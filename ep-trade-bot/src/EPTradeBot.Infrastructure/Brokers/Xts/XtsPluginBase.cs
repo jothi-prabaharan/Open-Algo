@@ -572,6 +572,50 @@ public sealed class JainamXtsPlugin(IHttpClientFactory http, BrokerSessionFactor
     protected override string DefaultBaseUrl => "https://jtrade.jainam.in:5000";
     protected override string MarketDataPath => "/apibinarymarketdata";
 
-    protected override JsonObject SessionBody(string appKey, string secretKey) =>
+    protected override JsonObject SessionBody(string appKey, string secretKey, IReadOnlyDictionary<string, string> input) =>
         new() { ["appKey"] = appKey, ["secretKey"] = secretKey, ["accessToken"] = "jainamxts" };
+}
+
+/// <summary>
+/// CompositEdge's XTS server (broker/compositedge). The trader signs in on CompositEdge's page, which sends the session back with an access token that is
+/// exchanged for the interactive session. The two sessions must name the same account, or the sign-in is refused.
+/// </summary>
+[BrokerPlugin]
+public sealed class CompositEdgePlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<CompositEdgePlugin> logger)
+    : XtsPluginBase(http, sessions, symbols, logger)
+{
+    public override string Name => "compositedge";
+    public override string DisplayName => "CompositEdge";
+    protected override string DefaultBaseUrl => "https://xts.compositedge.com";
+    protected override bool RequiresSameAccount => true;
+
+    public override LoginMethod LoginMethod => LoginMethod.Redirect;
+
+    public override string? LoginUrl(IReadOnlyDictionary<string, string> keys, string state)
+    {
+        if (!keys.TryGetValue("ApiKey", out var key) || string.IsNullOrWhiteSpace(key)) return null;
+        if (!keys.TryGetValue("RedirectUrl", out var redirect) || string.IsNullOrWhiteSpace(redirect)) return null;
+        var returnUrl = Uri.EscapeDataString($"{redirect.Trim()}?state={state}");
+        return $"https://xts.compositedge.com/interactive/thirdparty?appKey={Uri.EscapeDataString(key.Trim())}&returnURL={returnUrl}";
+    }
+
+    /// <summary>The page sends the session back as JSON holding the access token; a bare token is taken as it is.</summary>
+    protected override JsonObject SessionBody(string appKey, string secretKey, IReadOnlyDictionary<string, string> input)
+    {
+        var given = input.TryGetValue("request_token", out var t) ? t.Trim() : "";
+        if (given.StartsWith('{') || given.StartsWith('"'))
+        {
+            try
+            {
+                var node = JsonNode.Parse(given);
+                if (node is JsonValue v && v.TryGetValue<string>(out var inner)) node = JsonNode.Parse(inner);
+                if (node is JsonObject session && JsonRead.Str(session["accessToken"]) is { Length: > 0 } token) given = token;
+            }
+            catch (System.Text.Json.JsonException)
+            {
+            }
+        }
+
+        return new JsonObject { ["appKey"] = appKey, ["secretKey"] = secretKey, ["accessToken"] = given };
+    }
 }

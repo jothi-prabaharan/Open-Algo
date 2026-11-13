@@ -362,3 +362,35 @@ public sealed class LoginJainamContractTests(LoginJainamHost host, ITestOutputHe
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginCompositEdgeHost : BrokerContractHost
+{
+    public override string BrokerName => "compositedge";
+    public override string FixtureFile => "login_compositedge.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string>
+    {
+        ["ApiKey"] = "ce-app-key", ["ApiSecret"] = "ce-app-secret", ["RedirectUrl"] = "http://127.0.0.1:5000/compositedge/callback", ["ApiKeyMarket"] = "ce-market-key", ["ApiSecretMarket"] = "ce-market-secret",
+    };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginCompositEdgeContractTests(LoginCompositEdgeHost host, ITestOutputHelper output) : IClassFixture<LoginCompositEdgeHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_different_accounts"] = new(
+            "OpenAlgo's plugin answers the code \"account_mismatch\" and its sign-in page turns that into a sentence. EP Trade bot answers the sentence, with a conflict status.",
+            f => ContractRunner.Expect(f, 409, ContractRunner.Error("This CompositEdge sign-in is for a different account than the market data keys saved for CompositEdge. Sign in with that account, or check the keys under Broker Configuration."))),
+        ["login_session_refused"] = LoginDeviations.Refused("CompositEdge did not accept the sign-in: Invalid access token"),
+        ["login_session_error_type_with_ok_status"] = LoginDeviations.Refused("CompositEdge did not accept the sign-in: Expired"),
+        ["login_market_data_refused"] = LoginDeviations.Refused("CompositEdge accepted the sign-in but refused the market data login: Bad market key"),
+        ["login_market_data_error_type_with_ok_status"] = LoginDeviations.Refused("CompositEdge accepted the sign-in but refused the market data login: no reason was given."),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_compositedge.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
