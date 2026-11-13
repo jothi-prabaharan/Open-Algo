@@ -207,3 +207,34 @@ public sealed class LoginDhanContractTests(LoginDhanHost host, ITestOutputHelper
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginWisdomHost : BrokerContractHost
+{
+    public override string BrokerName => "wisdom";
+    public override string FixtureFile => "login_wisdom.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string>
+    {
+        ["ApiKey"] = "wisdom-app-key", ["ApiSecret"] = "wisdom-app-secret", ["ApiKeyMarket"] = "wisdom-market-key", ["ApiSecretMarket"] = "wisdom-market-secret",
+    };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginWisdomContractTests(LoginWisdomHost host, ITestOutputHelper output) : IClassFixture<LoginWisdomHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_with_a_message"] = LoginDeviations.Refused("Wisdom Capital did not accept the sign-in: Invalid App Key"),
+        ["login_refused_with_an_ok_status_and_an_error_type"] = LoginDeviations.Refused("Wisdom Capital did not accept the sign-in: Invalid user"),
+        ["login_ok_body_with_an_error_status"] = LoginDeviations.Refused("Wisdom Capital did not accept the sign-in: Gateway trouble"),
+        ["login_session_without_a_token_field"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error("Wisdom Capital accepted the sign-in but sent no access token. Start the sign-in again."))),
+        ["login_market_data_refused"] = LoginDeviations.Refused("Wisdom Capital accepted the sign-in but refused the market data login: Invalid market data key"),
+        ["login_market_data_ok_status_error_type"] = LoginDeviations.Refused("Wisdom Capital accepted the sign-in but refused the market data login: Market data login not enabled"),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_wisdom.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

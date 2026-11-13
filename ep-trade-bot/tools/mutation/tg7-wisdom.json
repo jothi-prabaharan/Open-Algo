@@ -1,0 +1,240 @@
+[
+ {
+  "name": "W1 stop-limit mapped to limit",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "\"SL\" => \"STOPLIMIT\"",
+  "new": "\"SL\" => \"LIMIT\"",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W2 stop-market mapped to market",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "\"SL-M\" => \"STOPMARKET\"",
+  "new": "\"SL-M\" => \"MARKET\"",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W3 currency segment wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"CDS\"] = \"NSECD\"",
+  "new": "[\"CDS\"] = \"NSECM\"",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W4 mcx segment wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"MCX\"] = \"MCXFO\"",
+  "new": "[\"MCX\"] = \"NSEFO\"",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W6 disclosed quantity dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"disclosedQuantity\"] = order.DisclosedQuantity,",
+  "new": "[\"disclosedQuantity\"] = 0,",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W7 trigger price dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"stopPrice\"] = (double)order.TriggerPrice,",
+  "new": "[\"stopPrice\"] = 0.0,",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W8 unknown symbol sent",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (instrument is null) return BrokerCallResult.Refused(400, UnknownSymbol(order.Symbol, order.Exchange));",
+  "new": "if (Environment.TickCount64 < 0 && instrument is null) return BrokerCallResult.Refused(400, UnknownSymbol(order.Symbol, order.Exchange));",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests",
+  "also": [
+   {
+    "old": "[\"exchangeInstrumentID\"] = instrument.Token,",
+    "new": "[\"exchangeInstrumentID\"] = instrument?.Token,"
+   }
+  ]
+ },
+ {
+  "name": "W9 order id not required",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (Str(reply?[\"type\"]) == \"success\" && Str(reply?[\"result\"]?[\"AppOrderID\"]) is { Length: > 0 } id) return BrokerCallResult.Success(id);",
+  "new": "if (Str(reply?[\"result\"]?[\"AppOrderID\"]) is { Length: > 0 } id) return BrokerCallResult.Success(id);",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W10 modify uses limit for stop",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"modifiedStopPrice\"] = (double)change.TriggerPrice,",
+  "new": "[\"modifiedStopPrice\"] = 0.0,",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W11 modify type not mapped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"modifiedOrderType\"] = OrderType(change.PriceType),",
+  "new": "[\"modifiedOrderType\"] = \"LIMIT\",",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W12 cancel refusal reported as success",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (Str(reply?[\"type\"]) == \"success\") return BrokerCallResult.Success(orderId);",
+  "new": "if (reply is not null) return BrokerCallResult.Success(orderId);",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W13 cancel without id in query",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "$\"/orders?appOrderID={Uri.EscapeDataString(orderId)}\"",
+  "new": "\"/orders\"",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W14 buy count by sell",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (side == \"BUY\") buy++;",
+  "new": "if (side == \"SELL\") buy++;",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W15 completed counted from open",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (raw == \"Filled\") completed++;",
+  "new": "if (raw == \"Cancelled\") completed++;",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W16 rejected not counted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "else if (raw == \"Rejected\") rejected++;",
+  "new": "else if (raw == \"xRejected\") rejected++;",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W17 partial fill mapped to open",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "\"New\" => \"open\",",
+  "new": "\"New\" or \"PartiallyFilled\" => \"open\",",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W18 order id not truncated",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "((long)Math.Truncate(Float(value))).ToString(System.Globalization.CultureInfo.InvariantCulture)",
+  "new": "Str(value) ?? \"\"",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W19 trade value wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"trade_value\"] = quantity * average,",
+  "new": "[\"trade_value\"] = average,",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W20 short average from buy side",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "quantity < 0 ? Float(p[\"SellAveragePrice\"])",
+  "new": "quantity < 0 ? Float(p[\"BuyAveragePrice\"])",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W21 position symbol not mapped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "var (symbol, exchange) = await MapRowAsync(p, \"ExchangeInstrumentId\", cancellationToken);",
+  "new": "var (symbol, exchange) = (Str(p[\"TradingSymbol\"]) ?? \"\", \"NSE\");",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W22 holding falls back to blank",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"symbol\"] = record?.Symbol ?? isin,",
+  "new": "[\"symbol\"] = record?.Symbol ?? \"\",",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W23 holding value not summed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "value += quantity * Float(h[\"BuyAvgPrice\"]);",
+  "new": "value += quantity;",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W24 funds expired not refused",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "Str(reply?[\"code\"]) is \"e-session-0002\" or \"e-session-0001\"",
+  "new": "false",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W25 funds cash from collateral",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"availablecash\"] = Field(\"netMarginAvailable\"), [\"collateral\"] = Field(\"collateral\")",
+  "new": "[\"availablecash\"] = Field(\"collateral\"), [\"collateral\"] = Field(\"collateral\")",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W26 nan funds not zero",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "Str(limits?[name])?.Equals(\"nan\", StringComparison.OrdinalIgnoreCase) == true ? \"0.00\" : ",
+  "new": "false ? \"0.00\" : ",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W27 auth header dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "request.Headers.TryAddWithoutValidation(\"authorization\", session.AuthToken);",
+  "new": "_ = session.AuthToken;",
+  "filter": "FullyQualifiedName~Wisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W28 login feed refusal ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.Login.cs",
+  "old": "if (feedRefusal is not null) return BrokerLoginResult.Refused(",
+  "new": "if (false && feedRefusal is not null) return BrokerLoginResult.Refused(",
+  "filter": "FullyQualifiedName~LoginWisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "W29 login keys not required",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.Login.cs",
+  "old": "|| Key(\"ApiSecretMarket\").Length == 0)",
+  "new": ")",
+  "filter": "FullyQualifiedName~XtsLoginKeys",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "W30 login status not checked",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.Login.cs",
+  "old": "if (!response.IsSuccessStatusCode || Str(body?[\"type\"]) != \"success\")",
+  "new": "if (Str(body?[\"type\"]) != \"success\")",
+  "filter": "FullyQualifiedName~LoginWisdom",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

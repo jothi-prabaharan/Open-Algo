@@ -9,15 +9,16 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Upstox | yes | yes | yes | yes | yes | yes | yes | yes |
 | Fyers | yes | yes | yes | yes | yes | yes | yes | yes |
 | Delta Exchange | yes | yes | yes | yes | yes | no | yes | yes |
+| Wisdom Capital (XTS) | yes | yes | no | no | no | no | yes | no |
 
-The other 30 brokers in the task list are not started.
+The other 29 brokers in the task list are not started. The six other XTS brokers (ibulls, jainamxts, fivepaisaxts, iifl, compositedge, rmoney) are next: they share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
 ## Not done, and why Gate 7 is open
 
 - Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **The 30 brokers not started** (fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, ibulls, iifl, iiflcapital, indmoney, jainamxts, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, wisdom, zebu). Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **The 29 brokers not started** (fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, ibulls, iifl, iiflcapital, indmoney, jainamxts, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, zebu). Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
 ## Upstox sign-in
 
@@ -116,3 +117,17 @@ The other 30 brokers in the task list are not started.
 - Ported from `broker/fyers/streaming` (HSM binary protocol): the `hsm_key` is read from the access token (refused when expired or absent), sign-in is a binary message, subscriptions wait until the sign-in is accepted, and snapshot/update frames keep per-topic state and scaling. Quote, depth and index depth shapes match the Python adapter.
 - Contract: 43 recorded cases (`feed_fyers.fixtures.json`) plus 4 key tests. Deviations, each with its reason in the contract file: a subscription made before the sign-in is accepted is held and sent after it (OpenAlgo drops it), and a feed nobody asked for is never given to the only subscription (OpenAlgo guesses).
 - Mutation: `tools/mutation/tg7-fyers-feed.json`, all caught after survivors each got a recorded case or the equivalent code was removed.
+
+## Wisdom Capital (XTS): orders, books, funds and sign-in
+
+- Ported from `broker/wisdom` (`order_api.py`, `funds.py`, `mapping/order_data.py`, `mapping/transform_data.py`, `api/auth_api.py`) into `Brokers/Xts/XtsPluginBase.cs`, the base the other XTS brokers will use.
+- Contract: 32 recorded cases for orders, books and funds (`wisdom.fixtures.json`) and 8 for sign-in (`login_wisdom.fixtures.json`). Deviations, each with its reason in the contract file:
+  - An unknown symbol is refused by name; OpenAlgo sends a null instrument id.
+  - A broker refusal passes the broker's reason on (place, modify, cancel); OpenAlgo says "Failed to ...". A place reply with an error type answers a refusal; OpenAlgo answers success with no order id.
+  - Order ids are text.
+  - A stop order waiting for its trigger is "trigger pending" in the book (OpenAlgo leaves "Trigger Pending"), the spelling cancel-all reads.
+  - Smart order: OpenAlgo looks for the open position under keys the XTS reply does not have, so it never sees one and BUYS the target quantity; EP Trade bot reads the position and trades the difference.
+  - A position whose symbol is not in the master contract cannot be closed by symbol; the answer names it as still open.
+  - An expired session on funds is reported as an expired session; OpenAlgo shows an empty balance.
+- Mutation: `tools/mutation/tg7-wisdom.json`, 29 mutants, all caught (ten survived the first run; each got a recorded case or a unit test, and one equivalent product default was removed).
+- Not ported, and refused rather than guessed: quotes, depth and history (a separate market-data service), margin, and the feed. Position and holding profit and loss are zero, as in OpenAlgo (the XTS position reply carries no last price).
