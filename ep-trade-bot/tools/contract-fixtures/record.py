@@ -111,6 +111,9 @@ def _handler(request: httpx.Request) -> httpx.Response:
 
 _client = httpx.Client(transport=httpx.MockTransport(_handler), timeout=5)
 httpx_client.get_httpx_client = lambda *a, **k: _client
+# A broker that builds an HTTP client of its own (Dhan's Forever Orders need HTTP/1.1) names it so the recorder can stand in for it too.
+if hasattr(SCENARIOS, "patch_clients"):
+    SCENARIOS.patch_clients(_client)
 
 import database.auth_db as auth_db  # noqa: E402
 import database.settings_db as settings_db  # noqa: E402

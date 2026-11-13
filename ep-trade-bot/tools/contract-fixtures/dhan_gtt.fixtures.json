@@ -1,0 +1,3327 @@
+{
+  "broker": "dhan",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "dhan-access-token",
+  "client_id": "1100000001",
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500209",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY-Nov2026-FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE_FNO",
+      "token": "35001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY-Nov2026-24000-CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE_FNO",
+      "token": "40001",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "OPTIDX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "BSEONLY",
+      "brsymbol": "BSEONLY",
+      "name": "LISTED ON BSE ONLY",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500325",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NOTICK",
+      "brsymbol": "NOTICK",
+      "name": "NO TICK SIZE",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "9999",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQUITY",
+      "tick_size": 0.0
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "place_single_limit",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/forever/orders": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "TRANSIT"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderFlag": "SINGLE",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "CNC",
+            "orderType": "LIMIT",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "correlationId": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_target_trigger",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "819",
+        "triggerprice_sl": "0",
+        "triggerprice_tg": "820",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/forever/orders": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "TRANSIT"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderFlag": "SINGLE",
+            "transactionType": "SELL",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "CNC",
+            "orderType": "LIMIT",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10,
+            "price": 819.0,
+            "triggerPrice": 820.0,
+            "correlationId": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_market",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/forever/orders": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "TRANSIT"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderFlag": "SINGLE",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "CNC",
+            "orderType": "MARKET",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10,
+            "price": 0.0,
+            "triggerPrice": 795.0,
+            "correlationId": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_nrml_future",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NFO",
+        "symbol": "NIFTY25NOV26FUT",
+        "action": "BUY",
+        "product": "NRML",
+        "quantity": "75",
+        "pricetype": "LIMIT",
+        "price": "23900",
+        "triggerprice_sl": "23950",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/forever/orders": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "TRANSIT"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderFlag": "SINGLE",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_FNO",
+            "productType": "MARGIN",
+            "orderType": "LIMIT",
+            "validity": "DAY",
+            "securityId": "35001",
+            "quantity": 75,
+            "price": 23900.0,
+            "triggerPrice": 23950.0,
+            "correlationId": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_strategy_name_is_cut_to_thirty_characters",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "a-strategy-name-that-is-much-longer-than-thirty",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/forever/orders": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "TRANSIT"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderFlag": "SINGLE",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "CNC",
+            "orderType": "LIMIT",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "correlationId": "a-strategy-name-that-is-much-l"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_mis_product",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "MIS",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/forever/orders": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "TRANSIT"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'product': ['GTT supports only CNC (delivery) or NRML (overnight F&O); MIS is intraday-only.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_limit",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/forever/orders": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "TRANSIT"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderFlag": "OCO",
+            "transactionType": "SELL",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "CNC",
+            "orderType": "LIMIT",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10,
+            "price": 779.0,
+            "triggerPrice": 780.0,
+            "price1": 829.0,
+            "triggerPrice1": 830.0,
+            "quantity1": 10,
+            "correlationId": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_market",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/forever/orders": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "TRANSIT"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderFlag": "OCO",
+            "transactionType": "SELL",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "CNC",
+            "orderType": "MARKET",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10,
+            "price": 779.0,
+            "triggerPrice": 780.0,
+            "price1": 829.0,
+            "triggerPrice1": 830.0,
+            "quantity1": 10,
+            "correlationId": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/forever/orders": {
+          "status": 400,
+          "body": {
+            "errorType": "Order_Error",
+            "errorCode": "DH-905",
+            "errorMessage": "Invalid trigger price"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place GTT",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderFlag": "SINGLE",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "CNC",
+            "orderType": "LIMIT",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "correlationId": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_broker_session_expired",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/forever/orders": {
+          "status": 401,
+          "body": {
+            "errorType": "Order_Error",
+            "errorCode": "DH-901",
+            "errorMessage": "Invalid access token"
+          }
+        }
+      },
+      "expected": {
+        "status": 401,
+        "body": {
+          "message": "Failed to place GTT",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderFlag": "SINGLE",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "CNC",
+            "orderType": "LIMIT",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "correlationId": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_ok_answer_without_an_order_id",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/forever/orders": {
+          "body": {
+            "orderStatus": "TRANSIT"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to place GTT",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderFlag": "SINGLE",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "CNC",
+            "orderType": "LIMIT",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "correlationId": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_created_status",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/forever/orders": {
+          "status": 201,
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "TRANSIT"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderFlag": "SINGLE",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "CNC",
+            "orderType": "LIMIT",
+            "validity": "DAY",
+            "securityId": "3045",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "correlationId": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "NOPE",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/forever/orders": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "TRANSIT"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderFlag": "SINGLE",
+            "transactionType": "BUY",
+            "exchangeSegment": "NSE_EQ",
+            "productType": "CNC",
+            "orderType": "LIMIT",
+            "validity": "DAY",
+            "securityId": "None",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "correlationId": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_entry_leg",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "CONFIRM"
+          }
+        },
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "9001",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "SINGLE",
+            "orderType": "LIMIT",
+            "legName": "ENTRY_LEG",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_stored_as_a_stop_loss_leg",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "CONFIRM"
+          }
+        },
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "9001",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "STOP_LOSS_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "SINGLE",
+            "orderType": "LIMIT",
+            "legName": "STOP_LOSS_LEG",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_leg_name_in_lower_case",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "CONFIRM"
+          }
+        },
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "9001",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "target_leg",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "SINGLE",
+            "orderType": "LIMIT",
+            "legName": "TARGET_LEG",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_not_in_the_book_uses_the_entry_leg",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "CONFIRM"
+          }
+        },
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "5555",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "TARGET_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "SINGLE",
+            "orderType": "LIMIT",
+            "legName": "ENTRY_LEG",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_picks_its_own_orders_leg_among_others",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "CONFIRM"
+          }
+        },
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "5555",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "TARGET_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "9001",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "STOP_LOSS_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "SINGLE",
+            "orderType": "LIMIT",
+            "legName": "STOP_LOSS_LEG",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_leg_without_a_name_uses_the_entry_leg",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "CONFIRM"
+          }
+        },
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "9001",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "SINGLE",
+            "orderType": "LIMIT",
+            "legName": "ENTRY_LEG",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_book_unreadable_uses_the_entry_leg",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "CONFIRM"
+          }
+        },
+        "GET /v2/forever/orders": {
+          "status": 500,
+          "body": {
+            "errorType": "Order_Error",
+            "errorCode": "DH-900",
+            "errorMessage": "down"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "SINGLE",
+            "orderType": "LIMIT",
+            "legName": "ENTRY_LEG",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_limit_with_zero_price_becomes_market",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "CONFIRM"
+          }
+        },
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "9001",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "SINGLE",
+            "orderType": "MARKET",
+            "legName": "ENTRY_LEG",
+            "quantity": 10,
+            "price": 0.0,
+            "triggerPrice": 795.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_market",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "CONFIRM"
+          }
+        },
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "9001",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "SINGLE",
+            "orderType": "MARKET",
+            "legName": "ENTRY_LEG",
+            "quantity": 10,
+            "price": 0.0,
+            "triggerPrice": 795.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_oco_changes_the_stop_then_the_target",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "CONFIRM"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "OCO",
+            "orderType": "LIMIT",
+            "legName": "STOP_LOSS_LEG",
+            "quantity": 10,
+            "price": 779.0,
+            "triggerPrice": 780.0,
+            "validity": "DAY"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "OCO",
+            "orderType": "LIMIT",
+            "legName": "TARGET_LEG",
+            "quantity": 10,
+            "price": 829.0,
+            "triggerPrice": 830.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_oco_market",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "CONFIRM"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "OCO",
+            "orderType": "MARKET",
+            "legName": "STOP_LOSS_LEG",
+            "quantity": 10,
+            "price": 779.0,
+            "triggerPrice": 780.0,
+            "validity": "DAY"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "OCO",
+            "orderType": "MARKET",
+            "legName": "TARGET_LEG",
+            "quantity": 10,
+            "price": 829.0,
+            "triggerPrice": 830.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_oco_stop_leg_refused_stops_there",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "status": 400,
+          "body": {
+            "errorType": "Order_Error",
+            "errorCode": "DH-905",
+            "errorMessage": "Trigger too close"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Trigger too close",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "OCO",
+            "orderType": "LIMIT",
+            "legName": "STOP_LOSS_LEG",
+            "quantity": 10,
+            "price": 779.0,
+            "triggerPrice": 780.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_refused",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "status": 400,
+          "body": {
+            "errorType": "Order_Error",
+            "errorCode": "DH-905",
+            "errorMessage": "Trigger too close"
+          }
+        },
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "9001",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Trigger too close",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "SINGLE",
+            "orderType": "LIMIT",
+            "legName": "ENTRY_LEG",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_answer_without_an_order_id",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "body": {
+            "orderStatus": "CONFIRM"
+          }
+        },
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "9001",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "SINGLE",
+            "orderType": "LIMIT",
+            "legName": "ENTRY_LEG",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_refused_with_a_flat_message",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "status": 400,
+          "body": {
+            "message": "Bad request"
+          }
+        },
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "9001",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Bad request",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "SINGLE",
+            "orderType": "LIMIT",
+            "legName": "ENTRY_LEG",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_refused_without_any_reason",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "status": 400,
+          "body": {
+            "x": 1
+          }
+        },
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "9001",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to modify ENTRY_LEG",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "SINGLE",
+            "orderType": "LIMIT",
+            "legName": "ENTRY_LEG",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "9001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "NOPE",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/forever/orders/9001": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "CONFIRM"
+          }
+        },
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "9001",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json",
+            "client-id": "1100000001"
+          },
+          "json": {
+            "dhanClientId": "1100000001",
+            "orderId": "9001",
+            "orderFlag": "SINGLE",
+            "orderType": "LIMIT",
+            "legName": "ENTRY_LEG",
+            "quantity": 10,
+            "price": 790.0,
+            "triggerPrice": 795.0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancel",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "9001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/forever/orders/9001": {
+          "body": {
+            "orderId": "9001",
+            "orderStatus": "CANCELLED"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancel_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "9001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/forever/orders/9001": {
+          "status": 404,
+          "body": {
+            "errorType": "Order_Error",
+            "errorCode": "DH-905",
+            "errorMessage": "Order not found"
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "message": "Order not found",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancel_ok_answer_without_an_order_id",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "9001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/forever/orders/9001": {
+          "body": {
+            "orderStatus": "CANCELLED"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "9001"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancel_refused_with_a_flat_message",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "9001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/forever/orders/9001": {
+          "status": 400,
+          "body": {
+            "message": "Bad request"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Bad request",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancel_refused_without_any_reason",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "9001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/forever/orders/9001": {
+          "status": 400,
+          "body": {
+            "x": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to cancel GTT",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders/9001",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_active_only",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "2",
+              "orderStatus": "TRADED",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "3",
+              "orderStatus": "PENDING",
+              "transactionType": "SELL",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "OCO",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 829.0,
+              "triggerPrice": 830.0,
+              "legName": "TARGET_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "3",
+              "orderStatus": "PENDING",
+              "transactionType": "SELL",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "OCO",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 779.0,
+              "triggerPrice": 780.0,
+              "legName": "STOP_LOSS_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "4",
+              "orderStatus": "TRANSIT",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_FNO",
+              "productType": "MARGIN",
+              "orderType": "SINGLE",
+              "tradingSymbol": "NIFTY-Nov2026-FUT",
+              "securityId": "3045",
+              "quantity": 75,
+              "price": 0,
+              "triggerPrice": 24100.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "5",
+              "orderStatus": "CANCELLED",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "6",
+              "orderStatus": "PENDING",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "UNLISTED",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 10.0,
+              "triggerPrice": 11.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "7",
+              "orderStatus": "EXPIRED",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "",
+              "orderStatus": "PENDING",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 1.0,
+              "triggerPrice": 2.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "leg_name": "ENTRY_LEG",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "1",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "leg_name": "STOP_LOSS_LEG",
+                  "price": 779.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                },
+                {
+                  "action": "SELL",
+                  "leg_name": "TARGET_LEG",
+                  "price": 829.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "3",
+              "trigger_prices": [
+                780.0,
+                830.0
+              ],
+              "trigger_type": "two-leg",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NFO",
+              "expires_at": "",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "leg_name": "ENTRY_LEG",
+                  "price": 0,
+                  "pricetype": "MARKET",
+                  "product": "NRML",
+                  "quantity": 75
+                }
+              ],
+              "status": "active",
+              "symbol": "NIFTY25NOV26FUT",
+              "trigger_id": "4",
+              "trigger_prices": [
+                24100.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "leg_name": "ENTRY_LEG",
+                  "price": 10.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "UNLISTED",
+              "trigger_id": "6",
+              "trigger_prices": [
+                11.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_all_active_first",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "status": "all",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/forever/orders": {
+          "body": [
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "1",
+              "orderStatus": "CONFIRM",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "2",
+              "orderStatus": "TRADED",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "3",
+              "orderStatus": "PENDING",
+              "transactionType": "SELL",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "OCO",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 829.0,
+              "triggerPrice": 830.0,
+              "legName": "TARGET_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "3",
+              "orderStatus": "PENDING",
+              "transactionType": "SELL",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "OCO",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 779.0,
+              "triggerPrice": 780.0,
+              "legName": "STOP_LOSS_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "4",
+              "orderStatus": "TRANSIT",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_FNO",
+              "productType": "MARGIN",
+              "orderType": "SINGLE",
+              "tradingSymbol": "NIFTY-Nov2026-FUT",
+              "securityId": "3045",
+              "quantity": 75,
+              "price": 0,
+              "triggerPrice": 24100.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "5",
+              "orderStatus": "CANCELLED",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "6",
+              "orderStatus": "PENDING",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "UNLISTED",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 10.0,
+              "triggerPrice": 11.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "7",
+              "orderStatus": "EXPIRED",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 790.0,
+              "triggerPrice": 795.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            },
+            {
+              "dhanClientId": "1100000001",
+              "orderId": "",
+              "orderStatus": "PENDING",
+              "transactionType": "BUY",
+              "exchangeSegment": "NSE_EQ",
+              "productType": "CNC",
+              "orderType": "SINGLE",
+              "tradingSymbol": "SBIN",
+              "securityId": "3045",
+              "quantity": 10,
+              "price": 1.0,
+              "triggerPrice": 2.0,
+              "legName": "ENTRY_LEG",
+              "createTime": "2026-11-03 09:15:00",
+              "updateTime": "2026-11-03 09:16:00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "leg_name": "ENTRY_LEG",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "1",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "leg_name": "STOP_LOSS_LEG",
+                  "price": 779.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                },
+                {
+                  "action": "SELL",
+                  "leg_name": "TARGET_LEG",
+                  "price": 829.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "3",
+              "trigger_prices": [
+                780.0,
+                830.0
+              ],
+              "trigger_type": "two-leg",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NFO",
+              "expires_at": "",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "leg_name": "ENTRY_LEG",
+                  "price": 0,
+                  "pricetype": "MARKET",
+                  "product": "NRML",
+                  "quantity": 75
+                }
+              ],
+              "status": "active",
+              "symbol": "NIFTY25NOV26FUT",
+              "trigger_id": "4",
+              "trigger_prices": [
+                24100.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            },
+            {
+              "created_at": "2026-11-03 09:15:00",
+              "exchange": "NSE",
+              "expires_at": "",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "leg_name": "ENTRY_LEG",
+                  "price": 10.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "UNLISTED",
+              "trigger_id": "6",
+              "trigger_prices": [
+                11.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 09:16:00"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_empty",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/forever/orders": {
+          "body": []
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/forever/orders": {
+          "status": 401,
+          "body": {
+            "errorType": "Order_Error",
+            "errorCode": "DH-901",
+            "errorMessage": "Invalid access token"
+          }
+        }
+      },
+      "expected": {
+        "status": 401,
+        "body": {
+          "message": "Invalid access token",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/forever/orders",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using EPTradeBot.Core.Brokers;
 using EPTradeBot.Core.Brokers.Dhan;
+using EPTradeBot.Core.Brokers.Gtt;
 using EPTradeBot.Core.Calendar;
 using EPTradeBot.Core.Time;
 using Microsoft.Extensions.Logging;
@@ -14,8 +15,16 @@ namespace EPTradeBot.Infrastructure.Brokers.Dhan;
 /// <summary>Dhan v2 (broker/dhan). Request and response mapping held to tools/contract-fixtures/dhan.fixtures.json.</summary>
 [BrokerPlugin]
 public sealed class DhanPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, IMarketSessions calendar, TimeProvider clock, ILogger<DhanPlugin> logger)
-    : DhanPluginBase(http, sessions, symbols, calendar, clock, logger), IBrokerLoginStart
+    : DhanPluginBase(http, sessions, symbols, calendar, clock, logger), IBrokerLoginStart, IBrokerGtt
 {
+    public Task<GttResult> PlaceGttAsync(BrokerSession session, GttOrder order, CancellationToken cancellationToken) => PlaceForeverAsync(session, order, cancellationToken);
+
+    public Task<GttResult> ModifyGttAsync(BrokerSession session, GttOrder order, CancellationToken cancellationToken) => ModifyForeverAsync(session, order, cancellationToken);
+
+    public Task<GttResult> CancelGttAsync(BrokerSession session, string triggerId, CancellationToken cancellationToken) => CancelForeverAsync(session, triggerId, cancellationToken);
+
+    public Task<JsonArray> GetGttBookAsync(BrokerSession session, bool includeHistory, CancellationToken cancellationToken) => ForeverBookAsync(session, cancellationToken);
+
     public LoginMethod LoginMethod => LoginMethod.Redirect;
 
     public IReadOnlyList<string> LoginFields { get; } = [];
@@ -53,7 +62,7 @@ public sealed class DhanSandboxPlugin(IHttpClientFactory http, BrokerSessionFact
 /// <summary>
 /// The Dhan family. Port of broker/dhan and broker/dhan_sandbox: order_api.py, funds.py,
 /// data.py (quotes, depth), mapping/transform_data.py and mapping/order_data.py.
-/// Not ported yet, and refused rather than guessed: GTT and the feed. Sign-in is the live Dhan's only.
+/// Not ported yet, and refused rather than guessed: the feed. Sign-in is the live Dhan's only.
 /// </summary>
 public abstract partial class DhanPluginBase(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, IMarketSessions calendar, TimeProvider clock, ILogger logger)
     : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin

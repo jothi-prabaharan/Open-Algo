@@ -18,7 +18,8 @@ public sealed record GttOrder(
     decimal TriggerTg,
     decimal StopLoss,
     decimal Target,
-    string? TriggerId = null)
+    string? TriggerId = null,
+    string? Strategy = null)
 {
     public bool IsOco => TriggerType == "OCO";
 

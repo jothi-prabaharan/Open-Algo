@@ -32,7 +32,7 @@ public sealed partial class OpenAlgoApiService
         var tg = r.TriggerPriceTg ?? 0;
         // SINGLE keeps the one trigger that was given (the stoploss trigger wins if both are) and no second leg.
         var order = new GttOrder(instrument, oco ? "OCO" : "SINGLE", r.Action.ToUpperInvariant(), r.Product, (int)r.Quantity, r.PriceType, r.Price ?? 0,
-            oco || sl > 0 ? sl : 0, oco ? tg : sl > 0 ? 0 : tg, oco ? r.StopLoss ?? 0 : 0, oco ? r.Target ?? 0 : 0, triggerId);
+            oco || sl > 0 ? sl : 0, oco ? tg : sl > 0 ? 0 : tg, oco ? r.StopLoss ?? 0 : 0, oco ? r.Target ?? 0 : 0, triggerId, r.Strategy);
         return (order, null);
     }
 

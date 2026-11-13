@@ -1,0 +1,214 @@
+[
+ {
+  "name": "D1 client id from the account first",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "if (session.Key(\"ApiKey\") is { } key && key.Contains(\":::\", StringComparison.Ordinal)) return key.Split(\":::\", 2)[0];\n        return ClientId(session);",
+  "new": "return ClientId(session);",
+  "filter": "FullyQualifiedName~DhanGttApi",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "D2 oco price uses the single price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "[\"price\"] = single ? (double)order.Price : (double)order.StopLoss,",
+  "new": "[\"price\"] = (double)order.Price,",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D4 oco second leg dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "body[\"price1\"] = (double)order.Target;",
+  "new": "body[\"price2\"] = (double)order.Target;",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D5 strategy name not cut",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "order.Strategy.Length > 30 ? order.Strategy[..30] : order.Strategy",
+  "new": "order.Strategy",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D6 created status not accepted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "status is 200 or 201 && reply is JsonObject o",
+  "new": "status is 200 && reply is JsonObject o",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D7 ok answer without id reported as success",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "return GttResult.Refused(status is 200 or 201 ? 500 : status, ReasonOf(reply) ?? \"Failed to place GTT\");",
+  "new": "return GttResult.Success(\"x\");",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D8 oco legs in the wrong order",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "new List<string> { await StoredLegAsync(session, triggerId, cancellationToken) }",
+  "new": "new List<string> { await StoredLegAsync(session, triggerId, cancellationToken) }",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests",
+  "also": [
+   {
+    "old": "order.IsOco ? [\"STOP_LOSS_LEG\", \"TARGET_LEG\"]",
+    "new": "order.IsOco ? [\"TARGET_LEG\", \"STOP_LOSS_LEG\"]"
+   }
+  ]
+ },
+ {
+  "name": "D9 limit at zero not made market",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "var priceType = !order.IsOco && order.PriceType == \"LIMIT\" && order.Price == 0 ? \"MARKET\" : order.PriceType;",
+  "new": "var priceType = order.PriceType;",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D10 coercion applied to an oco",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "var priceType = !order.IsOco && order.PriceType == \"LIMIT\" && order.Price == 0 ? \"MARKET\" : order.PriceType;",
+  "new": "var priceType = order.PriceType == \"LIMIT\" && order.Price == 0 ? \"MARKET\" : order.PriceType;",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D11 target leg takes stop values",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "leg == \"TARGET_LEG\" ? ((double)order.Target, (double)order.TriggerTg) : ((double)order.StopLoss, (double)order.TriggerSl)",
+  "new": "leg == \"TARGET_LEG\" ? ((double)order.StopLoss, (double)order.TriggerSl) : ((double)order.Target, (double)order.TriggerTg)",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D12 first leg failure ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "if (status != 200 || reply is not JsonObject o || Str(o[\"orderId\"]) is not { Length: > 0 } id)\n            {",
+  "new": "if (Environment.TickCount64 < 0)\n            {",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests",
+  "also": [
+   {
+    "old": "lastId = id;",
+    "new": "lastId = triggerId;"
+   }
+  ]
+ },
+ {
+  "name": "D13 ok answer without id on modify is success",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "return GttResult.Refused(status == 200 ? 500 : status, ReasonOf(reply) ?? $\"Failed to modify {leg}\");",
+  "new": "return GttResult.Refused(status == 200 ? 200 : status, ReasonOf(reply) ?? $\"Failed to modify {leg}\");",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D14 stored leg not upper-cased",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "return Str(row[\"legName\"]) is { Length: > 0 } name ? name.ToUpperInvariant() : \"ENTRY_LEG\";",
+  "new": "return Str(row[\"legName\"]) is { Length: > 0 } name ? name : \"ENTRY_LEG\";",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D15 blank stored leg kept blank",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "? name.ToUpperInvariant() : \"ENTRY_LEG\";",
+  "new": "? name.ToUpperInvariant() : \"\";",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D16 other orders legs used",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": ".Where(r => Str(r[\"orderId\"]) == triggerId))",
+  "new": ".Where(r => true))",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D18 cancel ok answer without id is success",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "return GttResult.Refused(status == 200 ? 500 : status, ReasonOf(reply) ?? \"Failed to cancel GTT\");",
+  "new": "return GttResult.Success(triggerId);",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D19 finished orders listed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "!ActiveStatuses.Contains((Str(row[\"orderStatus\"]) ?? \"\").ToUpperInvariant())",
+  "new": "false",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D20 transit not active",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "[\"TRANSIT\", \"PENDING\", \"CONFIRM\"]",
+  "new": "[\"PENDING\", \"CONFIRM\"]",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D21 legs not sorted by trigger",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "var sorted = legs.OrderBy(l => Float(l[\"triggerPrice\"])).ToList();",
+  "new": "var sorted = legs.ToList();",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D22 pricetype guess reversed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "[\"pricetype\"] = price == 0 ? \"MARKET\" : \"LIMIT\"",
+  "new": "[\"pricetype\"] = price == 0 ? \"LIMIT\" : \"MARKET\"",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D23 margin product wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "\"MARGIN\" => \"NRML\"",
+  "new": "\"MARGIN\" => \"CNC\"",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D24 two-leg flag ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "== \"OCO\" ? \"two-leg\" : \"single\"",
+  "new": "== \"OCO\" ? \"single\" : \"single\"",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D25 rows without an id kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "if (id.Length == 0 || !ActiveStatuses",
+  "new": "if (!ActiveStatuses",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D26 unknown symbol hides the broker symbol",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "[\"symbol\"] = record?.Symbol is { Length: > 0 } s ? s : brokerSymbol,",
+  "new": "[\"symbol\"] = record?.Symbol is { Length: > 0 } s ? s : \"\",",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D27 cancel without content type",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Gtt.cs",
+  "old": "if (body is not null || method == HttpMethod.Delete)",
+  "new": "if (body is not null)",
+  "filter": "FullyQualifiedName~DhanGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

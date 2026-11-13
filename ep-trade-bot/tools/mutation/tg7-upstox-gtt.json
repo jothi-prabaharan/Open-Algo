@@ -1,0 +1,170 @@
+[
+ {
+  "name": "G1 below and above swapped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "? trigger < lastPrice ? \"BELOW\" : trigger > lastPrice ? \"ABOVE\" : \"IMMEDIATE\"",
+  "new": "? trigger < lastPrice ? \"ABOVE\" : trigger > lastPrice ? \"BELOW\" : \"IMMEDIATE\"",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G2 equal price not immediate",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": ": trigger > lastPrice ? \"ABOVE\" : \"IMMEDIATE\"",
+  "new": ": trigger > lastPrice ? \"ABOVE\" : \"BELOW\"",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G3 fallback reads the stoploss",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": ": order.TriggerTg > 0 ? \"ABOVE\" : \"BELOW\"",
+  "new": ": order.TriggerSl > 0 ? \"ABOVE\" : \"BELOW\"",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G4 entry side not flipped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "string.Equals(order.Action, \"BUY\", StringComparison.OrdinalIgnoreCase) ? \"SELL\" : \"BUY\"",
+  "new": "string.Equals(order.Action, \"BUY\", StringComparison.OrdinalIgnoreCase) ? \"BUY\" : \"SELL\"",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G5 target and stop swapped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "entry == \"BUY\" ? ((double)order.TriggerTg, (double)order.TriggerSl) : ((double)order.TriggerSl, (double)order.TriggerTg)",
+  "new": "entry == \"BUY\" ? ((double)order.TriggerSl, (double)order.TriggerTg) : ((double)order.TriggerTg, (double)order.TriggerSl)",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G8 modify keeps protection",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "foreach (var rule in rules.OfType<JsonObject>()) rule.Remove(\"market_protection\");",
+  "new": "",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G9 place oco without a price allowed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "var lastPrice = await LastPriceAsync(session, order, cancellationToken);\n        if (order.IsOco && lastPrice <= 0) return GttResult.Refused(502, LastPriceFailed);\n\n        var body = GttBody(order, lastPrice, forModify: false);",
+  "new": "var lastPrice = await LastPriceAsync(session, order, cancellationToken);\n\n        var body = GttBody(order, lastPrice, forModify: false);",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G10 modify oco without a price allowed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "var lastPrice = await LastPriceAsync(session, order, cancellationToken);\n        if (order.IsOco && lastPrice <= 0) return GttResult.Refused(502, LastPriceFailed);\n\n        var body = GttBody(order, lastPrice, forModify: true);",
+  "new": "var lastPrice = await LastPriceAsync(session, order, cancellationToken);\n\n        var body = GttBody(order, lastPrice, forModify: true);",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G11 inactive rules not live",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "[\"SCHEDULED\", \"PENDING\", \"OPEN\", \"INACTIVE\"]",
+  "new": "[\"SCHEDULED\", \"PENDING\", \"OPEN\"]",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G12 entry shown in a bracket",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "type == \"MULTIPLE\" ? rules.Where(r => S(r[\"strategy\"]).ToUpperInvariant() != \"ENTRY\").ToList() : rules",
+  "new": "rules",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G13 legs not sorted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "shown = [.. shown.OrderBy(r => Float(r[\"trigger_price\"]))];",
+  "new": "",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G14 microseconds read as milliseconds",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "else if (epoch >= 1e15) seconds = epoch / 1e6;",
+  "new": "else if (epoch >= 1e15) seconds = epoch / 1e3;",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G15 futures exchange wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "\"NSE_FO\" => \"NFO\"",
+  "new": "\"NSE_FO\" => \"NSE\"",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G16 delivery product wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "\"NFO\" or \"BFO\" or \"MCX\" or \"CDS\" => \"NRML\"",
+  "new": "\"NFO\" or \"BFO\" or \"MCX\" or \"CDS\" => \"CNC\"",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G17 code not joined",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "$\"{code}: {message}\".Trim(':', ' ')",
+  "new": "message",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G18 single id field ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "if (S(data[\"gtt_order_id\"]) is { Length: > 0 } single) return single;",
+  "new": "",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G19 cancel field renamed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "new JsonObject { [\"gtt_order_id\"] = triggerId }",
+  "new": "new JsonObject { [\"trigger_id\"] = triggerId }",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G20 ok error reported as success on place",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "return GttResult.Refused(status == 200 ? 500 : status, GttErrorMessage(payload, \"Failed to place GTT\"));",
+  "new": "return GttResult.Success(\"x\");",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G22 book keeps finished triggers",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "if (!rules.Any(r => LiveRuleStatuses.Contains(S(r[\"status\"]).ToUpperInvariant()))) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G23 unnamed type is not single",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "S(gtt[\"type\"]) is { Length: > 0 } t ? t.ToUpperInvariant() : \"SINGLE\"",
+  "new": "S(gtt[\"type\"]) is { Length: > 0 } t ? t.ToUpperInvariant() : \"MULTIPLE\"",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G24 quote failure not tolerated",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Gtt.cs",
+  "old": "catch (BrokerException ex)\n        {\n            logger.LogWarning(ex, \"Upstox GTT could not read the last price of {Symbol}.\", order.Instrument.Symbol);\n            return 0;\n        }",
+  "new": "catch (BrokerException ex) when (Environment.TickCount64 < 0)\n        {\n            logger.LogWarning(ex, \"Upstox GTT could not read the last price of {Symbol}.\", order.Instrument.Symbol);\n            return 0;\n        }",
+  "filter": "FullyQualifiedName~UpstoxGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

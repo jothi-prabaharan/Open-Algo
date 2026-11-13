@@ -1,0 +1,5078 @@
+{
+  "broker": "upstox",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "upstox-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE_EQ",
+      "token": "NSE_EQ|INE062A01020",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE_EQ",
+      "token": "NSE_EQ|INE009A01021",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY FUT 25 NOV 26",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE_FO",
+      "token": "NSE_FO|35001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "Nifty 50",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE_INDEX",
+      "token": "NSE_INDEX|Nifty 50",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY 24000 CE 25 NOV 26",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE_FO",
+      "token": "NSE_FO|40001",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "CE",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "place_single_trigger_below_last_price",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_trigger_above_last_price",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "0",
+        "triggerprice_tg": "820",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "SELL",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "ABOVE",
+                "trigger_price": 820.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_trigger_equal_to_last_price",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "805.45",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "IMMEDIATE",
+                "trigger_price": 805.45
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_limit_price_is_dropped",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "700",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_market_protected",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0,
+                "market_protection": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_market_cheap_stock",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "INFY",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:INFY": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 90.0
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 90.0,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 90.0,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE009A01021",
+                "symbol": "INFY",
+                "last_price": 90.0,
+                "volume": 1234567,
+                "average_price": 90.0,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 90.0,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE009A01021"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE009A01021",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "ABOVE",
+                "trigger_price": 795.0,
+                "market_protection": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_nrml_future",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NFO",
+        "symbol": "NIFTY25NOV26FUT",
+        "action": "BUY",
+        "product": "NRML",
+        "quantity": "75",
+        "pricetype": "LIMIT",
+        "price": "23900",
+        "triggerprice_sl": "23950",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_FO:NIFTY FUT 25 NOV 26": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 23980.25
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 23980.25,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 23980.25,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_FO|35001",
+                "symbol": "NIFTY FUT 25 NOV 26",
+                "last_price": 23980.25,
+                "volume": 1234567,
+                "average_price": 23980.25,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 23980.25,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_FO|35001"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 75,
+            "product": "D",
+            "instrument_token": "NSE_FO|35001",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 23950.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_market_option_slab",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NFO",
+        "symbol": "NIFTY25NOV2624000CE",
+        "action": "BUY",
+        "product": "NRML",
+        "quantity": "75",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "8",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_FO:NIFTY 24000 CE 25 NOV 26": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 7.5
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 7.5,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 7.5,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_FO|40001",
+                "symbol": "NIFTY 24000 CE 25 NOV 26",
+                "last_price": 7.5,
+                "volume": 1234567,
+                "average_price": 7.5,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 7.5,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_FO|40001"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 75,
+            "product": "D",
+            "instrument_token": "NSE_FO|40001",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "ABOVE",
+                "trigger_price": 8.0,
+                "market_protection": 5
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_without_a_last_price_falls_back_to_the_stoploss_side",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_without_a_last_price_falls_back_to_the_target_side",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "0",
+        "triggerprice_tg": "820",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "SELL",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "ABOVE",
+                "trigger_price": 820.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_last_price_zero",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 0
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 0,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 0,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 0,
+                "volume": 1234567,
+                "average_price": 0,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 0,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_quote_refused",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "errorCode": "UDAPI100050",
+                "message": "Invalid token used to access API"
+              }
+            ]
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_sell_exit_opens_a_long_entry",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "MULTIPLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "IMMEDIATE",
+                "trigger_price": 805.45
+              },
+              {
+                "strategy": "TARGET",
+                "trigger_type": "IMMEDIATE",
+                "trigger_price": 830.0
+              },
+              {
+                "strategy": "STOPLOSS",
+                "trigger_type": "IMMEDIATE",
+                "trigger_price": 780.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_buy_exit_opens_a_short_entry",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "MULTIPLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "SELL",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "IMMEDIATE",
+                "trigger_price": 805.45
+              },
+              {
+                "strategy": "TARGET",
+                "trigger_type": "IMMEDIATE",
+                "trigger_price": 780.0
+              },
+              {
+                "strategy": "STOPLOSS",
+                "trigger_type": "IMMEDIATE",
+                "trigger_price": 830.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_market_protected_around_each_trigger",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "MULTIPLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "IMMEDIATE",
+                "trigger_price": 805.45,
+                "market_protection": 1
+              },
+              {
+                "strategy": "TARGET",
+                "trigger_type": "IMMEDIATE",
+                "trigger_price": 830.0,
+                "market_protection": 1
+              },
+              {
+                "strategy": "STOPLOSS",
+                "trigger_type": "IMMEDIATE",
+                "trigger_price": 780.0,
+                "market_protection": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_without_a_last_price_is_refused",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 502,
+        "body": {
+          "message": "Failed to fetch last_price from Upstox quotes",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "error_code": "UDAPI1141",
+                "message": "Entry rule is mandatory"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "UDAPI1141: Entry rule is mandatory",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_broker_refuses_with_two_reasons",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "error_code": "UDAPI1137",
+                "message": "Rules needed"
+              },
+              {
+                "error_code": "",
+                "message": "Second reason"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "UDAPI1137: Rules needed; Second reason",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_broker_session_expired",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "error_code": "UDAPI100050",
+                "message": "Invalid token used to access API"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 401,
+        "body": {
+          "message": "UDAPI100050: Invalid token used to access API",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_broker_gateway_message",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "status": 502,
+          "body": {
+            "message": "Bad gateway"
+          }
+        }
+      },
+      "expected": {
+        "status": 502,
+        "body": {
+          "message": "Bad gateway",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_ok_answer_without_an_id",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to place GTT",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_ok_answer_with_a_single_id_field",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_id": "GTT-ONE"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-ONE"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_error_status_in_an_ok_answer",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "error_code": "UDAPI1",
+                "message": "Rejected in an ok answer"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "UDAPI1: Rejected in an ok answer",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/place",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "product": "D",
+            "instrument_token": "NSE_EQ|INE062A01020",
+            "transaction_type": "BUY",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "NOPE",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "POST /v3/order/gtt/place": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "message": "Instrument token not found for NOPE",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "modify_single",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT-C25110300000001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "PUT /v3/order/gtt/modify": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/modify",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "gtt_order_id": "GTT-C25110300000001",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_market_has_no_protection",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT-C25110300000001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "PUT /v3/order/gtt/modify": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/modify",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "gtt_order_id": "GTT-C25110300000001",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_oco",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT-C25110300000001",
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "PUT /v3/order/gtt/modify": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/modify",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "MULTIPLE",
+            "quantity": 10,
+            "gtt_order_id": "GTT-C25110300000001",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "IMMEDIATE",
+                "trigger_price": 805.45
+              },
+              {
+                "strategy": "TARGET",
+                "trigger_type": "IMMEDIATE",
+                "trigger_price": 830.0
+              },
+              {
+                "strategy": "STOPLOSS",
+                "trigger_type": "IMMEDIATE",
+                "trigger_price": 780.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_oco_without_a_last_price_is_refused",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT-C25110300000001",
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        },
+        "PUT /v3/order/gtt/modify": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 502,
+        "body": {
+          "message": "Failed to fetch last_price from Upstox quotes",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT-C25110300000001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "PUT /v3/order/gtt/modify": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "error_code": "UDAPI1150",
+                "message": "Quantity cannot be changed"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "UDAPI1150: Quantity cannot be changed",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/modify",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "gtt_order_id": "GTT-C25110300000001",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_error_status_in_an_ok_answer",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT-C25110300000001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "PUT /v3/order/gtt/modify": {
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "error_code": "UDAPI2",
+                "message": "Rejected in an ok answer"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/modify",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "gtt_order_id": "GTT-C25110300000001",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_without_an_id_in_the_answer_keeps_the_given_id",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT-C25110300000001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "PUT /v3/order/gtt/modify": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/market-quote/quotes",
+          "query": [
+            [
+              "instrument_key",
+              "NSE_EQ|INE062A01020"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/modify",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "type": "SINGLE",
+            "quantity": 10,
+            "gtt_order_id": "GTT-C25110300000001",
+            "rules": [
+              {
+                "strategy": "ENTRY",
+                "trigger_type": "BELOW",
+                "trigger_price": 795.0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT-C25110300000001",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "NOPE",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        },
+        "PUT /v3/order/gtt/modify": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "message": "Instrument token not found for NOPE",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "modify_missing_trigger_id",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/market-quote/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE_EQ:SBIN": {
+                "ohlc": {
+                  "open": 800.0,
+                  "high": 810.0,
+                  "low": 795.5,
+                  "close": 805.45
+                },
+                "depth": {
+                  "buy": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "quantity": 1,
+                      "price": 805.45,
+                      "orders": 1
+                    }
+                  ]
+                },
+                "timestamp": "2026-11-03T09:30:00.000+05:30",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "symbol": "SBIN",
+                "last_price": 805.45,
+                "volume": 1234567,
+                "average_price": 805.45,
+                "oi": 0,
+                "net_change": 5.5,
+                "total_buy_quantity": 170,
+                "total_sell_quantity": 97,
+                "lower_circuit_limit": 700,
+                "upper_circuit_limit": 900,
+                "last_trade_time": "1793686800000",
+                "oi_day_high": 0,
+                "oi_day_low": 0,
+                "prev_close_price": 805.45,
+                "last_quantity": 5
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'trigger_id': ['Missing data for required field.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "cancel",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "GTT-C25110300000001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v3/order/gtt/cancel": {
+          "body": {
+            "status": "success",
+            "data": {
+              "gtt_order_ids": [
+                "GTT-C25110300000001"
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-C25110300000001"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/cancel",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "gtt_order_id": "GTT-C25110300000001"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancel_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "GTT-C25110300000001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v3/order/gtt/cancel": {
+          "status": 404,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "error_code": "UDAPI1160",
+                "message": "GTT not found"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "message": "UDAPI1160: GTT not found",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/cancel",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "gtt_order_id": "GTT-C25110300000001"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancel_ok_answer_without_an_id",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "GTT-X",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v3/order/gtt/cancel": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT-X"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt/cancel",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "gtt_order_id": "GTT-X"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_active_only",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/order/gtt": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "gtt_order_id": "GTT-1",
+                "type": "SINGLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "SCHEDULED",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 795.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-2",
+                "type": "SINGLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "COMPLETED",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 795.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-3",
+                "type": "MULTIPLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "TRIGGERED",
+                    "trigger_type": "IMMEDIATE",
+                    "trigger_price": 800.0,
+                    "transaction_type": "BUY"
+                  },
+                  {
+                    "strategy": "TARGET",
+                    "status": "OPEN",
+                    "trigger_type": "IMMEDIATE",
+                    "trigger_price": 830.0,
+                    "transaction_type": "SELL"
+                  },
+                  {
+                    "strategy": "STOPLOSS",
+                    "status": "INACTIVE",
+                    "trigger_type": "IMMEDIATE",
+                    "trigger_price": 780.0,
+                    "transaction_type": "SELL"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-4",
+                "type": "SINGLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "CANCELLED",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 795.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-5",
+                "type": "SINGLE",
+                "exchange": "NSE_FO",
+                "quantity": 75,
+                "product": "D",
+                "trading_symbol": "NIFTY 24000 CE 25 NOV 26",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "PENDING",
+                    "trigger_type": "ABOVE",
+                    "trigger_price": 24100.0,
+                    "transaction_type": "SELL"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-6",
+                "type": "SINGLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "UNLISTED",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "SCHEDULED",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 10.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-7",
+                "type": "SINGLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "I",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": "2026-11-03T09:15:00Z",
+                "expires_at": "",
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "SCHEDULED",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 10.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-8",
+                "type": "SINGLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "EXPIRED",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 10.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-9",
+                "type": "SINGLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "INACTIVE",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 10.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-10",
+                "type": null,
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "SCHEDULED",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 11.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "created_at": "2026-01-03T08:46:40Z",
+              "exchange": "NSE",
+              "expires_at": "2027-01-03T08:46:40Z",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 795.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "GTT-1",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": ""
+            },
+            {
+              "created_at": "2026-01-03T08:46:40Z",
+              "exchange": "NSE",
+              "expires_at": "2027-01-03T08:46:40Z",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "price": 780.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                },
+                {
+                  "action": "SELL",
+                  "price": 830.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "GTT-3",
+              "trigger_prices": [
+                780.0,
+                830.0
+              ],
+              "trigger_type": "two-leg",
+              "updated_at": ""
+            },
+            {
+              "created_at": "2026-01-03T08:46:40Z",
+              "exchange": "NFO",
+              "expires_at": "2027-01-03T08:46:40Z",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "price": 24100.0,
+                  "pricetype": "LIMIT",
+                  "product": "NRML",
+                  "quantity": 75
+                }
+              ],
+              "status": "active",
+              "symbol": "NIFTY25NOV2624000CE",
+              "trigger_id": "GTT-5",
+              "trigger_prices": [
+                24100.0
+              ],
+              "trigger_type": "single",
+              "updated_at": ""
+            },
+            {
+              "created_at": "2026-01-03T08:46:40Z",
+              "exchange": "NSE",
+              "expires_at": "2027-01-03T08:46:40Z",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 10.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "UNLISTED",
+              "trigger_id": "GTT-6",
+              "trigger_prices": [
+                10.0
+              ],
+              "trigger_type": "single",
+              "updated_at": ""
+            },
+            {
+              "created_at": "2026-11-03T09:15:00Z",
+              "exchange": "NSE",
+              "expires_at": "",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 10.0,
+                  "pricetype": "LIMIT",
+                  "product": "MIS",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "GTT-7",
+              "trigger_prices": [
+                10.0
+              ],
+              "trigger_type": "single",
+              "updated_at": ""
+            },
+            {
+              "created_at": "2026-01-03T08:46:40Z",
+              "exchange": "NSE",
+              "expires_at": "2027-01-03T08:46:40Z",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 10.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "GTT-9",
+              "trigger_prices": [
+                10.0
+              ],
+              "trigger_type": "single",
+              "updated_at": ""
+            },
+            {
+              "created_at": "2026-01-03T08:46:40Z",
+              "exchange": "NSE",
+              "expires_at": "2027-01-03T08:46:40Z",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 11.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "GTT-10",
+              "trigger_prices": [
+                11.0
+              ],
+              "trigger_type": "single",
+              "updated_at": ""
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_all_active_first",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "status": "all",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/order/gtt": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "gtt_order_id": "GTT-1",
+                "type": "SINGLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "SCHEDULED",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 795.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-2",
+                "type": "SINGLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "COMPLETED",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 795.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-3",
+                "type": "MULTIPLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "TRIGGERED",
+                    "trigger_type": "IMMEDIATE",
+                    "trigger_price": 800.0,
+                    "transaction_type": "BUY"
+                  },
+                  {
+                    "strategy": "TARGET",
+                    "status": "OPEN",
+                    "trigger_type": "IMMEDIATE",
+                    "trigger_price": 830.0,
+                    "transaction_type": "SELL"
+                  },
+                  {
+                    "strategy": "STOPLOSS",
+                    "status": "INACTIVE",
+                    "trigger_type": "IMMEDIATE",
+                    "trigger_price": 780.0,
+                    "transaction_type": "SELL"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-4",
+                "type": "SINGLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "CANCELLED",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 795.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-5",
+                "type": "SINGLE",
+                "exchange": "NSE_FO",
+                "quantity": 75,
+                "product": "D",
+                "trading_symbol": "NIFTY 24000 CE 25 NOV 26",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "PENDING",
+                    "trigger_type": "ABOVE",
+                    "trigger_price": 24100.0,
+                    "transaction_type": "SELL"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-6",
+                "type": "SINGLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "UNLISTED",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "SCHEDULED",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 10.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-7",
+                "type": "SINGLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "I",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": "2026-11-03T09:15:00Z",
+                "expires_at": "",
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "SCHEDULED",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 10.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-8",
+                "type": "SINGLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "EXPIRED",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 10.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-9",
+                "type": "SINGLE",
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "INACTIVE",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 10.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              },
+              {
+                "gtt_order_id": "GTT-10",
+                "type": null,
+                "exchange": "NSE_EQ",
+                "quantity": 10,
+                "product": "D",
+                "trading_symbol": "SBIN",
+                "instrument_token": "NSE_EQ|INE062A01020",
+                "created_at": 1767430000000000,
+                "expires_at": 1798966000000000,
+                "rules": [
+                  {
+                    "strategy": "ENTRY",
+                    "status": "SCHEDULED",
+                    "trigger_type": "BELOW",
+                    "trigger_price": 11.0,
+                    "transaction_type": "BUY"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "created_at": "2026-01-03T08:46:40Z",
+              "exchange": "NSE",
+              "expires_at": "2027-01-03T08:46:40Z",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 795.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "GTT-1",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": ""
+            },
+            {
+              "created_at": "2026-01-03T08:46:40Z",
+              "exchange": "NSE",
+              "expires_at": "2027-01-03T08:46:40Z",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "price": 780.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                },
+                {
+                  "action": "SELL",
+                  "price": 830.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "GTT-3",
+              "trigger_prices": [
+                780.0,
+                830.0
+              ],
+              "trigger_type": "two-leg",
+              "updated_at": ""
+            },
+            {
+              "created_at": "2026-01-03T08:46:40Z",
+              "exchange": "NFO",
+              "expires_at": "2027-01-03T08:46:40Z",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "price": 24100.0,
+                  "pricetype": "LIMIT",
+                  "product": "NRML",
+                  "quantity": 75
+                }
+              ],
+              "status": "active",
+              "symbol": "NIFTY25NOV2624000CE",
+              "trigger_id": "GTT-5",
+              "trigger_prices": [
+                24100.0
+              ],
+              "trigger_type": "single",
+              "updated_at": ""
+            },
+            {
+              "created_at": "2026-01-03T08:46:40Z",
+              "exchange": "NSE",
+              "expires_at": "2027-01-03T08:46:40Z",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 10.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "UNLISTED",
+              "trigger_id": "GTT-6",
+              "trigger_prices": [
+                10.0
+              ],
+              "trigger_type": "single",
+              "updated_at": ""
+            },
+            {
+              "created_at": "2026-11-03T09:15:00Z",
+              "exchange": "NSE",
+              "expires_at": "",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 10.0,
+                  "pricetype": "LIMIT",
+                  "product": "MIS",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "GTT-7",
+              "trigger_prices": [
+                10.0
+              ],
+              "trigger_type": "single",
+              "updated_at": ""
+            },
+            {
+              "created_at": "2026-01-03T08:46:40Z",
+              "exchange": "NSE",
+              "expires_at": "2027-01-03T08:46:40Z",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 10.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "GTT-9",
+              "trigger_prices": [
+                10.0
+              ],
+              "trigger_type": "single",
+              "updated_at": ""
+            },
+            {
+              "created_at": "2026-01-03T08:46:40Z",
+              "exchange": "NSE",
+              "expires_at": "2027-01-03T08:46:40Z",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 11.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "GTT-10",
+              "trigger_prices": [
+                11.0
+              ],
+              "trigger_type": "single",
+              "updated_at": ""
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_empty",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/order/gtt": {
+          "body": {
+            "status": "success",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v3/order/gtt": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "error_code": "UDAPI100050",
+                "message": "Invalid token used to access API"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 401,
+        "body": {
+          "message": "UDAPI100050: Invalid token used to access API",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.upstox.com",
+          "path": "/v3/order/gtt",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer upstox-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
