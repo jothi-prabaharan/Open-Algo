@@ -1,0 +1,5537 @@
+{
+  "broker": "tradesmart",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "FA12345:::tradesmart-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [
+    "/NorenWClientAPIv2/OrderBook",
+    "/NorenWClientAPIv2/TradeBook",
+    "/NorenWClientAPIv2/PositionBook",
+    "/NorenWClientAPIv2/Holdings",
+    "/NorenWClientAPIv2/Limits",
+    "/NorenWClientAPIv2/GetQuotes"
+  ],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN-EQ",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "M&M",
+      "brsymbol": "M&M-EQ",
+      "name": "MAHINDRA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "2031",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY-EQ",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY25NOV26F",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "35001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY25NOV2624000CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "40001",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "OPTIDX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "CRUDEOIL",
+      "brsymbol": "CRUDEOIL",
+      "name": "CRUDEOIL",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "50001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 100,
+      "instrumenttype": "FUTCOM",
+      "tick_size": 1.0
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000123",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "800.5",
+            "trgprc": "0.0",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit_cnc",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "INFY",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "1500.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "2",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000123",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "INFY-EQ",
+            "qty": "10",
+            "prc": "1500.5",
+            "trgprc": "0.0",
+            "dscqty": "2",
+            "prd": "C",
+            "trantype": "S",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_sl_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "SL",
+        "product": "NRML",
+        "price": "24010",
+        "trigger_price": "24000",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000123",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NFO",
+            "tsym": "NIFTY25NOV26F",
+            "qty": "75",
+            "prc": "24010.0",
+            "trgprc": "24000.0",
+            "dscqty": "0",
+            "prd": "M",
+            "trantype": "B",
+            "prctyp": "SL-LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_ampersand_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "M&M",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000123",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "M%26M-EQ",
+            "qty": "10",
+            "prc": "800.5",
+            "trgprc": "0.0",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_becomes_a_protected_limit_buy",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetQuotes": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "token": "3045",
+            "lp": "805.45",
+            "o": "802.45",
+            "h": "809.45",
+            "l": "800.45",
+            "c": "803.95",
+            "v": "1234567",
+            "ltq": "25",
+            "bp1": "805.4",
+            "sp1": "805.5",
+            "oi": "1500",
+            "ti": "0.05",
+            "bq1": "100",
+            "sq1": "110",
+            "bo1": "1",
+            "so1": "2",
+            "bp2": "805.35",
+            "bq2": "200",
+            "sp2": "805.55",
+            "sq2": "220",
+            "bo2": "2",
+            "so2": "4",
+            "bp3": "805.3",
+            "bq3": "300",
+            "sp3": "805.6",
+            "sq3": "330",
+            "bo3": "3",
+            "so3": "6",
+            "bp4": "805.25",
+            "bq4": "400",
+            "sp4": "805.65",
+            "sq4": "440",
+            "bo4": "4",
+            "so4": "8",
+            "bp5": "805.2",
+            "bq5": "500",
+            "sp5": "805.7",
+            "sq5": "550",
+            "bo5": "5",
+            "so5": "10"
+          }
+        },
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000123",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": "3045",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "809.5",
+            "trgprc": "0.0",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_becomes_a_protected_limit_sell",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetQuotes": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "token": "3045",
+            "lp": "805.45",
+            "o": "802.45",
+            "h": "809.45",
+            "l": "800.45",
+            "c": "803.95",
+            "v": "1234567",
+            "ltq": "25",
+            "bp1": "805.4",
+            "sp1": "805.5",
+            "oi": "1500",
+            "ti": "0.05",
+            "bq1": "100",
+            "sq1": "110",
+            "bo1": "1",
+            "so1": "2",
+            "bp2": "805.35",
+            "bq2": "200",
+            "sp2": "805.55",
+            "sq2": "220",
+            "bo2": "2",
+            "so2": "4",
+            "bp3": "805.3",
+            "bq3": "300",
+            "sp3": "805.6",
+            "sq3": "330",
+            "bo3": "3",
+            "so3": "6",
+            "bp4": "805.25",
+            "bq4": "400",
+            "sp4": "805.65",
+            "sq4": "440",
+            "bo4": "4",
+            "so4": "8",
+            "bp5": "805.2",
+            "bq5": "500",
+            "sp5": "805.7",
+            "sq5": "550",
+            "bo5": "5",
+            "so5": "10"
+          }
+        },
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000123",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": "3045",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "801.4",
+            "trgprc": "0.0",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "S",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_option_uses_the_option_slab",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV2624000CE",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetQuotes": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "exch": "NFO",
+            "tsym": "NIFTY25NOV2624000CE",
+            "token": "40001",
+            "lp": "120.3",
+            "o": "802.45",
+            "h": "809.45",
+            "l": "800.45",
+            "c": "803.95",
+            "v": "1234567",
+            "ltq": "25",
+            "bp1": "805.4",
+            "sp1": "805.5",
+            "oi": "1500",
+            "ti": "0.05",
+            "bq1": "100",
+            "sq1": "110",
+            "bo1": "1",
+            "so1": "2",
+            "bp2": "805.35",
+            "bq2": "200",
+            "sp2": "805.55",
+            "sq2": "220",
+            "bo2": "2",
+            "so2": "4",
+            "bp3": "805.3",
+            "bq3": "300",
+            "sp3": "805.6",
+            "sq3": "330",
+            "bo3": "3",
+            "so3": "6",
+            "bp4": "805.25",
+            "bq4": "400",
+            "sp4": "805.65",
+            "sq4": "440",
+            "bo4": "4",
+            "so4": "8",
+            "bp5": "805.2",
+            "bq5": "500",
+            "sp5": "805.7",
+            "sq5": "550",
+            "bo5": "5",
+            "so5": "10"
+          }
+        },
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000123",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "exch": "NFO",
+            "token": "40001",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NFO",
+            "tsym": "NIFTY25NOV2624000CE",
+            "qty": "75",
+            "prc": "122.7",
+            "trgprc": "0.0",
+            "dscqty": "0",
+            "prd": "M",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_cheap_share",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetQuotes": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "token": "3045",
+            "lp": "42.35",
+            "o": "802.45",
+            "h": "809.45",
+            "l": "800.45",
+            "c": "803.95",
+            "v": "1234567",
+            "ltq": "25",
+            "bp1": "805.4",
+            "sp1": "805.5",
+            "oi": "1500",
+            "ti": "0.05",
+            "bq1": "100",
+            "sq1": "110",
+            "bo1": "1",
+            "so1": "2",
+            "bp2": "805.35",
+            "bq2": "200",
+            "sp2": "805.55",
+            "sq2": "220",
+            "bo2": "2",
+            "so2": "4",
+            "bp3": "805.3",
+            "bq3": "300",
+            "sp3": "805.6",
+            "sq3": "330",
+            "bo3": "3",
+            "so3": "6",
+            "bp4": "805.25",
+            "bq4": "400",
+            "sp4": "805.65",
+            "sq4": "440",
+            "bo4": "4",
+            "so4": "8",
+            "bp5": "805.2",
+            "bq5": "500",
+            "sp5": "805.7",
+            "sq5": "550",
+            "bo5": "5",
+            "so5": "10"
+          }
+        },
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000123",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": "3045",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "43.2",
+            "trgprc": "0.0",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_quote_has_no_price",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetQuotes": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "token": "3045",
+            "lp": "0",
+            "o": "802.45",
+            "h": "809.45",
+            "l": "800.45",
+            "c": "803.95",
+            "v": "1234567",
+            "ltq": "25",
+            "bp1": "805.4",
+            "sp1": "805.5",
+            "oi": "1500",
+            "ti": "0.05",
+            "bq1": "100",
+            "sq1": "110",
+            "bo1": "1",
+            "so1": "2",
+            "bp2": "805.35",
+            "bq2": "200",
+            "sp2": "805.55",
+            "sq2": "220",
+            "bo2": "2",
+            "so2": "4",
+            "bp3": "805.3",
+            "bq3": "300",
+            "sp3": "805.6",
+            "sq3": "330",
+            "bo3": "3",
+            "so3": "6",
+            "bp4": "805.25",
+            "bq4": "400",
+            "sp4": "805.65",
+            "sq4": "440",
+            "bo4": "4",
+            "so4": "8",
+            "bp5": "805.2",
+            "bq5": "500",
+            "sp5": "805.7",
+            "sq5": "550",
+            "bo5": "5",
+            "so5": "10"
+          }
+        },
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000123",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": "3045",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "0.0",
+            "trgprc": "0.0",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_quote_refused",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetQuotes": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Session Expired : Invalid Session Key"
+          }
+        },
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000123",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": "3045",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "0.0",
+            "trgprc": "0.0",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market_becomes_a_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetQuotes": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "token": "3045",
+            "lp": "805.45",
+            "o": "802.45",
+            "h": "809.45",
+            "l": "800.45",
+            "c": "803.95",
+            "v": "1234567",
+            "ltq": "25",
+            "bp1": "805.4",
+            "sp1": "805.5",
+            "oi": "1500",
+            "ti": "0.05",
+            "bq1": "100",
+            "sq1": "110",
+            "bo1": "1",
+            "so1": "2",
+            "bp2": "805.35",
+            "bq2": "200",
+            "sp2": "805.55",
+            "sq2": "220",
+            "bo2": "2",
+            "so2": "4",
+            "bp3": "805.3",
+            "bq3": "300",
+            "sp3": "805.6",
+            "sq3": "330",
+            "bo3": "3",
+            "so3": "6",
+            "bp4": "805.25",
+            "bq4": "400",
+            "sp4": "805.65",
+            "sq4": "440",
+            "bo4": "4",
+            "so4": "8",
+            "bp5": "805.2",
+            "bq5": "500",
+            "sp5": "805.7",
+            "sq5": "550",
+            "bo5": "5",
+            "so5": "10"
+          }
+        },
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000123",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": "3045",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "801.5",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "SL-LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market_without_a_quote_is_priced_off_the_trigger",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetQuotes": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "no quote"
+          }
+        },
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000123",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": "3045",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "801.5",
+            "trgprc": "801.5",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "SL-LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Not_Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "emsg": "Rejected : Insufficient funds"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "800.5",
+            "trgprc": "0.0",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000123",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": null,
+            "qty": "10",
+            "prc": "800.5",
+            "trgprc": "0.0",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "1001",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/ModifyOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "1001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/ModifyOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "exch": "NSE",
+            "norenordno": "1001",
+            "prctyp": "LMT",
+            "prc": "801.0",
+            "qty": "12",
+            "tsym": "SBIN-EQ",
+            "ret": "DAY",
+            "dscqty": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "orderid": "1003",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "SL",
+        "product": "NRML",
+        "price": "24020",
+        "disclosed_quantity": "5",
+        "trigger_price": "24005",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/ModifyOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "1003",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/ModifyOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "exch": "NFO",
+            "norenordno": "1003",
+            "prctyp": "SL-LMT",
+            "prc": "24020.0",
+            "qty": "75",
+            "tsym": "NIFTY25NOV26F",
+            "ret": "DAY",
+            "dscqty": "5",
+            "trgprc": "24005.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_ampersand_symbol",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "M&M",
+        "exchange": "NSE",
+        "orderid": "1011",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "2800",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/ModifyOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "1011",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/ModifyOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "exch": "NSE",
+            "norenordno": "1011",
+            "prctyp": "LMT",
+            "prc": "2800.0",
+            "qty": "1",
+            "tsym": "M%26M-EQ",
+            "ret": "DAY",
+            "dscqty": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "1002",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/ModifyOrder": {
+          "body": {
+            "stat": "Not_Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "emsg": "Rejected : Insufficient funds"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "1002",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/ModifyOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "exch": "NSE",
+            "norenordno": "1002",
+            "prctyp": "LMT",
+            "prc": "801.0",
+            "qty": "12",
+            "tsym": "SBIN-EQ",
+            "ret": "DAY",
+            "dscqty": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "1001",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/CancelOrder": {
+          "body": {
+            "stat": "Ok",
+            "result": "1001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "1001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/CancelOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "norenordno": "1001"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "1002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/CancelOrder": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Order not found"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "1002",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/CancelOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "norenordno": "1002"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/OrderBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "norenordno": "1001",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "OPEN",
+              "norentm": "10:20:01 03-11-2026",
+              "prc": "800.50"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1002",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "INFY-EQ",
+              "qty": "5",
+              "trantype": "S",
+              "prctyp": "MKT",
+              "ret": "DAY",
+              "token": "1594",
+              "prd": "C",
+              "status": "COMPLETE",
+              "norentm": "10:21:11 03-11-2026",
+              "prc": "0.00",
+              "avgprc": "1499.95"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1003",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "qty": "75",
+              "trantype": "B",
+              "prctyp": "SL-LMT",
+              "ret": "DAY",
+              "token": "35001",
+              "prd": "M",
+              "status": "TRIGGER_PENDING",
+              "norentm": "10:22:00 03-11-2026",
+              "prc": "24010.00",
+              "trgprc": "24000.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1004",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "1",
+              "trantype": "S",
+              "prctyp": "SL-MKT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "REJECTED",
+              "norentm": "10:23:00 03-11-2026",
+              "prc": "0.00",
+              "trgprc": "790.50",
+              "rejreason": "RMS:Margin Exceeds"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1005",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "2",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "CANCELED",
+              "norentm": "10:24:00 03-11-2026",
+              "prc": "700.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1006",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "UNLISTED-EQ",
+              "qty": "1",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "99999",
+              "prd": "M",
+              "status": "PENDING",
+              "norentm": "10:25:00 03-11-2026",
+              "prc": "10.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1007",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "MCX",
+              "tsym": "CRUDEOIL",
+              "qty": "1",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "50001",
+              "prd": "M",
+              "status": "OPEN",
+              "norentm": "10:26:00 03-11-2026",
+              "prc": "6500.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1008",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "1",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "Open Pending",
+              "norentm": "10:27:00 03-11-2026",
+              "prc": "700.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1012",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "1",
+              "trantype": "S",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "CANCELLED",
+              "norentm": "10:28:00 03-11-2026",
+              "prc": "900.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1013",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "qty": "75",
+              "trantype": "S",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "35001",
+              "prd": "C",
+              "status": "COMPLETE",
+              "norentm": "10:29:00 03-11-2026",
+              "prc": "24100.00"
+            }
+          ]
+        },
+        "POST /NorenWClientAPIv2/CancelOrder": {
+          "body": {
+            "stat": "Ok",
+            "result": "x"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "1001",
+            "1003",
+            "1006",
+            "1007",
+            "1008"
+          ],
+          "failed_cancellations": [],
+          "message": "Canceled 5 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/CancelOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "norenordno": "1001"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/CancelOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "norenordno": "1003"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/CancelOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "norenordno": "1006"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/CancelOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "norenordno": "1007"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/CancelOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "norenordno": "1008"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_book_empty",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/OrderBook": {
+          "body": {
+            "stat": "Not_Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "emsg": "Error Occurred : 5 \"no data\""
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/PositionBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "token": "3045",
+              "prd": "I",
+              "netqty": "10",
+              "netavgprc": "801.1234",
+              "lp": "805.45",
+              "rpnl": "0.00",
+              "urmtom": "43.33",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "token": "35001",
+              "prd": "M",
+              "netqty": "-75",
+              "netavgprc": "24005.50",
+              "lp": "24000.00",
+              "rpnl": "5.5",
+              "urmtom": "412.5",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "INFY-EQ",
+              "token": "1594",
+              "prd": "C",
+              "netqty": "0",
+              "netavgprc": "0.00",
+              "lp": "1500.00",
+              "rpnl": "-2.5",
+              "urmtom": "0.00",
+              "daybuyavgprc": "1500.25",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "OLD-EQ",
+              "token": "7777",
+              "prd": "I",
+              "netqty": "3",
+              "netavgprc": "12.00",
+              "lp": "0.00",
+              "rpnl": "1.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "MCX",
+              "tsym": "CRUDEOIL",
+              "token": "50001",
+              "prd": "M",
+              "netqty": "1",
+              "netavgprc": "6500.00",
+              "lp": "6510.00",
+              "rpnl": "0.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV2624000CE",
+              "token": "40001",
+              "prd": "M",
+              "netqty": "-50",
+              "netavgprc": "120.00",
+              "lp": "110.00",
+              "rpnl": "2.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "token": "35001",
+              "prd": "C",
+              "netqty": "0",
+              "netavgprc": "0.00",
+              "lp": "24010.00",
+              "rpnl": "1.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "24000.00"
+            }
+          ]
+        },
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        },
+        "POST /NorenWClientAPIv2/GetQuotes": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "no quote"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PositionBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": "3045",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "0",
+            "trgprc": "0",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "S",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "exch": "NFO",
+            "token": "35001",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NFO",
+            "tsym": "NIFTY25NOV26F",
+            "qty": "75",
+            "prc": "0",
+            "trgprc": "0",
+            "dscqty": "0",
+            "prd": "M",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": null,
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": null,
+            "qty": "3",
+            "prc": "0",
+            "trgprc": "0",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "S",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "exch": "MCX",
+            "token": "50001",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "MCX",
+            "tsym": "CRUDEOIL",
+            "qty": "1",
+            "prc": "0",
+            "trgprc": "0",
+            "dscqty": "0",
+            "prd": "M",
+            "trantype": "S",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "exch": "NFO",
+            "token": "40001",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NFO",
+            "tsym": "NIFTY25NOV2624000CE",
+            "qty": "50",
+            "prc": "0",
+            "trgprc": "0",
+            "dscqty": "0",
+            "prd": "M",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_nothing_open",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/PositionBook": {
+          "body": {
+            "stat": "Not_Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "emsg": "Error Occurred : 5 \"no data\""
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PositionBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_reduce",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/PositionBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "token": "3045",
+              "prd": "I",
+              "netqty": "10",
+              "netavgprc": "801.1234",
+              "lp": "805.45",
+              "rpnl": "0.00",
+              "urmtom": "43.33",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "token": "35001",
+              "prd": "M",
+              "netqty": "-75",
+              "netavgprc": "24005.50",
+              "lp": "24000.00",
+              "rpnl": "5.5",
+              "urmtom": "412.5",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "INFY-EQ",
+              "token": "1594",
+              "prd": "C",
+              "netqty": "0",
+              "netavgprc": "0.00",
+              "lp": "1500.00",
+              "rpnl": "-2.5",
+              "urmtom": "0.00",
+              "daybuyavgprc": "1500.25",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "OLD-EQ",
+              "token": "7777",
+              "prd": "I",
+              "netqty": "3",
+              "netavgprc": "12.00",
+              "lp": "0.00",
+              "rpnl": "1.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "MCX",
+              "tsym": "CRUDEOIL",
+              "token": "50001",
+              "prd": "M",
+              "netqty": "1",
+              "netavgprc": "6500.00",
+              "lp": "6510.00",
+              "rpnl": "0.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV2624000CE",
+              "token": "40001",
+              "prd": "M",
+              "netqty": "-50",
+              "netavgprc": "120.00",
+              "lp": "110.00",
+              "rpnl": "2.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "token": "35001",
+              "prd": "C",
+              "netqty": "0",
+              "netavgprc": "0.00",
+              "lp": "24010.00",
+              "rpnl": "1.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "24000.00"
+            }
+          ]
+        },
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "norenordno": "26110300000123"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "26110300000123",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PositionBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "6",
+            "prc": "800.5",
+            "trgprc": "0.0",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "S",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/OrderBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "norenordno": "1001",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "OPEN",
+              "norentm": "10:20:01 03-11-2026",
+              "prc": "800.50"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1002",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "INFY-EQ",
+              "qty": "5",
+              "trantype": "S",
+              "prctyp": "MKT",
+              "ret": "DAY",
+              "token": "1594",
+              "prd": "C",
+              "status": "COMPLETE",
+              "norentm": "10:21:11 03-11-2026",
+              "prc": "0.00",
+              "avgprc": "1499.95"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1003",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "qty": "75",
+              "trantype": "B",
+              "prctyp": "SL-LMT",
+              "ret": "DAY",
+              "token": "35001",
+              "prd": "M",
+              "status": "TRIGGER_PENDING",
+              "norentm": "10:22:00 03-11-2026",
+              "prc": "24010.00",
+              "trgprc": "24000.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1004",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "1",
+              "trantype": "S",
+              "prctyp": "SL-MKT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "REJECTED",
+              "norentm": "10:23:00 03-11-2026",
+              "prc": "0.00",
+              "trgprc": "790.50",
+              "rejreason": "RMS:Margin Exceeds"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1005",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "2",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "CANCELED",
+              "norentm": "10:24:00 03-11-2026",
+              "prc": "700.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1006",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "UNLISTED-EQ",
+              "qty": "1",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "99999",
+              "prd": "M",
+              "status": "PENDING",
+              "norentm": "10:25:00 03-11-2026",
+              "prc": "10.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1007",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "MCX",
+              "tsym": "CRUDEOIL",
+              "qty": "1",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "50001",
+              "prd": "M",
+              "status": "OPEN",
+              "norentm": "10:26:00 03-11-2026",
+              "prc": "6500.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1008",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "1",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "Open Pending",
+              "norentm": "10:27:00 03-11-2026",
+              "prc": "700.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1012",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "1",
+              "trantype": "S",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "CANCELLED",
+              "norentm": "10:28:00 03-11-2026",
+              "prc": "900.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1013",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "qty": "75",
+              "trantype": "S",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "35001",
+              "prd": "C",
+              "status": "COMPLETE",
+              "norentm": "10:29:00 03-11-2026",
+              "prc": "24100.00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "1001",
+                "price": "800.50",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:01 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "1002",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": "5",
+                "symbol": "INFY",
+                "timestamp": "10:21:11 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NFO",
+                "order_status": "open",
+                "orderid": "1003",
+                "price": "24010.00",
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": "75",
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "10:22:00 03-11-2026",
+                "trigger_price": "24000.00"
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "rejected",
+                "orderid": "1004",
+                "price": "0.00",
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": "1",
+                "symbol": "SBIN",
+                "timestamp": "10:23:00 03-11-2026",
+                "trigger_price": "790.50"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "cancelled",
+                "orderid": "1005",
+                "price": "700.00",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "2",
+                "symbol": "SBIN",
+                "timestamp": "10:24:00 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "1006",
+                "price": "10.00",
+                "pricetype": "LIMIT",
+                "product": "M",
+                "quantity": "1",
+                "symbol": "UNLISTED-EQ",
+                "timestamp": "10:25:00 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "MCX",
+                "order_status": "open",
+                "orderid": "1007",
+                "price": "6500.00",
+                "pricetype": "LIMIT",
+                "product": "NRML",
+                "quantity": "1",
+                "symbol": "CRUDEOIL",
+                "timestamp": "10:26:00 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "1008",
+                "price": "700.00",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "1",
+                "symbol": "SBIN",
+                "timestamp": "10:27:00 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "cancelled",
+                "orderid": "1012",
+                "price": "900.00",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "1",
+                "symbol": "SBIN",
+                "timestamp": "10:28:00 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NFO",
+                "order_status": "complete",
+                "orderid": "1013",
+                "price": "24100.00",
+                "pricetype": "LIMIT",
+                "product": "C",
+                "quantity": "75",
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "10:29:00 03-11-2026",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 6,
+              "total_completed_orders": 2,
+              "total_open_orders": 5,
+              "total_rejected_orders": 1,
+              "total_sell_orders": 4
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_average_and_reported_prices",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/OrderBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "norenordno": "2001",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "MKT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "COMPLETE",
+              "norentm": "10:20:01 03-11-2026",
+              "prc": "0.00",
+              "instname": "EQ",
+              "avgprc": "805.45",
+              "fillshares": "10"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "2002",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "MKT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "OPEN",
+              "norentm": "10:20:02 03-11-2026",
+              "prc": "0.00",
+              "rprc": "806.10",
+              "fillshares": "4"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "2003",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "S",
+              "prctyp": "SL-MKT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "OPEN",
+              "norentm": "10:20:03 03-11-2026",
+              "prc": "0.00",
+              "trgprc": "790.5",
+              "rprc": "789.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "2004",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "MKT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "OPEN",
+              "norentm": "10:20:04 03-11-2026",
+              "prc": "0.00",
+              "rprc": "0"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "2005",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "OPEN",
+              "norentm": "10:20:05 03-11-2026",
+              "prc": "700.00",
+              "instname": "EQ",
+              "avgprc": "0.00",
+              "rprc": "1"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "2001",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:01 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "2002",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:02 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "2003",
+                "price": "789.00",
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:03 03-11-2026",
+                "trigger_price": "790.5"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "2004",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:04 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "2005",
+                "price": "700.00",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:05 03-11-2026",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 4,
+              "total_completed_orders": 1,
+              "total_open_orders": 4,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 1
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_garbled_average_price",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/OrderBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "norenordno": "2006",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "OPEN",
+              "norentm": "10:20:06 03-11-2026",
+              "prc": "700.00",
+              "fillshares": "12",
+              "avgprc": "x"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "could not convert string to float: 'x'",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_empty",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/OrderBook": {
+          "body": {
+            "stat": "Not_Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "emsg": "Error Occurred : 5 \"no data\""
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/TradeBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "norenordno": "1002",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "prctyp": "MKT",
+              "ret": "DAY",
+              "prd": "C",
+              "flid": "9001",
+              "fltm": "10:21:12 03-11-2026",
+              "trantype": "S",
+              "tsym": "INFY-EQ",
+              "qty": "5",
+              "token": "1594",
+              "fillshares": "5",
+              "flqty": "5",
+              "prc": "0.00",
+              "flprc": "1499.95",
+              "norentm": "10:21:11 03-11-2026",
+              "avgprc": "1499.95"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1009",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "prd": "M",
+              "flid": "9002",
+              "fltm": "10:25:01 03-11-2026",
+              "trantype": "B",
+              "tsym": "NIFTY25NOV26F",
+              "qty": "75",
+              "token": "35001",
+              "fillshares": "75",
+              "flqty": "75",
+              "prc": "24005.55",
+              "flprc": "24005.555",
+              "norentm": "10:25:00 03-11-2026",
+              "avgprc": "24005.555"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1010",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "prd": "I",
+              "flid": "9003",
+              "fltm": "10:27:01 03-11-2026",
+              "trantype": "B",
+              "tsym": "UNKNOWN-EQ",
+              "qty": "3",
+              "token": "88888",
+              "fillshares": "3",
+              "flqty": "3",
+              "prc": "10.00",
+              "flprc": "10.00",
+              "norentm": "10:27:00 03-11-2026",
+              "avgprc": "10.00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "SELL",
+              "average_price": 1499.95,
+              "exchange": "NSE",
+              "orderid": "1002",
+              "product": "CNC",
+              "quantity": 5,
+              "symbol": "INFY",
+              "timestamp": "10:21:11 03-11-2026",
+              "trade_value": 7499.75
+            },
+            {
+              "action": "BUY",
+              "average_price": 24005.56,
+              "exchange": "NFO",
+              "orderid": "1009",
+              "product": "NRML",
+              "quantity": 75,
+              "symbol": "NIFTY25NOV26FUT",
+              "timestamp": "10:25:00 03-11-2026",
+              "trade_value": 1800417.0
+            },
+            {
+              "action": "B",
+              "average_price": 10.0,
+              "exchange": "NSE",
+              "orderid": "1010",
+              "product": "I",
+              "quantity": 3,
+              "symbol": "UNKNOWN-EQ",
+              "timestamp": "10:27:00 03-11-2026",
+              "trade_value": 30.0
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/TradeBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_rounding",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/TradeBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "norenordno": "1011",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "prd": "I",
+              "flid": "9004",
+              "fltm": "10:28:01 03-11-2026",
+              "trantype": "B",
+              "tsym": "SBIN-EQ",
+              "qty": "3",
+              "token": "3045",
+              "fillshares": "3",
+              "flqty": "3",
+              "prc": "10.00",
+              "flprc": "10.005",
+              "norentm": "10:28:00 03-11-2026",
+              "avgprc": "10.005"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "BUY",
+              "average_price": 10.01,
+              "exchange": "NSE",
+              "orderid": "1011",
+              "product": "MIS",
+              "quantity": 3,
+              "symbol": "SBIN",
+              "timestamp": "10:28:00 03-11-2026",
+              "trade_value": 30.03
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/TradeBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_price_factor",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/PositionBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "MCX",
+              "tsym": "CRUDEOIL",
+              "token": "50001",
+              "prd": "M",
+              "netqty": "10",
+              "netavgprc": "100.00",
+              "lp": "110.00",
+              "rpnl": "0.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00",
+              "prcftr": "0.5"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "100.00",
+              "exchange": "MCX",
+              "ltp": "110.00",
+              "pnl": 50.0,
+              "product": "NRML",
+              "quantity": "10",
+              "realized_pnl": 0.0,
+              "symbol": "CRUDEOIL",
+              "unrealized_pnl": 50.0
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PositionBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_negative_reported_price_is_ignored",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/OrderBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "norenordno": "2007",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "SL-MKT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "OPEN",
+              "norentm": "10:20:07 03-11-2026",
+              "prc": "0.00",
+              "trgprc": "790.5",
+              "rprc": "-1"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "2008",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "SL-MKT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "OPEN",
+              "norentm": "10:20:08 03-11-2026",
+              "prc": "0.00",
+              "trgprc": "790.5",
+              "rprc": "791.25"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "2009",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "COMPLETE",
+              "norentm": "10:20:09 03-11-2026",
+              "prc": "800.00",
+              "instname": "EQ",
+              "avgprc": "805.45",
+              "fillshares": "10"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "2010",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "OPEN",
+              "norentm": "10:20:10 03-11-2026",
+              "prc": "800.00",
+              "instname": "EQ",
+              "avgprc": "0.00",
+              "fillshares": "0"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "2007",
+                "price": "0.00",
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:07 03-11-2026",
+                "trigger_price": "790.5"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "2008",
+                "price": "791.25",
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:08 03-11-2026",
+                "trigger_price": "790.5"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "2009",
+                "price": "805.45",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:09 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "2010",
+                "price": "800.00",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:10 03-11-2026",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 4,
+              "total_completed_orders": 1,
+              "total_open_orders": 3,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_rate_limited_then_answered",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/OrderBook": [
+          {
+            "body": {
+              "stat": "Not_Ok",
+              "emsg": "Invalid Input : Order Recieved 11 in a current second exceeds Limit 10 for user"
+            }
+          },
+          {
+            "body": [
+              {
+                "stat": "Ok",
+                "norenordno": "1001",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NSE",
+                "tsym": "SBIN-EQ",
+                "qty": "10",
+                "trantype": "B",
+                "prctyp": "LMT",
+                "ret": "DAY",
+                "token": "3045",
+                "prd": "I",
+                "status": "OPEN",
+                "norentm": "10:20:01 03-11-2026",
+                "prc": "800.50"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1002",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NSE",
+                "tsym": "INFY-EQ",
+                "qty": "5",
+                "trantype": "S",
+                "prctyp": "MKT",
+                "ret": "DAY",
+                "token": "1594",
+                "prd": "C",
+                "status": "COMPLETE",
+                "norentm": "10:21:11 03-11-2026",
+                "prc": "0.00",
+                "avgprc": "1499.95"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1003",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NFO",
+                "tsym": "NIFTY25NOV26F",
+                "qty": "75",
+                "trantype": "B",
+                "prctyp": "SL-LMT",
+                "ret": "DAY",
+                "token": "35001",
+                "prd": "M",
+                "status": "TRIGGER_PENDING",
+                "norentm": "10:22:00 03-11-2026",
+                "prc": "24010.00",
+                "trgprc": "24000.00"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1004",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NSE",
+                "tsym": "SBIN-EQ",
+                "qty": "1",
+                "trantype": "S",
+                "prctyp": "SL-MKT",
+                "ret": "DAY",
+                "token": "3045",
+                "prd": "I",
+                "status": "REJECTED",
+                "norentm": "10:23:00 03-11-2026",
+                "prc": "0.00",
+                "trgprc": "790.50",
+                "rejreason": "RMS:Margin Exceeds"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1005",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NSE",
+                "tsym": "SBIN-EQ",
+                "qty": "2",
+                "trantype": "B",
+                "prctyp": "LMT",
+                "ret": "DAY",
+                "token": "3045",
+                "prd": "I",
+                "status": "CANCELED",
+                "norentm": "10:24:00 03-11-2026",
+                "prc": "700.00"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1006",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NSE",
+                "tsym": "UNLISTED-EQ",
+                "qty": "1",
+                "trantype": "B",
+                "prctyp": "LMT",
+                "ret": "DAY",
+                "token": "99999",
+                "prd": "M",
+                "status": "PENDING",
+                "norentm": "10:25:00 03-11-2026",
+                "prc": "10.00"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1007",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "MCX",
+                "tsym": "CRUDEOIL",
+                "qty": "1",
+                "trantype": "B",
+                "prctyp": "LMT",
+                "ret": "DAY",
+                "token": "50001",
+                "prd": "M",
+                "status": "OPEN",
+                "norentm": "10:26:00 03-11-2026",
+                "prc": "6500.00"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1008",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NSE",
+                "tsym": "SBIN-EQ",
+                "qty": "1",
+                "trantype": "B",
+                "prctyp": "LMT",
+                "ret": "DAY",
+                "token": "3045",
+                "prd": "I",
+                "status": "Open Pending",
+                "norentm": "10:27:00 03-11-2026",
+                "prc": "700.00"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1012",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NSE",
+                "tsym": "SBIN-EQ",
+                "qty": "1",
+                "trantype": "S",
+                "prctyp": "LMT",
+                "ret": "DAY",
+                "token": "3045",
+                "prd": "I",
+                "status": "CANCELLED",
+                "norentm": "10:28:00 03-11-2026",
+                "prc": "900.00"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1013",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NFO",
+                "tsym": "NIFTY25NOV26F",
+                "qty": "75",
+                "trantype": "S",
+                "prctyp": "LMT",
+                "ret": "DAY",
+                "token": "35001",
+                "prd": "C",
+                "status": "COMPLETE",
+                "norentm": "10:29:00 03-11-2026",
+                "prc": "24100.00"
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_rate_limited_every_time",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/OrderBook": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Invalid Input : Order Recieved 11 in a current second exceeds Limit 10 for user"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_rate_limited_is_not_asked_again",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/PlaceOrder": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Invalid Input : Order Recieved 11 in a current second exceeds Limit 10 for user"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "800.5",
+            "trgprc": "0.0",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "ret": "DAY",
+            "ordersource": "API",
+            "remarks": "openalgo"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_empty",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/TradeBook": {
+          "body": {
+            "stat": "Not_Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "emsg": "Error Occurred : 5 \"no data\""
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/TradeBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/PositionBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "token": "3045",
+              "prd": "I",
+              "netqty": "10",
+              "netavgprc": "801.1234",
+              "lp": "805.45",
+              "rpnl": "0.00",
+              "urmtom": "43.33",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "token": "35001",
+              "prd": "M",
+              "netqty": "-75",
+              "netavgprc": "24005.50",
+              "lp": "24000.00",
+              "rpnl": "5.5",
+              "urmtom": "412.5",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "INFY-EQ",
+              "token": "1594",
+              "prd": "C",
+              "netqty": "0",
+              "netavgprc": "0.00",
+              "lp": "1500.00",
+              "rpnl": "-2.5",
+              "urmtom": "0.00",
+              "daybuyavgprc": "1500.25",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "OLD-EQ",
+              "token": "7777",
+              "prd": "I",
+              "netqty": "3",
+              "netavgprc": "12.00",
+              "lp": "0.00",
+              "rpnl": "1.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "MCX",
+              "tsym": "CRUDEOIL",
+              "token": "50001",
+              "prd": "M",
+              "netqty": "1",
+              "netavgprc": "6500.00",
+              "lp": "6510.00",
+              "rpnl": "0.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV2624000CE",
+              "token": "40001",
+              "prd": "M",
+              "netqty": "-50",
+              "netavgprc": "120.00",
+              "lp": "110.00",
+              "rpnl": "2.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "token": "35001",
+              "prd": "C",
+              "netqty": "0",
+              "netavgprc": "0.00",
+              "lp": "24010.00",
+              "rpnl": "1.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "24000.00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "801.1234",
+              "exchange": "NSE",
+              "ltp": "805.45",
+              "pnl": 43.33,
+              "product": "MIS",
+              "quantity": "10",
+              "realized_pnl": 0.0,
+              "symbol": "SBIN",
+              "unrealized_pnl": 43.33
+            },
+            {
+              "average_price": "24005.50",
+              "exchange": "NFO",
+              "ltp": "24000.00",
+              "pnl": 418.0,
+              "product": "NRML",
+              "quantity": "-75",
+              "realized_pnl": 5.5,
+              "symbol": "NIFTY25NOV26FUT",
+              "unrealized_pnl": 412.5
+            },
+            {
+              "average_price": "0.00",
+              "exchange": "NSE",
+              "ltp": "1500.00",
+              "pnl": -2.5,
+              "product": "CNC",
+              "quantity": "0",
+              "realized_pnl": -2.5,
+              "symbol": "INFY",
+              "unrealized_pnl": 0.0
+            },
+            {
+              "average_price": "12.00",
+              "exchange": "NSE",
+              "ltp": "0.00",
+              "pnl": -35.0,
+              "product": "I",
+              "quantity": "3",
+              "realized_pnl": 1.0,
+              "symbol": "OLD-EQ",
+              "unrealized_pnl": -36.0
+            },
+            {
+              "average_price": "6500.00",
+              "exchange": "MCX",
+              "ltp": "6510.00",
+              "pnl": 10.0,
+              "product": "NRML",
+              "quantity": "1",
+              "realized_pnl": 0.0,
+              "symbol": "CRUDEOIL",
+              "unrealized_pnl": 10.0
+            },
+            {
+              "average_price": "120.00",
+              "exchange": "NFO",
+              "ltp": "110.00",
+              "pnl": 502.0,
+              "product": "NRML",
+              "quantity": "-50",
+              "realized_pnl": 2.0,
+              "symbol": "NIFTY25NOV2624000CE",
+              "unrealized_pnl": 500.0
+            },
+            {
+              "average_price": "0.00",
+              "exchange": "NFO",
+              "ltp": "24010.00",
+              "pnl": 1.0,
+              "product": "C",
+              "quantity": "0",
+              "realized_pnl": 1.0,
+              "symbol": "NIFTY25NOV26FUT",
+              "unrealized_pnl": 0.0
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PositionBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_empty",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/PositionBook": {
+          "body": {
+            "stat": "Not_Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "emsg": "Error Occurred : 5 \"no data\""
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PositionBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/Holdings": {
+          "body": [
+            {
+              "stat": "Ok",
+              "exch_tsym": [
+                {
+                  "exch": "NSE",
+                  "token": "1594",
+                  "tsym": "INFY-EQ",
+                  "pp": "2",
+                  "ti": "0.05",
+                  "ls": "1"
+                },
+                {
+                  "exch": "BSE",
+                  "token": "500209",
+                  "tsym": "INFY",
+                  "pp": "2",
+                  "ti": "0.05",
+                  "ls": "1"
+                }
+              ],
+              "holdqty": "20",
+              "dpqty": "20",
+              "npoadqty": "0",
+              "colqty": "0",
+              "benqty": "0",
+              "unplgdqty": "0",
+              "brkcolqty": "0",
+              "btstqty": "0",
+              "btstcolqty": "0",
+              "usedqty": "0",
+              "upldprc": "1400.00",
+              "s_prdt_ali": "CNC"
+            },
+            {
+              "stat": "Ok",
+              "exch_tsym": [
+                {
+                  "exch": "BSE",
+                  "token": "500325",
+                  "tsym": "BSEONLY",
+                  "pp": "2",
+                  "ti": "0.05",
+                  "ls": "1"
+                }
+              ],
+              "holdqty": "4",
+              "dpqty": "4",
+              "npoadqty": "0",
+              "colqty": "0",
+              "benqty": "0",
+              "unplgdqty": "0",
+              "brkcolqty": "0",
+              "btstqty": "0",
+              "btstcolqty": "0",
+              "usedqty": "0",
+              "upldprc": "250.00",
+              "s_prdt_ali": "CNC"
+            },
+            {
+              "stat": "Ok",
+              "exch_tsym": [
+                {
+                  "exch": "NSE",
+                  "token": "7777",
+                  "tsym": "OLD-EQ",
+                  "pp": "2",
+                  "ti": "0.05",
+                  "ls": "1"
+                }
+              ],
+              "holdqty": "5",
+              "dpqty": "2",
+              "npoadqty": "6",
+              "colqty": "0",
+              "benqty": "1",
+              "unplgdqty": "1",
+              "brkcolqty": "2",
+              "btstqty": "1",
+              "btstcolqty": "0",
+              "usedqty": "2",
+              "upldprc": "12.50",
+              "s_prdt_ali": "CNC"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "average_price": 1400.0,
+                "exchange": "NSE",
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 40,
+                "symbol": "INFY"
+              },
+              {
+                "average_price": 12.5,
+                "exchange": "NSE",
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 11,
+                "symbol": "OLD-EQ"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 56175.0,
+              "totalinvvalue": 56137.5,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/Holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "prd": "C",
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_empty",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/Holdings": {
+          "body": {
+            "stat": "Not_Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "emsg": "Error Occurred : 5 \"no data\""
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/Holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "prd": "C",
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/Limits": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "cash": "100000.50",
+            "payin": "1500.25",
+            "marginused": "274.95",
+            "brkcollamt": "1500.00",
+            "rpnl": "-30.00",
+            "unmtom": "-12.50"
+          }
+        },
+        "POST /NorenWClientAPIv2/PositionBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "token": "3045",
+              "prd": "I",
+              "netqty": "10",
+              "netavgprc": "801.1234",
+              "lp": "805.45",
+              "rpnl": "0.00",
+              "urmtom": "43.33",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "token": "35001",
+              "prd": "M",
+              "netqty": "-75",
+              "netavgprc": "24005.50",
+              "lp": "24000.00",
+              "rpnl": "5.5",
+              "urmtom": "412.5",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "INFY-EQ",
+              "token": "1594",
+              "prd": "C",
+              "netqty": "0",
+              "netavgprc": "0.00",
+              "lp": "1500.00",
+              "rpnl": "-2.5",
+              "urmtom": "0.00",
+              "daybuyavgprc": "1500.25",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "OLD-EQ",
+              "token": "7777",
+              "prd": "I",
+              "netqty": "3",
+              "netavgprc": "12.00",
+              "lp": "0.00",
+              "rpnl": "1.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "MCX",
+              "tsym": "CRUDEOIL",
+              "token": "50001",
+              "prd": "M",
+              "netqty": "1",
+              "netavgprc": "6500.00",
+              "lp": "6510.00",
+              "rpnl": "0.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV2624000CE",
+              "token": "40001",
+              "prd": "M",
+              "netqty": "-50",
+              "netavgprc": "120.00",
+              "lp": "110.00",
+              "rpnl": "2.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "token": "35001",
+              "prd": "C",
+              "netqty": "0",
+              "netavgprc": "0.00",
+              "lp": "24010.00",
+              "rpnl": "1.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "24000.00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "101225.80",
+            "collateral": "1500.00",
+            "m2mrealized": "7.00",
+            "m2munrealized": "929.83",
+            "utiliseddebits": "274.95"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/Limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PositionBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_positions_book_empty",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/Limits": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "cash": "100000.50",
+            "payin": "1500.25",
+            "marginused": "274.95",
+            "brkcollamt": "1500.00",
+            "rpnl": "-30.00",
+            "unmtom": "-12.50"
+          }
+        },
+        "POST /NorenWClientAPIv2/PositionBook": {
+          "body": {
+            "stat": "Not_Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "emsg": "Error Occurred : 5 \"no data\""
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "101225.80",
+            "collateral": "1500.00",
+            "m2mrealized": "0.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "274.95"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/Limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PositionBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_refused",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/Limits": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Session Expired : Invalid Session Key"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/Limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderstatus_complete",
+      "method": "POST",
+      "path": "/api/v1/orderstatus",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "1002",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/OrderBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "norenordno": "1001",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "OPEN",
+              "norentm": "10:20:01 03-11-2026",
+              "prc": "800.50"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1002",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "INFY-EQ",
+              "qty": "5",
+              "trantype": "S",
+              "prctyp": "MKT",
+              "ret": "DAY",
+              "token": "1594",
+              "prd": "C",
+              "status": "COMPLETE",
+              "norentm": "10:21:11 03-11-2026",
+              "prc": "0.00",
+              "avgprc": "1499.95"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1003",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "qty": "75",
+              "trantype": "B",
+              "prctyp": "SL-LMT",
+              "ret": "DAY",
+              "token": "35001",
+              "prd": "M",
+              "status": "TRIGGER_PENDING",
+              "norentm": "10:22:00 03-11-2026",
+              "prc": "24010.00",
+              "trgprc": "24000.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1004",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "1",
+              "trantype": "S",
+              "prctyp": "SL-MKT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "REJECTED",
+              "norentm": "10:23:00 03-11-2026",
+              "prc": "0.00",
+              "trgprc": "790.50",
+              "rejreason": "RMS:Margin Exceeds"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1005",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "2",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "CANCELED",
+              "norentm": "10:24:00 03-11-2026",
+              "prc": "700.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1006",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "UNLISTED-EQ",
+              "qty": "1",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "99999",
+              "prd": "M",
+              "status": "PENDING",
+              "norentm": "10:25:00 03-11-2026",
+              "prc": "10.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1007",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "MCX",
+              "tsym": "CRUDEOIL",
+              "qty": "1",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "50001",
+              "prd": "M",
+              "status": "OPEN",
+              "norentm": "10:26:00 03-11-2026",
+              "prc": "6500.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1008",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "1",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "Open Pending",
+              "norentm": "10:27:00 03-11-2026",
+              "prc": "700.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1012",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "1",
+              "trantype": "S",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "CANCELLED",
+              "norentm": "10:28:00 03-11-2026",
+              "prc": "900.00"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1013",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "qty": "75",
+              "trantype": "S",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "35001",
+              "prd": "C",
+              "status": "COMPLETE",
+              "norentm": "10:29:00 03-11-2026",
+              "prc": "24100.00"
+            }
+          ]
+        },
+        "POST /NorenWClientAPIv2/TradeBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "norenordno": "1002",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "prctyp": "MKT",
+              "ret": "DAY",
+              "prd": "C",
+              "flid": "9001",
+              "fltm": "10:21:12 03-11-2026",
+              "trantype": "S",
+              "tsym": "INFY-EQ",
+              "qty": "5",
+              "token": "1594",
+              "fillshares": "5",
+              "flqty": "5",
+              "prc": "0.00",
+              "flprc": "1499.95",
+              "norentm": "10:21:11 03-11-2026",
+              "avgprc": "1499.95"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1009",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "prd": "M",
+              "flid": "9002",
+              "fltm": "10:25:01 03-11-2026",
+              "trantype": "B",
+              "tsym": "NIFTY25NOV26F",
+              "qty": "75",
+              "token": "35001",
+              "fillshares": "75",
+              "flqty": "75",
+              "prc": "24005.55",
+              "flprc": "24005.555",
+              "norentm": "10:25:00 03-11-2026",
+              "avgprc": "24005.555"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "1010",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "prd": "I",
+              "flid": "9003",
+              "fltm": "10:27:01 03-11-2026",
+              "trantype": "B",
+              "tsym": "UNKNOWN-EQ",
+              "qty": "3",
+              "token": "88888",
+              "fillshares": "3",
+              "flqty": "3",
+              "prc": "10.00",
+              "flprc": "10.00",
+              "norentm": "10:27:00 03-11-2026",
+              "avgprc": "10.00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "action": "SELL",
+            "average_price": 1499.95,
+            "exchange": "NSE",
+            "order_status": "complete",
+            "orderid": "1002",
+            "price": 0.0,
+            "pricetype": "MARKET",
+            "product": "CNC",
+            "quantity": "5",
+            "symbol": "INFY",
+            "timestamp": "10:21:11 03-11-2026",
+            "trigger_price": 0.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/TradeBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_short",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/PositionBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "token": "3045",
+              "prd": "I",
+              "netqty": "10",
+              "netavgprc": "801.1234",
+              "lp": "805.45",
+              "rpnl": "0.00",
+              "urmtom": "43.33",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "token": "35001",
+              "prd": "M",
+              "netqty": "-75",
+              "netavgprc": "24005.50",
+              "lp": "24000.00",
+              "rpnl": "5.5",
+              "urmtom": "412.5",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "INFY-EQ",
+              "token": "1594",
+              "prd": "C",
+              "netqty": "0",
+              "netavgprc": "0.00",
+              "lp": "1500.00",
+              "rpnl": "-2.5",
+              "urmtom": "0.00",
+              "daybuyavgprc": "1500.25",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "OLD-EQ",
+              "token": "7777",
+              "prd": "I",
+              "netqty": "3",
+              "netavgprc": "12.00",
+              "lp": "0.00",
+              "rpnl": "1.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "MCX",
+              "tsym": "CRUDEOIL",
+              "token": "50001",
+              "prd": "M",
+              "netqty": "1",
+              "netavgprc": "6500.00",
+              "lp": "6510.00",
+              "rpnl": "0.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV2624000CE",
+              "token": "40001",
+              "prd": "M",
+              "netqty": "-50",
+              "netavgprc": "120.00",
+              "lp": "110.00",
+              "rpnl": "2.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00"
+            },
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NFO",
+              "tsym": "NIFTY25NOV26F",
+              "token": "35001",
+              "prd": "C",
+              "netqty": "0",
+              "netavgprc": "0.00",
+              "lp": "24010.00",
+              "rpnl": "1.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "24000.00"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": "-75",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/PositionBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

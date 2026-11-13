@@ -19,6 +19,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Shoonya | yes | yes | yes | yes | yes | no | yes | yes |
 | Zebu | yes | yes | yes | yes | n/a (no calculator) | no | yes | yes |
 | Flattrade | yes | yes | yes | yes | yes | no | yes | yes |
+| TradeSmart (Noren v2) | yes | yes | no | no | no | no | no | no |
 
 The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -226,6 +227,12 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Recorded differences from OpenAlgo: OpenAlgo's Wisdom adapter disconnects the whole feed when any one instrument is unsubscribed; EP Trade bot releases that instrument only. OpenAlgo asks to release a depth subscription with the quote code (so depth is never released); EP Trade bot sends the depth code. OpenAlgo publishes a tick for a mode or an instrument nobody subscribed (Jainam's routing is kept as recorded); EP Trade bot publishes only to what is subscribed. OpenAlgo subscribes an exchange it does not know as the NSE cash market; EP Trade bot refuses it. OpenAlgo's iBulls feed client cannot be built at all (it reads a `BASE_URL` it never defines), so the recording gave it the address it was meant to use; EP Trade bot's iBulls feed works.
 - Mutation set `tools/mutation/tg7-xts-feed.json`: 59 mutants, all caught (one dropped as equivalent: an unknown message code that no held mode can match). Eleven needed unit tests, because every recording starts with the connection open.
 - RMoney (76 recorded scenarios, `feed_rmoney.fixtures.json`; 31 mutants, all caught, `tools/mutation/tg7-rmoney-feed.json`): subscriptions go in requests of up to fifty with instrument ids as numbers, and LTP is asked for as a touchline (1501). Its events are read its own way: the message code is the one in the event's name, keys come in more than one spelling, a segment may be a name, a touchline is a quote when a quote or a depth is subscribed and an LTP otherwise, the book may be under `BidInfo` and `AskInfo` or inside the touchline, the legacy `1105` text event is read as an LTP, and candle and open interest events publish nothing. A quote in a subscription reply that names no message code is given the code of the request. Not ported for RMoney, and left out on purpose: the `xts-binary-packet` event, whose reader scans the bytes for anything that looks like a price (OpenAlgo calls it best effort), and the sign-in again after an expired market-data token (a refused subscription is skipped and the next reconnect asks again).
+
+## TradeSmart (Noren v2): orders, books and funds
+
+- `TradesmartPlugin` on the Noren base (Bearer header with a text/plain `jData=` body, the user id read from a saved token of the form `user:::token`), held to `broker/tradesmart` by 47 recorded cases (`tradesmart.fixtures.json`). Its own rules: the market types are refused over its API, so a market order goes as a limit order priced off the last price and a stop-market as a stop-limit priced off its trigger (the last price when it has none), moved by the protection slab, and when no price can be had the order is still converted at the price it was given; the order body carries `remarks` and no market protection field; books pass most values on as they were sent (positions keep the broker's text, with realised and unrealised profit); an order shows its average price once it has one; funds add the day's profit up from the position book.
+- Recorded differences from OpenAlgo: an order the broker turns away for going over its rate limit is a success with no order id there, and a refusal with the broker's reason here; one order whose average price is not a number fails the whole book there, and is shown at its placed price here.
+- Not yet ported for TradeSmart: quotes and depth, history, margin, sign-in, the feed, and the mutation set.
 
 ## Shoonya sign-in
 

@@ -350,3 +350,38 @@ public sealed class FlattradeHistoryContractTests(FlattradeHistoryHost host, ITe
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class TradesmartHost : ShoonyaBaseHost
+{
+    public override string BrokerName => "tradesmart";
+    public override string FixtureFile => "tradesmart.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "FA12345:::tradesmart-api-key", ["ApiSecret"] = "tradesmart-secret" };
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>
+    {
+        ["POST /NorenWClientAPIv2/PositionBook"] = """{"stat":"Not_Ok","emsg":"no data"}""",
+    };
+}
+
+/// <summary>TradeSmart (the Noren v2 API) against the Python implementation (tools/contract-fixtures/tradesmart.fixtures.json).</summary>
+public sealed class TradesmartContractTests(TradesmartHost host, ITestOutputHelper output) : IClassFixture<TradesmartHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = Build();
+
+    private static Dictionary<string, Deviation> Build()
+    {
+        var d = ShoonyaContractTests.For("TradeSmart");
+        d["placeorder_rate_limited_is_not_asked_again"] = new(
+            "OpenAlgo answers success with no order id when TradeSmart turns an order away. EP Trade bot refuses with TradeSmart's reason (and never sends the order twice).",
+            f => Expect(f, 500, Error("Invalid Input : Order Recieved 11 in a current second exceeds Limit 10 for user")));
+        d["orderbook_garbled_average_price"] = new(
+            "OpenAlgo fails the whole order book with an internal error when one order's average price is not a number. EP Trade bot shows that order at the price it was placed at and the rest of the book as usual.",
+            f => Expect(f, 200, JsonNode.Parse("""{"status":"success","data":{"orders":[{"symbol":"SBIN","exchange":"NSE","action":"BUY","quantity":"10","price":"700.00","trigger_price":0,"pricetype":"LIMIT","product":"MIS","orderid":"2006","order_status":"open","timestamp":"10:20:06 03-11-2026"}],"statistics":{"total_buy_orders":1,"total_sell_orders":0,"total_completed_orders":0,"total_open_orders":1,"total_rejected_orders":0}}}""")!.AsObject()));
+        return d;
+    }
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("tradesmart.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
