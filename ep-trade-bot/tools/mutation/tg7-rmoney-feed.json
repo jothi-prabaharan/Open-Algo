@@ -1,0 +1,218 @@
+[
+ {
+  "name": "R1 ltp code",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "1 => rmoney ? 1501 : 1512,",
+  "new": "1 => 1512,",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R2 ltp code everywhere",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "1 => rmoney ? 1501 : 1512,",
+  "new": "1 => 1501,",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R3 numeric id never",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "private JsonNode Id(string token) => rmoney && token.Length > 0",
+  "new": "private JsonNode Id(string token) => false && token.Length > 0",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R5 dedupe dropped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (rmoney) fresh = fresh.GroupBy",
+  "new": "if (false) fresh = fresh.GroupBy",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R7 events not rmoney",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (rmoney) return RMoneyEvent(eventName, array[1], nowMs);",
+  "new": "",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R8 legacy event ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (prefix == \"1105\") return payload is JsonValue legacy",
+  "new": "if (prefix == \"1105\") return [];\n        if (false) return payload is JsonValue legacy",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R9 code not replaced",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "data[\"MessageCode\"] = code;\n        return Tick(data, nowMs);",
+  "new": "return Tick(data, nowMs);",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R12 legacy code",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"ExchangeInstrumentID\"] = id, [\"MessageCode\"] = 1512 };",
+  "new": "[\"ExchangeInstrumentID\"] = id, [\"MessageCode\"] = 1501 };",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R14 legacy field 110",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"110\"] = \"LastTradedPrice\",",
+  "new": "[\"110\"] = \"LastTradedQuantity\",",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R16 legacy text kept as text",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "data[field] = double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var number) ? JsonValue.Create(number) : JsonValue.Create(value);",
+  "new": "data[field] = JsonValue.Create(value);",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R17 camel segment",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "First(data, \"ExchangeSegment\", \"exchangeSegment\")",
+  "new": "First(data, \"ExchangeSegment\")",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R18 camel id",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "First(data, \"ExchangeInstrumentID\", \"exchangeInstrumentID\", \"exchangeInstrumentId\")",
+  "new": "First(data, \"ExchangeInstrumentID\", \"exchangeInstrumentId\")",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R21 segment names",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "!SegmentNames.TryGetValue(segmentText.ToUpperInvariant(), out segment)",
+  "new": "true",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R22 missing code not touchline",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "var code = codeText is null ? 1501 :",
+  "new": "var code = codeText is null ? 1512 :",
+  "filter": "FullyQualifiedName~XtsFeedCodecTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R23 bad code accepted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "int.TryParse(codeText, out var parsed) ? parsed : -1;",
+  "new": "int.TryParse(codeText, out var parsed) ? parsed : 1501;",
+  "filter": "FullyQualifiedName~XtsFeedCodecTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R24 quote preferred over ltp",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (modes.Any(m => m is 2 or 3)) mode = 2;\n                else if (modes.Contains(1)) mode = 1;",
+  "new": "if (modes.Contains(1)) mode = 1;\n                else if (modes.Any(m => m is 2 or 3)) mode = 2;",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R25 depth subscriber not quote",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (modes.Any(m => m is 2 or 3)) mode = 2;",
+  "new": "if (modes.Any(m => m is 2)) mode = 2;",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R29 1502 mode",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "case 1502:\n                mode = 3;",
+  "new": "case 1502:\n                mode = 2;",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R30 1512 mode",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "case 1512:\n                mode = 1;",
+  "new": "case 1512:\n                mode = 2;",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R31 touchline source",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "var source = message[\"Touchline\"] is JsonObject touchline ? touchline : message;\n        if (mode != 3)",
+  "new": "var source = message;\n        if (mode != 3)",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R32 bid info",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "bids = message.ContainsKey(\"BidInfo\") ? message[\"BidInfo\"] as JsonArray : source[\"BidInfo\"] as JsonArray;",
+  "new": "bids = null;",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R33 ask info",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "asks = message.ContainsKey(\"AskInfo\") ? message[\"AskInfo\"] as JsonArray : source[\"AskInfo\"] as JsonArray;",
+  "new": "asks = null;",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R34 book inside touchline",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "var bids = message.ContainsKey(\"Bids\") ? message[\"Bids\"] as JsonArray : source[\"Bids\"] as JsonArray;",
+  "new": "var bids = message[\"Bids\"] as JsonArray;",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R35 one side enough",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (bids is { Count: > 0 } || asks is { Count: > 0 }) result[\"depth\"]",
+  "new": "if (bids is { Count: > 0 } && asks is { Count: > 0 }) result[\"depth\"]",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R36 average from touchline",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "var average = source == message || rmoney ?",
+  "new": "var average = source == message ?",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R37 one tick only",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "return [new FeedPublish($\"{first.Exchange}_{first.Symbol}_",
+  "new": "return [new FeedPublish($\"{first.Exchange}_{first.Symbol}x_",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R38 unheld instrument",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (entries.Count == 0) return [];",
+  "new": "if (false) return [];",
+  "filter": "FullyQualifiedName~RmoneyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

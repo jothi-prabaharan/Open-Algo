@@ -12,6 +12,9 @@ public abstract partial class XtsPluginBase : IBrokerFeedHttp
     /// <summary>Where the Socket.IO endpoint lives under the address; Jainam's is under the binary market-data path.</summary>
     protected virtual string SocketPath => "/apimarketdata/socket.io";
 
+    /// <summary>RMoney's quotes may name no message code; they are given the code of the request they answer.</summary>
+    protected virtual bool StampsQuoteCode => false;
+
     public virtual IFeedCodec CreateFeedCodec() => new XtsFeedCodec(Name);
 
     /// <summary>
@@ -62,8 +65,15 @@ public abstract partial class XtsPluginBase : IBrokerFeedHttp
         if (Str(reply?["type"]) != "success") return quotes;
         foreach (var raw in ((reply!["result"] as JsonObject)?["listQuotes"] as JsonArray) ?? [])
         {
-            if (raw is JsonValue v && v.TryGetValue<string>(out var text)) quotes.Add(text);
-            else if (raw is JsonObject o) quotes.Add(o.ToJsonString());
+            var text = raw is JsonValue v && v.TryGetValue<string>(out var t) ? t : raw is JsonObject o ? o.ToJsonString() : null;
+            if (text is null) continue;
+            if (StampsQuoteCode && text.StartsWith('{') && JsonNode.Parse(text) is JsonObject quote && !quote.ContainsKey("MessageCode"))
+            {
+                quote["MessageCode"] = call.Body["xtsMessageCode"]?.DeepClone();
+                text = quote.ToJsonString();
+            }
+
+            quotes.Add(text);
         }
 
         return quotes;

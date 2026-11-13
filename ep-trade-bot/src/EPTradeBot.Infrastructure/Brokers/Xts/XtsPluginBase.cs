@@ -664,6 +664,11 @@ public sealed class CompositEdgePlugin(IHttpClientFactory http, BrokerSessionFac
 public sealed class RmoneyPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<RmoneyPlugin> logger)
     : XtsPluginBase(http, sessions, symbols, logger), IBrokerMargin
 {
+    // Instruments of one mode are subscribed in requests of up to fifty, with ids sent as numbers; LTP is asked for as a touchline.
+    public override EPTradeBot.Core.Streaming.Feeds.IFeedCodec CreateFeedCodec() => new EPTradeBot.Core.Streaming.Feeds.XtsFeedCodec(Name, batch: 50, rmoney: true);
+
+    protected override bool StampsQuoteCode => true;
+
     public override string Name => "rmoney";
     public override string DisplayName => "RMoney";
     protected override string DefaultBaseUrl => "https://xts.rmoneyindia.co.in:3000";

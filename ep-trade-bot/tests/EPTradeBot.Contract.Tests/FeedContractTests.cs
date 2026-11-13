@@ -378,7 +378,7 @@ public sealed class NorenResubscribeTests
 /// <summary>The XTS feed against the Python adapters: the HTTP calls that subscribe, and the ticks for what the socket and the replies carry.</summary>
 public static class XtsFeedRunner
 {
-    public static void Run(string file, string name, Func<IFeedHttpCodec> create, string marketData, Action<JsonObject>? adjust = null)
+    public static void Run(string file, string name, Func<IFeedHttpCodec> create, string marketData, Action<JsonObject>? adjust = null, bool stampsCode = false)
     {
         var fixtures = BrokerContractHost.Load(file);
         var now = fixtures["now_ms"]!.GetValue<long>();
@@ -428,7 +428,18 @@ public static class XtsFeedRunner
             var calls = feed.TakeHttp();
             if (calls.Count > 0)
             {
-                foreach (var quote in pending) published.AddRange(feed.DecodeText(quote, now));
+                foreach (var quote in pending)
+                {
+                    var text = quote;
+                    // RMoney's plugin gives a quote that names no message code the code of the request it answers.
+                    if (stampsCode && quote.StartsWith('{') && JsonNode.Parse(quote) is JsonObject q && !q.ContainsKey("MessageCode"))
+                    {
+                        q["MessageCode"] = calls[^1].Body["xtsMessageCode"]!.DeepClone();
+                        text = q.ToJsonString();
+                    }
+
+                    published.AddRange(feed.DecodeText(text, now));
+                }
                 pending = [];
             }
 
@@ -635,6 +646,19 @@ public sealed class XtsFeedCodecTests
     }
 
     [Fact]
+    public void A_tick_that_names_no_message_code_is_a_touchline_on_RMoney_and_nothing_elsewhere()
+    {
+        var rmoney = new XtsFeedCodec("rmoney", rmoney: true);
+        rmoney.DecodeText("40", 0);
+        rmoney.Subscribe([Request(mode: StreamMode.Quote)], 0);
+        Assert.Equal("QUOTE", rmoney.DecodeText("""{"ExchangeSegment":1,"ExchangeInstrumentID":2885,"LastTradedPrice":1}""", 0).Single().Topic.Split('_')[^1]);
+        Assert.Empty(rmoney.DecodeText("""{"MessageCode":"abc","ExchangeSegment":1,"ExchangeInstrumentID":2885}""", 0));
+        var other = Open();
+        other.Subscribe([Request()], 0);
+        Assert.Empty(other.DecodeText("""{"ExchangeSegment":1,"ExchangeInstrumentID":2885,"LastTradedPrice":1}""", 0));
+    }
+
+    [Fact]
     public void A_reset_forgets_every_subscription()
     {
         var codec = Open();
@@ -645,4 +669,13 @@ public sealed class XtsFeedCodecTests
         codec.DecodeText("40", 0);
         Assert.Empty(codec.TakeHttp());
     }
+}
+
+public sealed class RmoneyFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_rmoney.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => XtsFeedRunner.Run("feed_rmoney.fixtures.json", name, () => new XtsFeedCodec("rmoney", batch: 50, rmoney: true), "/apimarketdata", name == "an_event_for_another_mode_is_ignored" ? null : XtsFeedDeviations.Common.GetValueOrDefault(name), stampsCode: true);
 }
