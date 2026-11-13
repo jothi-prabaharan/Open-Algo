@@ -15,16 +15,23 @@ namespace EPTradeBot.Infrastructure.Brokers.Shoonya;
 /// Market and stop-market orders are priced like OpenAlgo's market price protection (Shoonya refuses both types over the API).
 /// Not ported yet, and refused rather than guessed: history, margin and the feed.
 /// </summary>
-[BrokerPlugin]
-public sealed partial class ShoonyaPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<ShoonyaPlugin> logger)
+public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger logger)
     : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerLogin
 {
-    private const string Host = "https://api.shoonya.com";
     private const string Api = "/NorenWClientAPI";
     private const int QuoteAttempts = 3;
 
-    public string Name => "shoonya";
-    public string DisplayName => "Shoonya";
+    public abstract string Name { get; }
+    public abstract string DisplayName { get; }
+
+    /// <summary>The broker's API address.</summary>
+    protected abstract string Host { get; }
+
+    /// <summary>Whether a stop-market order is priced from a quote and sent as a stop-limit (Shoonya refuses the stop-market type over the API; Zebu takes it).</summary>
+    protected virtual bool ProtectsStopMarket => true;
+
+    /// <summary>Whether a quote is checked to be for the instrument asked about and asked for again when it is not (a fault seen on Shoonya's Noren backend; Zebu runs the same one).</summary>
+    protected virtual bool GuardsQuotes => true;
     public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
@@ -65,7 +72,7 @@ public sealed partial class ShoonyaPlugin(IHttpClientFactory http, BrokerSession
     private static bool SessionExpired(string? message) =>
         message is not null && new[] { "session expired", "invalid session", "session key", "not logged in", "invalid input : uid" }.Any(m => message.Contains(m, StringComparison.OrdinalIgnoreCase));
 
-    private JsonObject Account(BrokerSession session, bool holdings = false)
+    protected JsonObject Account(BrokerSession session, bool holdings = false)
     {
         var id = UserId(session);
         var body = new JsonObject { ["uid"] = id, ["actid"] = id };
@@ -90,7 +97,7 @@ public sealed partial class ShoonyaPlugin(IHttpClientFactory http, BrokerSession
         var type = OrderType(order.PriceType);
         var action = order.Action.ToUpperInvariant();
         var instrumentType = MarketPriceProtection.InstrumentType(null, order.Symbol);
-        if (order.PriceType is "MARKET" or "SL-M")
+        if (order.PriceType == "MARKET" || (ProtectsStopMarket && order.PriceType == "SL-M"))
         {
             var converted = false;
             try
@@ -111,7 +118,7 @@ public sealed partial class ShoonyaPlugin(IHttpClientFactory http, BrokerSession
             }
 
             // A stop-market that was not converted would go out as the order type Shoonya refuses, so it becomes a stop-limit priced off its trigger.
-            if (order.PriceType == "SL-M" && !converted)
+            if (ProtectsStopMarket && order.PriceType == "SL-M" && !converted)
             {
                 type = "SL-LMT";
                 var trigger = (double)order.TriggerPrice;
@@ -175,7 +182,7 @@ public sealed partial class ShoonyaPlugin(IHttpClientFactory http, BrokerSession
     // ---- books -----------------------------------------------------------------------------------------------
 
     /// <summary>A list answer is the book; the "no data" refusal Shoonya gives an empty book is an empty list; a lapsed session is an error.</summary>
-    private async Task<JsonArray> BookAsync(BrokerSession session, string endpoint, JsonObject payload, CancellationToken cancellationToken)
+    protected async Task<JsonArray> BookAsync(BrokerSession session, string endpoint, JsonObject payload, CancellationToken cancellationToken)
     {
         var reply = await PostAsync(session, endpoint, payload, cancellationToken);
         if (reply is JsonArray rows) return rows;
@@ -205,7 +212,7 @@ public sealed partial class ShoonyaPlugin(IHttpClientFactory http, BrokerSession
     private async Task<string?> SymbolByTokenAsync(string token, string exchange, CancellationToken cancellationToken) =>
         token.Length == 0 ? null : (await symbols.FindByTokenAsync(Name, token, exchange, cancellationToken))?.Symbol;
 
-    private async Task<string?> SymbolByBrokerSymbolAsync(string brokerSymbol, string exchange, CancellationToken cancellationToken) =>
+    protected async Task<string?> SymbolByBrokerSymbolAsync(string brokerSymbol, string exchange, CancellationToken cancellationToken) =>
         (await symbols.FindByBrokerSymbolAsync(Name, brokerSymbol, exchange, cancellationToken))?.Symbol;
 
     public async Task<BrokerBook> GetOrderBookAsync(BrokerSession session, CancellationToken cancellationToken)
@@ -293,7 +300,7 @@ public sealed partial class ShoonyaPlugin(IHttpClientFactory http, BrokerSession
         return positions;
     }
 
-    public async Task<BrokerBook> GetHoldingsAsync(BrokerSession session, CancellationToken cancellationToken)
+    public virtual async Task<BrokerBook> GetHoldingsAsync(BrokerSession session, CancellationToken cancellationToken)
     {
         var holdings = new JsonArray();
         double value = 0;
@@ -358,6 +365,7 @@ public sealed partial class ShoonyaPlugin(IHttpClientFactory http, BrokerSession
                 throw new BrokerException($"{DisplayName} could not send the quote: {Str(reply["emsg"]) ?? "no reason was given."}");
             }
 
+            if (!GuardsQuotes) return reply;
             var gotToken = Str(reply["token"]) ?? "";
             var gotExchange = Str(reply["exch"]) ?? "";
             if (gotToken.Length == 0 || (gotToken == token && (gotExchange.Length == 0 || gotExchange == DataExchange(exchange)))) return reply;
@@ -425,5 +433,61 @@ public sealed partial class ShoonyaPlugin(IHttpClientFactory http, BrokerSession
         }
 
         return results;
+    }
+}
+
+/// <summary>Shoonya (broker/shoonya), api.shoonya.com.</summary>
+[BrokerPlugin]
+public sealed class ShoonyaPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<ShoonyaPlugin> logger)
+    : NorenPluginBase(http, sessions, symbols, logger)
+{
+    public override string Name => "shoonya";
+    public override string DisplayName => "Shoonya";
+    protected override string Host => "https://api.shoonya.com";
+}
+
+/// <summary>
+/// Zebu (broker/zebu), go.mynt.in: the same Noren API as Shoonya. A stop-market order is sent as it is, a quote is checked as Shoonya's is (OpenAlgo's Zebu plugin takes whatever answer comes, even another instrument's), and its holdings
+/// carry the product, profit and loss on each row, with the held quantity counted as held shares plus the larger of the T1 and demat quantities.
+/// </summary>
+[BrokerPlugin]
+public sealed class ZebuPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<ZebuPlugin> logger)
+    : NorenPluginBase(http, sessions, symbols, logger)
+{
+    public override string Name => "zebu";
+    public override string DisplayName => "Zebu";
+    protected override string Host => "https://go.mynt.in";
+    protected override bool ProtectsStopMarket => false;
+
+    public override async Task<BrokerBook> GetHoldingsAsync(BrokerSession session, CancellationToken cancellationToken)
+    {
+        var holdings = new JsonArray();
+        double held = 0, invested = 0;
+        foreach (var h in (await BookAsync(session, "/Holdings", Account(session, holdings: true), cancellationToken)).OfType<JsonObject>())
+        {
+            var entries = (h["exch_tsym"] as JsonArray ?? []).OfType<JsonObject>().Where(e => JsonRead.Str(e["exch"]) == "NSE").ToList();
+            var quantity = JsonRead.Int(h["holdqty"]) + Math.Max(JsonRead.Int(h["npoadt1qty"]), JsonRead.Int(h["dpqty"]));
+            foreach (var entry in entries)
+            {
+                var brokerSymbol = JsonRead.Str(entry["tsym"]) ?? "";
+                holdings.Add(new JsonObject
+                {
+                    ["symbol"] = await SymbolByBrokerSymbolAsync(brokerSymbol, "NSE", cancellationToken) ?? brokerSymbol, ["exchange"] = JsonRead.Str(entry["exch"]),
+                    ["quantity"] = quantity, ["product"] = JsonRead.Get(entry, "product", "CNC"),
+                    ["pnl"] = JsonRead.Get(h, "profitandloss", 0.0), ["pnlpercent"] = JsonRead.Get(h, "pnlpercentage", 0.0),
+                });
+            }
+
+            if (JsonRead.Str(h["stat"]) != "Ok" || entries.Count == 0) continue;
+            var price = JsonRead.Float(h["upldprc"]);
+            invested += (JsonRead.Float(h["holdqty"]) + Math.Max(JsonRead.Float(h["npoadt1qty"]), JsonRead.Float(h["dpqty"]))) * price;
+            held += (JsonRead.Float(h["btstqty"]) + JsonRead.Float(h["holdqty"]) + JsonRead.Float(h["brkcolqty"]) + JsonRead.Float(h["unplgdqty"]) + JsonRead.Float(h["benqty"])
+                + Math.Max(JsonRead.Float(h["npoadt1qty"]), JsonRead.Float(h["dpqty"])) - JsonRead.Float(h["usedqty"])) * price;
+        }
+
+        return new BrokerBook(holdings, new JsonObject
+        {
+            ["totalholdingvalue"] = held, ["totalinvvalue"] = invested, ["totalprofitandloss"] = 0, ["totalpnlpercentage"] = 0,
+        });
     }
 }

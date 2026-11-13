@@ -455,3 +455,32 @@ public sealed class LoginShoonyaContractTests(LoginShoonyaHost host, ITestOutput
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginZebuHost : BrokerContractHost
+{
+    public override string BrokerName => "zebu";
+    public override string FixtureFile => "login_zebu.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "FA12345:::zebu-client-id", ["ApiSecret"] = "zebu-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginZebuContractTests(LoginZebuHost host, ITestOutputHelper output) : IClassFixture<LoginZebuHost>
+{
+    private const string Again = "Zebu did not accept the sign-in. Start it again from the beginning.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_with_a_message"] = LoginDeviations.Refused("Zebu did not accept the sign-in: Invalid code"),
+        ["login_refused_without_a_message"] = LoginDeviations.Refused(Again),
+        ["login_ok_without_a_token"] = LoginDeviations.Refused(Again),
+        ["login_token_without_ok_status"] = LoginDeviations.Refused(Again),
+        ["login_http_error"] = LoginDeviations.Refused(Again),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_zebu.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

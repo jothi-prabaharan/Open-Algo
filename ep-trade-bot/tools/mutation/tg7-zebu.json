@@ -1,0 +1,90 @@
+[
+ {
+  "name": "Z1 stop market protected",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "protected override bool ProtectsStopMarket => false;",
+  "new": "protected override bool ProtectsStopMarket => true;",
+  "filter": "FullyQualifiedName~ZebuContract|FullyQualifiedName~ZebuDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Z2 holdings quantity",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "JsonRead.Int(h[\"holdqty\"]) + Math.Max(JsonRead.Int(h[\"npoadt1qty\"]), JsonRead.Int(h[\"dpqty\"]));",
+  "new": "JsonRead.Int(h[\"holdqty\"]) + JsonRead.Int(h[\"dpqty\"]);",
+  "filter": "FullyQualifiedName~ZebuContract|FullyQualifiedName~ZebuDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Z3 holdings t1 quantity",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "Math.Max(JsonRead.Int(h[\"npoadt1qty\"]), JsonRead.Int(h[\"dpqty\"]));",
+  "new": "Math.Max(JsonRead.Int(h[\"npoadqty\"]), JsonRead.Int(h[\"dpqty\"]));",
+  "filter": "FullyQualifiedName~ZebuContract|FullyQualifiedName~ZebuDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Z4 product from holding",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"product\"] = JsonRead.Get(entry, \"product\", \"CNC\"),",
+  "new": "[\"product\"] = \"CNC\",",
+  "filter": "FullyQualifiedName~ZebuContract|FullyQualifiedName~ZebuDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Z5 pnl dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"pnl\"] = JsonRead.Get(h, \"profitandloss\", 0.0)",
+  "new": "[\"pnl\"] = 0.0",
+  "filter": "FullyQualifiedName~ZebuContract|FullyQualifiedName~ZebuDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Z6 pnl percent dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"pnlpercent\"] = JsonRead.Get(h, \"pnlpercentage\", 0.0)",
+  "new": "[\"pnlpercent\"] = 0.0",
+  "filter": "FullyQualifiedName~ZebuContract|FullyQualifiedName~ZebuDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Z7 not-ok rows dropped from list",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "            var quantity = JsonRead.Int(h[\"holdqty\"])",
+  "new": "            if (JsonRead.Str(h[\"stat\"]) != \"Ok\") continue;\n            var quantity = JsonRead.Int(h[\"holdqty\"])",
+  "filter": "FullyQualifiedName~ZebuContract|FullyQualifiedName~ZebuDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Z8 invested includes used",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "invested += (JsonRead.Float(h[\"holdqty\"]) + Math.Max(JsonRead.Float(h[\"npoadt1qty\"]), JsonRead.Float(h[\"dpqty\"]))) * price;",
+  "new": "invested += (JsonRead.Float(h[\"holdqty\"]) + Math.Max(JsonRead.Float(h[\"npoadt1qty\"]), JsonRead.Float(h[\"dpqty\"])) - JsonRead.Float(h[\"usedqty\"])) * price;",
+  "filter": "FullyQualifiedName~ZebuContract|FullyQualifiedName~ZebuDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Z9 valuation without used",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "- JsonRead.Float(h[\"usedqty\"])) * price;\n        }",
+  "new": "- 0) * price;\n        }",
+  "filter": "FullyQualifiedName~ZebuContract|FullyQualifiedName~ZebuDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Z10 valuation without brokerage collateral",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "JsonRead.Float(h[\"btstqty\"]) + JsonRead.Float(h[\"holdqty\"]) + JsonRead.Float(h[\"brkcolqty\"])",
+  "new": "JsonRead.Float(h[\"btstqty\"]) + JsonRead.Float(h[\"holdqty\"])",
+  "filter": "FullyQualifiedName~ZebuContract|FullyQualifiedName~ZebuDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Z11 host wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "protected override string Host => \"https://go.mynt.in\";",
+  "new": "protected override string Host => \"https://go.mynt.in/x\";",
+  "filter": "FullyQualifiedName~ZebuContract|FullyQualifiedName~ZebuDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

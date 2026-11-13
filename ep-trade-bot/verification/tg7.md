@@ -17,15 +17,16 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | CompositEdge (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | RMoney (XTS) | yes | yes | yes | yes | yes | no | yes | no |
 | Shoonya | yes | yes | yes | no | no | no | yes | no |
+| Zebu | yes | yes | yes | no | no | no | yes | no |
 
-The other 22 brokers in the task list are not started (Shoonya is partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
+The other 21 brokers in the task list are not started (Shoonya and Zebu are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
 ## Not done, and why Gate 7 is open
 
 - Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **The 22 brokers not started** (fivepaisa, aliceblue, arrow, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rupeezy, sahi, samco, tradejini, tradesmart, zebu), and Shoonya's history, margin and feed. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **The 21 brokers not started** (fivepaisa, aliceblue, arrow, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rupeezy, sahi, samco, tradejini, tradesmart), and history, margin and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
 ## Upstox sign-in
 
@@ -210,3 +211,11 @@ The other 22 brokers in the task list are not started (Shoonya is partly done). 
 - Ported from `broker/shoonya/api/auth_api.py` and the address `blueprints/brlogin.py` builds: the trader signs in on Shoonya's OAuth page (`.../OAuthlogin/authorize/oauth?client_id=...`, the client id being the part of the saved key after ":::"), which sends back a code; the code is exchanged at GenAcsTok with the SHA-256 (lower-case hex) of the client id, the secret and the code. There is no feed token.
 - Contract: 7 recorded cases (`login_shoonya.fixtures.json`) check the exchange body field by field (the checksum included) and the token stored; 5 integration tests cover the address and the keys. Refusals are worded for the trader; an HTTP error from Shoonya and an answer with no token say the sign-in was not accepted.
 - Mutation: `tools/mutation/tg7-shoonya-login.json`, 10 mutants, all caught (one equivalent mutant, an HTTP status check whose refusal reads the same as the check after it, was dropped).
+
+## Zebu (Noren API at go.mynt.in)
+
+- Same Noren base class as Shoonya (`NorenPluginBase`), held to `broker/zebu`: 38 recorded cases for orders, books and funds (`zebu.fixtures.json`), 18 for quotes (`zebu_data.fixtures.json`) and 7 for sign-in (`login_zebu.fixtures.json`).
+- Differences from Shoonya, recorded: a stop-market order is sent as it is (only market orders are priced from a quote); holdings carry the product and profit and loss on each row, the held quantity is held shares plus the larger of the T1 and demat quantities, and the totals are Zebu's own (value counts every quantity, invested counts the held quantity only, profit is zero); the sign-in address is `go.mynt.in/OAuthlogin/authorize/oauth`.
+- OpenAlgo's Zebu plugin takes whatever quote comes back, including another instrument's. EP Trade bot checks every quote as it does for Shoonya (the Noren backend is the same) and asks again, then refuses; the three recorded cases that show the difference are deviations.
+- Mutation: `tools/mutation/tg7-zebu.json`, 11 mutants for what is specific to Zebu, all caught (one first needed a holding whose product is not CNC); the shared Noren code is covered by Shoonya's 34.
+- Not yet ported for Zebu: history, margin and the feed.

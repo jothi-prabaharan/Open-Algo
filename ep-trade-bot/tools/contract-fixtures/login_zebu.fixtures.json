@@ -1,0 +1,316 @@
+{
+  "broker": "zebu",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GenAcsTok": {
+          "body": {
+            "stat": "Ok",
+            "access_token": "zebu-access-777",
+            "request_time": "10:20:30 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "zebu-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "go.mynt.in",
+          "path": "/NorenWClientAPI/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "a7806ef6a2830e2cc0dd4ae5a1523372c9945e816b91d73e9b392244baa09126"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_code_with_odd_characters",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "a/b+c=d&e",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GenAcsTok": {
+          "body": {
+            "stat": "Ok",
+            "access_token": "zebu-access-777",
+            "request_time": "10:20:30 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "zebu-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "go.mynt.in",
+          "path": "/NorenWClientAPI/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "a/b+c=d&e",
+            "checksum": "c79559e2ffbf499b4656a47d969b73d2c5ded3837d2ecf994739a7e1bf4998a7"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GenAcsTok": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Invalid code"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid code"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "go.mynt.in",
+          "path": "/NorenWClientAPI/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "a7806ef6a2830e2cc0dd4ae5a1523372c9945e816b91d73e9b392244baa09126"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GenAcsTok": {
+          "body": {
+            "stat": "Not_Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed. Please try again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "go.mynt.in",
+          "path": "/NorenWClientAPI/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "a7806ef6a2830e2cc0dd4ae5a1523372c9945e816b91d73e9b392244baa09126"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_ok_without_a_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GenAcsTok": {
+          "body": {
+            "stat": "Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed. Please try again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "go.mynt.in",
+          "path": "/NorenWClientAPI/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "a7806ef6a2830e2cc0dd4ae5a1523372c9945e816b91d73e9b392244baa09126"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_token_without_ok_status",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GenAcsTok": {
+          "body": {
+            "access_token": "x"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed. Please try again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "go.mynt.in",
+          "path": "/NorenWClientAPI/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "a7806ef6a2830e2cc0dd4ae5a1523372c9945e816b91d73e9b392244baa09126"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_http_error",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GenAcsTok": {
+          "status": 500,
+          "body": {
+            "error": "down"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Error: 500, {\"error\":\"down\"}"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "go.mynt.in",
+          "path": "/NorenWClientAPI/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "a7806ef6a2830e2cc0dd4ae5a1523372c9945e816b91d73e9b392244baa09126"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
