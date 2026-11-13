@@ -278,3 +278,32 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Margin (27 recorded cases, `margin_flattrade.fixtures.json`): a basket to GetBasketMargin; a market leg is priced off the last price and a stop-market leg off its trigger (last price only when it has none), moved by the protection slab and rounded to the quote's tick, else the master contract's; with no tick the reference goes unprotected; a leg that cannot be priced refuses the whole basket with the trader-worded message. The total is the margin after the trade, else the total margin. A refusal is a success status in OpenAlgo and an error status here (recorded deviation).
 - Mutation sets: 26 mutants on orders, books and funds and 22 on margin, all caught (one margin mutant, protection returning a non-positive price, is dropped as unreachable: the slab never yields zero).
 - History (31 recorded cases, `history_flattrade.fixtures.json`): one TPSeries call for intraday bars and one EODChartData call for daily ones; the 09:14 pre-open bar on cash and F&O is left out (commodities keep theirs), bars missing a price are skipped, negative intraday volume is zeroed, a daily bar whose range leaves out its open or close is widened, and today's bar is built from a quote when the daily range includes today and the chart has none. Differences, recorded: OpenAlgo stamps today's bar 5 hours 30 minutes late and fails the whole request over one unreadable row or a chart it cannot reach; EP Trade bot stamps midnight India time, skips the row, builds today's bar from the quote, keeps one bar per timestamp and words errors for the trader (a lapsed session says to log in again). Mutation set: 29 mutants, all caught.
+
+
+## Remaining brokers: size of the work (for planning)
+
+Lines of Python in each broker's `api/` and `mapping/` (the REST side) and `streaming/` (the feed). Each broker needs the same pass TradeSmart got: recorded cases for orders, books and funds, quotes and depth, history, margin and sign-in, the feed, and a mutation set, with the deviations written down. None of these shares an API with a broker already done, so none is a re-skin; the closest relatives are noted.
+
+| Broker | REST lines | Feed lines | Note |
+|---|---|---|---|
+| rupeezy | 2150 | 698 | Own paged REST API; has GTT. Smallest feed. |
+| sahi | 1802 | 1318 | Own REST API |
+| arrow | 2035 | 1104 | Own REST API |
+| hdfcsecurities | 2264 | 1345 | Own REST API |
+| hdfcsky | 2578 | 1085 | Own REST API |
+| iiflcapital | 2773 | 2490 | Own REST API |
+| samco | 2892 | 1790 | Own REST API |
+| fivepaisa | 2950 | 1735 | Own REST API (5paisa's own, not its XTS) |
+| firstock | 3188 | 1706 | Own REST API |
+| kotak | 3269 | 5390 | Own REST API; the largest feed |
+| definedge | 3690 | 2115 | Noren-flavoured feed, own REST API |
+| aliceblue | 4248 | 2330 | Noren-flavoured feed, own REST API |
+| mstock | 4213 | 853 | Own REST API |
+| tradejini | 4816 | 1624 | Own REST API |
+| indmoney | 4577 | 1661 | Own REST API |
+| pocketful | 4919 | 911 | Own REST API |
+| nubra | 4995 | 1267 | Own REST API |
+| groww | 5233 | 3800 | Own REST API |
+| motilal | 5617 | 1161 | Own REST API |
+
+Also open: Dhan 20-level depth (a second socket, an unconfirmed unsubscribe code, and a depth-level field the subscribe request does not have), Delta fractional (spot) quantities (a decision on decimal quantities end to end), and a live-broker run of every feed.
