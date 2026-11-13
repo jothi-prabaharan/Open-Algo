@@ -12,6 +12,13 @@ This file records, per broker, what is ported and how it was checked. It is the 
 
 The other 30 brokers in the task list are not started.
 
+## Not done, and why Gate 7 is open
+
+- **Market-data feeds** for Dhan, Upstox, Fyers and Delta Exchange. Each is a separate wire protocol (Dhan binary, Upstox protobuf, Fyers HSM binary, Delta JSON over a websocket) and needs its own codec held to the Python adapter, as the Zerodha, Angel One and Paytm Money feeds were.
+- **Delta Exchange leverage and fractional (spot) quantities.** Both cross the request model, not only the plugin: quantity is whole everywhere in the order pipeline today, and leverage comes from OpenAlgo's leverage setting, which EP Trade bot does not have yet.
+- **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
+- **The 30 brokers not started** (fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, ibulls, iifl, iiflcapital, indmoney, jainamxts, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, wisdom, zebu). Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+
 ## Upstox sign-in
 
 - Ported from `broker/upstox/api/auth_api.py` and the address `utils/broker_login.py` builds: the trader signs in on Upstox's page, which sends back a `code`; the code is exchanged at `/v2/login/authorization/token` with the same redirect address. There is no separate feed token.
