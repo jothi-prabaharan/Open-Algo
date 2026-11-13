@@ -1,0 +1,474 @@
+[
+ {
+  "name": "X1 path",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "private const string Subscription = \"/instruments/subscription\";",
+  "new": "private const string Subscription = \"/instruments/subscribe\";",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X2 ltp code",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "private static int Code(int mode) => mode switch { 1 => 1512, 2 => 1501, _ => 1502 };",
+  "new": "private static int Code(int mode) => mode switch { 1 => 1501, 2 => 1501, _ => 1502 };",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X3 quote code",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "private static int Code(int mode) => mode switch { 1 => 1512, 2 => 1501, _ => 1502 };",
+  "new": "private static int Code(int mode) => mode switch { 1 => 1512, 2 => 1512, _ => 1502 };",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X4 depth code",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "private static int Code(int mode) => mode switch { 1 => 1512, 2 => 1501, _ => 1502 };",
+  "new": "private static int Code(int mode) => mode switch { 1 => 1512, 2 => 1501, _ => 1501 };",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X5 segment bse",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"BSE\"] = 11,",
+  "new": "[\"BSE\"] = 1,",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X6 segment mcx",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"MCX\"] = 51,",
+  "new": "[\"MCX\"] = 5,",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X7 segment cds",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"CDS\"] = 3,",
+  "new": "[\"CDS\"] = 2,",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X8 segment bfo",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"BFO\"] = 12,",
+  "new": "[\"BFO\"] = 2,",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X9 index segment",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"NSE_INDEX\"] = 1,",
+  "new": "[\"NSE_INDEX\"] = 2,",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X10 bse index segment",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"BSE_INDEX\"] = 11,",
+  "new": "[\"BSE_INDEX\"] = 1,",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X11 token as number",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"exchangeInstrumentID\"] = h.Token }),\n            [\"xtsMessageCode\"] = Code(h.Mode),",
+  "new": "[\"exchangeInstrumentID\"] = long.Parse(h.Token) }),\n            [\"xtsMessageCode\"] = Code(h.Mode),",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X12 mode check dropped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (r.Mode is not (StreamMode.Ltp or StreamMode.Quote or StreamMode.Depth) || !Segments.TryGetValue(r.BrokerExchange, out var segment)) continue;",
+  "new": "if (!Segments.TryGetValue(r.BrokerExchange, out var segment)) continue;",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X13 unknown exchange defaults",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (r.Mode is not (StreamMode.Ltp or StreamMode.Quote or StreamMode.Depth) || !Segments.TryGetValue(r.BrokerExchange, out var segment)) continue;",
+  "new": "if (r.Mode is not (StreamMode.Ltp or StreamMode.Quote or StreamMode.Depth)) continue;\n                var segment = Segments.GetValueOrDefault(r.BrokerExchange, 1);",
+  "filter": "FullyQualifiedName~XtsFeedCodecTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X14 duplicate held",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "held.RemoveAll(h => h.Symbol == entry.Symbol && h.Exchange == entry.Exchange && h.Mode == entry.Mode);",
+  "new": "",
+  "filter": "FullyQualifiedName~XtsFeedCodecTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X15 sent before connect",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (connected && batch == 0) http.Add(Call(\"POST\", entry));\n                else if (connected) fresh.Add(entry);",
+  "new": "if (batch == 0) http.Add(Call(\"POST\", entry));\n                else fresh.Add(entry);",
+  "filter": "FullyQualifiedName~XtsFeedCodecTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X16 batch never",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (connected && batch == 0) http.Add(Call(\"POST\", entry));\n                else if (connected) fresh.Add(entry);",
+  "new": "if (connected) http.Add(Call(\"POST\", entry));",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X17 unsubscribe verb",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (connected) http.Add(Call(\"PUT\", entry));",
+  "new": "if (connected) http.Add(Call(\"POST\", entry));",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X18 unsubscribe not sent",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (connected) http.Add(Call(\"PUT\", entry));",
+  "new": "if (false) http.Add(Call(\"PUT\", entry));",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X19 unsubscribe keeps held",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "held.Remove(entry);\n                if (connected)",
+  "new": "if (connected)",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X20 unsubscribe wrong mode default",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "foreach (var m in mode is { } one ? [(int)one] : new[] { 1, 2, 3 })",
+  "new": "foreach (var m in mode is { } one ? [(int)one] : new[] { 2 })",
+  "filter": "FullyQualifiedName~XtsFeedCodecTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X21 resubscribe keeps connected",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "connected = false;\n            return [];\n        }\n    }\n\n    public IReadOnlyList<string> TakeOutgoing",
+  "new": "return [];\n        }\n    }\n\n    public IReadOnlyList<string> TakeOutgoing",
+  "filter": "FullyQualifiedName~XtsFeedCodecTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X22 ping not answered",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "outgoing.Add(\"3\");",
+  "new": "outgoing.Add(\"2\");",
+  "filter": "FullyQualifiedName~XtsFeedCodecTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X23 open not answered",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "outgoing.Add(\"40\");",
+  "new": "outgoing.Add(\"41\");",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X24 connect does not resubscribe",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "connected = true;\n                if (batch == 0) foreach (var h in held) http.Add(Call(\"POST\", h));\n                else http.AddRange(Batches(held));",
+  "new": "connected = true;",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X25 connect never marks connected",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "connected = true;\n                if (batch == 0)",
+  "new": "if (batch == 0)",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X26 disconnect ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (frame.StartsWith(\"41\", StringComparison.Ordinal))\n            {\n                connected = false;\n                return [];\n            }",
+  "new": "if (frame.StartsWith(\"41\", StringComparison.Ordinal))\n            {\n                return [];\n            }",
+  "filter": "FullyQualifiedName~XtsFeedCodecTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X27 only full events",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (!eventName.EndsWith(\"-json-full\", StringComparison.Ordinal) && !eventName.EndsWith(\"-json-partial\", StringComparison.Ordinal)) return [];",
+  "new": "if (!eventName.EndsWith(\"-json-full\", StringComparison.Ordinal)) return [];",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X28 only partial events",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (!eventName.EndsWith(\"-json-full\", StringComparison.Ordinal) && !eventName.EndsWith(\"-json-partial\", StringComparison.Ordinal)) return [];",
+  "new": "if (!eventName.EndsWith(\"-json-partial\", StringComparison.Ordinal)) return [];",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X29 any event name",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (!eventName.EndsWith(\"-json-full\", StringComparison.Ordinal) && !eventName.EndsWith(\"-json-partial\", StringComparison.Ordinal)) return [];",
+  "new": "",
+  "filter": "FullyQualifiedName~XtsFeedCodecTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X30 text payload not parsed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (payload is JsonValue text && text.TryGetValue<string>(out var json)) payload = Parse(json);",
+  "new": "",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X31 raw json not read",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (frame[0] == '{') return Tick(Parse(frame), nowMs);",
+  "new": "if (frame[0] == '{') return [];",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X32 mode 1512",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "var code = Text(data[\"MessageCode\"]) switch { \"1512\" => 1, \"1501\" => 2, \"1502\" => 3, _ => 0 };",
+  "new": "var code = Text(data[\"MessageCode\"]) switch { \"1512\" => 2, \"1501\" => 2, \"1502\" => 3, _ => 0 };",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X33 mode 1501",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "var code = Text(data[\"MessageCode\"]) switch { \"1512\" => 1, \"1501\" => 2, \"1502\" => 3, _ => 0 };",
+  "new": "var code = Text(data[\"MessageCode\"]) switch { \"1512\" => 1, \"1501\" => 1, \"1502\" => 3, _ => 0 };",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X34 mode 1502",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "var code = Text(data[\"MessageCode\"]) switch { \"1512\" => 1, \"1501\" => 2, \"1502\" => 3, _ => 0 };",
+  "new": "var code = Text(data[\"MessageCode\"]) switch { \"1512\" => 1, \"1501\" => 2, \"1502\" => 2, _ => 0 };",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X36 segment ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "h.Segment == segment && h.Token == token))",
+  "new": "h.Token == token))",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X37 token ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "h.Segment == segment && h.Token == token))",
+  "new": "h.Segment == segment))",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X38 ltp quantity",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"ltq\"] = quantity }",
+  "new": "[\"ltq\"] = ltt }",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X39 average price spelling",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "(message.ContainsKey(\"AveragePrice\") ? Get(message, \"AveragePrice\") : Get(message, \"AverageTradedPrice\"))",
+  "new": "Get(message, \"AveragePrice\")",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X40 quantity spelling",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "source.ContainsKey(\"LastTradedQunatity\") ? Get(source, \"LastTradedQunatity\") : Get(source, \"LastTradedQuantity\")",
+  "new": "Get(source, \"LastTradedQunatity\")",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X41 quote volume",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"volume\"] = Get(source, \"TotalTradedQuantity\"), [\"open\"] = Get(source, \"Open\"), [\"high\"] = Get(source, \"High\"), [\"low\"] = Get(source, \"Low\"),\n                    [\"close\"] = Get(source, \"Close\"), [\"last_quantity\"]",
+  "new": "[\"volume\"] = Get(source, \"TotalTradedQuantity\"), [\"open\"] = Get(source, \"Open\"), [\"high\"] = Get(source, \"Low\"), [\"low\"] = Get(source, \"Low\"),\n                    [\"close\"] = Get(source, \"Close\"), [\"last_quantity\"]",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X42 buy sell totals",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"total_buy_quantity\"] = Get(source, \"TotalBuyQuantity\"),\n                    [\"total_sell_quantity\"] = Get(source, \"TotalSellQuantity\"),",
+  "new": "[\"total_buy_quantity\"] = Get(source, \"TotalSellQuantity\"),\n                    [\"total_sell_quantity\"] = Get(source, \"TotalBuyQuantity\"),",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X43 touchline ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "var source = Text(message[\"MessageCode\"]) == \"1502\" && message[\"Touchline\"] is JsonObject touchline ? touchline : message;",
+  "new": "var source = message;",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X44 touchline for all codes",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "var source = Text(message[\"MessageCode\"]) == \"1502\" && message[\"Touchline\"] is JsonObject touchline ? touchline : message;",
+  "new": "var source = message[\"Touchline\"] is JsonObject touchline ? touchline : message;",
+  "filter": "FullyQualifiedName~XtsFeedCodecTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X45 missing field null",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "private static JsonNode? Get(JsonObject o, string key, JsonNode? fallback = null) => o.ContainsKey(key) ? o[key]?.DeepClone() : fallback ?? JsonValue.Create(0);",
+  "new": "private static JsonNode? Get(JsonObject o, string key, JsonNode? fallback = null) => o.ContainsKey(key) ? o[key]?.DeepClone() : null;",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X46 oi",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"oi\"] = Get(message, \"OpenInterest\")",
+  "new": "[\"oi\"] = Get(source, \"OpenInterest\")",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X47 circuits swapped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"upper_circuit\"] = Get(message, \"UpperCircuitLimit\"), [\"lower_circuit\"] = Get(message, \"LowerCircuitLimit\")",
+  "new": "[\"upper_circuit\"] = Get(message, \"LowerCircuitLimit\"), [\"lower_circuit\"] = Get(message, \"UpperCircuitLimit\")",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X48 book needs both sides",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "if (message.ContainsKey(\"Bids\") && message.ContainsKey(\"Asks\"))",
+  "new": "if (message.ContainsKey(\"Bids\") || message.ContainsKey(\"Asks\"))",
+  "filter": "FullyQualifiedName~XtsFeedCodecTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X49 sides swapped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"buy\"] = Levels(message[\"Bids\"] as JsonArray), [\"sell\"] = Levels(message[\"Asks\"] as JsonArray)",
+  "new": "[\"buy\"] = Levels(message[\"Asks\"] as JsonArray), [\"sell\"] = Levels(message[\"Bids\"] as JsonArray)",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X50 level size",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"quantity\"] = Get(o, \"Size\")",
+  "new": "[\"quantity\"] = Get(o, \"Price\")",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X51 level orders",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"orders\"] = Get(o, \"TotalOrders\")",
+  "new": "[\"orders\"] = Get(o, \"Size\")",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X52 pad to four",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "while (result.Count < 5)",
+  "new": "while (result.Count < 4)",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X53 cap at ten",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "while (result.Count > 20)",
+  "new": "while (result.Count > 10)",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X54 padding not zero",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "[\"price\"] = 0.0, [\"quantity\"] = 0, [\"orders\"] = 0",
+  "new": "[\"price\"] = 0.0, [\"quantity\"] = 1, [\"orders\"] = 0",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X55 timestamp",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "tick[\"timestamp\"] = nowMs;",
+  "new": "tick[\"timestamp\"] = nowMs + 1;",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X56 mode field",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "tick[\"mode\"] = mode;",
+  "new": "tick[\"mode\"] = code;",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X57 topic modes",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "mode switch { 1 => \"LTP\", 2 => \"QUOTE\", _ => \"DEPTH\" }",
+  "new": "mode switch { 1 => \"LTP\", 2 => \"LTP\", _ => \"DEPTH\" }",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X58 batch size grouping",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "var group = rest.Where(h => h.Mode == mode).Take(batch).ToList();",
+  "new": "var group = rest.Where(h => h.Mode == mode).Take(batch + 1).ToList();",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X59 batch ignores mode",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "var group = rest.Where(h => h.Mode == mode).Take(batch).ToList();",
+  "new": "var group = rest.Take(batch).ToList();",
+  "filter": "FullyQualifiedName~WisdomFeed|FullyQualifiedName~FivepaisaXtsFeed|FullyQualifiedName~JainamXtsFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "X60 reset keeps held",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/XtsFeedCodec.cs",
+  "old": "held.Clear();\n            http = [];",
+  "new": "http = [];",
+  "filter": "FullyQualifiedName~XtsFeedCodecTests",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

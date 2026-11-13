@@ -70,3 +70,10 @@ public interface IBrokerFeedAuthorize : IBrokerFeed
     /// <summary>The address and headers for this connection, or null when the broker would not give one.</summary>
     Task<FeedEndpoint?> AuthorizeAsync(BrokerSession session, string? overrideUrl, CancellationToken cancellationToken);
 }
+
+/// <summary>A feed that also needs HTTP calls made for it (see <see cref="EPTradeBot.Core.Streaming.Feeds.IFeedHttpCodec"/>).</summary>
+public interface IBrokerFeedHttp : IBrokerFeed
+{
+    /// <summary>Makes one call. The initial quotes the broker answers with, each as JSON text, for the codec to read.</summary>
+    Task<IReadOnlyList<string>> SendFeedCallAsync(BrokerSession session, EPTradeBot.Core.Streaming.Feeds.FeedHttpCall call, CancellationToken cancellationToken);
+}

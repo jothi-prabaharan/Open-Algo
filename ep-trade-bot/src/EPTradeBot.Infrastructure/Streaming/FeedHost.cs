@@ -153,6 +153,8 @@ public sealed class FeedHost(
         private Task? run;
         private Task? senderTask;
         private bool connected;
+        private BrokerSession? currentSession;
+        private readonly SemaphoreSlim httpTurn = new(1, 1);
 
         private long Now => host.clock.GetUtcNow().ToUnixTimeMilliseconds();
 
@@ -176,12 +178,14 @@ public sealed class FeedHost(
                 if (connected) foreach (var m in messages) outbox.Writer.TryWrite(m);
             }
 
+            PumpHttp();
             return null;
         }
 
         /// <summary>Gives up one hold. The number of instruments still held on the connection.</summary>
         public int Release(string exchange, string symbol, StreamMode mode)
         {
+            int count;
             lock (sync)
             {
                 var key = (exchange, symbol, mode);
@@ -195,8 +199,53 @@ public sealed class FeedHost(
                 held.Remove(key);
                 var messages = codec.Unsubscribe(existing.Request.Target, mode, Now);
                 if (connected) foreach (var m in messages) outbox.Writer.TryWrite(m);
-                return held.Count;
+                count = held.Count;
             }
+
+            PumpHttp();
+            return count;
+        }
+
+        /// <summary>Makes the HTTP calls the codec owes, one batch after another, and reads the quotes the broker answers with.</summary>
+        private void PumpHttp()
+        {
+            if (codec is not IFeedHttpCodec http || plugin is not IBrokerFeedHttp sender) return;
+            IReadOnlyList<FeedHttpCall> calls;
+            BrokerSession? session;
+            lock (sync)
+            {
+                calls = connected ? http.TakeHttp() : [];
+                session = currentSession;
+            }
+
+            if (calls.Count == 0 || session is null) return;
+            _ = Task.Run(async () =>
+            {
+                await httpTurn.WaitAsync(stop.Token);
+                try
+                {
+                    foreach (var call in calls)
+                    {
+                        try
+                        {
+                            foreach (var quote in await sender.SendFeedCallAsync(session, call, stop.Token))
+                            {
+                                IReadOnlyList<FeedPublish> ticks;
+                                lock (sync) ticks = codec.DecodeText(quote, Now);
+                                foreach (var tick in ticks) host.publisher.Publish(tick.Topic, tick.Data);
+                            }
+                        }
+                        catch (Exception ex) when (ex is not OutOfMemoryException)
+                        {
+                            host.logger.LogWarning(ex, "A {Broker} subscription request failed and was skipped.", plugin.Name);
+                        }
+                    }
+                }
+                finally
+                {
+                    httpTurn.Release();
+                }
+            }, stop.Token);
         }
 
         public void Start()
@@ -266,6 +315,7 @@ public sealed class FeedHost(
                 }
 
                 codec.Begin(session);
+                lock (sync) currentSession = session;
                 using var socket = new ClientWebSocket();
                 socket.Options.KeepAliveInterval = TimeSpan.FromSeconds(20);
                 foreach (var (name, value) in endpoint.Headers) socket.Options.SetRequestHeader(name, value);
@@ -422,6 +472,8 @@ public sealed class FeedHost(
                 {
                     if (connected) foreach (var m in codec.TakeOutgoing()) outbox.Writer.TryWrite(m);
                 }
+
+                PumpHttp();
             }
             catch (Exception ex) when (ex is not OutOfMemoryException)
             {

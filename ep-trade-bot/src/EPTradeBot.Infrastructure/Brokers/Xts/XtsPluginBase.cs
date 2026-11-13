@@ -35,7 +35,7 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
     protected virtual Task<(string PriceType, decimal Price)> PriceAsync(BrokerSession session, BrokerOrder order, CancellationToken cancellationToken) =>
         Task.FromResult((order.PriceType, order.Price));
 
-    public virtual BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
+    public virtual BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Streaming;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret", "ApiKeyMarket", "ApiSecretMarket"];
 
     private static readonly Dictionary<string, string> Segments = new()
@@ -544,6 +544,9 @@ public sealed class FivepaisaXtsPlugin(IHttpClientFactory http, BrokerSessionFac
     public override string Name => "fivepaisaxts";
     public override string DisplayName => "5paisa XTS";
     protected override string DefaultBaseUrl => "https://xtsmum.5paisa.com";
+
+    // Instruments of one mode are subscribed in requests of up to fifty.
+    public override EPTradeBot.Core.Streaming.Feeds.IFeedCodec CreateFeedCodec() => new EPTradeBot.Core.Streaming.Feeds.XtsFeedCodec(Name, batch: 50);
 }
 
 /// <summary>IIFL's XTS server (broker/iifl).</summary>
@@ -606,6 +609,10 @@ public sealed class JainamXtsPlugin(IHttpClientFactory http, BrokerSessionFactor
     public override string DisplayName => "Jainam";
     protected override string DefaultBaseUrl => "https://jtrade.jainam.in:5000";
     protected override string MarketDataPath => "/apibinarymarketdata";
+    protected override string SocketPath => "/apibinarymarketdata/socket.io";
+
+    // A tick goes to every mode the instrument is subscribed in, whatever its message code.
+    public override EPTradeBot.Core.Streaming.Feeds.IFeedCodec CreateFeedCodec() => new EPTradeBot.Core.Streaming.Feeds.XtsFeedCodec(Name, routesByInstrument: true);
 
     protected override JsonObject SessionBody(string appKey, string secretKey, IReadOnlyDictionary<string, string> input) =>
         new() { ["appKey"] = appKey, ["secretKey"] = secretKey, ["accessToken"] = "jainamxts" };

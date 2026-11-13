@@ -9,12 +9,12 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Upstox | yes | yes | yes | yes | yes | yes | yes | yes |
 | Fyers | yes | yes | yes | yes | yes | yes | yes | yes |
 | Delta Exchange | yes | yes | yes | yes | yes | no | yes | yes |
-| Wisdom Capital (XTS) | yes | yes | yes | yes | no | no | yes | no |
-| 5paisa XTS | yes | yes | yes | yes | no | no | yes | no |
-| IIFL (XTS) | yes | yes | yes | yes | no | no | yes | no |
-| iBulls (XTS) | yes | yes | yes | yes | no | no | yes | no |
-| Jainam (XTS) | yes | yes | yes | yes | no | no | yes | no |
-| CompositEdge (XTS) | yes | yes | yes | yes | no | no | yes | no |
+| Wisdom Capital (XTS) | yes | yes | yes | yes | no | no | yes | yes |
+| 5paisa XTS | yes | yes | yes | yes | no | no | yes | yes |
+| IIFL (XTS) | yes | yes | yes | yes | no | no | yes | yes |
+| iBulls (XTS) | yes | yes | yes | yes | no | no | yes | yes |
+| Jainam (XTS) | yes | yes | yes | yes | no | no | yes | yes |
+| CompositEdge (XTS) | yes | yes | yes | yes | no | no | yes | yes |
 | RMoney (XTS) | yes | yes | yes | yes | yes | no | yes | no |
 | Shoonya | yes | yes | yes | yes | yes | no | yes | yes |
 | Zebu | yes | yes | yes | yes | n/a (no calculator) | no | yes | yes |
@@ -218,6 +218,14 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - The same `NorenFeedCodec`, with a style for each broker, held to `broker/zebu/streaming` and `broker/flattrade/streaming` by the same 75 scenarios recorded from their own adapters (`feed_zebu.fixtures.json`, `feed_flattrade.fixtures.json`). What differs, as recorded: the ticks carry `zebu_timestamp` or `flattrade_timestamp` and `total_traded_value` where Shoonya's carry `shoonya_timestamp` and `open_interest`, and an LTP tick has no last trade time; both send their subscriptions straight after the sign-in message instead of waiting for the broker's acceptance, and keep the cache over a reconnect; Zebu sends one message per scrip, Flattrade one message per kind with every scrip in it (no limit of 100), and both repeat everything held in one message per kind.
 - Recorded differences from OpenAlgo: a second identical subscribe call there stops the instrument ever being released from the broker (the call count never returns to zero); EP Trade bot's connection counts its clients itself, so the codec releases the instrument when its one hold goes. OpenAlgo also knows when the socket is signed out and sends nothing then, where EP Trade bot's connection discards what the codec says while it is down and the next sign-in sends everything held.
 - Mutation set `tools/mutation/tg7-noren-feed-styles.json`: 14 mutants on what differs between the styles, all caught (the repeat of more than a hundred scrips is held by unit tests, because OpenAlgo repeats them from a set whose order changes on every run).
+
+## XTS feed (Wisdom, 5paisa XTS, IIFL, iBulls, Jainam, CompositEdge)
+
+- `XtsFeedCodec` (Core) and the XTS plugin base. The feed is a Socket.IO connection that carries ticks only, and HTTP calls to `/instruments/subscription` that subscribe (POST) and unsubscribe (PUT). The codec reads the Engine.IO and Socket.IO frames (the open packet is answered with a Socket.IO connect, a ping with a pong, an event named `<code>-json-full` or `-json-partial` is a tick) and hands the connection the HTTP calls to make: a new hook on the feed host (`IFeedHttpCodec`, `IBrokerFeedHttp`) makes them one after another and gives the initial quotes in the replies back to the codec. LTP is message code 1512, Quote 1501 and Depth 1502. The socket is opened with the market-data token and the user id read from it (the account's client id when the token has none).
+- Held to each broker's own adapter by 44 recorded scenarios apiece (`feed_<broker>.fixtures.json`; 47 for 5paisa XTS), and to the adapters' clients with the HTTP calls recorded. Per-broker differences, as recorded: 5paisa XTS sends instruments of one mode in requests of up to fifty (and again after a reconnect); Jainam sends a tick to every mode the instrument is subscribed in, whatever its message code; Jainam's socket and subscription paths are under `/apibinarymarketdata`, and so are iBulls' subscription calls.
+- Recorded differences from OpenAlgo: OpenAlgo's Wisdom adapter disconnects the whole feed when any one instrument is unsubscribed; EP Trade bot releases that instrument only. OpenAlgo asks to release a depth subscription with the quote code (so depth is never released); EP Trade bot sends the depth code. OpenAlgo publishes a tick for a mode or an instrument nobody subscribed (Jainam's routing is kept as recorded); EP Trade bot publishes only to what is subscribed. OpenAlgo subscribes an exchange it does not know as the NSE cash market; EP Trade bot refuses it. OpenAlgo's iBulls feed client cannot be built at all (it reads a `BASE_URL` it never defines), so the recording gave it the address it was meant to use; EP Trade bot's iBulls feed works.
+- Mutation set `tools/mutation/tg7-xts-feed.json`: 59 mutants, all caught (one dropped as equivalent: an unknown message code that no held mode can match). Eleven needed unit tests, because every recording starts with the connection open.
+- Not done for the XTS family: RMoney's feed (its adapter batches subscriptions, retries and reads binary packets, and needs its own recordings).
 
 ## Shoonya sign-in
 

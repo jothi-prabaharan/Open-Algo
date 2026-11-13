@@ -374,3 +374,275 @@ public sealed class NorenResubscribeTests
         Assert.Equal(101, Scrips(messages[1]));
     }
 }
+
+/// <summary>The XTS feed against the Python adapters: the HTTP calls that subscribe, and the ticks for what the socket and the replies carry.</summary>
+public static class XtsFeedRunner
+{
+    public static void Run(string file, string name, Func<IFeedHttpCodec> create, string marketData, Action<JsonObject>? adjust = null)
+    {
+        var fixtures = BrokerContractHost.Load(file);
+        var now = fixtures["now_ms"]!.GetValue<long>();
+        var symbols = fixtures["symbols"]!.AsArray().OfType<JsonObject>().ToDictionary(s => (s["exchange"]!.GetValue<string>(), s["symbol"]!.GetValue<string>()), s => (Token: s["token"]!.GetValue<string>(), BrokerExchange: s["brexchange"]!.GetValue<string>()));
+        var scenario = (JsonObject)fixtures["scenarios"]!.AsArray().OfType<JsonObject>().Single(s => s["name"]!.GetValue<string>() == name).DeepClone();
+        adjust?.Invoke(scenario);
+        var feed = create();
+        Open(feed, now);
+        var pending = new List<string>();
+        var index = 0;
+        foreach (var entry in scenario["steps"]!.AsArray().OfType<JsonObject>())
+        {
+            var step = entry["step"]!.AsObject();
+            var kind = step.First().Key;
+            var label = $"{name} step {++index} ({kind})";
+            var result = entry["result"]!.AsObject();
+            var published = new List<FeedPublish>();
+            switch (kind)
+            {
+                case "quotes_next":
+                    pending = step["quotes_next"]!.AsArray().Select(q => q is JsonValue v && v.TryGetValue<string>(out var t) ? t : q!.ToJsonString()).ToList();
+                    continue;
+                case "subscribe":
+                    feed.Subscribe(step["subscribe"]!.AsArray().OfType<JsonObject>().Select(i =>
+                    {
+                        var (exchange, symbol) = (i["exchange"]!.GetValue<string>(), i["symbol"]!.GetValue<string>());
+                        return new FeedRequest(exchange, symbol, symbols[(exchange, symbol)].Token, symbols[(exchange, symbol)].BrokerExchange, (StreamMode)i["mode"]!.GetValue<int>());
+                    }).ToList(), now);
+                    break;
+                case "unsubscribe":
+                    var u = step["unsubscribe"]!.AsObject();
+                    var (ue, us) = (u["exchange"]!.GetValue<string>(), u["symbol"]!.GetValue<string>());
+                    feed.Unsubscribe(new FeedTarget(ue, us, symbols[(ue, us)].Token, symbols[(ue, us)].BrokerExchange), (StreamMode)u["mode"]!.GetValue<int>(), now);
+                    break;
+                case "reconnect":
+                    feed.Resubscribe(now);
+                    Open(feed, now);
+                    break;
+                case "event":
+                    var e = step["event"]!.AsObject();
+                    published.AddRange(feed.DecodeText("42" + new JsonArray(e["name"]!.GetValue<string>(), e["payload"]!.DeepClone()).ToJsonString(), now));
+                    break;
+                default:
+                    throw new InvalidOperationException($"Unknown step {kind}.");
+            }
+
+            var calls = feed.TakeHttp();
+            if (calls.Count > 0)
+            {
+                foreach (var quote in pending) published.AddRange(feed.DecodeText(quote, now));
+                pending = [];
+            }
+
+            var expected = result["http"]!.AsArray();
+            Assert.True(expected.Count == calls.Count, $"{label}: expected {expected.Count} calls, got {calls.Count}: {string.Join(" | ", calls.Select(c => c.Method + " " + c.Body.ToJsonString()))}");
+            for (var i = 0; i < calls.Count; i++)
+            {
+                Assert.Equal(expected[i]!["method"]!.GetValue<string>(), calls[i].Method);
+                Assert.Equal(expected[i]!["path"]!.GetValue<string>(), marketData + calls[i].Path);
+                var diffs = JsonCompare.Differences(expected[i]!["body"], calls[i].Body);
+                Assert.True(diffs.Count == 0, $"{label}: call {i} differs:\n{string.Join("\n", diffs)}");
+            }
+
+            var ticks = result["published"]!.AsArray();
+            Assert.True(ticks.Count == published.Count, $"{label}: expected {ticks.Count} ticks, got {published.Count}: {string.Join(", ", published.Select(p => p.Topic))}");
+            for (var i = 0; i < published.Count; i++)
+            {
+                Assert.Equal(ticks[i]!["topic"]!.GetValue<string>(), published[i].Topic);
+                var diffs = JsonCompare.Differences(ticks[i]!["data"], published[i].Data);
+                Assert.True(diffs.Count == 0, $"{label}: tick {published[i].Topic} differs:\n{string.Join("\n", diffs)}");
+            }
+        }
+    }
+
+    /// <summary>The socket opens: the server's open packet is answered with a Socket.IO connect, and its acceptance releases the subscriptions held.</summary>
+    private static void Open(IFeedHttpCodec feed, long now)
+    {
+        feed.DecodeText("""0{"sid":"abc","upgrades":[],"pingInterval":25000,"pingTimeout":5000}""", now);
+        Assert.Equal(["40"], feed.TakeOutgoing());
+        feed.DecodeText("""40{"sid":"xyz"}""", now);
+    }
+}
+
+public sealed class WisdomFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_wisdom.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => XtsFeedRunner.Run("feed_wisdom.fixtures.json", name, () => new XtsFeedCodec("wisdom"), "/apimarketdata", XtsFeedDeviations.Common.GetValueOrDefault(name));
+}
+
+public static class XtsFeedDeviations
+{
+    private static Action<JsonObject> NoTick(int step) => scenario => scenario["steps"]![step]!["result"]!["published"] = new JsonArray();
+
+    /// <summary>
+    /// OpenAlgo publishes whatever tick arrives, under the topic its message code names, even for a mode or an instrument nobody subscribed; EP Trade bot
+    /// publishes only to what is subscribed. And OpenAlgo asks to release a depth subscription with the quote code (it looks the code up under a name that carries
+    /// the depth level, finds nothing and falls back to 1501), so the depth subscription is never released; EP Trade bot sends the depth code.
+    /// </summary>
+    public static readonly Dictionary<string, Action<JsonObject>> Common = new()
+    {
+        ["an_event_for_another_mode_is_ignored"] = NoTick(1),
+        ["an_event_for_an_instrument_nobody_subscribed"] = NoTick(1),
+        ["unsubscribe_quote_and_depth"] = scenario => scenario["steps"]![2]!["result"]!["http"]![0]!["body"]!["xtsMessageCode"] = 1502,
+    };
+}
+
+public sealed class IiflFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_iifl.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => XtsFeedRunner.Run("feed_iifl.fixtures.json", name, () => new XtsFeedCodec("iifl"), "/apimarketdata", XtsFeedDeviations.Common.GetValueOrDefault(name));
+}
+
+public sealed class CompositEdgeFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_compositedge.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => XtsFeedRunner.Run("feed_compositedge.fixtures.json", name, () => new XtsFeedCodec("compositedge"), "/apimarketdata", XtsFeedDeviations.Common.GetValueOrDefault(name));
+}
+
+public sealed class IbullsFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_ibulls.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => XtsFeedRunner.Run("feed_ibulls.fixtures.json", name, () => new XtsFeedCodec("ibulls"), "/apibinarymarketdata", XtsFeedDeviations.Common.GetValueOrDefault(name));
+}
+
+public sealed class FivepaisaXtsFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_fivepaisaxts.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => XtsFeedRunner.Run("feed_fivepaisaxts.fixtures.json", name, () => new XtsFeedCodec("fivepaisaxts", batch: 50), "//apimarketdata", XtsFeedDeviations.Common.GetValueOrDefault(name));
+}
+
+public sealed class JainamXtsFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_jainamxts.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => XtsFeedRunner.Run("feed_jainamxts.fixtures.json", name, () => new XtsFeedCodec("jainamxts", routesByInstrument: true), "/apibinarymarketdata", name == "an_event_for_another_mode_is_ignored" ? null : XtsFeedDeviations.Common.GetValueOrDefault(name));
+}
+
+/// <summary>The parts of the XTS protocol the recordings start past (the connection is open in every one) and the places EP Trade bot is deliberately stricter.</summary>
+public sealed class XtsFeedCodecTests
+{
+    private static FeedRequest Request(string symbol = "RELIANCE", string exchange = "NSE", string token = "2885", StreamMode mode = StreamMode.Quote, string brokerExchange = "NSE") =>
+        new(exchange, symbol, token, brokerExchange, mode);
+
+    private static XtsFeedCodec Open(bool connect = true)
+    {
+        var codec = new XtsFeedCodec("wisdom");
+        codec.DecodeText("""0{"sid":"a"}""", 0);
+        codec.TakeOutgoing();
+        if (connect) codec.DecodeText("""40{"sid":"b"}""", 0);
+        return codec;
+    }
+
+    [Fact]
+    public void Nothing_is_sent_until_the_socket_connect_is_accepted_and_then_everything_held_is()
+    {
+        var codec = Open(connect: false);
+        codec.Subscribe([Request()], 0);
+        Assert.Empty(codec.TakeHttp());
+        codec.DecodeText("""40{"sid":"b"}""", 0);
+        Assert.Single(codec.TakeHttp());
+    }
+
+    [Fact]
+    public void The_same_subscription_twice_is_held_once()
+    {
+        var codec = Open(connect: false);
+        codec.Subscribe([Request(), Request()], 0);
+        codec.DecodeText("""40""", 0);
+        Assert.Single(codec.TakeHttp());
+    }
+
+    [Fact]
+    public void A_server_ping_is_answered_with_a_pong()
+    {
+        var codec = Open();
+        codec.DecodeText("2", 0);
+        Assert.Equal(["3"], codec.TakeOutgoing());
+    }
+
+    [Fact]
+    public void A_dropped_connection_holds_requests_until_the_next_accepted_connect()
+    {
+        var codec = Open();
+        codec.Resubscribe(0);
+        codec.Subscribe([Request()], 0);
+        Assert.Empty(codec.TakeHttp());
+        var other = Open();
+        other.DecodeText("41", 0);
+        other.Subscribe([Request()], 0);
+        Assert.Empty(other.TakeHttp());
+    }
+
+    [Fact]
+    public void An_unsubscribe_without_a_mode_releases_every_mode()
+    {
+        var codec = Open();
+        codec.Subscribe([Request(mode: StreamMode.Ltp), Request(mode: StreamMode.Quote), Request(mode: StreamMode.Depth)], 0);
+        codec.TakeHttp();
+        codec.Unsubscribe(Request().Target, null, 0);
+        Assert.Equal([1512, 1501, 1502], codec.TakeHttp().Select(c => c.Body["xtsMessageCode"]!.GetValue<int>()));
+    }
+
+    [Fact]
+    public void An_exchange_xts_does_not_have_is_refused_rather_than_sent_as_the_cash_market()
+    {
+        var codec = Open();
+        codec.Subscribe([Request(exchange: "NCO", brokerExchange: "NCO")], 0);
+        Assert.Empty(codec.TakeHttp());
+    }
+
+    [Fact]
+    public void An_event_that_is_not_a_market_data_event_is_not_a_tick()
+    {
+        var codec = Open();
+        codec.Subscribe([Request()], 0);
+        var quote = """{"MessageCode":1501,"ExchangeSegment":1,"ExchangeInstrumentID":2885,"LastTradedPrice":1}""";
+        Assert.Empty(codec.DecodeText("42[\"message\"," + quote + "]", 0));
+        Assert.Single(codec.DecodeText("42[\"1501-json-full\"," + quote + "]", 0));
+    }
+
+    [Fact]
+    public void A_quote_reads_the_touchline_only_when_it_is_a_depth_message()
+    {
+        var codec = Open();
+        codec.Subscribe([Request()], 0);
+        var tick = codec.DecodeText("""42["1501-json-full",{"MessageCode":1501,"ExchangeSegment":1,"ExchangeInstrumentID":2885,"LastTradedPrice":5,"Touchline":{"LastTradedPrice":9}}]""", 0).Single();
+        Assert.Equal(5, tick.Data["ltp"]!.GetValue<double>());
+    }
+
+    [Fact]
+    public void A_book_with_one_side_only_carries_no_depth()
+    {
+        var codec = Open();
+        codec.Subscribe([Request(mode: StreamMode.Depth)], 0);
+        var tick = codec.DecodeText("""42["1502-json-full",{"MessageCode":1502,"ExchangeSegment":1,"ExchangeInstrumentID":2885,"Bids":[{"Price":1,"Size":1,"TotalOrders":1}]}]""", 0).Single();
+        Assert.Null(tick.Data["depth"]);
+    }
+
+    [Fact]
+    public void A_reset_forgets_every_subscription()
+    {
+        var codec = Open();
+        codec.Subscribe([Request()], 0);
+        codec.TakeHttp();
+        codec.Reset();
+        codec.DecodeText("""0{"sid":"a"}""", 0);
+        codec.DecodeText("40", 0);
+        Assert.Empty(codec.TakeHttp());
+    }
+}

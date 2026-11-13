@@ -52,3 +52,13 @@ public interface IFeedCodec
     /// <summary>Messages the codec owes the broker because of what it just read (subscribing once a sign-in is accepted). Taken after every frame.</summary>
     IReadOnlyList<string> TakeOutgoing() => [];
 }
+
+/// <summary>A request a broker wants made over HTTP beside its socket (XTS subscribes and unsubscribes that way): the verb, the path under the broker's market-data address and the JSON body.</summary>
+public sealed record FeedHttpCall(string Method, string Path, JsonObject Body);
+
+/// <summary>A codec whose subscriptions are HTTP calls rather than socket messages. The connection sends what it hands over and gives the quotes in the replies back to <see cref="IFeedCodec.DecodeText"/>.</summary>
+public interface IFeedHttpCodec : IFeedCodec
+{
+    /// <summary>The calls owed since the last time, in order.</summary>
+    IReadOnlyList<FeedHttpCall> TakeHttp();
+}
