@@ -1,0 +1,2311 @@
+{
+  "broker": "rupeezy",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "rupeezy-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE_EQ",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE_EQ",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY25NOV26FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE_FO",
+      "token": "35001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "GOLDM25NOV26FUT",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "MCX_FO",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 10,
+      "instrumenttype": "FUTCOM",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "NIFTY",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE_EQ",
+      "token": "26000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "history_5m_equity",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "ok",
+            "t": [
+              1793591100,
+              1793591400,
+              1793591700
+            ],
+            "o": [
+              800.0,
+              801.0,
+              802.0
+            ],
+            "h": [
+              802.0,
+              803.0,
+              804.0
+            ],
+            "l": [
+              799.0,
+              800.0,
+              801.0
+            ],
+            "c": [
+              801.0,
+              802.0,
+              803.0
+            ],
+            "v": [
+              1000,
+              2000,
+              3000
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793591100,
+              "volume": 1000
+            },
+            {
+              "close": 802.0,
+              "high": 803.0,
+              "low": 800.0,
+              "oi": 0,
+              "open": 801.0,
+              "timestamp": 1793591400,
+              "volume": 2000
+            },
+            {
+              "close": 803.0,
+              "high": 804.0,
+              "low": 801.0,
+              "oi": 0,
+              "open": 802.0,
+              "timestamp": 1793591700,
+              "volume": 3000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793557800"
+            ],
+            [
+              "to",
+              "1793644199"
+            ],
+            [
+              "resolution",
+              "5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_is_sorted",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "ok",
+            "t": [
+              1793591400,
+              1793591100,
+              1793591700
+            ],
+            "o": [
+              800.0,
+              801.0,
+              802.0
+            ],
+            "h": [
+              802.0,
+              803.0,
+              804.0
+            ],
+            "l": [
+              799.0,
+              800.0,
+              801.0
+            ],
+            "c": [
+              801.0,
+              802.0,
+              803.0
+            ],
+            "v": [
+              1000,
+              2000,
+              3000
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 802.0,
+              "high": 803.0,
+              "low": 800.0,
+              "oi": 0,
+              "open": 801.0,
+              "timestamp": 1793591100,
+              "volume": 2000
+            },
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793591400,
+              "volume": 1000
+            },
+            {
+              "close": 803.0,
+              "high": 804.0,
+              "low": 801.0,
+              "oi": 0,
+              "open": 802.0,
+              "timestamp": 1793591700,
+              "volume": 3000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793557800"
+            ],
+            [
+              "to",
+              "1793644199"
+            ],
+            [
+              "resolution",
+              "5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_one_bar_per_timestamp_the_first_kept",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "ok",
+            "t": [
+              1793591100,
+              1793591100,
+              1793591400
+            ],
+            "o": [
+              800.0,
+              801.0,
+              802.0
+            ],
+            "h": [
+              802.0,
+              803.0,
+              804.0
+            ],
+            "l": [
+              799.0,
+              800.0,
+              801.0
+            ],
+            "c": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "v": [
+              1000,
+              2000,
+              3000
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 1.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793591100,
+              "volume": 1000
+            },
+            {
+              "close": 3.0,
+              "high": 804.0,
+              "low": 801.0,
+              "oi": 0,
+              "open": 802.0,
+              "timestamp": 1793591400,
+              "volume": 3000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793557800"
+            ],
+            [
+              "to",
+              "1793644199"
+            ],
+            [
+              "resolution",
+              "5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_null_volume_is_zero",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "ok",
+            "t": [
+              1793591100,
+              1793591400
+            ],
+            "o": [
+              1,
+              2
+            ],
+            "h": [
+              2,
+              3
+            ],
+            "l": [
+              0.5,
+              1
+            ],
+            "c": [
+              1.5,
+              2.5
+            ],
+            "v": [
+              null,
+              7
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 1.5,
+              "high": 2.0,
+              "low": 0.5,
+              "oi": 0,
+              "open": 1.0,
+              "timestamp": 1793591100,
+              "volume": 0
+            },
+            {
+              "close": 2.5,
+              "high": 3.0,
+              "low": 1.0,
+              "oi": 0,
+              "open": 2.0,
+              "timestamp": 1793591400,
+              "volume": 7
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793557800"
+            ],
+            [
+              "to",
+              "1793644199"
+            ],
+            [
+              "resolution",
+              "5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_no_data_is_empty",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "no_data"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793557800"
+            ],
+            [
+              "to",
+              "1793644199"
+            ],
+            [
+              "resolution",
+              "5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_error_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "error",
+            "message": "Bad ticker"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching historical data: Bad ticker",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793557800"
+            ],
+            [
+              "to",
+              "1793644199"
+            ],
+            [
+              "resolution",
+              "5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_error_with_errmsg",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "error",
+            "errmsg": "Bad range"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching historical data: Bad range",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793557800"
+            ],
+            [
+              "to",
+              "1793644199"
+            ],
+            [
+              "resolution",
+              "5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_error_with_nothing",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "error"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching historical data: Historical data request failed",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793557800"
+            ],
+            [
+              "to",
+              "1793644199"
+            ],
+            [
+              "resolution",
+              "5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_http_error",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "status": 500,
+          "body": {
+            "status": "error",
+            "message": "down"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching historical data: down",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793557800"
+            ],
+            [
+              "to",
+              "1793644199"
+            ],
+            [
+              "resolution",
+              "5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_1m",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "1m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "ok",
+            "t": [
+              1793591100,
+              1793591400,
+              1793591700
+            ],
+            "o": [
+              800.0,
+              801.0,
+              802.0
+            ],
+            "h": [
+              802.0,
+              803.0,
+              804.0
+            ],
+            "l": [
+              799.0,
+              800.0,
+              801.0
+            ],
+            "c": [
+              801.0,
+              802.0,
+              803.0
+            ],
+            "v": [
+              1000,
+              2000,
+              3000
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793591100,
+              "volume": 1000
+            },
+            {
+              "close": 802.0,
+              "high": 803.0,
+              "low": 800.0,
+              "oi": 0,
+              "open": 801.0,
+              "timestamp": 1793591400,
+              "volume": 2000
+            },
+            {
+              "close": 803.0,
+              "high": 804.0,
+              "low": 801.0,
+              "oi": 0,
+              "open": 802.0,
+              "timestamp": 1793591700,
+              "volume": 3000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793557800"
+            ],
+            [
+              "to",
+              "1793644199"
+            ],
+            [
+              "resolution",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_45m",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "45m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "ok",
+            "t": [
+              1793591100,
+              1793591400,
+              1793591700
+            ],
+            "o": [
+              800.0,
+              801.0,
+              802.0
+            ],
+            "h": [
+              802.0,
+              803.0,
+              804.0
+            ],
+            "l": [
+              799.0,
+              800.0,
+              801.0
+            ],
+            "c": [
+              801.0,
+              802.0,
+              803.0
+            ],
+            "v": [
+              1000,
+              2000,
+              3000
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": {
+            "interval": [
+              "Must be one of: 1s, 5s, 10s, 15s, 30s, 45s, 1m, 2m, 3m, 5m, 10m, 15m, 20m, 30m, 1h, 2h, 3h, 4h, D, W, M, Q, Y."
+            ]
+          },
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "history_4h",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "4h",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "ok",
+            "t": [
+              1793591100,
+              1793591400,
+              1793591700
+            ],
+            "o": [
+              800.0,
+              801.0,
+              802.0
+            ],
+            "h": [
+              802.0,
+              803.0,
+              804.0
+            ],
+            "l": [
+              799.0,
+              800.0,
+              801.0
+            ],
+            "c": [
+              801.0,
+              802.0,
+              803.0
+            ],
+            "v": [
+              1000,
+              2000,
+              3000
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793591100,
+              "volume": 1000
+            },
+            {
+              "close": 802.0,
+              "high": 803.0,
+              "low": 800.0,
+              "oi": 0,
+              "open": 801.0,
+              "timestamp": 1793591400,
+              "volume": 2000
+            },
+            {
+              "close": 803.0,
+              "high": 804.0,
+              "low": 801.0,
+              "oi": 0,
+              "open": 802.0,
+              "timestamp": 1793591700,
+              "volume": 3000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793557800"
+            ],
+            [
+              "to",
+              "1793644199"
+            ],
+            [
+              "resolution",
+              "240"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_futures",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "interval": "1m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "ok",
+            "t": [
+              1793591100,
+              1793591400,
+              1793591700
+            ],
+            "o": [
+              800.0,
+              801.0,
+              802.0
+            ],
+            "h": [
+              802.0,
+              803.0,
+              804.0
+            ],
+            "l": [
+              799.0,
+              800.0,
+              801.0
+            ],
+            "c": [
+              801.0,
+              802.0,
+              803.0
+            ],
+            "v": [
+              1000,
+              2000,
+              3000
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793591100,
+              "volume": 1000
+            },
+            {
+              "close": 802.0,
+              "high": 803.0,
+              "low": 800.0,
+              "oi": 0,
+              "open": 801.0,
+              "timestamp": 1793591400,
+              "volume": 2000
+            },
+            {
+              "close": 803.0,
+              "high": 804.0,
+              "low": 801.0,
+              "oi": 0,
+              "open": 802.0,
+              "timestamp": 1793591700,
+              "volume": 3000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:NIFTY25NOV26FUT"
+            ],
+            [
+              "from",
+              "1793557800"
+            ],
+            [
+              "to",
+              "1793644199"
+            ],
+            [
+              "resolution",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_index",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "interval": "5m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "ok",
+            "t": [
+              1793591100,
+              1793591400,
+              1793591700
+            ],
+            "o": [
+              800.0,
+              801.0,
+              802.0
+            ],
+            "h": [
+              802.0,
+              803.0,
+              804.0
+            ],
+            "l": [
+              799.0,
+              800.0,
+              801.0
+            ],
+            "c": [
+              801.0,
+              802.0,
+              803.0
+            ],
+            "v": [
+              1000,
+              2000,
+              3000
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793591100,
+              "volume": 1000
+            },
+            {
+              "close": 802.0,
+              "high": 803.0,
+              "low": 800.0,
+              "oi": 0,
+              "open": 801.0,
+              "timestamp": 1793591400,
+              "volume": 2000
+            },
+            {
+              "close": 803.0,
+              "high": 804.0,
+              "low": 801.0,
+              "oi": 0,
+              "open": 802.0,
+              "timestamp": 1793591700,
+              "volume": 3000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:NIFTY"
+            ],
+            [
+              "from",
+              "1793557800"
+            ],
+            [
+              "to",
+              "1793644199"
+            ],
+            [
+              "resolution",
+              "5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_daily_from_ist_midnight",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "D",
+        "start_date": "2026-10-29",
+        "end_date": "2026-10-30",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "ok",
+            "t": [
+              1793212200,
+              1793298600
+            ],
+            "o": [
+              800.0,
+              801.0
+            ],
+            "h": [
+              802.0,
+              803.0
+            ],
+            "l": [
+              799.0,
+              800.0
+            ],
+            "c": [
+              801.0,
+              802.0
+            ],
+            "v": [
+              1000,
+              2000
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793232000,
+              "volume": 1000
+            },
+            {
+              "close": 802.0,
+              "high": 803.0,
+              "low": 800.0,
+              "oi": 0,
+              "open": 801.0,
+              "timestamp": 1793318400,
+              "volume": 2000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793212200"
+            ],
+            [
+              "to",
+              "1793384999"
+            ],
+            [
+              "resolution",
+              "1D"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_daily_from_utc_midnight",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "D",
+        "start_date": "2026-10-29",
+        "end_date": "2026-10-30",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "ok",
+            "t": [
+              1793232000,
+              1793318400
+            ],
+            "o": [
+              800.0,
+              801.0
+            ],
+            "h": [
+              802.0,
+              803.0
+            ],
+            "l": [
+              799.0,
+              800.0
+            ],
+            "c": [
+              801.0,
+              802.0
+            ],
+            "v": [
+              1000,
+              2000
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793232000,
+              "volume": 1000
+            },
+            {
+              "close": 802.0,
+              "high": 803.0,
+              "low": 800.0,
+              "oi": 0,
+              "open": 801.0,
+              "timestamp": 1793318400,
+              "volume": 2000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793212200"
+            ],
+            [
+              "to",
+              "1793384999"
+            ],
+            [
+              "resolution",
+              "1D"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_weekly",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "W",
+        "start_date": "2026-10-26",
+        "end_date": "2026-10-30",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "ok",
+            "t": [
+              1793212200
+            ],
+            "o": [
+              800.0
+            ],
+            "h": [
+              802.0
+            ],
+            "l": [
+              799.0
+            ],
+            "c": [
+              801.0
+            ],
+            "v": [
+              1000
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793232000,
+              "volume": 1000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1792953000"
+            ],
+            [
+              "to",
+              "1793384999"
+            ],
+            [
+              "resolution",
+              "1W"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_monthly",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "M",
+        "start_date": "2026-10-01",
+        "end_date": "2026-10-30",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "ok",
+            "t": [
+              1793212200
+            ],
+            "o": [
+              800.0
+            ],
+            "h": [
+              802.0
+            ],
+            "l": [
+              799.0
+            ],
+            "c": [
+              801.0
+            ],
+            "v": [
+              1000
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793232000,
+              "volume": 1000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1790793000"
+            ],
+            [
+              "to",
+              "1793384999"
+            ],
+            [
+              "resolution",
+              "1M"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_two_chunks_of_thirty_days",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-10-01",
+        "end_date": "2026-11-15",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": [
+          {
+            "body": {
+              "s": "ok",
+              "t": [
+                1793591100,
+                1793591400,
+                1793591700
+              ],
+              "o": [
+                800.0,
+                801.0,
+                802.0
+              ],
+              "h": [
+                802.0,
+                803.0,
+                804.0
+              ],
+              "l": [
+                799.0,
+                800.0,
+                801.0
+              ],
+              "c": [
+                801.0,
+                802.0,
+                803.0
+              ],
+              "v": [
+                1000,
+                2000,
+                3000
+              ]
+            }
+          },
+          {
+            "body": {
+              "s": "ok",
+              "t": [
+                1793592000
+              ],
+              "o": [
+                800.0
+              ],
+              "h": [
+                802.0
+              ],
+              "l": [
+                799.0
+              ],
+              "c": [
+                801.0
+              ],
+              "v": [
+                1000
+              ]
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793591100,
+              "volume": 1000
+            },
+            {
+              "close": 802.0,
+              "high": 803.0,
+              "low": 800.0,
+              "oi": 0,
+              "open": 801.0,
+              "timestamp": 1793591400,
+              "volume": 2000
+            },
+            {
+              "close": 803.0,
+              "high": 804.0,
+              "low": 801.0,
+              "oi": 0,
+              "open": 802.0,
+              "timestamp": 1793591700,
+              "volume": 3000
+            },
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793592000,
+              "volume": 1000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1790793000"
+            ],
+            [
+              "to",
+              "1793384999"
+            ],
+            [
+              "resolution",
+              "5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793385000"
+            ],
+            [
+              "to",
+              "1794767399"
+            ],
+            [
+              "resolution",
+              "5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_a_chunk_fails_after_the_first_answered",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-10-01",
+        "end_date": "2026-11-15",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": [
+          {
+            "body": {
+              "s": "ok",
+              "t": [
+                1793591100,
+                1793591400,
+                1793591700
+              ],
+              "o": [
+                800.0,
+                801.0,
+                802.0
+              ],
+              "h": [
+                802.0,
+                803.0,
+                804.0
+              ],
+              "l": [
+                799.0,
+                800.0,
+                801.0
+              ],
+              "c": [
+                801.0,
+                802.0,
+                803.0
+              ],
+              "v": [
+                1000,
+                2000,
+                3000
+              ]
+            }
+          },
+          {
+            "body": {
+              "s": "error",
+              "message": "Bad ticker"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching historical data: Bad ticker",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1790793000"
+            ],
+            [
+              "to",
+              "1793384999"
+            ],
+            [
+              "resolution",
+              "5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1793385000"
+            ],
+            [
+              "to",
+              "1794767399"
+            ],
+            [
+              "resolution",
+              "5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_daily_chunks_of_a_thousand_days",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "D",
+        "start_date": "2022-01-01",
+        "end_date": "2026-10-30",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": [
+          {
+            "body": {
+              "s": "ok",
+              "t": [
+                1793212200,
+                1793298600
+              ],
+              "o": [
+                800.0,
+                801.0
+              ],
+              "h": [
+                802.0,
+                803.0
+              ],
+              "l": [
+                799.0,
+                800.0
+              ],
+              "c": [
+                801.0,
+                802.0
+              ],
+              "v": [
+                1000,
+                2000
+              ]
+            }
+          },
+          {
+            "body": {
+              "s": "ok",
+              "t": [
+                1793232000,
+                1793318400
+              ],
+              "o": [
+                800.0,
+                801.0
+              ],
+              "h": [
+                802.0,
+                803.0
+              ],
+              "l": [
+                799.0,
+                800.0
+              ],
+              "c": [
+                801.0,
+                802.0
+              ],
+              "v": [
+                1000,
+                2000
+              ]
+            }
+          },
+          {
+            "body": {
+              "s": "ok",
+              "t": [
+                1793212200
+              ],
+              "o": [
+                800.0
+              ],
+              "h": [
+                802.0
+              ],
+              "l": [
+                799.0
+              ],
+              "c": [
+                801.0
+              ],
+              "v": [
+                1000
+              ]
+            }
+          },
+          {
+            "body": {
+              "s": "no_data"
+            }
+          },
+          {
+            "body": {
+              "s": "no_data"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793232000,
+              "volume": 1000
+            },
+            {
+              "close": 802.0,
+              "high": 803.0,
+              "low": 800.0,
+              "oi": 0,
+              "open": 801.0,
+              "timestamp": 1793318400,
+              "volume": 2000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1640975400"
+            ],
+            [
+              "to",
+              "1727375399"
+            ],
+            [
+              "resolution",
+              "1D"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/history",
+          "query": [
+            [
+              "ticker",
+              "NSE:SBIN"
+            ],
+            [
+              "from",
+              "1727375400"
+            ],
+            [
+              "to",
+              "1793384999"
+            ],
+            [
+              "resolution",
+              "1D"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_interval_rupeezy_lacks",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "20m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/history": {
+          "body": {
+            "s": "ok",
+            "t": [
+              1793591100,
+              1793591400,
+              1793591700
+            ],
+            "o": [
+              800.0,
+              801.0,
+              802.0
+            ],
+            "h": [
+              802.0,
+              803.0,
+              804.0
+            ],
+            "l": [
+              799.0,
+              800.0,
+              801.0
+            ],
+            "c": [
+              801.0,
+              802.0,
+              803.0
+            ],
+            "v": [
+              1000,
+              2000,
+              3000
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching historical data: Unsupported timeframe: 20m",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "intervals",
+      "method": "POST",
+      "path": "/api/v1/intervals",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "days": [
+              "D"
+            ],
+            "hours": [
+              "1h",
+              "2h",
+              "3h",
+              "4h"
+            ],
+            "minutes": [
+              "1m",
+              "2m",
+              "3m",
+              "5m",
+              "10m",
+              "15m",
+              "30m"
+            ],
+            "months": [
+              "M"
+            ],
+            "seconds": [],
+            "weeks": [
+              "W"
+            ]
+          },
+          "status": "success"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}

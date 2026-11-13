@@ -20,7 +20,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Zebu | yes | yes | yes | yes | n/a (no calculator) | no | yes | yes |
 | Flattrade | yes | yes | yes | yes | yes | no | yes | yes |
 | TradeSmart (Noren v2) | yes | yes | yes | yes | yes | no | yes | yes |
-| Rupeezy (Vortex) | yes | yes | no | no | no | no | no | no |
+| Rupeezy (Vortex) | yes | yes | yes | yes | no | no | no | no |
 
 The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -238,11 +238,13 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Feed: the Noren codec with TradeSmart's own tick shape (an LTP tick carries the price and time stamp only; quote and depth share their fields, with "oi"), 75 recorded scenarios, and the user id read from the saved token to sign the socket in.
 - Mutation set `tools/mutation/tg7-tradesmart.json`: 52 mutants, all caught (four dropped as equivalent: values the platform's own book formatting rounds or zeroes, and a product that is zero either way).
 
-## Rupeezy (Vortex API): orders, books and funds
+## Rupeezy (Vortex API): orders, books, funds, quotes, depth and history
 
 - `RupeezyPlugin`, held to `broker/rupeezy` by 49 recorded cases (`rupeezy.fixtures.json`): a ticker is "NSE:SBIN" (the first three letters of the exchange, a colon, the broker symbol); the order variety is RL, RL-MKT, SL or SL-MKT, and CNC and NRML are both DELIVERY; an MCX order and its disclosed quantity count lots (a quantity that is not a whole number of lots is refused), and a book shows units again; the order book is paged 500 at a time; a modify reads the order's latest state first and passes its traded quantity, because Vortex grows the order by it otherwise; the order id is percent-encoded; a trade that arrives with only its order id is completed from the order book; positions are priced from one batched quotes call, with the profit worked out from sold less bought plus the open quantity at the last price; holdings are priced the same way when a row has no price; funds add the exchange buckets up and take the day's profit from the position book.
 - Recorded differences from OpenAlgo: an empty balance when Rupeezy refuses the funds call there, a refusal here; a success with no order id there, a refusal here; the wording of the refusals.
-- Not yet ported for Rupeezy: quotes and depth, history, margin, GTT, sign-in, the feed, and the mutation set.
+- Quotes, depth and several quotes (`rupeezy_data.fixtures.json`, 17 cases; several quotes go out in batches of 1000 with the full mode) and history (`history_rupeezy.fixtures.json`, 23 cases; 30-day chunks for minute bars, 1000-day chunks for daily bars, daily bars stamped at the IST midnight, a repeated timestamp keeps its first bar). Rupeezy has no 20m candle: the refusal names the intervals it does offer.
+- Mutation set `tools/mutation/tg7-rupeezy.json`: 73 mutants, 60 turned a test red. Thirteen survived and are open, not explained away: BSE_FO shown as BFO (V9), the MCX quotation multiplier (V14), a lot size of one skipping the lot check (V18), a MARKET order price sent as zero (V20; platform formatting zeroes it, so likely unobservable), the default strategy name (V23), the EXECUTED and TRIGGER PENDING status spellings (V33, V35), the lot size read from a row (V37), a trade's fields completed from its order (V38, V39), the average-price guard in the funds split (V54), a missing history volume (V70) and the x-api-key header name (V72; the harness does not check request headers). Each needs a recorded scenario or a unit test before this row is complete.
+- Not yet ported for Rupeezy: margin, GTT, sign-in and the feed.
 
 ## Shoonya sign-in
 

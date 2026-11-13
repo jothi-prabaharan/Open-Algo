@@ -12,7 +12,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Rupeezy;
 /// units. Not ported yet: quotes and depth, history, margin, GTT, sign-in and the feed.
 /// </summary>
 [BrokerPlugin]
-public sealed class RupeezyPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
+public sealed class RupeezyPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory
 {
     private const string DefaultBaseUrl = "https://vortex-api.rupeezy.in/v2";
     private const int OrderPage = 500;
@@ -21,7 +21,7 @@ public sealed class RupeezyPlugin(IHttpClientFactory http, BrokerSessionFactory 
 
     public string Name => "rupeezy";
     public string DisplayName => "Rupeezy";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     // ---- vocabulary ------------------------------------------------------------------------------------------
@@ -413,6 +413,157 @@ public sealed class RupeezyPlugin(IHttpClientFactory http, BrokerSessionFactory 
             ["totalholdingvalue"] = BookFormatting.Round2(value), ["totalinvvalue"] = BookFormatting.Round2(invested), ["totalprofitandloss"] = BookFormatting.Round2(pnlTotal),
             ["totalpnlpercentage"] = invested != 0 ? BookFormatting.Round2(pnlTotal / invested * 100) : 0.0,
         });
+    }
+
+    // ---- quotes and depth ------------------------------------------------------------------------------------
+
+    private static JsonArray Levels(JsonNode? side)
+    {
+        var rows = (side as JsonArray) ?? [];
+        var result = new JsonArray();
+        for (var i = 0; i < 5; i++)
+        {
+            var level = i < rows.Count ? rows[i] as JsonObject : null;
+            result.Add(new JsonObject { ["price"] = F(level?["price"]), ["quantity"] = Int(level?["quantity"]) });
+        }
+
+        return result;
+    }
+
+    private static JsonObject FormatQuote(JsonObject q)
+    {
+        var depth = q["depth"] as JsonObject;
+        var bids = Levels(depth?["buy"]);
+        var asks = Levels(depth?["sell"]);
+        return new JsonObject
+        {
+            ["ask"] = asks[0]!["price"]!.DeepClone(), ["bid"] = bids[0]!["price"]!.DeepClone(), ["ask_qty"] = asks[0]!["quantity"]!.DeepClone(), ["bid_qty"] = bids[0]!["quantity"]!.DeepClone(),
+            ["high"] = F(q["high_price"]), ["low"] = F(q["low_price"]), ["ltp"] = F(q["last_trade_price"]), ["open"] = F(q["open_price"]), ["prev_close"] = F(q["close_price"]),
+            ["volume"] = Int(q["volume"]), ["oi"] = Int(q["open_interest"]),
+        };
+    }
+
+    private async Task<JsonObject> FetchQuotesAsync(BrokerSession session, IEnumerable<string> tickers, CancellationToken cancellationToken)
+    {
+        var query = string.Join("&", tickers.Select(t => "q=" + Uri.EscapeDataString(t))) + "&mode=full";
+        var reply = await GetAsync(session, "/data/quotes?" + query, cancellationToken);
+        if (Str(reply["status"]) != "success") throw new BrokerException(Str(reply["message"]) ?? "Quote request failed");
+        return reply["data"] as JsonObject ?? [];
+    }
+
+    private async Task<JsonObject> SingleQuoteAsync(BrokerSession session, string symbol, string exchange, string what, CancellationToken cancellationToken)
+    {
+        var instrument = await symbols.FindAsync(Name, symbol, exchange, cancellationToken)
+            ?? throw new BrokerException($"Error {what}: Symbol {symbol} not found on {exchange}");
+        var ticker = Ticker(instrument.BrokerExchange, instrument.BrokerSymbol);
+        try
+        {
+            return (await FetchQuotesAsync(session, [ticker], cancellationToken))[ticker] as JsonObject ?? throw new BrokerException($"No quote available for {exchange}:{symbol}");
+        }
+        catch (BrokerException ex)
+        {
+            throw new BrokerException($"Error {what}: {ex.Message}", ex.HttpStatus);
+        }
+    }
+
+    public async Task<JsonObject> GetQuoteAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken) =>
+        FormatQuote(await SingleQuoteAsync(session, symbol, exchange, "fetching quotes", cancellationToken));
+
+    public async Task<JsonObject> GetDepthAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken)
+    {
+        var q = await SingleQuoteAsync(session, symbol, exchange, "fetching market depth", cancellationToken);
+        var depth = q["depth"] as JsonObject;
+        return new JsonObject
+        {
+            ["asks"] = Levels(depth?["sell"]), ["bids"] = Levels(depth?["buy"]), ["high"] = F(q["high_price"]), ["low"] = F(q["low_price"]), ["ltp"] = F(q["last_trade_price"]),
+            ["ltq"] = Int(q["last_trade_quantity"]), ["oi"] = Int(q["open_interest"]), ["open"] = F(q["open_price"]), ["prev_close"] = F(q["close_price"]),
+            ["totalbuyqty"] = Int(q["total_buy_quantity"]), ["totalsellqty"] = Int(q["total_sell_quantity"]), ["volume"] = Int(q["volume"]),
+        };
+    }
+
+    public async Task<JsonArray> GetMultiQuotesAsync(BrokerSession session, IReadOnlyList<SymbolRecord> instruments, CancellationToken cancellationToken)
+    {
+        var results = new JsonArray();
+        for (var i = 0; i < instruments.Count; i += LtpBatch)
+        {
+            var batch = instruments.Skip(i).Take(LtpBatch).Select(r => (Ticker: Ticker(r.BrokerExchange, r.BrokerSymbol), Record: r)).ToList();
+            JsonObject quotes;
+            try
+            {
+                quotes = await FetchQuotesAsync(session, batch.Select(b => b.Ticker).Distinct().OrderBy(t => t, StringComparer.Ordinal), cancellationToken);
+            }
+            catch (BrokerException)
+            {
+                quotes = [];
+            }
+
+            foreach (var (ticker, record) in batch)
+            {
+                results.Add(quotes[ticker] is JsonObject quote
+                    ? new JsonObject { ["symbol"] = record.Symbol, ["exchange"] = record.Exchange, ["data"] = FormatQuote(quote) }
+                    : new JsonObject { ["symbol"] = record.Symbol, ["exchange"] = record.Exchange, ["error"] = "No quote data available" });
+            }
+        }
+
+        return results;
+    }
+
+    // ---- history ---------------------------------------------------------------------------------------------
+
+    private static readonly Dictionary<string, string> Resolutions = new()
+    {
+        ["1m"] = "1", ["2m"] = "2", ["3m"] = "3", ["5m"] = "5", ["10m"] = "10", ["15m"] = "15", ["30m"] = "30", ["45m"] = "45", ["1h"] = "60", ["2h"] = "120", ["3h"] = "180", ["4h"] = "240",
+        ["D"] = "1D", ["W"] = "1W", ["M"] = "1M",
+    };
+
+    private static readonly TimeSpan IstOffset = TimeSpan.FromHours(5.5);
+
+    public IReadOnlyList<string> HistoryTimeframes { get; } = [.. Resolutions.Keys];
+
+    /// <summary>
+    /// Candles in chunks (a thousand days of daily bars, thirty days of the rest), one call each. Intraday bars are passed on as they come; a daily, weekly or monthly bar is
+    /// stamped at midnight UTC of its India trading day, whether Vortex stamped it at midnight India time or UTC. One bar per time stamp, the first one kept.
+    /// </summary>
+    public async Task<JsonArray> GetHistoryAsync(BrokerSession session, SymbolRecord instrument, string interval, DateOnly start, DateOnly end, CancellationToken cancellationToken)
+    {
+        if (!Resolutions.TryGetValue(interval, out var resolution)) throw new BrokerException($"{DisplayName} does not offer {interval} candles. Choose one of: {string.Join(", ", Resolutions.Keys)}.", 400);
+        var ticker = Ticker(instrument.BrokerExchange, instrument.BrokerSymbol);
+        var daily = interval is "D" or "W" or "M";
+        var chunkDays = daily ? 1000 : 30;
+        var bars = new List<(long Stamp, double Open, double High, double Low, double Close, long Volume)>();
+        for (var current = start; current <= end;)
+        {
+            var chunkEnd = current.AddDays(chunkDays - 1) < end ? current.AddDays(chunkDays - 1) : end;
+            var from = new DateTimeOffset(current.ToDateTime(TimeOnly.MinValue), IstOffset).ToUnixTimeSeconds();
+            var to = new DateTimeOffset(chunkEnd.ToDateTime(new TimeOnly(23, 59, 59)), IstOffset).ToUnixTimeSeconds();
+            var reply = await GetAsync(session, $"/data/history?ticker={Uri.EscapeDataString(ticker)}&from={from}&to={to}&resolution={resolution}", cancellationToken);
+            var status = Str(reply["s"]);
+            if (status == "ok" && reply["t"] is JsonArray times && times.Count > 0)
+            {
+                for (var i = 0; i < times.Count; i++)
+                {
+                    double At(string key) => (reply[key] as JsonArray) is { } a && i < a.Count && a[i] is not null ? Float(a[i]) : double.NaN;
+                    var stamp = Int(times[i]);
+                    bars.Add((stamp, At("o"), At("h"), At("l"), At("c"), double.IsNaN(At("v")) ? 0 : (long)At("v")));
+                }
+            }
+            else if (status is not ("ok" or "no_data"))
+            {
+                throw new BrokerException($"Error fetching historical data: {Str(reply["message"]) ?? Str(reply["errmsg"]) ?? "Historical data request failed"}");
+            }
+
+            current = chunkEnd.AddDays(1);
+        }
+
+        var result = new JsonArray();
+        var seen = new HashSet<long>();
+        foreach (var b in bars.Select(b => daily ? (Stamp: (b.Stamp + 19800) / 86400 * 86400, b.Open, b.High, b.Low, b.Close, b.Volume) : b).OrderBy(b => b.Stamp))
+        {
+            if (!seen.Add(b.Stamp)) continue;
+            result.Add(new JsonObject { ["timestamp"] = b.Stamp, ["open"] = b.Open, ["high"] = b.High, ["low"] = b.Low, ["close"] = b.Close, ["volume"] = b.Volume, ["oi"] = 0 });
+        }
+
+        return result;
     }
 
     // ---- funds -----------------------------------------------------------------------------------------------

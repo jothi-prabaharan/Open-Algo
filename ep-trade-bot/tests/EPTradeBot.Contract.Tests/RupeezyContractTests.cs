@@ -42,3 +42,52 @@ public sealed class RupeezyContractTests(RupeezyHost host, ITestOutputHelper out
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class RupeezyDataHost : BrokerContractHost
+{
+    public override string BrokerName => "rupeezy";
+    public override string FixtureFile => "rupeezy_data.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "rupeezy-app-id", ["ApiSecret"] = "rupeezy-api-key" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+/// <summary>Rupeezy quotes, depth and several quotes (tools/contract-fixtures/rupeezy_data.fixtures.json).</summary>
+public sealed class RupeezyDataContractTests(RupeezyDataHost host, ITestOutputHelper output) : IClassFixture<RupeezyDataHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new();
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("rupeezy_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class RupeezyHistoryHost : BrokerContractHost
+{
+    public override string BrokerName => "rupeezy";
+    public override string FixtureFile => "history_rupeezy.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "rupeezy-app-id", ["ApiSecret"] = "rupeezy-api-key" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>Rupeezy history (tools/contract-fixtures/history_rupeezy.fixtures.json).</summary>
+public sealed class RupeezyHistoryContractTests(RupeezyHistoryHost host, ITestOutputHelper output) : IClassFixture<RupeezyHistoryHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_interval_rupeezy_lacks"] = new("OpenAlgo answers 500 with \"Unsupported timeframe: 20m\". EP Trade bot answers 400 and names what Rupeezy offers.",
+            f => Expect(f, 400, Error("Rupeezy does not offer 20m candles. Choose one of: 1m, 2m, 3m, 5m, 10m, 15m, 30m, 45m, 1h, 2h, 3h, 4h, D, W, M."))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_rupeezy.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}

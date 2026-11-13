@@ -1,0 +1,2072 @@
+{
+  "broker": "rupeezy",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "rupeezy-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE_EQ",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE_EQ",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY25NOV26FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE_FO",
+      "token": "35001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "GOLDM25NOV26FUT",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "MCX_FO",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 10,
+      "instrumenttype": "FUTCOM",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "NIFTY",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE_EQ",
+      "token": "26000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "quotes_equity",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45,
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": 1234567,
+                "open_interest": 1500,
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 100,
+                      "orders": 1
+                    },
+                    {
+                      "price": 805.35,
+                      "quantity": 200,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.3,
+                      "quantity": 300,
+                      "orders": 3
+                    },
+                    {
+                      "price": 805.25,
+                      "quantity": 400,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.1999999999999,
+                      "quantity": 500,
+                      "orders": 5
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 110,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.55,
+                      "quantity": 220,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.6,
+                      "quantity": 330,
+                      "orders": 6
+                    },
+                    {
+                      "price": 805.65,
+                      "quantity": 440,
+                      "orders": 8
+                    },
+                    {
+                      "price": 805.7,
+                      "quantity": 550,
+                      "orders": 10
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 805.5,
+            "ask_qty": 110,
+            "bid": 805.4,
+            "bid_qty": 100,
+            "high": 809.45,
+            "low": 800.45,
+            "ltp": 805.45,
+            "oi": 1500,
+            "open": 802.45,
+            "prev_close": 803.95,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_futures",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:NIFTY25NOV26FUT": {
+                "last_trade_price": 24005.5,
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": 1234567,
+                "open_interest": 1500,
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 100,
+                      "orders": 1
+                    },
+                    {
+                      "price": 805.35,
+                      "quantity": 200,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.3,
+                      "quantity": 300,
+                      "orders": 3
+                    },
+                    {
+                      "price": 805.25,
+                      "quantity": 400,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.1999999999999,
+                      "quantity": 500,
+                      "orders": 5
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 110,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.55,
+                      "quantity": 220,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.6,
+                      "quantity": 330,
+                      "orders": 6
+                    },
+                    {
+                      "price": 805.65,
+                      "quantity": 440,
+                      "orders": 8
+                    },
+                    {
+                      "price": 805.7,
+                      "quantity": 550,
+                      "orders": 10
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 805.5,
+            "ask_qty": 110,
+            "bid": 805.4,
+            "bid_qty": 100,
+            "high": 809.45,
+            "low": 800.45,
+            "ltp": 24005.5,
+            "oi": 1500,
+            "open": 802.45,
+            "prev_close": 803.95,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:NIFTY25NOV26FUT"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_index",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "NIFTY",
+        "exchange": "NSE_INDEX",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:NIFTY": {
+                "last_trade_price": 24100.25,
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": 1234567,
+                "open_interest": 1500,
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 100,
+                      "orders": 1
+                    },
+                    {
+                      "price": 805.35,
+                      "quantity": 200,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.3,
+                      "quantity": 300,
+                      "orders": 3
+                    },
+                    {
+                      "price": 805.25,
+                      "quantity": 400,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.1999999999999,
+                      "quantity": 500,
+                      "orders": 5
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 110,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.55,
+                      "quantity": 220,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.6,
+                      "quantity": 330,
+                      "orders": 6
+                    },
+                    {
+                      "price": 805.65,
+                      "quantity": 440,
+                      "orders": 8
+                    },
+                    {
+                      "price": 805.7,
+                      "quantity": 550,
+                      "orders": 10
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 805.5,
+            "ask_qty": 110,
+            "bid": 805.4,
+            "bid_qty": 100,
+            "high": 809.45,
+            "low": 800.45,
+            "ltp": 24100.25,
+            "oi": 1500,
+            "open": 802.45,
+            "prev_close": 803.95,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:NIFTY"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_without_depth",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45,
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": 1234567,
+                "open_interest": 1500,
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {}
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 0.0,
+            "ask_qty": 0,
+            "bid": 0.0,
+            "bid_qty": 0,
+            "high": 809.45,
+            "low": 800.45,
+            "ltp": 805.45,
+            "oi": 1500,
+            "open": 802.45,
+            "prev_close": 803.95,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_short_depth",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45,
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": 1234567,
+                "open_interest": 1500,
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 100
+                    },
+                    {}
+                  ],
+                  "sell": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 0.0,
+            "ask_qty": 0,
+            "bid": 805.4,
+            "bid_qty": 100,
+            "high": 809.45,
+            "low": 800.45,
+            "ltp": 805.45,
+            "oi": 1500,
+            "open": 802.45,
+            "prev_close": 803.95,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_numbers_as_text",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": "805.45",
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": "1234567",
+                "open_interest": "",
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": "805.4",
+                      "quantity": "100"
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": "x",
+                      "quantity": null
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 0.0,
+            "ask_qty": 0,
+            "bid": 805.4,
+            "bid_qty": 100,
+            "high": 809.45,
+            "low": 800.45,
+            "ltp": 805.45,
+            "oi": 0,
+            "open": 802.45,
+            "prev_close": 803.95,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_no_quote_for_the_instrument",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching quotes: No quote available for NSE:SBIN",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_refused",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "Invalid token"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching quotes: Invalid token",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45,
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": 1234567,
+                "open_interest": 1500,
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 100,
+                      "orders": 1
+                    },
+                    {
+                      "price": 805.35,
+                      "quantity": 200,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.3,
+                      "quantity": 300,
+                      "orders": 3
+                    },
+                    {
+                      "price": 805.25,
+                      "quantity": 400,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.1999999999999,
+                      "quantity": 500,
+                      "orders": 5
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 110,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.55,
+                      "quantity": 220,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.6,
+                      "quantity": 330,
+                      "orders": 6
+                    },
+                    {
+                      "price": 805.65,
+                      "quantity": 440,
+                      "orders": 8
+                    },
+                    {
+                      "price": 805.7,
+                      "quantity": 550,
+                      "orders": 10
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Symbol 'NOPE' not found for exchange 'NSE'. Please verify the symbol name and ensure master contracts are downloaded.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "depth_five_levels",
+      "method": "POST",
+      "path": "/api/v1/depth",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45,
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": 1234567,
+                "open_interest": 1500,
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 100,
+                      "orders": 1
+                    },
+                    {
+                      "price": 805.35,
+                      "quantity": 200,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.3,
+                      "quantity": 300,
+                      "orders": 3
+                    },
+                    {
+                      "price": 805.25,
+                      "quantity": 400,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.1999999999999,
+                      "quantity": 500,
+                      "orders": 5
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 110,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.55,
+                      "quantity": 220,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.6,
+                      "quantity": 330,
+                      "orders": 6
+                    },
+                    {
+                      "price": 805.65,
+                      "quantity": 440,
+                      "orders": 8
+                    },
+                    {
+                      "price": 805.7,
+                      "quantity": 550,
+                      "orders": 10
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "asks": [
+              {
+                "price": 805.5,
+                "quantity": 110
+              },
+              {
+                "price": 805.55,
+                "quantity": 220
+              },
+              {
+                "price": 805.6,
+                "quantity": 330
+              },
+              {
+                "price": 805.65,
+                "quantity": 440
+              },
+              {
+                "price": 805.7,
+                "quantity": 550
+              }
+            ],
+            "bids": [
+              {
+                "price": 805.4,
+                "quantity": 100
+              },
+              {
+                "price": 805.35,
+                "quantity": 200
+              },
+              {
+                "price": 805.3,
+                "quantity": 300
+              },
+              {
+                "price": 805.25,
+                "quantity": 400
+              },
+              {
+                "price": 805.1999999999999,
+                "quantity": 500
+              }
+            ],
+            "high": 809.45,
+            "low": 800.45,
+            "ltp": 805.45,
+            "ltq": 25,
+            "oi": 1500,
+            "open": 802.45,
+            "prev_close": 803.95,
+            "totalbuyqty": 5000,
+            "totalsellqty": 4000,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "depth_short_book",
+      "method": "POST",
+      "path": "/api/v1/depth",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45,
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": 1234567,
+                "open_interest": 1500,
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 100
+                    },
+                    {}
+                  ],
+                  "sell": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "asks": [
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              }
+            ],
+            "bids": [
+              {
+                "price": 805.4,
+                "quantity": 100
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              }
+            ],
+            "high": 809.45,
+            "low": 800.45,
+            "ltp": 805.45,
+            "ltq": 25,
+            "oi": 1500,
+            "open": 802.45,
+            "prev_close": 803.95,
+            "totalbuyqty": 5000,
+            "totalsellqty": 4000,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "depth_no_book",
+      "method": "POST",
+      "path": "/api/v1/depth",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45,
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": 1234567,
+                "open_interest": 1500,
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {}
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "asks": [
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              }
+            ],
+            "bids": [
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              },
+              {
+                "price": 0.0,
+                "quantity": 0
+              }
+            ],
+            "high": 809.45,
+            "low": 800.45,
+            "ltp": 805.45,
+            "ltq": 25,
+            "oi": 1500,
+            "open": 802.45,
+            "prev_close": 803.95,
+            "totalbuyqty": 5000,
+            "totalsellqty": 4000,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "depth_refused",
+      "method": "POST",
+      "path": "/api/v1/depth",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "Invalid token"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching market depth: Invalid token",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "NOPE",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45,
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": 1234567,
+                "open_interest": 1500,
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 100,
+                      "orders": 1
+                    },
+                    {
+                      "price": 805.35,
+                      "quantity": 200,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.3,
+                      "quantity": 300,
+                      "orders": 3
+                    },
+                    {
+                      "price": 805.25,
+                      "quantity": 400,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.1999999999999,
+                      "quantity": 500,
+                      "orders": 5
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 110,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.55,
+                      "quantity": 220,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.6,
+                      "quantity": 330,
+                      "orders": 6
+                    },
+                    {
+                      "price": 805.65,
+                      "quantity": 440,
+                      "orders": 8
+                    },
+                    {
+                      "price": 805.7,
+                      "quantity": 550,
+                      "orders": 10
+                    }
+                  ]
+                }
+              },
+              "NSE:INFY": {
+                "last_trade_price": 1499.5,
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": 1234567,
+                "open_interest": 1500,
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 100,
+                      "orders": 1
+                    },
+                    {
+                      "price": 805.35,
+                      "quantity": 200,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.3,
+                      "quantity": 300,
+                      "orders": 3
+                    },
+                    {
+                      "price": 805.25,
+                      "quantity": 400,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.1999999999999,
+                      "quantity": 500,
+                      "orders": 5
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 110,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.55,
+                      "quantity": 220,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.6,
+                      "quantity": 330,
+                      "orders": 6
+                    },
+                    {
+                      "price": 805.65,
+                      "quantity": 440,
+                      "orders": 8
+                    },
+                    {
+                      "price": 805.7,
+                      "quantity": 550,
+                      "orders": 10
+                    }
+                  ]
+                }
+              },
+              "NSE:NIFTY25NOV26FUT": {
+                "last_trade_price": 24005.5,
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": 1234567,
+                "open_interest": 1500,
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 100,
+                      "orders": 1
+                    },
+                    {
+                      "price": 805.35,
+                      "quantity": 200,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.3,
+                      "quantity": 300,
+                      "orders": 3
+                    },
+                    {
+                      "price": 805.25,
+                      "quantity": 400,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.1999999999999,
+                      "quantity": 500,
+                      "orders": 5
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 110,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.55,
+                      "quantity": 220,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.6,
+                      "quantity": 330,
+                      "orders": 6
+                    },
+                    {
+                      "price": 805.65,
+                      "quantity": 440,
+                      "orders": 8
+                    },
+                    {
+                      "price": 805.7,
+                      "quantity": 550,
+                      "orders": 10
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [
+            {
+              "error": "Symbol 'NOPE' not found for exchange 'NSE'. Please verify the symbol name and ensure master contracts are downloaded.",
+              "exchange": "NSE",
+              "symbol": "NOPE"
+            },
+            {
+              "data": {
+                "ask": 805.5,
+                "ask_qty": 110,
+                "bid": 805.4,
+                "bid_qty": 100,
+                "high": 809.45,
+                "low": 800.45,
+                "ltp": 805.45,
+                "oi": 1500,
+                "open": 802.45,
+                "prev_close": 803.95,
+                "volume": 1234567
+              },
+              "exchange": "NSE",
+              "symbol": "SBIN"
+            },
+            {
+              "data": {
+                "ask": 805.5,
+                "ask_qty": 110,
+                "bid": 805.4,
+                "bid_qty": 100,
+                "high": 809.45,
+                "low": 800.45,
+                "ltp": 1499.5,
+                "oi": 1500,
+                "open": 802.45,
+                "prev_close": 803.95,
+                "volume": 1234567
+              },
+              "exchange": "NSE",
+              "symbol": "INFY"
+            },
+            {
+              "data": {
+                "ask": 805.5,
+                "ask_qty": 110,
+                "bid": 805.4,
+                "bid_qty": 100,
+                "high": 809.45,
+                "low": 800.45,
+                "ltp": 24005.5,
+                "oi": 1500,
+                "open": 802.45,
+                "prev_close": 803.95,
+                "volume": 1234567
+              },
+              "exchange": "NFO",
+              "symbol": "NIFTY25NOV26FUT"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:INFY"
+            ],
+            [
+              "q",
+              "NSE:NIFTY25NOV26FUT"
+            ],
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes_one_instrument_missing_from_the_answer",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45,
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": 1234567,
+                "open_interest": 1500,
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 100,
+                      "orders": 1
+                    },
+                    {
+                      "price": 805.35,
+                      "quantity": 200,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.3,
+                      "quantity": 300,
+                      "orders": 3
+                    },
+                    {
+                      "price": 805.25,
+                      "quantity": 400,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.1999999999999,
+                      "quantity": 500,
+                      "orders": 5
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 110,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.55,
+                      "quantity": 220,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.6,
+                      "quantity": 330,
+                      "orders": 6
+                    },
+                    {
+                      "price": 805.65,
+                      "quantity": 440,
+                      "orders": 8
+                    },
+                    {
+                      "price": 805.7,
+                      "quantity": 550,
+                      "orders": 10
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [
+            {
+              "data": {
+                "ask": 805.5,
+                "ask_qty": 110,
+                "bid": 805.4,
+                "bid_qty": 100,
+                "high": 809.45,
+                "low": 800.45,
+                "ltp": 805.45,
+                "oi": 1500,
+                "open": 802.45,
+                "prev_close": 803.95,
+                "volume": 1234567
+              },
+              "exchange": "NSE",
+              "symbol": "SBIN"
+            },
+            {
+              "error": "No quote data available",
+              "exchange": "NSE",
+              "symbol": "INFY"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:INFY"
+            ],
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes_refused",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "Invalid token"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [
+            {
+              "error": "No quote data available",
+              "exchange": "NSE",
+              "symbol": "SBIN"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes_the_same_instrument_twice",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45,
+                "open_price": 802.45,
+                "high_price": 809.45,
+                "low_price": 800.45,
+                "close_price": 803.95,
+                "volume": 1234567,
+                "open_interest": 1500,
+                "last_trade_quantity": 25,
+                "total_buy_quantity": 5000,
+                "total_sell_quantity": 4000,
+                "depth": {
+                  "buy": [
+                    {
+                      "price": 805.4,
+                      "quantity": 100,
+                      "orders": 1
+                    },
+                    {
+                      "price": 805.35,
+                      "quantity": 200,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.3,
+                      "quantity": 300,
+                      "orders": 3
+                    },
+                    {
+                      "price": 805.25,
+                      "quantity": 400,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.1999999999999,
+                      "quantity": 500,
+                      "orders": 5
+                    }
+                  ],
+                  "sell": [
+                    {
+                      "price": 805.5,
+                      "quantity": 110,
+                      "orders": 2
+                    },
+                    {
+                      "price": 805.55,
+                      "quantity": 220,
+                      "orders": 4
+                    },
+                    {
+                      "price": 805.6,
+                      "quantity": 330,
+                      "orders": 6
+                    },
+                    {
+                      "price": 805.65,
+                      "quantity": 440,
+                      "orders": 8
+                    },
+                    {
+                      "price": 805.7,
+                      "quantity": 550,
+                      "orders": 10
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [
+            {
+              "data": {
+                "ask": 805.5,
+                "ask_qty": 110,
+                "bid": 805.4,
+                "bid_qty": 100,
+                "high": 809.45,
+                "low": 800.45,
+                "ltp": 805.45,
+                "oi": 1500,
+                "open": 802.45,
+                "prev_close": 803.95,
+                "volume": 1234567
+              },
+              "exchange": "NSE",
+              "symbol": "SBIN"
+            },
+            {
+              "data": {
+                "ask": 805.5,
+                "ask_qty": 110,
+                "bid": 805.4,
+                "bid_qty": 100,
+                "high": 809.45,
+                "low": 800.45,
+                "ltp": 805.45,
+                "oi": 1500,
+                "open": 802.45,
+                "prev_close": 803.95,
+                "volume": 1234567
+              },
+              "exchange": "NSE",
+              "symbol": "SBIN"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "full"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
