@@ -111,7 +111,7 @@ public sealed class FeedHost(
                 }
             }
 
-            var refusal = connection.Hold(new FeedRequest(exchange, symbol, instrument.Token, instrument.BrokerExchange, mode));
+            var refusal = connection.Hold(new FeedRequest(exchange, symbol, instrument.Token, instrument.BrokerExchange, mode, instrument.BrokerSymbol));
             if (refusal is not null) return FeedAnswer.Refused(refusal);
             bool current;
             lock (gate) current = connections.TryGetValue(accountId, out var now) && ReferenceEquals(now, connection);

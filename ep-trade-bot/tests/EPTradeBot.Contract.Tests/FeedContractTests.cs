@@ -18,7 +18,7 @@ public static class FeedRunner
     {
         var fixtures = BrokerContractHost.Load(file);
         var now = fixtures["now_ms"]!.GetValue<long>();
-        var symbols = fixtures["symbols"]!.AsArray().OfType<JsonObject>().ToDictionary(s => (s["exchange"]!.GetValue<string>(), s["symbol"]!.GetValue<string>()), s => (Token: s["token"]!.GetValue<string>(), BrokerExchange: s["brexchange"]!.GetValue<string>()));
+        var symbols = fixtures["symbols"]!.AsArray().OfType<JsonObject>().ToDictionary(s => (s["exchange"]!.GetValue<string>(), s["symbol"]!.GetValue<string>()), s => (Token: s["token"]!.GetValue<string>(), BrokerExchange: s["brexchange"]!.GetValue<string>(), BrokerSymbol: s["brsymbol"]!.GetValue<string>()));
         var scenario = (JsonObject)fixtures["scenarios"]!.AsArray().OfType<JsonObject>().Single(s => s["name"]!.GetValue<string>() == name).DeepClone();
         adjust?.Invoke(scenario);
         var feed = codec();
@@ -37,21 +37,25 @@ public static class FeedRunner
                     sent = feed.Subscribe(step["subscribe"]!.AsArray().OfType<JsonObject>().Select(i =>
                     {
                         var (exchange, symbol) = (i["exchange"]!.GetValue<string>(), i["symbol"]!.GetValue<string>());
-                        var (token, brokerExchange) = symbols[(exchange, symbol)];
-                        return new FeedRequest(exchange, symbol, token, brokerExchange, (StreamMode)i["mode"]!.GetValue<int>());
+                        var (token, brokerExchange, brokerSymbol) = symbols[(exchange, symbol)];
+                        return new FeedRequest(exchange, symbol, token, brokerExchange, (StreamMode)i["mode"]!.GetValue<int>(), brokerSymbol);
                     }).ToList(), now);
                     break;
                 case "unsubscribe":
                     var u = step["unsubscribe"]!.AsObject();
                     var (uExchange, uSymbol) = (u["exchange"]!.GetValue<string>(), u["symbol"]!.GetValue<string>());
-                    var (uToken, uBrokerExchange) = symbols[(uExchange, uSymbol)];
-                    sent = feed.Unsubscribe(new FeedTarget(uExchange, uSymbol, uToken, uBrokerExchange), u["mode"] is JsonValue m ? (StreamMode)m.GetValue<int>() : null, now);
+                    var (uToken, uBrokerExchange, uBrokerSymbol) = symbols[(uExchange, uSymbol)];
+                    sent = feed.Unsubscribe(new FeedTarget(uExchange, uSymbol, uToken, uBrokerExchange, uBrokerSymbol), u["mode"] is JsonValue m ? (StreamMode)m.GetValue<int>() : null, now);
                     break;
                 case "reconnect":
                     sent = feed.Resubscribe(now);
                     break;
                 case "frame":
                     published = feed.DecodeBinary(Convert.FromHexString(step["frame"]!.GetValue<string>()), now);
+                    break;
+                case "text":
+                    // A text frame is recorded as the JSON it carried, or as the raw text when that was not JSON.
+                    published = feed.DecodeText(step["text"] is JsonValue raw && raw.TryGetValue<string>(out var rawText) ? rawText : step["text"]!.ToJsonString(), now);
                     break;
                 default:
                     throw new InvalidOperationException($"Unknown step {kind}.");
@@ -149,4 +153,13 @@ public sealed class PaytmFeedContractTests
                 scenario["steps"]![2]!["result"]!["published"] = both["steps"]![2]!["result"]!["published"]!.DeepClone();
             }
             : null);
+}
+
+public sealed class DeltaFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_deltaexchange.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_deltaexchange.fixtures.json", name, () => new DeltaFeedCodec());
 }

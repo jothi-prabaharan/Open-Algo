@@ -18,7 +18,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Delta;
 /// HMAC-SHA256 over method, timestamp, path, query and body. Order ids are
 /// "product_id:order_id", as OpenAlgo forms them, so a cancel needs no lookup.
 /// Not ported yet, and refused rather than guessed: fractional (spot) quantities,
-/// leverage setting, bracket orders and the Delta feed.
+/// leverage setting, bracket orders.
 /// </summary>
 [BrokerPlugin]
 public sealed partial class DeltaExchangePlugin(
@@ -33,7 +33,7 @@ public sealed partial class DeltaExchangePlugin(
 
     public string Name => "deltaexchange";
     public string DisplayName => "Delta Exchange";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin | BrokerCapability.Streaming;
 
     /// <summary>The session token is the Delta API key (as OpenAlgo stores it); ApiSecret signs every request.</summary>
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiSecret"];

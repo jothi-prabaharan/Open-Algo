@@ -75,7 +75,7 @@ Built already during TG3, kept as they are (contract-verified for the pieces lis
 - [x] Dhan GTT (`verification/tg7.md`)
 - [x] Fyers GTT (`verification/tg7.md`)
 - [x] Dhan Sandbox margin (`verification/tg7.md`)
-- [ ] For the rest of those five: market-data feeds (Dhan, Upstox, Fyers, Delta), Delta leverage and fractional quantities
+- [ ] For the rest of those five: market-data feeds (Dhan, Upstox, Fyers; Delta's is done), Delta leverage and fractional quantities
 
 Not started (30): fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, ibulls, iifl, iiflcapital, indmoney, jainamxts, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, wisdom, zebu
 - [ ] Gate 7 artifact (per-broker verification status for all of the above)

@@ -1,0 +1,218 @@
+[
+ {
+  "name": "F1 depth channels reversed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "3 => [Book, Ticker]",
+  "new": "3 => [Ticker, Book]",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F2 quote reads the book",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "2 => [Ticker]",
+  "new": "2 => [Ticker, Book]",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F3 book takes many symbols",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "if (channel == Book)\n        {\n            foreach",
+  "new": "if (channel == \"x\")\n        {\n            foreach",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F4 modes outside the three subscribed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "if (mode is < 1 or > 3) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F5 queue not deduplicated",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "if (!queue.Contains((channel, brokerSymbol))) queue.Add((channel, brokerSymbol));\n                }\n            }\n\n            var frames = new List<string>();\n            foreach (var (channel, symbols) in Group(queue))\n            {\n                if (!registry",
+  "new": "queue.Add((channel, brokerSymbol));\n                }\n            }\n\n            var frames = new List<string>();\n            foreach (var (channel, symbols) in Group(queue))\n            {\n                if (!registry",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F6 broker symbol ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "var brokerSymbol = r.BrokerSymbol is { Length: > 0 } b ? b : r.Symbol;",
+  "new": "var brokerSymbol = r.Symbol;",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F7 replay not sorted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "new SortedSet<string>(StringComparer.Ordinal)",
+  "new": "new SortedSet<string>(Comparer<string>.Create((a, b) => 0))",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F8 unsubscribe keeps registry",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "if (registry.TryGetValue(channel, out var active)) active.ExceptWith(symbols);",
+  "new": "",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F9 unsubscribe ignores other modes",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "if (subs.Any(s => s.BrokerSymbol == brokerSymbol && s.Channels.Contains(channel))) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F10 never-subscribed uses broker symbol",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "var brokerSymbol = stored?.BrokerSymbol ?? target.Symbol;",
+  "new": "var brokerSymbol = stored?.BrokerSymbol ?? \"\";",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F11 cache kept after the last unsubscribe",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "cache.Remove($\"{target.Symbol}_{target.Exchange}\");",
+  "new": "{ }",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F12 cache removed too early",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "if (!subs.Any(s => s.Symbol == target.Symbol && s.Exchange == target.Exchange)) cache.Remove",
+  "new": "if (true) cache.Remove",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F13 spot price not a fallback",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "var mark = entry[\"m\"] ?? spot;",
+  "new": "var mark = entry[\"m\"];",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F14 contract name from the frame ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "var brokerSymbol = Text(entry[\"s\"]) is { Length: > 0 } s ? s : Text(message[\"sy\"]);",
+  "new": "var brokerSymbol = Text(entry[\"s\"]);",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F15 ohlc high and low swapped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "fields[\"high\"] = Float(At(ohlc, 1));\n                fields[\"low\"] = Float(At(ohlc, 2));",
+  "new": "fields[\"high\"] = Float(At(ohlc, 2));\n                fields[\"low\"] = Float(At(ohlc, 1));",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F16 bid and ask swapped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "fields[\"bid_price\"] = Float(At(quotes, 2));",
+  "new": "fields[\"bid_price\"] = Float(At(quotes, 0));",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F17 sizes not whole",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "fields[\"bid_qty\"] = Whole(At(quotes, 3));",
+  "new": "fields[\"bid_qty\"] = Float(At(quotes, 3));",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F18 missing array still sets fields",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "if (quotes is not null)\n            {",
+  "new": "if (true)\n            {",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F19 oi taken from the change",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "fields[\"oi\"] = Float(At(oi, 0));",
+  "new": "fields[\"oi\"] = Float(At(oi, 1));",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F20 five levels not enforced",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "foreach (var level in list.Take(5))",
+  "new": "foreach (var level in list)",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F21 short books not padded",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "while (levels.Count < 5) levels.Add",
+  "new": "while (levels.Count < 0) levels.Add",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F22 totals counted over padding only",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "total += quantity;",
+  "new": "",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F24 fallback to any subscription dropped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "if (matched.Count == 0) matched = [.. subs.Where(s => s.BrokerSymbol == brokerSymbol)];",
+  "new": "",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F25 truncation became rounding",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "(long)Math.Truncate(Float(node))",
+  "new": "(long)Math.Round(Float(node))",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F26 numeric text not read",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "double.TryParse(s.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)",
+  "new": "false && double.TryParse(s.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F27 timestamp missing",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "data[\"timestamp\"] = nowMs;",
+  "new": "",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F28 mode names wrong",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/DeltaFeedCodec.cs",
+  "old": "2 => \"QUOTE\"",
+  "new": "2 => \"LTP\"",
+  "filter": "FullyQualifiedName~DeltaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

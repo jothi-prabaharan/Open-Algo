@@ -3,12 +3,12 @@ using System.Text.Json.Nodes;
 namespace EPTradeBot.Core.Streaming.Feeds;
 
 /// <summary>An instrument, with the broker's own token and exchange for it (the master contract's).</summary>
-public sealed record FeedTarget(string Exchange, string Symbol, string Token, string BrokerExchange);
+public sealed record FeedTarget(string Exchange, string Symbol, string Token, string BrokerExchange, string? BrokerSymbol = null);
 
 /// <summary>An instrument a client wants ticks for, at one depth.</summary>
-public sealed record FeedRequest(string Exchange, string Symbol, string Token, string BrokerExchange, StreamMode Mode)
+public sealed record FeedRequest(string Exchange, string Symbol, string Token, string BrokerExchange, StreamMode Mode, string? BrokerSymbol = null)
 {
-    public FeedTarget Target => new(Exchange, Symbol, Token, BrokerExchange);
+    public FeedTarget Target => new(Exchange, Symbol, Token, BrokerExchange, BrokerSymbol);
 }
 
 /// <summary>One tick ready for the bus: the topic (EXCHANGE_SYMBOL_MODE) and the OpenAlgo-shaped data.</summary>

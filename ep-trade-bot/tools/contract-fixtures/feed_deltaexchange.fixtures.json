@@ -1,0 +1,3724 @@
+{
+  "broker": "deltaexchange",
+  "now_ms": 1793700000123,
+  "symbols": [
+    {
+      "symbol": "BTCUSD",
+      "brsymbol": "BTCUSD",
+      "name": "BTCUSD",
+      "exchange": "CRYPTO",
+      "brexchange": "CRYPTO",
+      "token": "27",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "FUTURES",
+      "tick_size": 0.5
+    },
+    {
+      "symbol": "ETHUSD",
+      "brsymbol": "ETHUSD",
+      "name": "ETHUSD",
+      "exchange": "CRYPTO",
+      "brexchange": "CRYPTO",
+      "token": "3136",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "FUTURES",
+      "tick_size": 0.5
+    },
+    {
+      "symbol": "SOLPERP",
+      "brsymbol": "SOLUSD",
+      "name": "SOLPERP",
+      "exchange": "CRYPTO",
+      "brexchange": "CRYPTO",
+      "token": "14823",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "FUTURES",
+      "tick_size": 0.5
+    },
+    {
+      "symbol": "BTC_INR",
+      "brsymbol": "BTC_INR",
+      "name": "BTC_INR",
+      "exchange": "CRYPTO",
+      "brexchange": "CRYPTO",
+      "token": "90001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "SPOT",
+      "tick_size": 0.5
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "subscribe_in_each_mode",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              },
+              {
+                "symbol": "ETHUSD",
+                "exchange": "CRYPTO",
+                "mode": 2
+              },
+              {
+                "symbol": "SOLPERP",
+                "exchange": "CRYPTO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD",
+                        "ETHUSD",
+                        "SOLUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "SOLUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "depth_subscribes_the_book_and_the_ticker",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "the_book_costs_one_message_per_symbol",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 3
+              },
+              {
+                "symbol": "ETHUSD",
+                "exchange": "CRYPTO",
+                "mode": 3
+              },
+              {
+                "symbol": "SOLPERP",
+                "exchange": "CRYPTO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "ETHUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "SOLUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD",
+                        "ETHUSD",
+                        "SOLUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "two_modes_of_one_symbol_in_one_batch",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              },
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_one_at_a_time",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "the_same_subscription_twice",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              },
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_mode_the_exchange_does_not_have",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 4
+              }
+            ]
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 0
+              }
+            ]
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_spot_pair",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTC_INR",
+                "exchange": "CRYPTO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTC_INR"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_sends_a_remove",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              },
+              {
+                "symbol": "ETHUSD",
+                "exchange": "CRYPTO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD",
+                        "ETHUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "BTCUSD",
+              "exchange": "CRYPTO",
+              "mode": 1
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "unsubscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "BTCUSD",
+              "exchange": "CRYPTO",
+              "mode": 1
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "unsubscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_depth_keeps_the_ticker_while_another_mode_needs_it",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              },
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "BTCUSD",
+              "exchange": "CRYPTO",
+              "mode": 3
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "unsubscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_ltp_keeps_everything_while_depth_remains",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              },
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "BTCUSD",
+              "exchange": "CRYPTO",
+              "mode": 1
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_depth_alone_removes_both_channels",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "BTCUSD",
+              "exchange": "CRYPTO",
+              "mode": 3
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "unsubscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "unsubscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_something_never_subscribed",
+      "steps": [
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "BTCUSD",
+              "exchange": "CRYPTO",
+              "mode": 1
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "unsubscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "reconnect_repeats_every_subscription_sorted",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SOLPERP",
+                "exchange": "CRYPTO",
+                "mode": 1
+              },
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 3
+              },
+              {
+                "symbol": "ETHUSD",
+                "exchange": "CRYPTO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "SOLUSD",
+                        "BTCUSD",
+                        "ETHUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "ETHUSD",
+              "exchange": "CRYPTO",
+              "mode": 2
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "unsubscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "ETHUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "reconnect": null
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD",
+                        "SOLUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "ticker_frame",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": "63838.06",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    "63834",
+                    "718",
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_QUOTE",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63838.06,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ticker_frame_for_ltp_mode",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": "63838.06",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    "63834",
+                    "718",
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_LTP",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63838.06,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 1,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ticker_frame_without_a_mark_price_uses_the_spot_price",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": null,
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    "63834",
+                    "718",
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_LTP",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63860.7,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 1,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ticker_frame_with_no_price_at_all",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "d": [
+                {
+                  "s": "BTCUSD"
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_LTP",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 1,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ticker_frame_with_an_empty_side_of_the_book",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": "63838.06",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    null,
+                    null,
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_QUOTE",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63838.06,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 0.0,
+                  "ask_qty": 0,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ticker_frame_without_the_quote_array_keeps_the_last_quote",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": "63838.06",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    "63834",
+                    "718",
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_QUOTE",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63838.06,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": "63900.5",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": null
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_QUOTE",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63900.5,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ticker_frame_with_odd_numbers",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": "abc",
+                  "ohlc": [
+                    "x",
+                    null,
+                    1,
+                    2
+                  ],
+                  "oi": [
+                    "12.7"
+                  ],
+                  "q": [
+                    "1.5",
+                    "2.9",
+                    "3",
+                    "4.2",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_QUOTE",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 0.0,
+                  "open": 0.0,
+                  "high": 0.0,
+                  "low": 1.0,
+                  "close": 2.0,
+                  "oi": 12.7,
+                  "bid_price": 3.0,
+                  "bid_qty": 4,
+                  "ask_price": 1.5,
+                  "ask_qty": 2,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ticker_frame_carrying_two_contracts",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 2
+              },
+              {
+                "symbol": "ETHUSD",
+                "exchange": "CRYPTO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD",
+                        "ETHUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": "63838.06",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    "63834",
+                    "718",
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                },
+                {
+                  "s": "ETHUSD",
+                  "m": "3100.5",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    "63834",
+                    "718",
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_QUOTE",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63838.06,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              },
+              {
+                "topic": "CRYPTO_ETHUSD_QUOTE",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 3100.5,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "ETHUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ticker_frame_names_the_contract_in_the_frame_only",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "d": [
+                {
+                  "m": "63000.5"
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_LTP",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63000.5,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 1,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ticker_frame_with_no_entries",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "d": null
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "d": [
+                "x"
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "two_modes_of_one_symbol_each_get_a_tick",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              },
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": "63838.06",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    "63834",
+                    "718",
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_LTP",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63838.06,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 1,
+                  "timestamp": 1793700000123
+                }
+              },
+              {
+                "topic": "CRYPTO_BTCUSD_QUOTE",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63838.06,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "book_frame_in_depth_mode",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ob_l2",
+              "sy": "BTCUSD",
+              "ts": 1786521801671015,
+              "a": [
+                [
+                  "63834",
+                  "700"
+                ],
+                [
+                  "63835",
+                  "701"
+                ],
+                [
+                  "63836",
+                  "702"
+                ],
+                [
+                  "63837",
+                  "703"
+                ],
+                [
+                  "63838",
+                  "704"
+                ],
+                [
+                  "63839",
+                  "705"
+                ]
+              ],
+              "b": [
+                [
+                  "63833",
+                  "4000"
+                ],
+                [
+                  "63832",
+                  "4001"
+                ],
+                [
+                  "63831",
+                  "4002"
+                ],
+                [
+                  "63830",
+                  "4003"
+                ],
+                [
+                  "63829",
+                  "4004"
+                ],
+                [
+                  "63828",
+                  "4005"
+                ]
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_DEPTH",
+                "data": {
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 63833.0,
+                        "quantity": 4000
+                      },
+                      {
+                        "price": 63832.0,
+                        "quantity": 4001
+                      },
+                      {
+                        "price": 63831.0,
+                        "quantity": 4002
+                      },
+                      {
+                        "price": 63830.0,
+                        "quantity": 4003
+                      },
+                      {
+                        "price": 63829.0,
+                        "quantity": 4004
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 63834.0,
+                        "quantity": 700
+                      },
+                      {
+                        "price": 63835.0,
+                        "quantity": 701
+                      },
+                      {
+                        "price": 63836.0,
+                        "quantity": 702
+                      },
+                      {
+                        "price": 63837.0,
+                        "quantity": 703
+                      },
+                      {
+                        "price": 63838.0,
+                        "quantity": 704
+                      }
+                    ]
+                  },
+                  "totalbuyqty": 20010,
+                  "totalsellqty": 3510,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "book_frame_with_fewer_than_five_levels",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ob_l2",
+              "sy": "BTCUSD",
+              "ts": 1786521801671015,
+              "a": [
+                [
+                  "63834",
+                  "700"
+                ],
+                [
+                  "63835",
+                  "701"
+                ]
+              ],
+              "b": [
+                [
+                  "63833",
+                  "4000"
+                ],
+                [
+                  "63832",
+                  "4001"
+                ]
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_DEPTH",
+                "data": {
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 63833.0,
+                        "quantity": 4000
+                      },
+                      {
+                        "price": 63832.0,
+                        "quantity": 4001
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 63834.0,
+                        "quantity": 700
+                      },
+                      {
+                        "price": 63835.0,
+                        "quantity": 701
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      }
+                    ]
+                  },
+                  "totalbuyqty": 8001,
+                  "totalsellqty": 1401,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "book_frame_with_no_levels",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ob_l2",
+              "sy": "BTCUSD"
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_DEPTH",
+                "data": {
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      }
+                    ]
+                  },
+                  "totalbuyqty": 0,
+                  "totalsellqty": 0,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "book_frame_with_odd_levels",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ob_l2",
+              "sy": "BTCUSD",
+              "a": [
+                [
+                  "1.9",
+                  "2.7"
+                ],
+                [
+                  "bad"
+                ],
+                "x",
+                [
+                  "5",
+                  null
+                ]
+              ],
+              "b": [
+                [
+                  null,
+                  "3"
+                ]
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_DEPTH",
+                "data": {
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 0.0,
+                        "quantity": 3
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 1.9,
+                        "quantity": 2
+                      },
+                      {
+                        "price": 5.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0
+                      }
+                    ]
+                  },
+                  "totalbuyqty": 3,
+                  "totalsellqty": 2,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "depth_mode_merges_the_ticker_and_the_book",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ob_l2",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": "63838.06",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    "63834",
+                    "718",
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_DEPTH",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63838.06,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ob_l2",
+              "sy": "BTCUSD",
+              "ts": 1786521801671015,
+              "a": [
+                [
+                  "63834",
+                  "700"
+                ],
+                [
+                  "63835",
+                  "701"
+                ],
+                [
+                  "63836",
+                  "702"
+                ],
+                [
+                  "63837",
+                  "703"
+                ],
+                [
+                  "63838",
+                  "704"
+                ],
+                [
+                  "63839",
+                  "705"
+                ]
+              ],
+              "b": [
+                [
+                  "63833",
+                  "4000"
+                ],
+                [
+                  "63832",
+                  "4001"
+                ],
+                [
+                  "63831",
+                  "4002"
+                ],
+                [
+                  "63830",
+                  "4003"
+                ],
+                [
+                  "63829",
+                  "4004"
+                ],
+                [
+                  "63828",
+                  "4005"
+                ]
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_DEPTH",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63838.06,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 63833.0,
+                        "quantity": 4000
+                      },
+                      {
+                        "price": 63832.0,
+                        "quantity": 4001
+                      },
+                      {
+                        "price": 63831.0,
+                        "quantity": 4002
+                      },
+                      {
+                        "price": 63830.0,
+                        "quantity": 4003
+                      },
+                      {
+                        "price": 63829.0,
+                        "quantity": 4004
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 63834.0,
+                        "quantity": 700
+                      },
+                      {
+                        "price": 63835.0,
+                        "quantity": 701
+                      },
+                      {
+                        "price": 63836.0,
+                        "quantity": 702
+                      },
+                      {
+                        "price": 63837.0,
+                        "quantity": 703
+                      },
+                      {
+                        "price": 63838.0,
+                        "quantity": 704
+                      }
+                    ]
+                  },
+                  "totalbuyqty": 20010,
+                  "totalsellqty": 3510,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "book_frame_reaches_a_symbol_subscribed_in_ltp_mode_only",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ob_l2",
+              "sy": "BTCUSD",
+              "ts": 1786521801671015,
+              "a": [
+                [
+                  "63834",
+                  "700"
+                ],
+                [
+                  "63835",
+                  "701"
+                ],
+                [
+                  "63836",
+                  "702"
+                ],
+                [
+                  "63837",
+                  "703"
+                ],
+                [
+                  "63838",
+                  "704"
+                ],
+                [
+                  "63839",
+                  "705"
+                ]
+              ],
+              "b": [
+                [
+                  "63833",
+                  "4000"
+                ],
+                [
+                  "63832",
+                  "4001"
+                ],
+                [
+                  "63831",
+                  "4002"
+                ],
+                [
+                  "63830",
+                  "4003"
+                ],
+                [
+                  "63829",
+                  "4004"
+                ],
+                [
+                  "63828",
+                  "4005"
+                ]
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_LTP",
+                "data": {
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 63833.0,
+                        "quantity": 4000
+                      },
+                      {
+                        "price": 63832.0,
+                        "quantity": 4001
+                      },
+                      {
+                        "price": 63831.0,
+                        "quantity": 4002
+                      },
+                      {
+                        "price": 63830.0,
+                        "quantity": 4003
+                      },
+                      {
+                        "price": 63829.0,
+                        "quantity": 4004
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 63834.0,
+                        "quantity": 700
+                      },
+                      {
+                        "price": 63835.0,
+                        "quantity": 701
+                      },
+                      {
+                        "price": 63836.0,
+                        "quantity": 702
+                      },
+                      {
+                        "price": 63837.0,
+                        "quantity": 703
+                      },
+                      {
+                        "price": 63838.0,
+                        "quantity": 704
+                      }
+                    ]
+                  },
+                  "totalbuyqty": 20010,
+                  "totalsellqty": 3510,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 1,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribing_one_mode_keeps_the_cached_values",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              },
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": "63838.06",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    "63834",
+                    "718",
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_LTP",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63838.06,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 1,
+                  "timestamp": 1793700000123
+                }
+              },
+              {
+                "topic": "CRYPTO_BTCUSD_QUOTE",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63838.06,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "BTCUSD",
+              "exchange": "CRYPTO",
+              "mode": 1
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": "64000.5"
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_QUOTE",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 64000.5,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_contract_whose_exchange_name_differs_from_the_broker_symbol",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SOLPERP",
+                "exchange": "CRYPTO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "SOLUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "SOLUSD",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "SOLUSD",
+                  "m": "155.25",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    "63834",
+                    "718",
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_SOLPERP_QUOTE",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 155.25,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "SOLPERP",
+                  "exchange": "CRYPTO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "SOLPERP",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "SOLPERP",
+                  "m": "1.0",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    "63834",
+                    "718",
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "frame_for_a_symbol_nobody_subscribed",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "ETHUSD",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "ETHUSD",
+                  "m": "3100.5",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    "63834",
+                    "718",
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "frame_after_everything_was_unsubscribed",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "BTCUSD",
+              "exchange": "CRYPTO",
+              "mode": 1
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "unsubscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": "63838.06",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    "63834",
+                    "718",
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "the_cache_is_forgotten_with_the_last_subscription",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "sp": "63860.7",
+              "ts": 1786521801671015,
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": "63838.06",
+                  "ohlc": [
+                    64025.0,
+                    64475.5,
+                    63217.5,
+                    63839.0
+                  ],
+                  "oi": [
+                    "1407713",
+                    "307138.71"
+                  ],
+                  "q": [
+                    "63834",
+                    "718",
+                    "63833",
+                    "4388",
+                    null
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_QUOTE",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 63838.06,
+                  "open": 64025.0,
+                  "high": 64475.5,
+                  "low": 63217.5,
+                  "close": 63839.0,
+                  "oi": 1407713.0,
+                  "bid_price": 63833.0,
+                  "bid_qty": 4388,
+                  "ask_price": 63834.0,
+                  "ask_qty": 718,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "BTCUSD",
+              "exchange": "CRYPTO",
+              "mode": 2
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "unsubscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "ticker",
+              "sy": "BTCUSD",
+              "d": [
+                {
+                  "s": "BTCUSD",
+                  "m": "1.5"
+                }
+              ]
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CRYPTO_BTCUSD_QUOTE",
+                "data": {
+                  "average_price": 0,
+                  "oi_change": 0,
+                  "ltp": 1.5,
+                  "symbol": "BTCUSD",
+                  "exchange": "CRYPTO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "frames_that_carry_no_market_data",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "BTCUSD",
+                "exchange": "CRYPTO",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "subscribe",
+                "payload": {
+                  "channels": [
+                    {
+                      "name": "ticker",
+                      "symbols": [
+                        "BTCUSD"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": "not json"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "subscriptions",
+              "channels": []
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "heartbeat"
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "key-auth"
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "type": "error",
+              "message": "bad"
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    }
+  ]
+}
