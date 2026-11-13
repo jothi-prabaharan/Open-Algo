@@ -712,3 +712,124 @@ public sealed class CompositEdgeHistoryContractTests(CompositEdgeHistoryHost hos
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
 
+
+public sealed class RmoneyHost : XtsHost
+{
+    public override string BrokerName => "rmoney";
+    public override string FixtureFile => "rmoney.fixtures.json";
+}
+
+/// <summary>RMoney against the Python implementation (tools/contract-fixtures/rmoney.fixtures.json).</summary>
+public sealed class RmoneyContractTests(RmoneyHost host, ITestOutputHelper output) : IClassFixture<RmoneyHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = Build();
+
+    private static Dictionary<string, Deviation> Build()
+    {
+        const string list = "OpenAlgo's RMoney plugin fails with an internal error when the position reply's result is a list, which RMoney's own close-all and open-position lookups accept. EP Trade bot lists the positions.";
+        var d = XtsDeviations.WithCrashes("RMoney");
+        d["positionbook_result_is_a_list"] = new(list, f => Expect(f, 200, new JsonObject
+        {
+            ["status"] = "success",
+            ["data"] = new JsonArray(
+                new JsonObject { ["symbol"] = "SBIN", ["exchange"] = "NSE", ["product"] = "MIS", ["quantity"] = "10", ["average_price"] = "801.12", ["ltp"] = 0, ["pnl"] = 0 },
+                new JsonObject { ["symbol"] = "NIFTY25NOV26FUT", ["exchange"] = "NFO", ["product"] = "NRML", ["quantity"] = "-75", ["average_price"] = "24005.50", ["ltp"] = 0, ["pnl"] = 0 }),
+        }));
+        d["openposition_from_a_list"] = new(list, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["quantity"] = "10" }));
+        return d;
+    }
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("rmoney.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class RmoneyDataHost : XtsHost
+{
+    public override string BrokerName => "rmoney";
+    public override string FixtureFile => "rmoney_data.fixtures.json";
+}
+
+/// <summary>RMoney market data against the Python implementation (tools/contract-fixtures/rmoney_data.fixtures.json).</summary>
+public sealed class RmoneyDataContractTests(RmoneyDataHost host, ITestOutputHelper output) : IClassFixture<RmoneyDataHost>
+{
+    private const string Words = "OpenAlgo answers a refused or empty quote with \"Failed to fetch market data\"; EP Trade bot names the broker and passes its reason on.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["quotes_market_data_refused"] = new(Words, f => Expect(f, 500, Error("RMoney could not send the quote: Market data not enabled"))),
+        ["quotes_empty_list"] = new(Words, f => Expect(f, 500, Error("RMoney has no quote for SBIN right now."))),
+        ["multiquotes_refused"] = new(Words, f => Expect(f, 500, Error("RMoney could not send the quotes: Market data not enabled"))),
+        ["depth_market_data_refused"] = new(
+            "OpenAlgo answers success with a depth of zeros when the broker refuses, which reads as a market with no orders. EP Trade bot reports the refusal.",
+            f => Expect(f, 500, Error("RMoney could not send the quote: Market data not enabled"))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("rmoney_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class RmoneyHistoryHost : XtsHost
+{
+    public override string BrokerName => "rmoney";
+    public override string FixtureFile => "history_rmoney.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>RMoney history against the Python implementation (tools/contract-fixtures/history_rmoney.fixtures.json).</summary>
+public sealed class RmoneyHistoryContractTests(RmoneyHistoryHost host, ITestOutputHelper output) : IClassFixture<RmoneyHistoryHost>
+{
+    private const string Quiet = "OpenAlgo fails with \"No objects to concatenate\" when no candle came back, which looks like a fault; EP Trade bot answers success with no candles.";
+
+    private static void Refused(JsonObject f, string from, string to) =>
+        Expect(f, 500, Error($"RMoney could not send the candles for {from} to {to}: Invalid Token"));
+
+    private const string NoRefresh = "RMoney signs in to market data again when it is told the token is invalid, then tries the call once more. EP Trade bot's plugin cannot store a new token, so it reports the refusal.";
+
+    private static Action<JsonObject> DropRefresh(Action<JsonObject> inner) => f =>
+    {
+        inner(f);
+        var sent = f["sent"]!.AsArray();
+        foreach (var s in sent.OfType<JsonObject>().Where(s => s["path"]!.GetValue<string>() == "/apibinarymarketdata/auth/login").ToList()) sent.Remove(s);
+    };
+
+    public static readonly Dictionary<string, Deviation> Deviations = Refreshing(new()
+    {
+        ["history_nothing_traded"] = new(Quiet, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray() })),
+        ["history_end_before_start"] = new(Quiet, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray() })),
+        ["history_refused"] = new("OpenAlgo shows an internal-looking message; EP Trade bot says which days were refused and why.", f => Refused(f, "2026-11-02", "2026-11-02")),
+        ["history_unsupported_interval"] = new(
+            "OpenAlgo answers 500 with \"Unsupported timeframe: 4h\". EP Trade bot answers 400 and names what RMoney offers.",
+            f => Expect(f, 400, Error("RMoney does not offer 4h candles. Choose one of: 1s, 1m, 2m, 3m, 5m, 10m, 15m, 30m, 60m, D."))),
+        ["history_chunked_in_weeks"] = new(
+            "OpenAlgo ends every week but the last at midnight of its seventh day and starts the next on the day after, so the seventh day's trading is never asked for. EP Trade bot asks for the whole of each day.",
+            f =>
+            {
+                var sent = f["sent"]!.AsArray();
+                sent[0]!["query"]!.AsArray()[3]!.AsArray()[1] = "Oct 25 2026 235959";
+                sent[1]!["query"]!.AsArray()[3]!.AsArray()[1] = "Nov 01 2026 235959";
+            }),
+        ["history_one_chunk_refused"] = new("OpenAlgo shows an internal-looking message; EP Trade bot says which days were refused and why.", f =>
+        {
+            Refused(f, "2026-11-02", "2026-11-02");
+            f["sent"]!.AsArray()[0]!["query"]!.AsArray()[3]!.AsArray()[1] = "Nov 01 2026 235959";
+        }),
+    });
+
+    private static Dictionary<string, Deviation> Refreshing(Dictionary<string, Deviation> d)
+    {
+        foreach (var name in new[] { "history_refused", "history_one_chunk_refused" }) d[name] = new(NoRefresh + " " + d[name].Reason, DropRefresh(d[name].Adjust!));
+        return d;
+    }
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_rmoney.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}

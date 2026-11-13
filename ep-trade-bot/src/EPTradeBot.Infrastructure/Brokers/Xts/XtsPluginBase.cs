@@ -15,6 +15,10 @@ namespace EPTradeBot.Infrastructure.Brokers.Xts;
 public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger logger)
     : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerLogin, IBrokerMultiQuotes, IBrokerHistory
 {
+    protected IHttpClientFactory Http => http;
+
+    protected BrokerSessionFactory Sessions => sessions;
+
     public abstract string Name { get; }
     public abstract string DisplayName { get; }
 
@@ -23,6 +27,9 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
 
     /// <summary>Where the market-data service lives under the address: most XTS servers use /apimarketdata, some /apibinarymarketdata.</summary>
     protected virtual string MarketDataPath => "/apimarketdata";
+
+    /// <summary>RMoney's several-quotes answer carries the best bid and ask sizes and the open interest (a second call); the others carry neither.</summary>
+    protected virtual bool RichMultiQuotes => false;
 
     /// <summary>The price type and price an order is sent with. Most brokers send what was asked; iBulls turns a market order into a limit order.</summary>
     protected virtual Task<(string PriceType, decimal Price)> PriceAsync(BrokerSession session, BrokerOrder order, CancellationToken cancellationToken) =>
@@ -189,10 +196,10 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
         using var response = await SendAsync(request, cancellationToken);
         var reply = await ReadAsync(response, cancellationToken) as JsonObject;
         RefuseExpired(response, reply);
-        if ((reply?["result"] as JsonObject)?["positionList"] is not JsonArray rows) return positions;
+        if ((reply?["result"] is JsonArray direct ? direct : (reply?["result"] as JsonObject)?["positionList"]) is not JsonArray rows) return positions;
         foreach (var p in rows.OfType<JsonObject>())
         {
-            var (symbol, exchange) = await MapRowAsync(p, "ExchangeInstrumentId", cancellationToken);
+            var (symbol, exchange) = await MapRowAsync(p, p.ContainsKey("ExchangeInstrumentID") ? "ExchangeInstrumentID" : "ExchangeInstrumentId", cancellationToken);
             var quantity = Float(p["Quantity"]);
             var average = quantity > 0 ? Float(p["BuyAveragePrice"]) : quantity < 0 ? Float(p["SellAveragePrice"]) : 0;
             positions.Add(new JsonObject
@@ -250,7 +257,7 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
             throw new BrokerException($"{DisplayName} could not report funds: {Reason(reply, "try again in a moment.")}");
         var list = (reply["result"] as JsonObject)?["BalanceList"] as JsonArray;
         if (list is null || list.Count == 0) return [];
-        var limits = (list[0]?["limitObject"] as JsonObject)?["RMSSubLimits"] as JsonObject;
+        var limits = (BalanceEntry(list)?["limitObject"] as JsonObject)?["RMSSubLimits"] as JsonObject;
         string Field(string name) => Str(limits?[name])?.Equals("nan", StringComparison.OrdinalIgnoreCase) == true ? "0.00" : BookFormatting.Fixed2(Float(limits?[name]));
         return new JsonObject
         {
@@ -345,6 +352,21 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
         };
     }
 
+    /// <summary>The open interest of a batch from a second call; a refusal leaves every figure at 0, and only a figure that is not 0 is set.</summary>
+    private async Task MergeOpenInterestAsync(BrokerSession session, List<(SymbolRecord Record, int Segment)> chunk, JsonArray results, CancellationToken cancellationToken)
+    {
+        var (interest, refusal) = await QuotesAsync(session, new JsonArray(chunk.Select(c => Instrument(c.Record, c.Segment)[0]!.DeepClone()).ToArray()), 1510, cancellationToken);
+        if (refusal is not null) return;
+        var open = new Dictionary<string, double>();
+        foreach (var q in interest) open[$"{Str(q["ExchangeSegment"])}_{Str(q["ExchangeInstrumentID"])}"] = Float(q["OpenInterest"]);
+        foreach (var (record, segment) in chunk)
+        {
+            if (!open.TryGetValue($"{segment}_{record.Token}", out var oi) || oi == 0) continue;
+            foreach (var r in results.OfType<JsonObject>().Where(r => Str(r["symbol"]) == record.Symbol && Str(r["exchange"]) == record.Exchange))
+                r["data"]!["oi"] = oi;
+        }
+    }
+
     public async Task<JsonArray> GetMultiQuotesAsync(BrokerSession session, IReadOnlyList<SymbolRecord> instruments, CancellationToken cancellationToken)
     {
         const int batch = 50;
@@ -367,8 +389,18 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
                 var key = $"{Str(q["ExchangeSegment"])}_{Str(q["ExchangeInstrumentID"])}";
                 var match = chunk.FirstOrDefault(c => $"{c.Segment}_{c.Record.Token}" == key);
                 if (match.Record is null) continue;
-                results.Add(new JsonObject { ["symbol"] = match.Record.Symbol, ["exchange"] = match.Record.Exchange, ["data"] = QuoteFrom(q, 0) });
+                var data = QuoteFrom(q, 0);
+                if (RichMultiQuotes)
+                {
+                    var touch = q["Touchline"] as JsonObject;
+                    data["ask_qty"] = Get(touch?["AskInfo"] as JsonObject, "Size", 0);
+                    data["bid_qty"] = Get(touch?["BidInfo"] as JsonObject, "Size", 0);
+                }
+
+                results.Add(new JsonObject { ["symbol"] = match.Record.Symbol, ["exchange"] = match.Record.Exchange, ["data"] = data });
             }
+
+            if (RichMultiQuotes) await MergeOpenInterestAsync(session, chunk, results, cancellationToken);
         }
 
         foreach (var node in results) skipped.Add(node!.DeepClone());
@@ -439,6 +471,9 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
 
     private static bool TryNumber(string text, out double value) =>
         double.TryParse(text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out value);
+
+    /// <summary>Which balance entry the funds come from: the first, unless a broker names the one that covers everything.</summary>
+    protected virtual JsonNode? BalanceEntry(JsonArray list) => list[0];
 
     // ---- plumbing --------------------------------------------------------------------------------------------
 
@@ -591,13 +626,7 @@ public sealed class CompositEdgePlugin(IHttpClientFactory http, BrokerSessionFac
 
     public override LoginMethod LoginMethod => LoginMethod.Redirect;
 
-    public override string? LoginUrl(IReadOnlyDictionary<string, string> keys, string state)
-    {
-        if (!keys.TryGetValue("ApiKey", out var key) || string.IsNullOrWhiteSpace(key)) return null;
-        if (!keys.TryGetValue("RedirectUrl", out var redirect) || string.IsNullOrWhiteSpace(redirect)) return null;
-        var returnUrl = Uri.EscapeDataString($"{redirect.Trim()}?state={state}");
-        return $"https://xts.compositedge.com/interactive/thirdparty?appKey={Uri.EscapeDataString(key.Trim())}&returnURL={returnUrl}";
-    }
+    public override string? LoginUrl(IReadOnlyDictionary<string, string> keys, string state) => ThirdPartyUrl(keys, state);
 
     /// <summary>The page sends the session back as JSON holding the access token; a bare token is taken as it is.</summary>
     protected override JsonObject SessionBody(string appKey, string secretKey, IReadOnlyDictionary<string, string> input)
@@ -617,5 +646,88 @@ public sealed class CompositEdgePlugin(IHttpClientFactory http, BrokerSessionFac
         }
 
         return new JsonObject { ["appKey"] = appKey, ["secretKey"] = secretKey, ["accessToken"] = given };
+    }
+}
+
+/// <summary>
+/// RMoney's XTS server (broker/rmoney). The trader signs in on RMoney's page, which posts back a session holding the interactive token itself; no exchange is needed.
+/// RMoney is asked who the token belongs to (the user id posted beside the token is only a label), and that account must be the market-data keys' account.
+/// </summary>
+[BrokerPlugin]
+public sealed class RmoneyPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<RmoneyPlugin> logger)
+    : XtsPluginBase(http, sessions, symbols, logger)
+{
+    public override string Name => "rmoney";
+    public override string DisplayName => "RMoney";
+    protected override string DefaultBaseUrl => "https://xts.rmoneyindia.co.in:3000";
+    protected override string MarketDataPath => "/apibinarymarketdata";
+    protected override bool RichMultiQuotes => true;
+
+    public override LoginMethod LoginMethod => LoginMethod.Redirect;
+
+    public override string? LoginUrl(IReadOnlyDictionary<string, string> keys, string state) => ThirdPartyUrl(keys, state);
+
+    /// <summary>The balance entry for everything ("ALL|ALL|ALL"), else the first.</summary>
+    protected override JsonNode? BalanceEntry(JsonArray list) =>
+        list.FirstOrDefault(e => JsonRead.Str((e as JsonObject)?["limitHeader"]) == "ALL|ALL|ALL") ?? list[0];
+
+    public override async Task<BrokerLoginResult> LoginAsync(IReadOnlyDictionary<string, string> keys, IReadOnlyDictionary<string, string> input, CancellationToken cancellationToken)
+    {
+        var token = SessionToken(input.TryGetValue("request_token", out var given) ? given.Trim() : "");
+        if (token.Length == 0) return BrokerLoginResult.Refused("RMoney did not send the sign-in back. Start the sign-in again.");
+
+        var account = await AccountOfAsync(token, cancellationToken);
+        if (account is null)
+            return BrokerLoginResult.Refused("RMoney did not confirm which account this login is for, so it was not stored. Log in again.", 409);
+
+        // The feed token is wanted but not required: a refused market-data sign-in leaves the session without one.
+        string? feed = null, feedUser = null;
+        if (keys.TryGetValue("ApiKeyMarket", out var marketKey) && keys.TryGetValue("ApiSecretMarket", out var marketSecret))
+            (feed, _, feedUser) = await TokenAsync(MarketDataPath + "/auth/login", KeyBody(marketKey.Trim(), marketSecret.Trim()), cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(feedUser) && !string.Equals(account.Trim(), feedUser.Trim(), StringComparison.OrdinalIgnoreCase))
+            return BrokerLoginResult.Refused("This RMoney sign-in is for a different account than the market data keys saved for RMoney. Sign in with that account, or check the keys under Broker Configuration.", 409);
+        return BrokerLoginResult.Success(token, feed);
+    }
+
+    /// <summary>The page posts the session as JSON (sometimes a JSON string holding JSON) with the token in it; a bare token is taken as given.</summary>
+    private static string SessionToken(string given)
+    {
+        if (!(given.StartsWith('{') || given.StartsWith('"'))) return given;
+        try
+        {
+            var node = JsonNode.Parse(given);
+            if (node is JsonValue v && v.TryGetValue<string>(out var inner)) node = JsonNode.Parse(inner);
+            return JsonRead.Str((node as JsonObject)?["token"]) ?? "";
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return "";
+        }
+    }
+
+    private async Task<string?> AccountOfAsync(string token, CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, Sessions.BaseUrl(Name, DefaultBaseUrl) + "/interactive/user/profile");
+        request.Headers.TryAddWithoutValidation("authorization", token);
+        HttpResponseMessage response;
+        try
+        {
+            response = await Http.CreateClient(Name).SendAsync(request, cancellationToken);
+        }
+        catch (HttpRequestException)
+        {
+            return null;
+        }
+
+        using (response)
+        {
+            if (!response.IsSuccessStatusCode) return null;
+            var body = await JsonRead.ReadAsync(response, cancellationToken) as JsonObject;
+            if (JsonRead.Str(body?["type"]) != "success" || body?["result"] is not JsonObject result) return null;
+            foreach (var key in new[] { "ClientId", "ClientID", "clientId", "clientID" })
+                if (JsonRead.Str(result[key])?.Trim() is { Length: > 0 } id) return id;
+            return null;
+        }
     }
 }

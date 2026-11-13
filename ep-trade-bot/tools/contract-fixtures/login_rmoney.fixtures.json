@@ -1,0 +1,818 @@
+{
+  "broker": "rmoney",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_same_account",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "{\"token\": \"rm-session-token\", \"userID\": \"label-only\"}",
+        "state": "<issued>"
+      },
+      "broker": {
+        "GET /interactive/user/profile": {
+          "body": {
+            "type": "success",
+            "result": {
+              "ClientId": "AB123"
+            }
+          }
+        },
+        "POST /apibinarymarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "rm-feed-token",
+              "userID": "AB123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "rm-session-token",
+        "feed_token": "rm-feed-token"
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/user/profile",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "rm-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/apibinarymarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "rm-market-secret",
+            "appKey": "rm-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_account_letter_case_and_spaces",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "{\"token\": \"rm-session-token\", \"userID\": \"label-only\"}",
+        "state": "<issued>"
+      },
+      "broker": {
+        "GET /interactive/user/profile": {
+          "body": {
+            "type": "success",
+            "result": {
+              "ClientId": " ab123 "
+            }
+          }
+        },
+        "POST /apibinarymarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "rm-feed-token",
+              "userID": "AB123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "rm-session-token",
+        "feed_token": "rm-feed-token"
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/user/profile",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "rm-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/apibinarymarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "rm-market-secret",
+            "appKey": "rm-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_account_under_another_key_spelling",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "{\"token\": \"rm-session-token\", \"userID\": \"label-only\"}",
+        "state": "<issued>"
+      },
+      "broker": {
+        "GET /interactive/user/profile": {
+          "body": {
+            "type": "success",
+            "result": {
+              "clientID": "AB123"
+            }
+          }
+        },
+        "POST /apibinarymarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "rm-feed-token",
+              "userID": "AB123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "rm-session-token",
+        "feed_token": "rm-feed-token"
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/user/profile",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "rm-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/apibinarymarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "rm-market-secret",
+            "appKey": "rm-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_market_data_account_with_spaces",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "{\"token\": \"rm-session-token\", \"userID\": \"label-only\"}",
+        "state": "<issued>"
+      },
+      "broker": {
+        "GET /interactive/user/profile": {
+          "body": {
+            "type": "success",
+            "result": {
+              "ClientId": "AB123"
+            }
+          }
+        },
+        "POST /apibinarymarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "rm-feed-token",
+              "userID": " ab123 "
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "rm-session-token",
+        "feed_token": "rm-feed-token"
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/user/profile",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "rm-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/apibinarymarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "rm-market-secret",
+            "appKey": "rm-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_profile_error_status_with_a_success_body",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "{\"token\": \"rm-session-token\", \"userID\": \"label-only\"}",
+        "state": "<issued>"
+      },
+      "broker": {
+        "GET /interactive/user/profile": {
+          "status": 500,
+          "body": {
+            "type": "success",
+            "result": {
+              "ClientId": "AB123"
+            }
+          }
+        },
+        "POST /apibinarymarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "rm-feed-token",
+              "userID": "AB123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 409,
+        "body": {
+          "status": "error",
+          "message": "account_unverified"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/user/profile",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "rm-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_different_accounts",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "{\"token\": \"rm-session-token\", \"userID\": \"label-only\"}",
+        "state": "<issued>"
+      },
+      "broker": {
+        "GET /interactive/user/profile": {
+          "body": {
+            "type": "success",
+            "result": {
+              "ClientId": "AB123"
+            }
+          }
+        },
+        "POST /apibinarymarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "rm-feed-token",
+              "userID": "XY999"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 409,
+        "body": {
+          "status": "error",
+          "message": "account_mismatch"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/user/profile",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "rm-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/apibinarymarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "rm-market-secret",
+            "appKey": "rm-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_market_data_names_no_account",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "{\"token\": \"rm-session-token\", \"userID\": \"label-only\"}",
+        "state": "<issued>"
+      },
+      "broker": {
+        "GET /interactive/user/profile": {
+          "body": {
+            "type": "success",
+            "result": {
+              "ClientId": "AB123"
+            }
+          }
+        },
+        "POST /apibinarymarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "rm-feed-token",
+              "userID": ""
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "rm-session-token",
+        "feed_token": "rm-feed-token"
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/user/profile",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "rm-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/apibinarymarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "rm-market-secret",
+            "appKey": "rm-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_market_data_refused_leaves_no_feed_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "{\"token\": \"rm-session-token\", \"userID\": \"label-only\"}",
+        "state": "<issued>"
+      },
+      "broker": {
+        "GET /interactive/user/profile": {
+          "body": {
+            "type": "success",
+            "result": {
+              "ClientId": "AB123"
+            }
+          }
+        },
+        "POST /apibinarymarketdata/auth/login": {
+          "status": 401,
+          "body": {
+            "type": "error",
+            "description": "Bad market key"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "rm-session-token",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/user/profile",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "rm-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/apibinarymarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "rm-market-secret",
+            "appKey": "rm-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_market_data_error_type_leaves_no_feed_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "{\"token\": \"rm-session-token\", \"userID\": \"label-only\"}",
+        "state": "<issued>"
+      },
+      "broker": {
+        "GET /interactive/user/profile": {
+          "body": {
+            "type": "success",
+            "result": {
+              "ClientId": "AB123"
+            }
+          }
+        },
+        "POST /apibinarymarketdata/auth/login": {
+          "body": {
+            "type": "error"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "rm-session-token",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/user/profile",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "rm-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/apibinarymarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "rm-market-secret",
+            "appKey": "rm-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_profile_names_no_account",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "{\"token\": \"rm-session-token\", \"userID\": \"label-only\"}",
+        "state": "<issued>"
+      },
+      "broker": {
+        "GET /interactive/user/profile": {
+          "body": {
+            "type": "success",
+            "result": {
+              "Other": "x"
+            }
+          }
+        },
+        "POST /apibinarymarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "rm-feed-token",
+              "userID": "AB123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 409,
+        "body": {
+          "status": "error",
+          "message": "account_unverified"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/user/profile",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "rm-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_profile_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "{\"token\": \"rm-session-token\", \"userID\": \"label-only\"}",
+        "state": "<issued>"
+      },
+      "broker": {
+        "GET /interactive/user/profile": {
+          "status": 401,
+          "body": {
+            "type": "error",
+            "description": "Invalid token"
+          }
+        },
+        "POST /apibinarymarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "rm-feed-token",
+              "userID": "AB123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 409,
+        "body": {
+          "status": "error",
+          "message": "account_unverified"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/user/profile",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "rm-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_profile_result_not_an_object",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "{\"token\": \"rm-session-token\", \"userID\": \"label-only\"}",
+        "state": "<issued>"
+      },
+      "broker": {
+        "GET /interactive/user/profile": {
+          "body": {
+            "type": "success",
+            "result": "x"
+          }
+        },
+        "POST /apibinarymarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "rm-feed-token",
+              "userID": "AB123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 409,
+        "body": {
+          "status": "error",
+          "message": "account_unverified"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/user/profile",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "rm-session-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_session_posted_as_a_json_string",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "\"{\\\"token\\\": \\\"rm-session-token\\\", \\\"userID\\\": \\\"x\\\"}\"",
+        "state": "<issued>"
+      },
+      "broker": {
+        "GET /interactive/user/profile": {
+          "body": {
+            "type": "success",
+            "result": {
+              "ClientId": "AB123"
+            }
+          }
+        },
+        "POST /apibinarymarketdata/auth/login": {
+          "body": {
+            "type": "success",
+            "result": {
+              "token": "rm-feed-token",
+              "userID": "AB123"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "rm-session-token",
+        "feed_token": "rm-feed-token"
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/user/profile",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "rm-session-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/apibinarymarketdata/auth/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "secretKey": "rm-market-secret",
+            "appKey": "rm-market-key",
+            "source": "WebAPI"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

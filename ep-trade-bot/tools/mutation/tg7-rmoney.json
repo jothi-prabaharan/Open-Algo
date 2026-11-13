@@ -1,0 +1,120 @@
+[
+ {
+  "name": "R1 all entry ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "list.FirstOrDefault(e => JsonRead.Str((e as JsonObject)?[\"limitHeader\"]) == \"ALL|ALL|ALL\") ?? list[0]",
+  "new": "list[0]",
+  "filter": "FullyQualifiedName~Rmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R2 last entry taken",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "list.FirstOrDefault(e => JsonRead.Str((e as JsonObject)?[\"limitHeader\"]) == \"ALL|ALL|ALL\") ?? list[0]",
+  "new": "list.FirstOrDefault(e => JsonRead.Str((e as JsonObject)?[\"limitHeader\"]) == \"ALL|ALL|ALL\") ?? list[^1]",
+  "filter": "FullyQualifiedName~Rmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R3 ask size from bid",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "data[\"ask_qty\"] = Get(touch?[\"AskInfo\"] as JsonObject, \"Size\", 0);",
+  "new": "data[\"ask_qty\"] = Get(touch?[\"BidInfo\"] as JsonObject, \"Size\", 0);",
+  "filter": "FullyQualifiedName~Rmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R4 bid size from ask",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "data[\"bid_qty\"] = Get(touch?[\"BidInfo\"] as JsonObject, \"Size\", 0);",
+  "new": "data[\"bid_qty\"] = Get(touch?[\"AskInfo\"] as JsonObject, \"Size\", 0);",
+  "filter": "FullyQualifiedName~Rmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R6 open interest refusal fails",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (refusal is not null) return;",
+  "new": "if (refusal is not null) throw new BrokerException(\"x\");",
+  "filter": "FullyQualifiedName~Rmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R7 profile id spelling",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "new[] { \"ClientId\", \"ClientID\", \"clientId\", \"clientID\" }",
+  "new": "new[] { \"ClientId\" }",
+  "filter": "FullyQualifiedName~Rmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R8 account not trimmed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "string.Equals(account.Trim(), feedUser.Trim(),",
+  "new": "string.Equals(account, feedUser,",
+  "filter": "FullyQualifiedName~Rmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R9 mismatch ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (!string.IsNullOrWhiteSpace(feedUser) && !string.Equals(",
+  "new": "if (false && !string.IsNullOrWhiteSpace(feedUser) && !string.Equals(",
+  "filter": "FullyQualifiedName~Rmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R10 blank feed account refused",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (!string.IsNullOrWhiteSpace(feedUser) && !string.Equals(",
+  "new": "if (feedUser is not null && !string.Equals(",
+  "filter": "FullyQualifiedName~Rmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R11 unverified account stored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (account is null)\n            return BrokerLoginResult.Refused(\"RMoney did not confirm",
+  "new": "if (Environment.TickCount64 < 0 && account is null)\n            return BrokerLoginResult.Refused(\"RMoney did not confirm",
+  "filter": "FullyQualifiedName~Rmoney",
+  "project": "EPTradeBot.Contract.Tests",
+  "also": [
+   {
+    "old": "string.Equals(account.Trim(), feedUser.Trim(),",
+    "new": "string.Equals(account?.Trim(), feedUser.Trim(),"
+   }
+  ]
+ },
+ {
+  "name": "R12 profile status ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (!response.IsSuccessStatusCode) return null;\n            var body",
+  "new": "var body",
+  "filter": "FullyQualifiedName~Rmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R13 json string not read",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (node is JsonValue v && v.TryGetValue<string>(out var inner)) node = JsonNode.Parse(inner);\n            return JsonRead.Str((node as JsonObject)?[\"token\"]) ?? \"\";",
+  "new": "return JsonRead.Str((node as JsonObject)?[\"token\"]) ?? \"\";",
+  "filter": "FullyQualifiedName~Rmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R14 list positions not read",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "reply?[\"result\"] is JsonArray direct ? direct : (reply?[\"result\"] as JsonObject)?[\"positionList\"]",
+  "new": "(reply?[\"result\"] as JsonObject)?[\"positionList\"]",
+  "filter": "FullyQualifiedName~Rmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "R15 id spelling not read",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "p.ContainsKey(\"ExchangeInstrumentID\") ? \"ExchangeInstrumentID\" : \"ExchangeInstrumentId\"",
+  "new": "\"ExchangeInstrumentId\"",
+  "filter": "FullyQualifiedName~Rmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

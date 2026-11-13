@@ -394,3 +394,35 @@ public sealed class LoginCompositEdgeContractTests(LoginCompositEdgeHost host, I
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginRmoneyHost : BrokerContractHost
+{
+    public override string BrokerName => "rmoney";
+    public override string FixtureFile => "login_rmoney.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string>
+    {
+        ["ApiKey"] = "rm-app-key", ["ApiSecret"] = "rm-app-secret", ["RedirectUrl"] = "http://127.0.0.1:5000/rmoney/callback", ["ApiKeyMarket"] = "rm-market-key", ["ApiSecretMarket"] = "rm-market-secret",
+    };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginRmoneyContractTests(LoginRmoneyHost host, ITestOutputHelper output) : IClassFixture<LoginRmoneyHost>
+{
+    private const string Why = "OpenAlgo's sign-in page turns the plugin's code into a sentence; EP Trade bot answers the sentence.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_different_accounts"] = new(Why, f => ContractRunner.Expect(f, 409, ContractRunner.Error("This RMoney sign-in is for a different account than the market data keys saved for RMoney. Sign in with that account, or check the keys under Broker Configuration."))),
+        ["login_profile_names_no_account"] = new(Why, f => ContractRunner.Expect(f, 409, ContractRunner.Error("RMoney did not confirm which account this login is for, so it was not stored. Log in again."))),
+        ["login_profile_error_status_with_a_success_body"] = new(Why, f => ContractRunner.Expect(f, 409, ContractRunner.Error("RMoney did not confirm which account this login is for, so it was not stored. Log in again."))),
+        ["login_profile_refused"] = new(Why, f => ContractRunner.Expect(f, 409, ContractRunner.Error("RMoney did not confirm which account this login is for, so it was not stored. Log in again."))),
+        ["login_profile_result_not_an_object"] = new(Why, f => ContractRunner.Expect(f, 409, ContractRunner.Error("RMoney did not confirm which account this login is for, so it was not stored. Log in again."))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_rmoney.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

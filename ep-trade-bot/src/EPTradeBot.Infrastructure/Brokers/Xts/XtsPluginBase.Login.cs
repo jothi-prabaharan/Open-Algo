@@ -21,7 +21,7 @@ public abstract partial class XtsPluginBase
     /// <summary>Brokers that name the account on both sessions refuse a sign-in whose two sessions are for different accounts.</summary>
     protected virtual bool RequiresSameAccount => false;
 
-    public async Task<BrokerLoginResult> LoginAsync(IReadOnlyDictionary<string, string> keys, IReadOnlyDictionary<string, string> input, CancellationToken cancellationToken)
+    public virtual async Task<BrokerLoginResult> LoginAsync(IReadOnlyDictionary<string, string> keys, IReadOnlyDictionary<string, string> input, CancellationToken cancellationToken)
     {
         string Key(string name) => keys.TryGetValue(name, out var v) ? v.Trim() : "";
         if (Key("ApiKey").Length == 0 || Key("ApiSecret").Length == 0 || Key("ApiKeyMarket").Length == 0 || Key("ApiSecretMarket").Length == 0)
@@ -39,13 +39,22 @@ public abstract partial class XtsPluginBase
         return BrokerLoginResult.Success(token, feed);
     }
 
-    private static JsonObject KeyBody(string appKey, string secretKey) => new() { ["appKey"] = appKey, ["secretKey"] = secretKey, ["source"] = "WebAPI" };
+    /// <summary>The XTS third-party sign-in address: the broker's page, with the state on the return address.</summary>
+    protected string? ThirdPartyUrl(IReadOnlyDictionary<string, string> keys, string state)
+    {
+        if (!keys.TryGetValue("ApiKey", out var key) || string.IsNullOrWhiteSpace(key)) return null;
+        if (!keys.TryGetValue("RedirectUrl", out var redirect) || string.IsNullOrWhiteSpace(redirect)) return null;
+        var returnUrl = Uri.EscapeDataString($"{redirect.Trim()}?state={state}");
+        return $"{sessions.BaseUrl(Name, DefaultBaseUrl)}/interactive/thirdparty?appKey={Uri.EscapeDataString(key.Trim())}&returnURL={returnUrl}";
+    }
+
+    protected static JsonObject KeyBody(string appKey, string secretKey) => new() { ["appKey"] = appKey, ["secretKey"] = secretKey, ["source"] = "WebAPI" };
 
     /// <summary>What the interactive sign-in sends. Jainam names no source and sends an access token instead.</summary>
     protected virtual JsonObject SessionBody(string appKey, string secretKey, IReadOnlyDictionary<string, string> input) => KeyBody(appKey, secretKey);
 
     /// <summary>One XTS session request. The token, or the reason it was refused; both null when the answer carried no token.</summary>
-    private async Task<(string? Token, string? Refusal, string? UserId)> TokenAsync(string path, JsonObject payload, CancellationToken cancellationToken)
+    protected async Task<(string? Token, string? Refusal, string? UserId)> TokenAsync(string path, JsonObject payload, CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, sessions.BaseUrl(Name, DefaultBaseUrl) + path)
         {
