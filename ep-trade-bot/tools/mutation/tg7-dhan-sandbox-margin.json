@@ -1,0 +1,90 @@
+[
+ {
+  "name": "S1 multi body flag renamed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "[\"includePosition\"] = true, [\"includeOrders\"] = true, [\"scripts\"]",
+  "new": "[\"includePosition\"] = true, [\"includeOrder\"] = true, [\"scripts\"]",
+  "filter": "FullyQualifiedName~MarginDhanSandbox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S2 scripts renamed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "[\"includePosition\"] = true, [\"includeOrders\"] = true, [\"scripts\"]",
+  "new": "[\"includePosition\"] = true, [\"includeOrders\"] = true, [\"scripList\"]",
+  "filter": "FullyQualifiedName~MarginDhanSandbox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S3 failed status ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "&& Str(reply[\"status\"]) != \"failed\")\n            {\n                double Figure",
+  "new": "&& true)\n            {\n                double Figure",
+  "filter": "FullyQualifiedName~MarginDhanSandbox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S4 error type ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "is JsonObject reply && !Truthy(reply[\"errorType\"]) && Str(reply[\"status\"]) != \"failed\")\n            {\n                double Figure",
+  "new": "is JsonObject reply && Str(reply[\"status\"]) != \"failed\")\n            {\n                double Figure",
+  "filter": "FullyQualifiedName~MarginDhanSandbox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S6 span read from exposure",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "[\"span_margin\"] = Figure(\"span_margin\"), [\"exposure_margin\"] = Figure(\"exposure_margin\")",
+  "new": "[\"span_margin\"] = Figure(\"exposure_margin\"), [\"exposure_margin\"] = Figure(\"exposure_margin\")",
+  "filter": "FullyQualifiedName~MarginDhanSandbox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S7 totals not added",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "total += Float(reply[\"totalMargin\"]);",
+  "new": "total = Float(reply[\"totalMargin\"]);",
+  "filter": "FullyQualifiedName~MarginDhanSandbox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S8 span not added",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "span += Float(reply[\"spanMargin\"]);",
+  "new": "span = Float(reply[\"spanMargin\"]);",
+  "filter": "FullyQualifiedName~MarginDhanSandbox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S9 exposure not added",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "exposure += Float(reply[\"exposureMargin\"]);",
+  "new": "exposure = Float(reply[\"exposureMargin\"]);",
+  "filter": "FullyQualifiedName~MarginDhanSandbox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S10 single refusal ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "if (Truthy(reply[\"errorType\"]) || Str(reply[\"status\"]) == \"failed\")\n            {\n                if (response.StatusCode is HttpStatusCode.Unauthorized",
+  "new": "if (Environment.TickCount64 < 0)\n            {\n                if (response.StatusCode is HttpStatusCode.Unauthorized",
+  "filter": "FullyQualifiedName~MarginDhanSandbox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S11 expired not told apart",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)\n                    throw new BrokerException($\"{DisplayName} says the access token is invalid or has expired. Log in to {DisplayName} again.\", 403);\n                throw new BrokerException($\"{DisplayName} could not work out the margin: {Str(reply[\"errorMessage\"]) ?? \"Failed to calculate margin\"}\"",
+  "new": "if (Environment.TickCount64 < 0)\n                    throw new BrokerException(\"x\", 403);\n                throw new BrokerException($\"{DisplayName} could not work out the margin: {Str(reply[\"errorMessage\"]) ?? \"Failed to calculate margin\"}\"",
+  "filter": "FullyQualifiedName~MarginDhanSandbox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S12 ok status refusal as 200",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPlugins.cs",
+  "old": "response.IsSuccessStatusCode ? 400 : (int)response.StatusCode);\n            }\n\n            total",
+  "new": "200);\n            }\n\n            total",
+  "filter": "FullyQualifiedName~MarginDhanSandbox",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

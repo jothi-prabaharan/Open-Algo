@@ -162,3 +162,53 @@ public sealed class MarginDeltaContractTests(MarginDeltaHost host, ITestOutputHe
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class MarginDhanSandboxHost : DhanFamilyHost
+{
+    public override string BrokerName => "dhan_sandbox";
+    public override string FixtureFile => "margin_dhan_sandbox.fixtures.json";
+}
+
+public sealed class MarginDhanSandboxContractTests(MarginDhanSandboxHost host, ITestOutputHelper output) : IClassFixture<MarginDhanSandboxHost>
+{
+    private const string ThreeFigures = "OpenAlgo gives the sandbox's own long answer (raw reply, brokerage, leverage and more). EP Trade bot gives the three figures every broker gives, with the same values.";
+
+    private static void Trim(JsonObject f)
+    {
+        var data = f["expected"]!["body"]!["data"]!.AsObject();
+        var kept = new JsonObject { ["total_margin_required"] = data["total_margin_required"]!.DeepClone(), ["span_margin"] = data["span_margin"]!.DeepClone(), ["exposure_margin"] = data["exposure_margin"]!.DeepClone() };
+        f["expected"]!["body"] = new JsonObject { ["status"] = "success", ["data"] = kept };
+    }
+
+    private static Deviation Shorter() => new(ThreeFigures, f => Trim(f));
+
+    private static string Unknown(string symbol) => $"{symbol} on NSE is not in the Dhan Sandbox master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["margin_one_position_goes_to_the_multi_calculator_first"] = Shorter(),
+        ["margin_two_positions_use_the_multi_calculator"] = Shorter(),
+        ["margin_multi_answer_with_blank_figures"] = Shorter(),
+        ["margin_limit_order_with_price"] = Shorter(),
+        ["margin_stop_loss_with_trigger"] = Shorter(),
+        ["margin_cnc_equity"] = Shorter(),
+        ["margin_multi_refused_one_position_falls_back_to_the_single_calculator"] = new(ThreeFigures, f => { f["expected"]!["body"]!.AsObject().Remove("_fallback_reason"); Trim(f); }),
+        ["margin_multi_refused_ok_status_falls_back"] = new(ThreeFigures, f => { f["expected"]!["body"]!.AsObject().Remove("_fallback_reason"); Trim(f); }),
+        ["margin_multi_refused_two_positions_are_added_up"] = new(ThreeFigures, f => { f["expected"]!["body"]!.AsObject().Remove("_fallback_reason"); Trim(f); }),
+        ["margin_both_calculators_refuse"] = new("Same status; the reason is worded for the trader.",
+            f => ContractRunner.Expect(f, 400, ContractRunner.Error("Dhan Sandbox could not work out the margin: Missing required fields, bad values for parameters etc."))),
+        ["margin_both_calculators_refuse_with_ok_status"] = new("Dhan Sandbox refuses with a 200 and an error in the body, and OpenAlgo passes that on as a success status with an error message. EP Trade bot answers an error status.",
+            f => ContractRunner.Expect(f, 400, ContractRunner.Error("Dhan Sandbox could not work out the margin: Invalid Client ID"))),
+        ["margin_token_expired"] = new("Same refusal; the status and words are EP Trade bot's own for an expired session.",
+            f => ContractRunner.Expect(f, 403, ContractRunner.Error("Dhan Sandbox says the access token is invalid or has expired. Log in to Dhan Sandbox again."))),
+        ["margin_unknown_symbol_alone"] = new("Same status; EP Trade bot names the symbol, where OpenAlgo says no symbol was valid.", f => ContractRunner.Expect(f, 400, ContractRunner.Error(Unknown("NOSUCH")))),
+        ["margin_unknown_symbol_among_others"] = new("OpenAlgo leaves the position whose symbol it cannot find out of the basket and calculates the rest, which understates the margin. EP Trade bot refuses and names the symbol.",
+            f => { ContractRunner.Expect(f, 400, ContractRunner.Error(Unknown("NOSUCH"))); f["sent"]!.AsArray().Clear(); }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin_dhan_sandbox.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

@@ -5,7 +5,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Broker | Orders and books | Funds | Quotes and depth | History | Margin | GTT | Login | Feed |
 |---|---|---|---|---|---|---|---|---|
 | Dhan | yes | yes | yes | yes | yes | yes | yes | no |
-| Dhan Sandbox | yes | yes | yes | yes | no | no | no | no |
+| Dhan Sandbox | yes | yes | yes | yes | yes | no | no | no |
 | Upstox | yes | yes | yes | yes | yes | yes | yes | no |
 | Fyers | yes | yes | yes | yes | yes | yes | yes | no |
 | Delta Exchange | yes | yes | yes | yes | yes | no | yes | no |
@@ -65,3 +65,9 @@ The other 30 brokers in the task list are not started.
 - Contract: 43 recorded cases (`fyers_gtt.fixtures.json`). Deviations, each with its reason in the contract file: a missing symbol is refused by name where OpenAlgo sends the trigger with no symbol; a modify answered with an OK status but an error word is a failure where OpenAlgo reports success; a book refused inside an OK answer is a failure status where OpenAlgo passes the OK status on.
 - Not ported: OpenAlgo swaps the two OCO legs when a caller gives the stoploss trigger at or above the target trigger. The request validation refuses that before it reaches the broker, so the swap could never run here.
 - Mutation: `tools/mutation/tg7-fyers-gtt.json`, 29 mutants, all caught.
+
+## Dhan Sandbox margin
+
+- Ported from `broker/dhan_sandbox/api/margin_api.py` and `mapping/margin_data.py`. The sandbox asks Dhan's multi-order calculator first, even for one position; if it refuses (an error type, or the word "failed"), it asks the single-order calculator once per position. The same client id and product mapping as the live Dhan are used.
+- Contract: 16 recorded cases (`margin_dhan_sandbox.fixtures.json`). Deviations, each with its reason in the contract file: the three figures every broker gives instead of OpenAlgo's long sandbox answer (same values); the trader-worded refusals and statuses used for the other brokers; and a basket with one refused position is refused, where OpenAlgo adds up the positions that answered and so understates the margin.
+- Mutation: `tools/mutation/tg7-dhan-sandbox-margin.json`, 11 mutants, all caught. One more was removed as equivalent (a blank figure already reads as zero).

@@ -927,11 +927,11 @@ public abstract partial class DhanPluginBase(IHttpClientFactory http, BrokerSess
 
     /// <summary>
     /// One position goes to Dhan's single-order calculator; two or more go to its multi-order calculator, which includes open positions
-    /// and orders and takes the benefit of hedged legs. The sandbox calculator is a different flow, not ported yet.
+    /// and orders and takes the benefit of hedged legs. The sandbox asks the multi-order calculator first, whatever the count, and falls back to
+    /// one call per position when it refuses.
     /// </summary>
     public async Task<JsonObject> CalculateMarginAsync(BrokerSession session, IReadOnlyList<MarginLeg> legs, CancellationToken cancellationToken)
     {
-        if (Sandbox) throw new BrokerException("Margin calculation on Dhan Sandbox is not supported in EP Trade bot yet.", 501);
         var client = ClientId(session) ?? throw new BrokerException("Could not determine the Dhan client id. Set the client id on the account, then try again.", 400);
         var scripts = new List<JsonObject>();
         foreach (var l in legs)
@@ -945,6 +945,8 @@ public abstract partial class DhanPluginBase(IHttpClientFactory http, BrokerSess
             if (l.TriggerPrice > 0) script["triggerPrice"] = (double)l.TriggerPrice;
             scripts.Add(script);
         }
+
+        if (Sandbox) return await SandboxMarginAsync(session, client, scripts, cancellationToken);
 
         var multi = scripts.Count > 1;
         var body = multi
@@ -967,6 +969,45 @@ public abstract partial class DhanPluginBase(IHttpClientFactory http, BrokerSess
         return multi
             ? new JsonObject { ["total_margin_required"] = Pick("total_margin", "totalMargin"), ["span_margin"] = Pick("span_margin", "spanMargin"), ["exposure_margin"] = Pick("exposure_margin", "exposureMargin", "exposure") }
             : new JsonObject { ["total_margin_required"] = Float(reply["totalMargin"]), ["span_margin"] = Float(reply["spanMargin"]), ["exposure_margin"] = Float(reply["exposureMargin"]) };
+    }
+
+    /// <summary>
+    /// The sandbox's flow (broker/dhan_sandbox/api/margin_api.py): the multi-order calculator first; if it refuses, one call per position. OpenAlgo adds up the
+    /// positions that answered and leaves a refused one out, which understates the margin; here one refusal refuses the whole basket.
+    /// </summary>
+    private async Task<JsonObject> SandboxMarginAsync(BrokerSession session, string client, List<JsonObject> scripts, CancellationToken cancellationToken)
+    {
+        var body = new JsonObject { ["includePosition"] = true, ["includeOrders"] = true, ["scripts"] = new JsonArray(scripts.Select(x => (JsonNode?)x.DeepClone()).ToArray()) };
+        using (var request = Request(session, HttpMethod.Post, "/v2/margincalculator/multi", body, clientHeader: true))
+        {
+            using var response = await SendAsync(request, cancellationToken);
+            if (await ReadAsync(response, cancellationToken) is JsonObject reply && !Truthy(reply["errorType"]) && Str(reply["status"]) != "failed")
+            {
+                double Figure(string name) => Float(reply[name]);
+                return new JsonObject { ["total_margin_required"] = Figure("total_margin"), ["span_margin"] = Figure("span_margin"), ["exposure_margin"] = Figure("exposure_margin") };
+            }
+        }
+
+        double total = 0, span = 0, exposure = 0;
+        foreach (var script in scripts)
+        {
+            using var request = Request(session, HttpMethod.Post, "/v2/margincalculator", script, clientHeader: true);
+            using var response = await SendAsync(request, cancellationToken);
+            var reply = await ReadAsync(response, cancellationToken) as JsonObject
+                ?? throw new BrokerException($"{DisplayName} sent a reply EP Trade bot could not read. Try again in a moment.", 502);
+            if (Truthy(reply["errorType"]) || Str(reply["status"]) == "failed")
+            {
+                if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+                    throw new BrokerException($"{DisplayName} says the access token is invalid or has expired. Log in to {DisplayName} again.", 403);
+                throw new BrokerException($"{DisplayName} could not work out the margin: {Str(reply["errorMessage"]) ?? "Failed to calculate margin"}", response.IsSuccessStatusCode ? 400 : (int)response.StatusCode);
+            }
+
+            total += Float(reply["totalMargin"]);
+            span += Float(reply["spanMargin"]);
+            exposure += Float(reply["exposureMargin"]);
+        }
+
+        return new JsonObject { ["total_margin_required"] = total, ["span_margin"] = span, ["exposure_margin"] = exposure };
     }
 
     // ---- plumbing --------------------------------------------------------------------------------------------
