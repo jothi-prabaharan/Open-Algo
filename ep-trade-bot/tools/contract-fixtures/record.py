@@ -81,6 +81,9 @@ def _handler(request: httpx.Request) -> httpx.Response:
         parsed_body = {"form": dict(parse_qsl(body, keep_blank_values=True))}
     elif "json" in ctype and body:
         parsed_body = {"json": json.loads(body)}
+    elif body.startswith("jData="):
+        # The Noren API (Shoonya, Zebu, ...) sends its JSON as a jData= value in a text/plain body.
+        parsed_body = {"json": json.loads(body[len("jData="):])}
     else:
         parsed_body = {}
     state["sent"].append(

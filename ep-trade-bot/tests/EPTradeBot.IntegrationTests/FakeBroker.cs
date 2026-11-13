@@ -88,6 +88,11 @@ public sealed class FakeBroker : HttpMessageHandler
             {
                 json = JsonNode.Parse(text);
             }
+            else if (text.StartsWith("jData=", StringComparison.Ordinal))
+            {
+                // The Noren API (Shoonya, Zebu, ...) sends its JSON as a jData= form value in a text/plain body.
+                json = JsonNode.Parse(text["jData=".Length..]);
+            }
         }
 
         (int Status, string Body) reply;

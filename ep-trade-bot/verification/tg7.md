@@ -16,15 +16,16 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Jainam (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | CompositEdge (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | RMoney (XTS) | yes | yes | yes | yes | yes | no | yes | no |
+| Shoonya | yes | yes | yes | no | no | no | no | no |
 
-The other 23 brokers in the task list are not started. All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
+The other 22 brokers in the task list are not started (Shoonya is partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
 ## Not done, and why Gate 7 is open
 
 - Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **The 23 brokers not started** (fivepaisa, aliceblue, arrow, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, zebu). Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **The 22 brokers not started** (fivepaisa, aliceblue, arrow, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rupeezy, sahi, samco, tradejini, tradesmart, zebu), and Shoonya's history, margin, feed and sign-in. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
 ## Upstox sign-in
 
@@ -193,3 +194,13 @@ The other 23 brokers in the task list are not started. All seven XTS brokers sha
 - RMoney: ported from `broker/rmoney` `margin_api.py` and `mapping/margin_data.py` (POST `/interactive/orders/margindetails` with a portfolio of positions); the answer is the margin required, the margin available, any shortfall, whether the basket is valid and the broker's error message. 17 recorded cases (`margin_rmoney.fixtures.json`). Deviations: a position whose symbol is not in the master contract refuses the basket and names it (OpenAlgo leaves it out and understates the margin); a refusal sent with an OK status is an error status; an index has no calculation and says so; an expired session says so.
 - Mutation: `tools/mutation/tg7-rmoney-margin.json`, 12 mutants, all caught (the order side's upper-casing is already done before the plugin, so that mutant was dropped as equivalent).
 - Wisdom Capital, iBulls, Jainam, 5paisa XTS, IIFL and CompositEdge have no margin calculator in OpenAlgo; one recorded case (`margin_wisdom.fixtures.json`) holds the 501 answer.
+
+## Shoonya (Noren API): orders, books, funds, quotes, depth and several quotes
+
+- Ported from `broker/shoonya` (`order_api.py`, `funds.py`, `api/data.py` quotes and depth, `mapping/`). Every call is a `jData=<json>` form in a text/plain body with a bearer token. The recorder and the test fake now read that form as JSON (`record.py`, `FakeBroker`), so the request bodies are compared field by field. 38 recorded cases for orders, books and funds (`shoonya.fixtures.json`) and 18 for quotes (`shoonya_data.fixtures.json`).
+- Market and stop-market orders are priced like OpenAlgo's market price protection (Shoonya refuses both over the API): the last price moved by the slab percentage (option slab for CE and PE), rounded to the quote's tick, sent as a limit or stop-limit; with no usable quote a market order goes as a market order, and a stop-market becomes a stop-limit priced off its trigger. A quote that answers for another instrument is asked for again, up to three times, then refused.
+- Deviations: an unknown symbol is refused by name; a refused place, modify or cancel is a refusal with Shoonya's reason (OpenAlgo answers success); an empty book answered with Shoonya's "no data" refusal is an empty book (OpenAlgo fails with an internal error on cancel-all and close-all); a lapsed session on funds or quotes says so; a position whose symbol is not in the master contract cannot be closed by symbol and is named as still open; error wording for quotes.
+- Platform fix found by this broker: order status read the trade's average price only when it was a JSON number; a broker that sends it as text ("1499.95") showed 0. It is now read as OpenAlgo reads it.
+- Held as OpenAlgo has them (not corrected, flagged): a holding's quantity counts held shares and the demat quantity both (it takes the larger of the two other quantities and adds the held ones), as the Python plugin does.
+- Mutation: `tools/mutation/tg7-shoonya.json`, 34 mutants, all caught (three first needed recorded cases; two equivalent ones were dropped: a spelling that falls through to the same text, and a short-position formula that is algebraically the same).
+- Not yet ported for Shoonya: history, margin, the feed and the sign-in.

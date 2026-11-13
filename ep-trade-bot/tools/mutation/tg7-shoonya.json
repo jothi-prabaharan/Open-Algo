@@ -1,0 +1,266 @@
+[
+ {
+  "name": "S1 product map",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "\"NRML\" => \"M\", \"MIS\" => \"I\", _ => \"I\"",
+  "new": "\"NRML\" => \"I\", \"MIS\" => \"I\", _ => \"I\"",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S2 sl limit type",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "\"SL\" => \"SL-LMT\", \"SL-M\" => \"SL-MKT\"",
+  "new": "\"SL\" => \"LMT\", \"SL-M\" => \"SL-MKT\"",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S3 ampersand not escaped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "symbol.Replace(\"&\", \"%26\", StringComparison.Ordinal)",
+  "new": "symbol",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S4 market not converted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "type = order.PriceType == \"MARKET\" ? \"LMT\" : \"SL-LMT\";",
+  "new": "type = order.PriceType == \"MARKET\" ? \"MKT\" : \"SL-LMT\";",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S5 stop market stays market",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "type = order.PriceType == \"MARKET\" ? \"LMT\" : \"SL-LMT\";",
+  "new": "type = order.PriceType == \"MARKET\" ? \"LMT\" : \"SL-MKT\";",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S6 zero ltp converted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (ltp > 0)\n                {\n                    price",
+  "new": "if (ltp >= 0)\n                {\n                    price",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S7 slab ignores option",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "MarketPriceProtection.InstrumentType(null, order.Symbol)",
+  "new": "\"EQ\"",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S8 tick ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var tick = Truthy(quote[\"ti\"]) ? Float(quote[\"ti\"]) : (double?)null;",
+  "new": "double? tick = null;",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S9 stop fallback off",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (order.PriceType == \"SL-M\" && !converted)",
+  "new": "if (false && order.PriceType == \"SL-M\" && !converted)",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S10 fallback no tick protection",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "price = instrument.TickSize is { } tick and > 0 ? MarketPriceProtection.ProtectedPrice(trigger, action, instrumentType, tick) : trigger;",
+  "new": "price = trigger;",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S11 side letter",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"trantype\"] = action == \"BUY\" ? \"B\" : \"S\"",
+  "new": "[\"trantype\"] = action == \"BUY\" ? \"S\" : \"B\"",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S12 trigger on limit modify",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (change.PriceType is \"SL\" or \"SL-M\") body[\"trgprc\"]",
+  "new": "if (true) body[\"trgprc\"]",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S13 modify disclosed dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"dscqty\"] = change.DisclosedQuantity.ToString(CultureInfo.InvariantCulture),\n        };",
+  "new": "[\"dscqty\"] = \"0\",\n        };",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S14 cancel refusal ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (Str(answer?[\"stat\"]) == \"Ok\") return BrokerCallResult.Success(orderId);",
+  "new": "if (answer is not null) return BrokerCallResult.Success(orderId);",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S15 pending is not open",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "\"OPEN\" or \"PENDING\" or \"TRIGGER PENDING\"",
+  "new": "\"OPEN\" or \"TRIGGER PENDING\"",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S17 cnc only on cash",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "(exchange is \"NSE\" or \"BSE\") && product == \"C\" ? \"CNC\"",
+  "new": "product == \"C\" ? \"CNC\"",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S18 trade time kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"timestamp\"] = time.Contains(' ') ? time.Split(' ')[0] : time",
+  "new": "[\"timestamp\"] = time",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S19 trade value wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"trade_value\"] = Float(t[\"avgprc\"]) * Int(t[\"qty\"])",
+  "new": "[\"trade_value\"] = Float(t[\"avgprc\"])",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S21 mtom ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "urmtom != 0 ? urmtom + rpnl :",
+  "new": "false ? urmtom + rpnl :",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S22 flat average fallback",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "avg = Float(p[\"daybuyavgprc\"]);",
+  "new": "avg = 0;",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S23 holdings double count",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "Math.Max(Float(h[\"npoadqty\"]), Float(h[\"dpqty\"]))",
+  "new": "Float(h[\"dpqty\"])",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S24 holdings used not subtracted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "- Float(h[\"usedqty\"]);",
+  "new": "- 0;",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S25 funds cash",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "Float(limits[\"cash\"]) + Float(limits[\"payin\"]) - used",
+  "new": "Float(limits[\"cash\"]) - used",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S26 realised sign",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"m2mrealized\"] = BookFormatting.Fixed2(-Float(limits[\"rpnl\"]))",
+  "new": "[\"m2mrealized\"] = BookFormatting.Fixed2(Float(limits[\"rpnl\"]))",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S27 funds expiry hidden",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (SessionExpired(Str(limits?[\"emsg\"]))) throw new BrokerException($\"{DisplayName} says the session has expired. Log in to {DisplayName} again.\", 403);\n            throw",
+  "new": "throw",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S28 index asks index segment",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "\"NSE_INDEX\" => \"NSE\"",
+  "new": "\"NSE_INDEX\" => \"NSE_INDEX\"",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S29 retry off",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "private const int QuoteAttempts = 3;",
+  "new": "private const int QuoteAttempts = 1;",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S30 token echo not checked",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "gotToken == token && (gotExchange.Length == 0 || gotExchange == DataExchange(exchange))",
+  "new": "true",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S31 exchange echo not checked",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "(gotExchange.Length == 0 || gotExchange == DataExchange(exchange))",
+  "new": "true",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S32 depth five levels",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "for (var i = 1; i <= 5; i++)\n        {\n            bids.Add",
+  "new": "for (var i = 1; i <= 4; i++)\n        {\n            bids.Add",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S33 depth totals",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "totalBuy += Int(q[$\"bq{i}\"]);",
+  "new": "totalBuy += 0;",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S34 tick size dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "data[\"tick_size\"] = Truthy(q[\"ti\"]) ? Float(q[\"ti\"]) : null;",
+  "new": "data[\"tick_size\"] = null;",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S36 no-data book fails",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (SessionExpired(message)) throw new BrokerException($\"{DisplayName} says the session has expired. Log in to {DisplayName} again.\", 403);\n        return [];",
+  "new": "throw new BrokerException(\"x\");",
+  "filter": "FullyQualifiedName~ShoonyaContract|FullyQualifiedName~ShoonyaDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

@@ -389,7 +389,9 @@ public sealed partial class OpenAlgoApiService(
             var trades = await TradeBookAsync(account, ct);
             if (trades.Status == 200 && trades.Body["data"] is JsonArray rows
                 && rows.OfType<JsonObject>().FirstOrDefault(t => Text(t["orderid"]) == r.OrderId) is { } trade)
-                average = BookFormatting.Number(trade["average_price"]) ?? 0;
+                // A broker may send the price as text ("1499.95"); OpenAlgo reads it with float().
+                average = BookFormatting.Number(trade["average_price"])
+                    ?? (double.TryParse(Text(trade["average_price"]), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var parsed) ? parsed : 0);
         }
 
         order["average_price"] = average;
