@@ -77,6 +77,7 @@ public static class FeedRunner
                 case "text":
                     // A text frame is recorded as the JSON it carried, or as the raw text when that was not JSON.
                     published = feed.DecodeText(step["text"] is JsonValue raw && raw.TryGetValue<string>(out var rawText) ? rawText : step["text"]!.ToJsonString(), now);
+                    sent = feed.TakeOutgoing();
                     break;
                 default:
                     throw new InvalidOperationException($"Unknown step {kind}.");
@@ -246,4 +247,43 @@ public sealed class FyersFeedContractTests
     [Theory]
     [MemberData(nameof(Names))]
     public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_fyers.fixtures.json", name, () => new FyersFeedCodec(), Differences.GetValueOrDefault(name));
+}
+
+public sealed class ShoonyaFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_shoonya.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_shoonya.fixtures.json", name, SignedIn,
+        name == "unsubscribe_while_signed_out"
+            ? scenario =>
+            {
+                // OpenAlgo refuses an unsubscribe while the socket is signed out and keeps the instrument, so the next sign-in subscribes it again. EP Trade bot
+                // lets go of it on the spot, so the trader's unsubscribe is not undone by a reconnect.
+                scenario["steps"]![4]!["result"]!["sent"]!.AsArray().RemoveAt(0);
+            }
+            : null,
+        anyOrderAcrossInstruments: true);
+
+    [Fact]
+    public void A_reset_forgets_every_subscription()
+    {
+        var codec = SignedIn();
+        codec.Subscribe([new FeedRequest("NSE", "SBIN", "3045", "NSE", StreamMode.Quote)], 0);
+        codec.Reset();
+        codec.Resubscribe(0);
+        codec.DecodeText("""{"t":"ak","s":"OK"}""", 0);
+        Assert.Empty(codec.TakeOutgoing());
+    }
+
+    /// <summary>The recording starts with the socket signed in; so does the codec.</summary>
+    private static IFeedCodec SignedIn()
+    {
+        var codec = new NorenFeedCodec("shoonya");
+        codec.Begin(new BrokerSession(Guid.Empty, "shoonya", "shoonya-session-token", null, null, new Dictionary<string, string> { ["ApiKey"] = "FA12345:::shoonya-api-key" }));
+        codec.DecodeText("""{"t":"ak","s":"OK"}""", 0);
+        codec.TakeOutgoing();
+        return codec;
+    }
 }

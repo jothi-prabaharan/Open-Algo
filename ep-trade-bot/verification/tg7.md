@@ -16,7 +16,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Jainam (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | CompositEdge (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | RMoney (XTS) | yes | yes | yes | yes | yes | no | yes | no |
-| Shoonya | yes | yes | yes | yes | yes | no | yes | no |
+| Shoonya | yes | yes | yes | yes | yes | no | yes | yes |
 | Zebu | yes | yes | yes | yes | n/a (no calculator) | no | yes | no |
 | Flattrade | yes | yes | yes | yes | yes | no | yes | no |
 
@@ -206,6 +206,12 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Held as OpenAlgo has them (not corrected, flagged): a holding's quantity counts held shares and the demat quantity both (it takes the larger of the two other quantities and adds the held ones), as the Python plugin does.
 - Mutation: `tools/mutation/tg7-shoonya.json`, 34 mutants, all caught (three first needed recorded cases; two equivalent ones were dropped: a spelling that falls through to the same text, and a short-position formula that is algebraically the same).
 - Not yet ported for Shoonya: the feed. History, margin and the sign-in are below.
+
+## Shoonya feed (Noren websocket)
+
+- `NorenFeedCodec` (Core) is the protocol with no socket in it, held to `broker/shoonya/streaming` by 75 recorded scenarios (`feed_shoonya.fixtures.json`): the sign-in is the first message and nothing else is sent until the broker accepts it; touchline (LTP and Quote) and depth are separate lists of "EXCHANGE|token" scrips joined with "#" in batches of 100; the broker is told when the first subscription of a kind arrives and when the last one leaves (counted per instrument and mode, and per scrip when two names share one); an accepted sign-in sends every subscription held again and forgets the cache; frames are routed by exchange and token, or by token alone when only one subscribed scrip has it; a zero open, high, low, close or average price does not replace a non-zero one already held.
+- Recorded difference: OpenAlgo refuses an unsubscribe while the socket is signed out and keeps the instrument, so the next sign-in subscribes it again. EP Trade bot lets go of it at once.
+- Mutation set `tools/mutation/tg7-noren-feed.json`: 71 mutants, all caught (five more were dropped as equivalent: a de-duplication the counts already make, a zero that replaces a zero, and three unreachable routing branches).
 
 ## Shoonya sign-in
 

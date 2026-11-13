@@ -1,0 +1,570 @@
+[
+ {
+  "name": "N1 batch size 101",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "private const int BatchSize = 100;",
+  "new": "private const int BatchSize = 101;",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N2 batch size 1",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "private const int BatchSize = 100;",
+  "new": "private const int BatchSize = 1;",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N3 source label",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "string source = \"API\"",
+  "new": "string source = \"WEB\"",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N4 key without prefix split",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "userId = key.Contains(\":::\", StringComparison.Ordinal) ? key.Split(\":::\")[0] : key;",
+  "new": "userId = key;",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N5 index maps to itself",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"NSE_INDEX\"] = \"NSE\", [\"BSE_INDEX\"] = \"BSE\",",
+  "new": "[\"NSE_INDEX\"] = \"NSE_INDEX\", [\"BSE_INDEX\"] = \"BSE\",",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N6 bse index wrong",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"BSE_INDEX\"] = \"BSE\",",
+  "new": "[\"BSE_INDEX\"] = \"NSE\",",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N7 mcx missing",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"MCX\"] = \"MCX\", ",
+  "new": "",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N8 mode 0 accepted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (r.Mode is not (StreamMode.Ltp or StreamMode.Quote or StreamMode.Depth) ||",
+  "new": "if (false ||",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N9 first owner always",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "var first = !owners.Any(o => o.Scrip == scrip && o.Owner.Symbol == r.Symbol && o.Owner.Exchange == r.Exchange && o.Owner.Mode == mode);",
+  "new": "var first = true;",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N10 symbol not part of owner key",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "o.Owner.Symbol == r.Symbol && o.Owner.Exchange == r.Exchange && o.Owner.Mode == mode);\n                owners.Add",
+  "new": "o.Owner.Exchange == r.Exchange && o.Owner.Mode == mode);\n                owners.Add",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N11 touchline resend while counted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (have.Touchline == 0 && !touchline.Contains(scrip)) touchline.Add(scrip);",
+  "new": "if (!touchline.Contains(scrip)) touchline.Add(scrip);",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N12 depth resend while counted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (have.Depth == 0 && !depth.Contains(scrip)) depth.Add(scrip);",
+  "new": "if (!depth.Contains(scrip)) depth.Add(scrip);",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N14 depth counted as touchline",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "refs[scrip] = (have.Touchline, have.Depth + 1);\n                    if (have.Depth == 0",
+  "new": "refs[scrip] = (have.Touchline + 1, have.Depth);\n                    if (have.Depth == 0",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N15 sent before sign-in",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "return authenticated ? [.. Batches(\"t\", touchline), .. Batches(\"d\", depth)] : [];",
+  "new": "return [.. Batches(\"t\", touchline), .. Batches(\"d\", depth)];",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N16 depth before touchline",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "return authenticated ? [.. Batches(\"t\", touchline), .. Batches(\"d\", depth)] : [];",
+  "new": "return authenticated ? [.. Batches(\"d\", depth), .. Batches(\"t\", touchline)] : [];",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N17 unsub type touchline",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"t\"] = m == 3 ? \"ud\" : \"u\"",
+  "new": "[\"t\"] = \"u\"",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N18 unsub type depth",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"t\"] = m == 3 ? \"ud\" : \"u\"",
+  "new": "[\"t\"] = m == 3 ? \"u\" : \"ud\"",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N19 release sent while shared",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (count == 1 && authenticated)",
+  "new": "if (count >= 1 && authenticated)",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N20 release never when last",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (count == 1 && authenticated)",
+  "new": "if (count > 1 && authenticated)",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N21 release while signed out",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (count == 1 && authenticated)",
+  "new": "if (count == 1)",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N22 ref not decremented",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "have = m == 3 ? (have.Touchline, have.Depth - 1) : (have.Touchline - 1, have.Depth);",
+  "new": "have = m == 3 ? (have.Touchline, have.Depth) : (have.Touchline, have.Depth);",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N23 ref decremented on wrong side",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "have = m == 3 ? (have.Touchline, have.Depth - 1) : (have.Touchline - 1, have.Depth);",
+  "new": "have = m == 3 ? (have.Touchline - 1, have.Depth) : (have.Touchline, have.Depth - 1);",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N25 two owners release all",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (mine.Count == 1)\n                {",
+  "new": "if (mine.Count >= 1)\n                {",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N26 owner kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "owners.Remove(mine[0]);\n                if",
+  "new": "if",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N27 cache kept with last owner",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "symbolOf.Remove(scrip);\n                    cache.Remove(scrip);",
+  "new": "symbolOf.Remove(scrip);",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N28 symbol kept with last owner",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "symbolOf.Remove(scrip);\n                    cache.Remove(scrip);",
+  "new": "cache.Remove(scrip);",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N29 cache cleared too early",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (owners.All(o => o.Scrip != scrip))",
+  "new": "if (true)",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N30 no sign-in on reconnect",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "authenticated = false;\n            return [SignIn()];",
+  "new": "authenticated = false;\n            return [];",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N31 authenticated kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "authenticated = false;\n            return [SignIn()];",
+  "new": "return [SignIn()];",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N32 sign-in actid empty",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"actid\"] = userId, [\"source\"] = source",
+  "new": "[\"actid\"] = \"\", [\"source\"] = source",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N33 refused sign-in accepted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (Text(data[\"s\"]) == \"OK\") Accept();",
+  "new": "if (true) Accept();",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N34 accept keeps cache",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "authenticated = true;\n        cache.Clear();",
+  "new": "authenticated = true;",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N35 accept sends nothing",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "outgoing = [.. Batches(\"t\", touchline), .. Batches(\"d\", depth)];",
+  "new": "outgoing = [];",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N36 accept depth as touchline",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "refs[scrip] = (have.Touchline, 1);\n                if (!depth.Contains(scrip)) depth.Add(scrip);",
+  "new": "refs[scrip] = (have.Touchline, 1);\n                if (!touchline.Contains(scrip)) touchline.Add(scrip);",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N37 heartbeat published",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "case \"hk\" or \"h\":\n                    return [];",
+  "new": "case \"hk\" or \"h\":\n                    return Market(data, \"tf\", nowMs);",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N38 depth frames ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "case \"tf\" or \"tk\" or \"df\" or \"dk\":",
+  "new": "case \"tf\" or \"tk\":",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N39 dk ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "case \"tf\" or \"tk\" or \"df\" or \"dk\":",
+  "new": "case \"tf\" or \"tk\" or \"df\":",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N40 tk ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "case \"tf\" or \"tk\" or \"df\" or \"dk\":",
+  "new": "case \"tf\" or \"df\" or \"dk\":",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N41 token empty allowed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (string.IsNullOrEmpty(tk)) return [];",
+  "new": "",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N42 depth type test",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "var wantsDepth = type is \"df\" or \"dk\";",
+  "new": "var wantsDepth = type is \"df\";",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N43 mode filter off",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if ((owner.Mode == 3) != wantsDepth) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N44 exchange from the token only",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (!string.IsNullOrEmpty(exchange))\n        {",
+  "new": "if (false)\n        {",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N45 shared token routed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "return candidates.Count == 1 ? candidates[0] : null;",
+  "new": "return candidates.Count >= 1 ? candidates[0] : null;",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N47 zero o not preserved",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (key is \"o\" or \"h\" or \"l\" or \"c\" or \"ap\" && IsZero(value)",
+  "new": "if (key is \"h\" or \"l\" or \"c\" or \"ap\" && IsZero(value)",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N48 zero h not preserved",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "key is \"o\" or \"h\" or \"l\" or \"c\" or \"ap\"",
+  "new": "key is \"o\" or \"l\" or \"c\" or \"ap\"",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N49 zero l not preserved",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "key is \"o\" or \"h\" or \"l\" or \"c\" or \"ap\"",
+  "new": "key is \"o\" or \"h\" or \"c\" or \"ap\"",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N50 zero c not preserved",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "key is \"o\" or \"h\" or \"l\" or \"c\" or \"ap\"",
+  "new": "key is \"o\" or \"h\" or \"l\" or \"ap\"",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N51 zero ap not preserved",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "key is \"o\" or \"h\" or \"l\" or \"c\" or \"ap\"",
+  "new": "key is \"o\" or \"h\" or \"l\" or \"c\"",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N52 volume preserved",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "key is \"o\" or \"h\" or \"l\" or \"c\" or \"ap\"",
+  "new": "key is \"o\" or \"h\" or \"l\" or \"c\" or \"ap\" or \"v\"",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N54 string 0.0 not zero",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "s is \"\" or \"0\" or \"0.0\"",
+  "new": "s is \"\" or \"0\"",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N55 empty not zero",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "s is \"\" or \"0\" or \"0.0\"",
+  "new": "s is \"0\" or \"0.0\"",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N56 string 0 not zero",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "s is \"\" or \"0\" or \"0.0\"",
+  "new": "s is \"\" or \"0.0\"",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N57 number zero not zero",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "d == 0,",
+  "new": "d == 1,",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N58 null not zero",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "null => true,",
+  "new": "null => false,",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N60 float truncated",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (v.TryGetValue<double>(out var d)) return d;",
+  "new": "if (v.TryGetValue<double>(out var d)) return Math.Truncate(d);",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N61 int rounded",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "(long)Math.Truncate(Float(node))",
+  "new": "(long)Math.Round(Float(node))",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N62 ltp mode number",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"mode\"] = 1, [\"ltp\"]",
+  "new": "[\"mode\"] = 2, [\"ltp\"]",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N63 ltp time dropped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"mode\"] = 1, [\"ltp\"] = Float(d[\"lp\"]), [\"last_trade_time\"] = d[\"ltt\"]?.DeepClone(), ",
+  "new": "[\"mode\"] = 1, [\"ltp\"] = Float(d[\"lp\"]), ",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N64 quote close from open",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"close\"] = Float(d[\"c\"]),\n        [\"average_price\"] = Float(d[\"ap\"]), [\"percent_change\"] = Float(d[\"pc\"]), [\"last_quantity\"] = Int(d[\"ltq\"]), [\"last_trade_time\"] = d[\"ltt\"]?.DeepClone(), [\"shoonya_timestamp\"] = Int(d[\"ft\"]),\n    };\n\n    private static JsonObject Depth",
+  "new": "[\"close\"] = Float(d[\"o\"]),\n        [\"average_price\"] = Float(d[\"ap\"]), [\"percent_change\"] = Float(d[\"pc\"]), [\"last_quantity\"] = Int(d[\"ltq\"]), [\"last_trade_time\"] = d[\"ltt\"]?.DeepClone(), [\"shoonya_timestamp\"] = Int(d[\"ft\"]),\n    };\n\n    private static JsonObject Depth",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N65 depth side swapped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"buy\"] = Side(\"bp\", \"bq\", \"bo\"), [\"sell\"] = Side(\"sp\", \"sq\", \"so\")",
+  "new": "[\"buy\"] = Side(\"sp\", \"sq\", \"so\"), [\"sell\"] = Side(\"bp\", \"bq\", \"bo\")",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N66 depth levels four",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "Enumerable.Range(1, 5)",
+  "new": "Enumerable.Range(1, 4)",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N67 depth orders from quantity",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"orders\"] = Int(d[$\"{orders}{i}\"])",
+  "new": "[\"orders\"] = Int(d[$\"{quantity}{i}\"])",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N68 depth open interest",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"open_interest\"] = Int(d[\"toi\"])",
+  "new": "[\"open_interest\"] = Int(d[\"tbq\"])",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N69 depth circuits swapped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"upper_circuit\"] = Float(d[\"uc\"]), [\"lower_circuit\"] = Float(d[\"lc\"])",
+  "new": "[\"upper_circuit\"] = Float(d[\"lc\"]), [\"lower_circuit\"] = Float(d[\"uc\"])",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N70 week high low swapped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"52_week_high\"] = Float(d[\"52h\"]), [\"52_week_low\"] = Float(d[\"52l\"])",
+  "new": "[\"52_week_high\"] = Float(d[\"52l\"]), [\"52_week_low\"] = Float(d[\"52h\"])",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N71 total buy sell swapped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"total_buy_quantity\"] = Int(d[\"tbq\"]), [\"total_sell_quantity\"] = Int(d[\"tsq\"])",
+  "new": "[\"total_buy_quantity\"] = Int(d[\"tsq\"]), [\"total_sell_quantity\"] = Int(d[\"tbq\"])",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N72 timestamp not now",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "tick[\"timestamp\"] = nowMs;",
+  "new": "tick[\"timestamp\"] = nowMs + 1;",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N73 topic mode names",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "owner.Mode switch { 1 => \"LTP\", 2 => \"QUOTE\", _ => \"DEPTH\" }",
+  "new": "owner.Mode switch { 1 => \"LTP\", 2 => \"LTP\", _ => \"DEPTH\" }",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N74 topic uses broker exchange",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "new FeedPublish($\"{named.Exchange}_{named.Symbol}",
+  "new": "new FeedPublish($\"{owner.Exchange}_{owner.Symbol}",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N75 merged not shared across modes",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "var merged = Merge(scrip, data);",
+  "new": "var merged = (JsonObject)data.DeepClone();",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "N76 reset keeps owners",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "owners.Clear();\n            symbolOf.Clear();",
+  "new": "symbolOf.Clear();",
+  "filter": "FullyQualifiedName~ShoonyaFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

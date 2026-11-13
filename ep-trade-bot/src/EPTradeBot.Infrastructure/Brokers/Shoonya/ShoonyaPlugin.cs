@@ -3,6 +3,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json.Nodes;
 using EPTradeBot.Core.Brokers;
+using EPTradeBot.Core.Streaming.Feeds;
 using EPTradeBot.Core.Brokers.Gtt;
 using Microsoft.Extensions.Logging;
 using static EPTradeBot.Infrastructure.Brokers.JsonRead;
@@ -466,7 +467,7 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
 /// <summary>Shoonya (broker/shoonya), api.shoonya.com.</summary>
 [BrokerPlugin]
 public sealed class ShoonyaPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<ShoonyaPlugin> logger)
-    : NorenPluginBase(http, sessions, symbols, logger), IBrokerMargin, IBrokerHistory
+    : NorenPluginBase(http, sessions, symbols, logger), IBrokerMargin, IBrokerHistory, IBrokerFeed
 {
     // ---- history ---------------------------------------------------------------------------------------------
 
@@ -645,7 +646,19 @@ public sealed class ShoonyaPlugin(IHttpClientFactory http, BrokerSessionFactory 
         return null;
     }
 
-    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.Margin | BrokerCapability.History;
+    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.Margin | BrokerCapability.History | BrokerCapability.Streaming;
+
+    // ---- feed ------------------------------------------------------------------------------------------------
+
+    public IFeedCodec CreateFeedCodec() => new NorenFeedCodec("shoonya");
+
+    public FeedEndpoint? FeedEndpoint(BrokerSession session, string? overrideUrl) =>
+        session.Key("ApiKey") is { Length: > 0 } ? new FeedEndpoint(new Uri(overrideUrl ?? "wss://api.shoonya.com/NorenWSAPI/"), new Dictionary<string, string>()) : null;
+
+    // The broker closes a socket that has been silent for a minute, so a heartbeat goes every thirty seconds.
+    public string? FeedKeepAliveText => """{"t":"h"}""";
+
+    public TimeSpan FeedKeepAliveEvery => TimeSpan.FromSeconds(30);
 
     /// <summary>
     /// The margin of a basket (GetBasketMargin). Shoonya refuses market and stop-market types here as it does on orders, so they are converted
