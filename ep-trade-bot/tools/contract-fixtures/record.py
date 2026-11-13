@@ -79,6 +79,9 @@ def _handler(request: httpx.Request) -> httpx.Response:
     ctype = request.headers.get("content-type", "")
     if "application/x-www-form-urlencoded" in ctype:
         parsed_body = {"form": dict(parse_qsl(body, keep_blank_values=True))}
+        if "jData" in parsed_body["form"]:
+            # The Noren API (Shoonya, Flattrade, ...) sends its JSON as a jData value beside a jKey token.
+            parsed_body["json"] = json.loads(parsed_body["form"].pop("jData"))
     elif "json" in ctype and body:
         parsed_body = {"json": json.loads(body)}
     elif body.startswith("jData="):

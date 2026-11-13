@@ -83,6 +83,13 @@ public sealed class FakeBroker : HttpMessageHandler
                     var i = pair.IndexOf('=');
                     form.Add(new(WebUtility.UrlDecode(i < 0 ? pair : pair[..i]), WebUtility.UrlDecode(i < 0 ? "" : pair[(i + 1)..])));
                 }
+
+                // The Noren API (Shoonya, Flattrade, ...) sends its JSON as a jData value beside a jKey token.
+                if (form.FindIndex(p => p.Key == "jData") is var at and >= 0)
+                {
+                    json = JsonNode.Parse(form[at].Value);
+                    form.RemoveAt(at);
+                }
             }
             else if (type.Contains("json") && text.Length > 0)
             {

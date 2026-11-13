@@ -1,0 +1,210 @@
+[
+ {
+  "name": "H1 resolution",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"1h\"] = \"60\", [\"2h\"] = \"120\"",
+  "new": "[\"1h\"] = \"61\", [\"2h\"] = \"120\"",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H2 window 1m",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"1m\"] = 5, [\"3m\"]",
+  "new": "[\"1m\"] = 6, [\"3m\"]",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H3 window 5m",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"5m\"] = 20,",
+  "new": "[\"5m\"] = 21,",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H4 daily window",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"D\"] = 730,",
+  "new": "[\"D\"] = 731,",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H5 index name",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[(\"NSE_INDEX\", \"NIFTY\")] = \"Nifty 50\"",
+  "new": "[(\"NSE_INDEX\", \"NIFTY\")] = \"Nifty50\"",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H6 start of day",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "IstEpoch(start, new TimeOnly(0, 0, 0))",
+  "new": "IstEpoch(start, new TimeOnly(0, 0, 1))",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H7 end of day",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "IstEpoch(end, new TimeOnly(23, 59, 59))",
+  "new": "IstEpoch(end, new TimeOnly(23, 59, 58))",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H8 chunk gap too wide",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "chunkStart = chunkEnd + 1;\n            if (!sent)",
+  "new": "chunkStart = chunkEnd + 2;\n            if (!sent)",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H9 no data fails",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (message.Contains(\"no data\", StringComparison.OrdinalIgnoreCase)) continue;",
+  "new": "if (Environment.TickCount64 < 0 && message.Contains(\"no data\", StringComparison.OrdinalIgnoreCase)) continue;",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H10 session not fatal",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (SessionLapsed(message)) throw new BrokerException($\"{DisplayName} says the session has expired. Log in to {DisplayName} again.\", 403);\n                if (message",
+  "new": "if (message",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H11 all failed not fatal",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (attempted > 0 && failed == attempted)",
+  "new": "if (attempted > 0 && failed == attempted + 1)",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H12 non list ok",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (answer is not JsonArray list)\n            {\n                failed++;\n                continue;\n            }",
+  "new": "if (answer is not JsonArray list) continue;",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H13 zero bars kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (open == 0 && high == 0 && low == 0 && close == 0) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H14 time text ist",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "return new DateTimeOffset(local, IstOffset).ToUnixTimeSeconds();",
+  "new": "return new DateTimeOffset(local, TimeSpan.Zero).ToUnixTimeSeconds();",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H15 day text utc",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "return new DateTimeOffset(day, TimeSpan.Zero).ToUnixTimeSeconds();",
+  "new": "return new DateTimeOffset(day, IstOffset).ToUnixTimeSeconds();",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H16 dedupe keeps first",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "candles[stamp.Value] = [open, high, low, close, volume, oi];",
+  "new": "candles.TryAdd(stamp.Value, [open, high, low, close, volume, oi]);",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H17 today offset",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "IstEpoch(today, new TimeOnly(0, 0, 0)) + 19800;",
+  "new": "IstEpoch(today, new TimeOnly(0, 0, 0));",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H18 today only when missing",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "(candles.Count == 0 || candles.Keys.Max() < todayTs)",
+  "new": "candles.Count == 0",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H19 today close from last price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "Float(quote[\"lp\"]), Float(quote[\"v\"]), Float(quote[\"oi\"])];",
+  "new": "Float(quote[\"c\"]), Float(quote[\"v\"]), Float(quote[\"oi\"])];",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H20 widen high",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"high\"] = Math.Max(Math.Max(c[0], c[1]), Math.Max(c[2], c[3]))",
+  "new": "[\"high\"] = c[1]",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H21 widen low",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"low\"] = Math.Min(Math.Min(c[0], c[1]), Math.Min(c[2], c[3]))",
+  "new": "[\"low\"] = c[2]",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H22 negative volume",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"volume\"] = c[4] < 0 ? 0 : c[4]",
+  "new": "[\"volume\"] = c[4]",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H23 string candles skipped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var candle = node is JsonValue v && v.TryGetValue<string>(out var text) ? TryParseObject(text) : node as JsonObject;",
+  "new": "var candle = node as JsonObject;",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H24 jkey dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "+ \"&jKey=\" + session.AuthToken",
+  "new": "+ \"&jKey=\"",
+  "filter": "FullyQualifiedName~ShoonyaChartToken",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H25 quote exchange for index",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var exchange = DataExchangeOf(instrument.Exchange);",
+  "new": "var exchange = instrument.Exchange;",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H26 ssboe preferred",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (candle[\"ssboe\"] is not null && Str(candle[\"ssboe\"]) is { } ssboe",
+  "new": "if (false && candle[\"ssboe\"] is not null && Str(candle[\"ssboe\"]) is { } ssboe",
+  "filter": "FullyQualifiedName~ShoonyaHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

@@ -159,3 +159,32 @@ public sealed class ZebuDataContractTests(ZebuDataHost host, ITestOutputHelper o
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class ShoonyaHistoryHost : ShoonyaBaseHost
+{
+    public override string BrokerName => "shoonya";
+    public override string FixtureFile => "history_shoonya.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>Shoonya history (tools/contract-fixtures/history_shoonya.fixtures.json), run with the clock stopped at the recording.</summary>
+public sealed class ShoonyaHistoryContractTests(ShoonyaHistoryHost host, ITestOutputHelper output) : IClassFixture<ShoonyaHistoryHost>
+{
+    private const string Words = "Same outcome; the reason is worded for the trader.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_interval_shoonya_lacks"] = new(
+            "OpenAlgo answers 500 with \"Unsupported interval '20m'\". EP Trade bot answers 400 and names what Shoonya offers.",
+            f => Expect(f, 400, Error("Shoonya does not offer 20m candles. Choose one of: 1m, 3m, 5m, 10m, 15m, 30m, 1h, 2h, 4h, D."))),
+        ["history_every_chunk_fails"] = new(Words, f => Expect(f, 500, Error("Shoonya did not send the candles for SBIN between 2026-10-20 and 2026-11-01. Try again in a moment."))),
+        ["history_chunk_answers_with_something_else"] = new(Words, f => Expect(f, 500, Error("Shoonya did not send the candles for SBIN between 2026-11-02 and 2026-11-02. Try again in a moment."))),
+        ["history_session_expired"] = new(Words, f => Expect(f, 403, Error("Shoonya says the session has expired. Log in to Shoonya again."))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_shoonya.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}

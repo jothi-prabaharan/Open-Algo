@@ -53,3 +53,28 @@ public sealed class ShoonyaLoginTests
         Assert.Empty(broker.Sent);
     }
 }
+
+/// <summary>Shoonya's chart calls carry the token in the form body, beside the JSON.</summary>
+public sealed class ShoonyaChartTokenTests
+{
+    [PostgresFact]
+    public async Task A_chart_call_sends_the_json_and_the_token_in_one_form()
+    {
+        var broker = new FakeBroker();
+        await using var host = new TestHost("Production", b =>
+        {
+            b.UseSetting("Brokers:Enabled:0", "shoonya");
+            b.ConfigureServices(s => s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => broker)));
+        });
+        broker.Reset(new Dictionary<string, (int, string)> { ["POST /NorenWClientAPI/EODChartData"] = (200, "[]") });
+        var session = new EPTradeBot.Core.Brokers.BrokerSession(Guid.NewGuid(), "shoonya", "tok-123", null, null, new Dictionary<string, string> { ["ApiKey"] = "FA1:::c" });
+        var record = new EPTradeBot.Core.Brokers.SymbolRecord("SBIN", "SBIN-EQ", "NSE", "NSE", "3045", null, null, null, 1, "EQ", 0.05);
+
+        await host.Get<ShoonyaPlugin>().GetHistoryAsync(session, record, "D", new DateOnly(2026, 10, 29), new DateOnly(2026, 10, 30), CancellationToken.None);
+
+        var sent = Assert.Single(broker.Sent);
+        Assert.StartsWith("jData=", sent.RawBody);
+        Assert.EndsWith("&jKey=tok-123", sent.RawBody);
+        Assert.StartsWith("application/x-www-form-urlencoded", sent.Headers["Content-Type"]);
+    }
+}

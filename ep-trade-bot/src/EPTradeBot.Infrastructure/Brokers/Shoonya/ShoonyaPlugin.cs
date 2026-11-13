@@ -82,6 +82,15 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
 
     // ---- orders ----------------------------------------------------------------------------------------------
 
+    protected static string DataExchangeOf(string exchange) => DataExchange(exchange);
+
+    protected static string EncodeJData(JsonObject payload) => JData(payload);
+
+
+    protected IHttpClientFactory Http => http;
+
+    protected BrokerSessionFactory Sessions => sessions;
+
     protected static string MapProduct(string product) => Product(product);
 
     protected static string MapType(string priceType) => OrderType(priceType);
@@ -450,10 +459,187 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
 
 /// <summary>Shoonya (broker/shoonya), api.shoonya.com.</summary>
 [BrokerPlugin]
-public sealed class ShoonyaPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<ShoonyaPlugin> logger)
-    : NorenPluginBase(http, sessions, symbols, logger), IBrokerMargin
+public sealed class ShoonyaPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<ShoonyaPlugin> logger)
+    : NorenPluginBase(http, sessions, symbols, logger), IBrokerMargin, IBrokerHistory
 {
-    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.Margin;
+    // ---- history ---------------------------------------------------------------------------------------------
+
+    private static readonly Dictionary<string, string> Resolutions = new()
+    {
+        ["1m"] = "1", ["3m"] = "3", ["5m"] = "5", ["10m"] = "10", ["15m"] = "15", ["30m"] = "30", ["1h"] = "60", ["2h"] = "120", ["4h"] = "240", ["D"] = "D",
+    };
+
+    private static readonly Dictionary<string, int> WindowDays = new()
+    {
+        ["1m"] = 5, ["3m"] = 10, ["5m"] = 20, ["10m"] = 40, ["15m"] = 60, ["30m"] = 90, ["1h"] = 180, ["2h"] = 180, ["4h"] = 365, ["D"] = 730,
+    };
+
+    /// <summary>The name Shoonya's daily chart knows an index by.</summary>
+    private static readonly Dictionary<(string, string), string> IndexNames = new()
+    {
+        [("NSE_INDEX", "NIFTY")] = "Nifty 50", [("NSE_INDEX", "BANKNIFTY")] = "Nifty Bank", [("NSE_INDEX", "FINNIFTY")] = "Nifty Financial Services",
+        [("NSE_INDEX", "MIDCPNIFTY")] = "Nifty Midcap Select", [("NSE_INDEX", "NIFTYNXT50")] = "Nifty Next 50", [("NSE_INDEX", "INDIAVIX")] = "India VIX",
+    };
+
+    private static readonly TimeSpan IstOffset = TimeSpan.FromHours(5.5);
+
+    public IReadOnlyList<string> HistoryTimeframes { get; } = [.. Resolutions.Keys];
+
+    private static long IstEpoch(DateOnly day, TimeOnly time) => new DateTimeOffset(day.ToDateTime(time), IstOffset).ToUnixTimeSeconds();
+
+    /// <summary>A chart call: the JSON and the token ride in a form body, as Shoonya's chart endpoints take them.</summary>
+    private async Task<JsonNode?> ChartAsync(BrokerSession session, string endpoint, JsonObject payload, CancellationToken cancellationToken)
+    {
+        payload["uid"] = UserIdOf(session);
+        using var request = new HttpRequestMessage(HttpMethod.Post, Sessions.BaseUrl(Name, Host) + "/NorenWClientAPI" + endpoint)
+        {
+            Content = new StringContent("jData=" + EncodeJData(payload) + "&jKey=" + session.AuthToken, System.Text.Encoding.UTF8, "application/x-www-form-urlencoded"),
+        };
+        using var response = await Http.CreateClient(Name).SendAsync(request, cancellationToken);
+        return await JsonRead.ReadAsync(response, cancellationToken);
+    }
+
+    public async Task<JsonArray> GetHistoryAsync(BrokerSession session, SymbolRecord instrument, string interval, DateOnly start, DateOnly end, CancellationToken cancellationToken)
+    {
+        if (!Resolutions.TryGetValue(interval, out var resolution))
+            throw new BrokerException($"{DisplayName} does not offer {interval} candles. Choose one of: {string.Join(", ", Resolutions.Keys)}.", 400);
+
+        var exchange = DataExchangeOf(instrument.Exchange);
+        var startTs = IstEpoch(start, new TimeOnly(0, 0, 0));
+        var endTs = IstEpoch(end, new TimeOnly(23, 59, 59));
+        var daily = interval == "D";
+        var endpoint = daily ? "/EODChartData" : "/TPSeries";
+        var chartName = IndexNames.TryGetValue((instrument.Exchange, instrument.Symbol), out var index) ? index : instrument.BrokerSymbol;
+        long window = WindowDays[interval] * 86400L;
+
+        var raw = new List<JsonNode?>();
+        int attempted = 0, failed = 0;
+        for (var chunkStart = startTs; chunkStart <= endTs;)
+        {
+            var chunkEnd = Math.Min(chunkStart + window, endTs);
+            attempted++;
+            var payload = daily
+                ? new JsonObject { ["sym"] = $"{exchange}:{chartName}", ["from"] = chunkStart.ToString(CultureInfo.InvariantCulture), ["to"] = chunkEnd.ToString(CultureInfo.InvariantCulture) }
+                : new JsonObject
+                {
+                    ["exch"] = exchange, ["token"] = instrument.Token, ["st"] = chunkStart.ToString(CultureInfo.InvariantCulture),
+                    ["et"] = chunkEnd.ToString(CultureInfo.InvariantCulture), ["intrv"] = resolution,
+                };
+            JsonNode? answer = null;
+            var sent = true;
+            try
+            {
+                answer = await ChartAsync(session, endpoint, payload, cancellationToken);
+            }
+            catch (HttpRequestException)
+            {
+                sent = false;
+            }
+
+            chunkStart = chunkEnd + 1;
+            if (!sent)
+            {
+                failed++;
+                continue;
+            }
+
+            if (answer is JsonObject error)
+            {
+                var message = Str(error["emsg"]) ?? Str(error["message"]) ?? "unknown";
+                if (SessionLapsed(message)) throw new BrokerException($"{DisplayName} says the session has expired. Log in to {DisplayName} again.", 403);
+                if (message.Contains("no data", StringComparison.OrdinalIgnoreCase)) continue;
+                failed++;
+                continue;
+            }
+
+            if (answer is not JsonArray list)
+            {
+                failed++;
+                continue;
+            }
+
+            raw.AddRange(list);
+        }
+
+        if (attempted > 0 && failed == attempted)
+            throw new BrokerException($"{DisplayName} did not send the candles for {instrument.Symbol} between {start:yyyy-MM-dd} and {end:yyyy-MM-dd}. Try again in a moment.");
+
+        var candles = new SortedDictionary<long, double[]>();
+        foreach (var node in raw)
+        {
+            var candle = node is JsonValue v && v.TryGetValue<string>(out var text) ? TryParseObject(text) : node as JsonObject;
+            if (candle is null) continue;
+            if (!TryFloat(candle["into"], out var open) || !TryFloat(candle["inth"], out var high) || !TryFloat(candle["intl"], out var low) || !TryFloat(candle["intc"], out var close)) continue;
+            if (open == 0 && high == 0 && low == 0 && close == 0) continue;
+            long? stamp = null;
+            if (candle["ssboe"] is not null && Str(candle["ssboe"]) is { } ssboe && long.TryParse(ssboe, NumberStyles.Integer, CultureInfo.InvariantCulture, out var seconds)) stamp = seconds;
+            else if (candle["ssboe"] is null && Str(candle["time"]) is { } time) stamp = ParseCandleTime(time);
+            if (stamp is null) continue;
+            if (!TryFloat(candle.ContainsKey("intv") ? candle["intv"] : 0, out var volume) || !TryFloat(candle.ContainsKey("oi") ? candle["oi"] : 0, out var oi)) continue;
+            candles[stamp.Value] = [open, high, low, close, volume, oi];
+        }
+
+        if (daily)
+        {
+            var today = DateOnly.FromDateTime(clock.GetUtcNow().ToOffset(IstOffset).DateTime);
+            var todayTs = IstEpoch(today, new TimeOnly(0, 0, 0)) + 19800;
+            if (todayTs >= startTs && todayTs <= endTs && (candles.Count == 0 || candles.Keys.Max() < todayTs))
+            {
+                try
+                {
+                    var quote = await QuoteForMarginAsync(session, instrument, cancellationToken);
+                    candles[todayTs] = [Float(quote["o"]), Float(quote["h"]), Float(quote["l"]), Float(quote["lp"]), Float(quote["v"]), Float(quote["oi"])];
+                }
+                catch (BrokerException)
+                {
+                }
+            }
+        }
+
+        var result = new JsonArray();
+        foreach (var (stamp, c) in candles)
+        {
+            // A bar whose range leaves out its own open or close is widened to cover them; a volume below zero cannot be true and is zeroed.
+            result.Add(new JsonObject
+            {
+                ["timestamp"] = stamp, ["open"] = c[0], ["high"] = Math.Max(Math.Max(c[0], c[1]), Math.Max(c[2], c[3])), ["low"] = Math.Min(Math.Min(c[0], c[1]), Math.Min(c[2], c[3])),
+                ["close"] = c[3], ["volume"] = c[4] < 0 ? 0 : c[4], ["oi"] = c[5],
+            });
+        }
+
+        return result;
+    }
+
+    private static JsonObject? TryParseObject(string text)
+    {
+        try
+        {
+            return JsonNode.Parse(text) as JsonObject;
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return null;
+        }
+    }
+
+    private static bool TryFloat(JsonNode? node, out double value)
+    {
+        value = 0;
+        if (node is null) return false;
+        return BookFormatting.Number(node) is { } n ? (value = n) == n : double.TryParse(Str(node), NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+    }
+
+    /// <summary>A bar with no epoch second carries its time as text: "02-11-2026 09:15:00" (IST) or "02-NOV-2026" (a day, read as midnight UTC).</summary>
+    private static long? ParseCandleTime(string text)
+    {
+        if (DateTime.TryParseExact(text, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var local))
+            return new DateTimeOffset(local, IstOffset).ToUnixTimeSeconds();
+        if (DateTime.TryParseExact(text, "dd-MMM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var day))
+            return new DateTimeOffset(day, TimeSpan.Zero).ToUnixTimeSeconds();
+        return null;
+    }
+
+    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.Margin | BrokerCapability.History;
 
     /// <summary>
     /// The margin of a basket (GetBasketMargin). Shoonya refuses market and stop-market types here as it does on orders, so they are converted
