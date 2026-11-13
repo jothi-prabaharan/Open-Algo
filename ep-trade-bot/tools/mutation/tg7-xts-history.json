@@ -1,0 +1,114 @@
+[
+ {
+  "name": "H1 week is eight days",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "from.AddDays(6) < end ? from.AddDays(6) : end",
+  "new": "from.AddDays(7) < end ? from.AddDays(7) : end",
+  "filter": "FullyQualifiedName~WisdomHistoryContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H2 end of day wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "Stamp(to, \"235959\")",
+  "new": "Stamp(to, \"000000\")",
+  "filter": "FullyQualifiedName~WisdomHistoryContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H3 start time wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "Stamp(from, \"000000\")",
+  "new": "Stamp(from, \"235959\")",
+  "filter": "FullyQualifiedName~WisdomHistoryContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H4 1m compression",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"1m\"] = (\"60\", 1)",
+  "new": "[\"1m\"] = (\"120\", 1)",
+  "filter": "FullyQualifiedName~WisdomHistoryContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H5 15m floor missing",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (!daily && compression.Minutes > 0) shifted -= shifted % (compression.Minutes * 60L);",
+  "new": "_ = shifted;",
+  "filter": "FullyQualifiedName~WisdomHistoryContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H6 ist shift missing",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "daily ? stamp - stamp % 86400 : stamp - 19800",
+  "new": "daily ? stamp - stamp % 86400 : stamp",
+  "filter": "FullyQualifiedName~WisdomHistoryContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H7 daily not midnight",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "daily ? stamp - stamp % 86400 : stamp - 19800",
+  "new": "daily ? stamp : stamp - 19800",
+  "filter": "FullyQualifiedName~WisdomHistoryContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H8 duplicate keeps last",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "rows.TryAdd(stamp, (open, high, low, close, volume));",
+  "new": "rows[stamp] = (open, high, low, close, volume);",
+  "filter": "FullyQualifiedName~WisdomHistoryContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H9 short rows read",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (f.Length < 6) continue;",
+  "new": "if (f.Length < 5) continue;",
+  "filter": "FullyQualifiedName~WisdomHistoryContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H10 refusal ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (Str(reply?[\"type\"]) != \"success\")\n                throw",
+  "new": "if (false)\n                throw",
+  "filter": "FullyQualifiedName~WisdomHistoryContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H11 index segment wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"NSE_INDEX\"] = \"NSECM\"",
+  "new": "[\"NSE_INDEX\"] = \"NSEFO\"",
+  "filter": "FullyQualifiedName~WisdomHistoryContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H12 volume as float",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "!long.TryParse(f[5], System.Globalization.NumberStyles.Integer",
+  "new": "!long.TryParse(f[5], System.Globalization.NumberStyles.Float",
+  "filter": "FullyQualifiedName~WisdomHistoryContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H13 feed token ignored on history",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "request.Headers.TryAddWithoutValidation(\"authorization\", string.IsNullOrEmpty(session.FeedToken) ? session.AuthToken : session.FeedToken);\n            using var response = await SendAsync(request, cancellationToken);\n            var reply = await ReadAsync(response, cancellationToken) as JsonObject;\n            if (Str(reply?[\"type\"]) != \"success\")\n                throw new BrokerException($\"{DisplayName} could not send the candles",
+  "new": "request.Headers.TryAddWithoutValidation(\"authorization\", session.AuthToken);\n            using var response = await SendAsync(request, cancellationToken);\n            var reply = await ReadAsync(response, cancellationToken) as JsonObject;\n            if (Str(reply?[\"type\"]) != \"success\")\n                throw new BrokerException($\"{DisplayName} could not send the candles",
+  "filter": "FullyQualifiedName~WisdomHistoryContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H14 daily one second compression",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"D\"] = (\"D\", 0)",
+  "new": "[\"D\"] = (\"1\", 0)",
+  "filter": "FullyQualifiedName~WisdomHistoryContract",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

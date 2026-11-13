@@ -9,9 +9,9 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Upstox | yes | yes | yes | yes | yes | yes | yes | yes |
 | Fyers | yes | yes | yes | yes | yes | yes | yes | yes |
 | Delta Exchange | yes | yes | yes | yes | yes | no | yes | yes |
-| Wisdom Capital (XTS) | yes | yes | yes | no | no | no | yes | no |
-| 5paisa XTS | yes | yes | yes | no | no | no | yes | no |
-| IIFL (XTS) | yes | yes | yes | no | no | no | yes | no |
+| Wisdom Capital (XTS) | yes | yes | yes | yes | no | no | yes | no |
+| 5paisa XTS | yes | yes | yes | yes | no | no | yes | no |
+| IIFL (XTS) | yes | yes | yes | yes | no | no | yes | no |
 
 The other 27 brokers in the task list are not started. The four other XTS brokers (ibulls, jainamxts, compositedge, rmoney) are next: they share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -147,4 +147,11 @@ The other 27 brokers in the task list are not started. The four other XTS broker
 - Deviations: a refused or empty quote is an error naming the broker and its reason (OpenAlgo says "Failed to fetch market data"); a refused depth is an error (OpenAlgo answers success with a depth of zeros, which reads as an empty market).
 - Not modelled: OpenAlgo refreshes an expired feed token itself (a market-data sign-in in the middle of a quote). EP Trade bot's plugin cannot store a new token, so an expired market-data session shows as the broker's refusal until the next sign-in.
 - Mutation: `tools/mutation/tg7-xts-data.json`, 11 mutants, all caught (three equivalent ones removed or simplified).
-- Still not ported for XTS: history, margin, the feed, and iBulls (needs this quote to price market orders), Jainam, CompositEdge and RMoney (different sign-in).
+- Still not ported for XTS: margin, the feed, and iBulls (needs this quote to price market orders), Jainam, CompositEdge and RMoney (different sign-in).
+
+## XTS history
+
+- Ported from `broker/wisdom/api/data.py` `get_history` (the ohlc service, `compressionValue` per interval, a week at a time). 19 recorded cases for Wisdom Capital (`history_wisdom.fixtures.json`) and the same set against 5paisa XTS and IIFL. Intraday timestamps move from XTS's clock to IST and start on the candle boundary; daily candles sit at midnight; duplicate timestamps keep the first candle; short or unreadable rows are left out.
+- Deviations: OpenAlgo ends every week but the last at midnight of its seventh day and starts the next on the day after, so one day in seven is never asked for (EP Trade bot asks for whole days); no candles is an empty success (OpenAlgo fails with "No objects to concatenate"); a refused week says which days and why; an unsupported interval is a 400 naming the choices; IIFL's retry after a market-data sign-in is not done.
+- Not ported: today's daily candle built from a quote when the day's history is empty.
+- Mutation: `tools/mutation/tg7-xts-history.json`, 14 mutants, all caught (two survived the first run and each got a recorded case).

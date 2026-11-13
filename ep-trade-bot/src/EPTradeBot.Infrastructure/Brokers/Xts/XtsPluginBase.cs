@@ -10,10 +10,10 @@ namespace EPTradeBot.Infrastructure.Brokers.Xts;
 /// <summary>
 /// The XTS family (Symphony Fintech's trading front end API), which Wisdom Capital, iBulls, Jainam, 5paisa XTS, IIFL, CompositEdge and RMoney share.
 /// Port of broker/wisdom: api/order_api.py, api/funds.py and mapping/order_data.py. Held to tools/contract-fixtures/wisdom.fixtures.json.
-/// Quotes, depth and several quotes (api/data.py) come from the market-data service. Not ported yet, and refused rather than guessed: history, margin, and the feed.
+/// Quotes, depth and several quotes (api/data.py) come from the market-data service. History is the ohlc service. Not ported yet, and refused rather than guessed: margin, the feed, and today's daily candle from a quote.
 /// </summary>
 public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerLogin, IBrokerMultiQuotes
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerLogin, IBrokerMultiQuotes, IBrokerHistory
 {
     public abstract string Name { get; }
     public abstract string DisplayName { get; }
@@ -21,7 +21,7 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
     /// <summary>The address of the broker's XTS server, without the /interactive path.</summary>
     protected abstract string DefaultBaseUrl { get; }
 
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret", "ApiKeyMarket", "ApiSecretMarket"];
 
     private static readonly Dictionary<string, string> Segments = new()
@@ -366,6 +366,71 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
         foreach (var node in results) skipped.Add(node!.DeepClone());
         return skipped;
     }
+
+
+    // ---- history ---------------------------------------------------------------------------------------------
+
+    private static readonly Dictionary<string, (string Compression, int Minutes)> Compressions = new()
+    {
+        ["1s"] = ("1", 0), ["1m"] = ("60", 1), ["2m"] = ("120", 2), ["3m"] = ("180", 3), ["5m"] = ("300", 5), ["10m"] = ("600", 10),
+        ["15m"] = ("900", 15), ["30m"] = ("1800", 30), ["60m"] = ("3600", 60), ["D"] = ("D", 0),
+    };
+
+    private static readonly Dictionary<string, string> HistorySegments = new(Segments) { ["NSE_INDEX"] = "NSECM", ["BSE_INDEX"] = "BSECM" };
+
+    public IReadOnlyList<string> HistoryTimeframes { get; } = [.. Compressions.Keys];
+
+    public async Task<JsonArray> GetHistoryAsync(BrokerSession session, SymbolRecord instrument, string interval, DateOnly start, DateOnly end, CancellationToken cancellationToken)
+    {
+        if (!Compressions.TryGetValue(interval, out var compression))
+            throw new BrokerException($"{DisplayName} does not offer {interval} candles. Choose one of: {string.Join(", ", Compressions.Keys)}.", 400);
+        if (!HistorySegments.TryGetValue(instrument.Exchange, out var segment)) throw new BrokerException($"{DisplayName} has no candles for {instrument.Exchange}.", 400);
+
+        var daily = interval == "D";
+        var rows = new SortedDictionary<long, (double Open, double High, double Low, double Close, long Volume)>();
+        for (var from = start; from <= end;)
+        {
+            // The service answers a week at a time; each request covers whole days.
+            var to = from.AddDays(6) < end ? from.AddDays(6) : end;
+            var query = $"exchangeSegment={segment}&exchangeInstrumentID={Uri.EscapeDataString(instrument.Token)}"
+                + $"&startTime={Uri.EscapeDataString(Stamp(from, "000000"))}&endTime={Uri.EscapeDataString(Stamp(to, "235959"))}&compressionValue={compression.Compression}";
+            using var request = new HttpRequestMessage(HttpMethod.Get, sessions.BaseUrl(Name, DefaultBaseUrl) + "/apimarketdata/instruments/ohlc?" + query);
+            request.Headers.TryAddWithoutValidation("authorization", string.IsNullOrEmpty(session.FeedToken) ? session.AuthToken : session.FeedToken);
+            using var response = await SendAsync(request, cancellationToken);
+            var reply = await ReadAsync(response, cancellationToken) as JsonObject;
+            if (Str(reply?["type"]) != "success")
+                throw new BrokerException($"{DisplayName} could not send the candles for {from:yyyy-MM-dd} to {to:yyyy-MM-dd}: {Reason(reply, "no reason was given.")}");
+
+            foreach (var row in (Str((reply!["result"] as JsonObject)?["dataReponse"]) ?? "").Trim().Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
+                var f = row.Split('|');
+                if (f.Length < 6) continue;
+                if (!long.TryParse(f[0], System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var stamp)
+                    || !TryNumber(f[1], out var open) || !TryNumber(f[2], out var high) || !TryNumber(f[3], out var low) || !TryNumber(f[4], out var close)
+                    || !long.TryParse(f[5], System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var volume)) continue;
+                // Two candles with one timestamp: the first one received is kept.
+                rows.TryAdd(stamp, (open, high, low, close, volume));
+            }
+
+            from = to.AddDays(1);
+        }
+
+        var candles = new JsonArray();
+        foreach (var (stamp, c) in rows)
+        {
+            // Daily candles sit at midnight of their date; intraday ones are moved from XTS's clock to IST and start on the candle boundary.
+            var shifted = daily ? stamp - stamp % 86400 : stamp - 19800;
+            if (!daily && compression.Minutes > 0) shifted -= shifted % (compression.Minutes * 60L);
+            candles.Add(new JsonObject { ["timestamp"] = shifted, ["open"] = c.Open, ["high"] = c.High, ["low"] = c.Low, ["close"] = c.Close, ["volume"] = c.Volume });
+        }
+
+        return candles;
+    }
+
+    private static string Stamp(DateOnly day, string time) => day.ToString("MMM dd yyyy", System.Globalization.CultureInfo.InvariantCulture) + " " + time;
+
+    private static bool TryNumber(string text, out double value) =>
+        double.TryParse(text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out value);
 
     // ---- plumbing --------------------------------------------------------------------------------------------
 

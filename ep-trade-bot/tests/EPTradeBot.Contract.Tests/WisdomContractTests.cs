@@ -245,3 +245,153 @@ public sealed class IiflDataContractTests(IiflDataHost host, ITestOutputHelper o
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class WisdomHistoryHost : XtsHost
+{
+    public override string BrokerName => "wisdom";
+    public override string FixtureFile => "history_wisdom.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>Wisdom Capital history against the Python implementation (tools/contract-fixtures/history_wisdom.fixtures.json).</summary>
+public sealed class WisdomHistoryContractTests(WisdomHistoryHost host, ITestOutputHelper output) : IClassFixture<WisdomHistoryHost>
+{
+    private const string Quiet = "OpenAlgo fails with \"No objects to concatenate\" when no candle came back, which looks like a fault; EP Trade bot answers success with no candles.";
+
+    private static void Refused(JsonObject f, string from, string to) =>
+        Expect(f, 500, Error($"Wisdom Capital could not send the candles for {from} to {to}: Invalid Token"));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_nothing_traded"] = new(Quiet, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray() })),
+        ["history_end_before_start"] = new(Quiet, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray() })),
+        ["history_refused"] = new("OpenAlgo shows an internal-looking message; EP Trade bot says which days were refused and why.", f => Refused(f, "2026-11-02", "2026-11-02")),
+        ["history_unsupported_interval"] = new(
+            "OpenAlgo answers 500 with \"Unsupported timeframe: 4h\". EP Trade bot answers 400 and names what Wisdom Capital offers.",
+            f => Expect(f, 400, Error("Wisdom Capital does not offer 4h candles. Choose one of: 1s, 1m, 2m, 3m, 5m, 10m, 15m, 30m, 60m, D."))),
+        ["history_chunked_in_weeks"] = new(
+            "OpenAlgo ends every week but the last at midnight of its seventh day and starts the next on the day after, so the seventh day's trading is never asked for. EP Trade bot asks for the whole of each day.",
+            f =>
+            {
+                var sent = f["sent"]!.AsArray();
+                sent[0]!["query"]!.AsArray()[3]!.AsArray()[1] = "Oct 25 2026 235959";
+                sent[1]!["query"]!.AsArray()[3]!.AsArray()[1] = "Nov 01 2026 235959";
+            }),
+        ["history_one_chunk_refused"] = new("OpenAlgo shows an internal-looking message; EP Trade bot says which days were refused and why.", f =>
+        {
+            Refused(f, "2026-11-02", "2026-11-02");
+            f["sent"]!.AsArray()[0]!["query"]!.AsArray()[3]!.AsArray()[1] = "Nov 01 2026 235959";
+        }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_wisdom.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class FivepaisaXtsHistoryHost : XtsHost
+{
+    public override string BrokerName => "fivepaisaxts";
+    public override string FixtureFile => "history_fivepaisaxts.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>5paisa XTS history against the Python implementation (tools/contract-fixtures/history_fivepaisaxts.fixtures.json).</summary>
+public sealed class FivepaisaXtsHistoryContractTests(FivepaisaXtsHistoryHost host, ITestOutputHelper output) : IClassFixture<FivepaisaXtsHistoryHost>
+{
+    private const string Quiet = "OpenAlgo fails with \"No objects to concatenate\" when no candle came back, which looks like a fault; EP Trade bot answers success with no candles.";
+
+    private static void Refused(JsonObject f, string from, string to) =>
+        Expect(f, 500, Error($"5paisa XTS could not send the candles for {from} to {to}: Invalid Token"));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_nothing_traded"] = new(Quiet, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray() })),
+        ["history_end_before_start"] = new(Quiet, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray() })),
+        ["history_refused"] = new("OpenAlgo shows an internal-looking message; EP Trade bot says which days were refused and why.", f => Refused(f, "2026-11-02", "2026-11-02")),
+        ["history_unsupported_interval"] = new(
+            "OpenAlgo answers 500 with \"Unsupported timeframe: 4h\". EP Trade bot answers 400 and names what 5paisa XTS offers.",
+            f => Expect(f, 400, Error("5paisa XTS does not offer 4h candles. Choose one of: 1s, 1m, 2m, 3m, 5m, 10m, 15m, 30m, 60m, D."))),
+        ["history_chunked_in_weeks"] = new(
+            "OpenAlgo ends every week but the last at midnight of its seventh day and starts the next on the day after, so the seventh day's trading is never asked for. EP Trade bot asks for the whole of each day.",
+            f =>
+            {
+                var sent = f["sent"]!.AsArray();
+                sent[0]!["query"]!.AsArray()[3]!.AsArray()[1] = "Oct 25 2026 235959";
+                sent[1]!["query"]!.AsArray()[3]!.AsArray()[1] = "Nov 01 2026 235959";
+            }),
+        ["history_one_chunk_refused"] = new("OpenAlgo shows an internal-looking message; EP Trade bot says which days were refused and why.", f =>
+        {
+            Refused(f, "2026-11-02", "2026-11-02");
+            f["sent"]!.AsArray()[0]!["query"]!.AsArray()[3]!.AsArray()[1] = "Nov 01 2026 235959";
+        }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_fivepaisaxts.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class IiflHistoryHost : XtsHost
+{
+    public override string BrokerName => "iifl";
+    public override string FixtureFile => "history_iifl.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>IIFL history against the Python implementation (tools/contract-fixtures/history_iifl.fixtures.json).</summary>
+public sealed class IiflHistoryContractTests(IiflHistoryHost host, ITestOutputHelper output) : IClassFixture<IiflHistoryHost>
+{
+    private const string Quiet = "OpenAlgo fails with \"No objects to concatenate\" when no candle came back, which looks like a fault; EP Trade bot answers success with no candles.";
+
+    private static void Refused(JsonObject f, string from, string to) =>
+        Expect(f, 500, Error($"IIFL could not send the candles for {from} to {to}: Invalid Token"));
+
+    private const string NoRefresh = "IIFL signs in to market data again when it is told the token is invalid, then tries the call once more. EP Trade bot's plugin cannot store a new token, so it reports the refusal.";
+
+    private static Action<JsonObject> DropRefresh(Action<JsonObject> inner) => f =>
+    {
+        inner(f);
+        var sent = f["sent"]!.AsArray();
+        foreach (var s in sent.OfType<JsonObject>().Where(s => s["path"]!.GetValue<string>() == "/apimarketdata/auth/login").ToList()) sent.Remove(s);
+    };
+
+    public static readonly Dictionary<string, Deviation> Deviations = Refreshing(new()
+    {
+        ["history_nothing_traded"] = new(Quiet, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray() })),
+        ["history_end_before_start"] = new(Quiet, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray() })),
+        ["history_refused"] = new("OpenAlgo shows an internal-looking message; EP Trade bot says which days were refused and why.", f => Refused(f, "2026-11-02", "2026-11-02")),
+        ["history_unsupported_interval"] = new(
+            "OpenAlgo answers 500 with \"Unsupported timeframe: 4h\". EP Trade bot answers 400 and names what IIFL offers.",
+            f => Expect(f, 400, Error("IIFL does not offer 4h candles. Choose one of: 1s, 1m, 2m, 3m, 5m, 10m, 15m, 30m, 60m, D."))),
+        ["history_chunked_in_weeks"] = new(
+            "OpenAlgo ends every week but the last at midnight of its seventh day and starts the next on the day after, so the seventh day's trading is never asked for. EP Trade bot asks for the whole of each day.",
+            f =>
+            {
+                var sent = f["sent"]!.AsArray();
+                sent[0]!["query"]!.AsArray()[3]!.AsArray()[1] = "Oct 25 2026 235959";
+                sent[1]!["query"]!.AsArray()[3]!.AsArray()[1] = "Nov 01 2026 235959";
+            }),
+        ["history_one_chunk_refused"] = new("OpenAlgo shows an internal-looking message; EP Trade bot says which days were refused and why.", f =>
+        {
+            Refused(f, "2026-11-02", "2026-11-02");
+            f["sent"]!.AsArray()[0]!["query"]!.AsArray()[3]!.AsArray()[1] = "Nov 01 2026 235959";
+        }),
+    });
+
+    private static Dictionary<string, Deviation> Refreshing(Dictionary<string, Deviation> d)
+    {
+        foreach (var name in new[] { "history_refused", "history_one_chunk_refused" }) d[name] = new(NoRefresh + " " + d[name].Reason, DropRefresh(d[name].Adjust!));
+        return d;
+    }
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_iifl.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
