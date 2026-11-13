@@ -12,11 +12,11 @@ namespace EPTradeBot.Infrastructure.Brokers.Upstox;
 /// Upstox (v2 books, v3 orders on the api-hft host, v3 funds and quotes). Port of broker/upstox
 /// (api/order_api.py, api/funds.py, api/data.py quotes and depth, mapping/transform_data.py,
 /// mapping/order_data.py), held to tools/contract-fixtures/upstox.fixtures.json. Not ported yet,
-/// and refused rather than guessed: history, GTT, margin, login, global indicators and the feed.
+/// and refused rather than guessed: history, GTT, margin, global indicators and the feed.
 /// </summary>
 [BrokerPlugin]
-public sealed class UpstoxPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<UpstoxPlugin> logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin
+public sealed partial class UpstoxPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<UpstoxPlugin> logger)
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin, IBrokerLogin
 {
     private const string Api = "https://api.upstox.com";
     private const string OrderApi = "https://api-hft.upstox.com";

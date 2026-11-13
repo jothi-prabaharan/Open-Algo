@@ -1,0 +1,251 @@
+{
+  "broker": "upstox",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v2/login/authorization/token": {
+          "body": {
+            "access_token": "upstox-access-777",
+            "email": "t@example.com",
+            "user_id": "UP1234"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "upstox-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v2/login/authorization/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "code": "auth-code-abc",
+            "client_id": "upstox-api-key",
+            "client_secret": "upstox-api-secret",
+            "redirect_uri": "http://127.0.0.1:5000/upstox/callback",
+            "grant_type": "authorization_code"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_reasons",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v2/login/authorization/token": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "errors": [
+              {
+                "message": "Invalid Auth code"
+              },
+              {
+                "message": "Code expired"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Upstox API Error: Invalid Auth code; Code expired"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v2/login/authorization/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "code": "auth-code-abc",
+            "client_id": "upstox-api-key",
+            "client_secret": "upstox-api-secret",
+            "redirect_uri": "http://127.0.0.1:5000/upstox/callback",
+            "grant_type": "authorization_code"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_without_reasons",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v2/login/authorization/token": {
+          "status": 500,
+          "body": {
+            "error": "x"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Upstox API Error: "
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v2/login/authorization/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "code": "auth-code-abc",
+            "client_id": "upstox-api-key",
+            "client_secret": "upstox-api-secret",
+            "redirect_uri": "http://127.0.0.1:5000/upstox/callback",
+            "grant_type": "authorization_code"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_no_access_token_in_the_answer",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v2/login/authorization/token": {
+          "body": {
+            "email": "t@example.com"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication succeeded but no access token was returned."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v2/login/authorization/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "code": "auth-code-abc",
+            "client_id": "upstox-api-key",
+            "client_secret": "upstox-api-secret",
+            "redirect_uri": "http://127.0.0.1:5000/upstox/callback",
+            "grant_type": "authorization_code"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_empty_access_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v2/login/authorization/token": {
+          "body": {
+            "access_token": ""
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication succeeded but no access token was returned."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.upstox.com",
+          "path": "/v2/login/authorization/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "code": "auth-code-abc",
+            "client_id": "upstox-api-key",
+            "client_secret": "upstox-api-secret",
+            "redirect_uri": "http://127.0.0.1:5000/upstox/callback",
+            "grant_type": "authorization_code"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

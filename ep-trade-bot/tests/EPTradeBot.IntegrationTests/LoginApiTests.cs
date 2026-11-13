@@ -21,6 +21,7 @@ public sealed class LoginApiTests
     {
         b.UseSetting("Brokers:Enabled:0", "zerodha");
         b.UseSetting("Brokers:Enabled:1", "angel");
+        b.UseSetting("Brokers:Enabled:2", "upstox");
         if (keys)
         {
             b.UseSetting("Brokers:Keys:zerodha:ApiKey", "kite-key");
@@ -64,6 +65,33 @@ public sealed class LoginApiTests
         (status, var again) = await PostAsync(host, $"/api/v1/accounts/{account}/broker-login/complete", new { request_token = "rt", state });
         Assert.Equal(400, status);
         Assert.Contains("Start the sign-in again", again["message"]!.GetValue<string>());
+        Assert.Single(broker.Sent);
+    }
+
+    [PostgresFact]
+    public async Task Upstox_start_names_the_redirect_address_and_complete_exchanges_the_code()
+    {
+        var broker = new FakeBroker();
+        broker.Reset(new Dictionary<string, (int, string)> { ["POST /v2/login/authorization/token"] = (200, """{"access_token":"upstox-new-token"}""") });
+        await using var host = new TestHost("Production", b =>
+        {
+            b.UseSetting("Brokers:Enabled:0", "upstox");
+            b.UseSetting("Brokers:Keys:upstox:ApiKey", "up-key");
+            b.UseSetting("Brokers:Keys:upstox:ApiSecret", "up-secret");
+            b.UseSetting("Brokers:Keys:upstox:RedirectUrl", "https://bot.example/upstox/callback");
+            b.ConfigureServices(s => s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => broker)));
+        });
+        var account = await host.CreateAccountAsync(AccountType.LIVE, "up", broker: "upstox");
+
+        var (status, started) = await PostAsync(host, $"/api/v1/accounts/{account}/broker-login/start");
+        Assert.Equal(200, status);
+        var state = started["state"]!.GetValue<string>();
+        Assert.Equal(
+            $"https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id=up-key&redirect_uri={Uri.EscapeDataString("https://bot.example/upstox/callback")}&state={Uri.EscapeDataString(state)}",
+            started["login_url"]!.GetValue<string>());
+
+        (status, _) = await PostAsync(host, $"/api/v1/accounts/{account}/broker-login/complete", new { code = "c1", state });
+        Assert.Equal(200, status);
         Assert.Single(broker.Sent);
     }
 

@@ -1,0 +1,66 @@
+[
+ {
+  "name": "U1 redirect_uri dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Login.cs",
+  "old": "new(\"redirect_uri\", redirect), ",
+  "new": "",
+  "filter": "FullyQualifiedName~LoginUpstox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U2 grant type changed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Login.cs",
+  "old": "\"authorization_code\"",
+  "new": "\"code\"",
+  "filter": "FullyQualifiedName~LoginUpstox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U3 reasons not joined",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Login.cs",
+  "old": "string.Join(\"; \",",
+  "new": "string.Join(\", \",",
+  "filter": "FullyQualifiedName~LoginUpstox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U4 no-token accepted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Login.cs",
+  "old": "Str(body?[\"access_token\"]) is { Length: > 0 } token",
+  "new": "Str(body?[\"access_token\"]) is { } token",
+  "filter": "FullyQualifiedName~LoginUpstox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U5 failure status accepted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Login.cs",
+  "old": "if (!response.IsSuccessStatusCode)",
+  "new": "if (Environment.TickCount64 < 0)",
+  "filter": "FullyQualifiedName~LoginUpstox",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U6 state not in address",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Login.cs",
+  "old": "&state={Uri.EscapeDataString(state)}",
+  "new": "",
+  "filter": "FullyQualifiedName~Upstox_start",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "U7 redirect not in address",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Login.cs",
+  "old": "&redirect_uri={Uri.EscapeDataString(redirect)}",
+  "new": "",
+  "filter": "FullyQualifiedName~Upstox_start",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "U8 code field ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Upstox/UpstoxPlugin.Login.cs",
+  "old": "input.TryGetValue(\"code\", out var code)",
+  "new": "input.TryGetValue(\"request_token\", out var code)",
+  "filter": "FullyQualifiedName~Upstox_start",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

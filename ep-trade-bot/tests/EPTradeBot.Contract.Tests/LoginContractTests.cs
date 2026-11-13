@@ -35,6 +35,18 @@ public sealed class LoginPaytmHost : BrokerContractHost
     public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
 }
 
+public sealed class LoginUpstoxHost : BrokerContractHost
+{
+    public override string BrokerName => "upstox";
+    public override string FixtureFile => "login_upstox.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string>
+    {
+        ["ApiKey"] = "upstox-api-key", ["ApiSecret"] = "upstox-api-secret", ["RedirectUrl"] = "http://127.0.0.1:5000/upstox/callback",
+    };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
 internal static class LoginDeviations
 {
     public const string Words = "OpenAlgo shows the broker's raw error text, prefixed with \"API error\" or not at all. EP Trade bot says in a sentence which broker refused and what to do next.";
@@ -84,6 +96,23 @@ public sealed class LoginPaytmContractTests(LoginPaytmHost host, ITestOutputHelp
     };
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("login_paytm.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
+
+public sealed class LoginUpstoxContractTests(LoginUpstoxHost host, ITestOutputHelper output) : IClassFixture<LoginUpstoxHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_with_reasons"] = LoginDeviations.Refused("Upstox did not accept the sign-in: Invalid Auth code; Code expired"),
+        ["login_refused_without_reasons"] = LoginDeviations.Refused("Upstox did not accept the sign-in. Start it again from the beginning."),
+        ["login_empty_access_token"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error("Upstox accepted the sign-in but sent no access token. Start the sign-in again."))),
+        ["login_no_access_token_in_the_answer"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error("Upstox accepted the sign-in but sent no access token. Start the sign-in again."))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_upstox.fixtures.json");
 
     [PostgresTheory]
     [MemberData(nameof(Names))]

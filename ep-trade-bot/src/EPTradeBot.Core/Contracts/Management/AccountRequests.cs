@@ -67,12 +67,15 @@ public sealed class SetBrokerSessionRequest
 }
 
 /// <summary>
-/// POST /api/v1/accounts/{id}/broker-login/complete. A redirect broker (Zerodha, Paytm Money) sends the <c>request_token</c> its page returned and the
+/// POST /api/v1/accounts/{id}/broker-login/complete. A redirect broker (Zerodha, Paytm Money) sends the <c>request_token</c> (Upstox, the <c>code</c>) its page returned and the
 /// <c>state</c> the start gave; a credentials broker (Angel One) sends the typed <c>clientcode</c>, <c>password</c> and <c>totp</c>.
 /// </summary>
 public sealed class BrokerLoginCompleteRequest
 {
     [StringLength(4096)] [JsonPropertyName("request_token")] public string? RequestToken { get; set; }
+
+    /// <summary>The authorisation code a broker that names it so returns (Upstox).</summary>
+    [StringLength(4096)] [JsonPropertyName("code")] public string? Code { get; set; }
 
     [StringLength(4096)] [JsonPropertyName("state")] public string? State { get; set; }
 

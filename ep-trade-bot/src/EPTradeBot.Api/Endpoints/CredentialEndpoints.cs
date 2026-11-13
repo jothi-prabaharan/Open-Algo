@@ -69,6 +69,7 @@ internal static class CredentialEndpoints
 
             var input = new Dictionary<string, string>(StringComparer.Ordinal);
             if (request.RequestToken is not null) input["request_token"] = request.RequestToken;
+            if (request.Code is not null) input["code"] = request.Code;
             if (request.ClientCode is not null) input["clientcode"] = request.ClientCode;
             if (request.Password is not null) input["password"] = request.Password;
             if (request.Totp is not null) input["totp"] = request.Totp;
