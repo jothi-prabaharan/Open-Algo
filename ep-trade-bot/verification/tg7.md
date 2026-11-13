@@ -14,8 +14,8 @@ The other 30 brokers in the task list are not started.
 
 ## Not done, and why Gate 7 is open
 
-- **Market-data feeds** for Dhan, Upstox and Fyers. Each is a separate wire protocol (Dhan binary, Upstox protobuf, Fyers HSM binary) and needs its own codec held to the Python adapter, as the Zerodha, Angel One, Paytm Money and Delta Exchange feeds were.
-- **Delta Exchange fractional (spot) quantities.** This crosses the request model, not only the plugin: quantity is whole everywhere in the order pipeline today.
+- **Market-data feeds** for Dhan, Upstox and Fyers. What the Upstox one needs beyond the codec itself: subscribe messages that are JSON sent as binary frames (the feed contract carries text only), a stream address fetched from Upstox with the token before connecting (the contract builds it without a call), a protobuf reader for its `FeedResponse` messages, and the per-mode key limits of its adapter. Each is a separate wire protocol (Dhan binary, Upstox protobuf, Fyers HSM binary) and needs its own codec held to the Python adapter, as the Zerodha, Angel One, Paytm Money and Delta Exchange feeds were.
+- **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
 - **The 30 brokers not started** (fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, ibulls, iifl, iiflcapital, indmoney, jainamxts, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, wisdom, zebu). Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
