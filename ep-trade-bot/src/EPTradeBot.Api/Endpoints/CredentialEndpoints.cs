@@ -52,6 +52,12 @@ internal static class CredentialEndpoints
             if (LoginRefusal(account, registry, out var login) is { } refused) return refused;
             var state = states.Issue(account.Id);
             if (login!.LoginMethod == LoginMethod.Credentials) return Results.Json(new { status = "success", method = "credentials", fields = login.LoginFields });
+            if (login is IBrokerLoginStart asks)
+            {
+                var start = await asks.StartAsync(sessions.KeysFor(account.Broker), account.ClientId, state, ct);
+                return start.Url is { } page ? Results.Json(new { status = "success", method = "redirect", login_url = page, state }) : Failed(start.HttpStatus, start.Message);
+            }
+
             return login.LoginUrl(sessions.KeysFor(account.Broker), state) is { } url
                 ? Results.Json(new { status = "success", method = "redirect", login_url = url, state })
                 : Failed(409, $"The {login.DisplayName} API key is not set on this server. Add it to the server's settings, then sign in again.");
@@ -70,6 +76,7 @@ internal static class CredentialEndpoints
             var input = new Dictionary<string, string>(StringComparer.Ordinal);
             if (request.RequestToken is not null) input["request_token"] = request.RequestToken;
             if (request.Code is not null) input["code"] = request.Code;
+            if (!string.IsNullOrWhiteSpace(account.ClientId)) input["client_id"] = account.ClientId;
             if (request.ClientCode is not null) input["clientcode"] = request.ClientCode;
             if (request.Password is not null) input["password"] = request.Password;
             if (request.Totp is not null) input["totp"] = request.Totp;

@@ -4,7 +4,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 
 | Broker | Orders and books | Funds | Quotes and depth | History | Margin | GTT | Login | Feed |
 |---|---|---|---|---|---|---|---|---|
-| Dhan | yes | yes | yes | yes | yes | no | no | no |
+| Dhan | yes | yes | yes | yes | yes | no | yes | no |
 | Dhan Sandbox | yes | yes | yes | yes | no | no | no | no |
 | Upstox | yes | yes | yes | yes | yes | no | yes | no |
 | Fyers | yes | yes | yes | yes | yes | no | yes | no |
@@ -33,3 +33,11 @@ The other 30 brokers in the task list are not started.
 - Ported from `broker/deltaexchange/api/auth_api.py`: no redirect and nothing typed. The key and secret from settings are proven by one signed `GET /v2/profile`; the key is stored as the session token. Setting `ApiKey` and `ApiSecret` under `Brokers:Keys:deltaexchange`; either missing answers 409 without calling Delta.
 - Contract: five recorded cases (success, profile not successful, key refused, blocked by the address allow-list, other status). An unexpected status is a 502 here (Python answers 400), worded as a retry.
 - Mutation: `tools/mutation/tg7-delta-login.json`, 7 mutants, all caught.
+
+## Dhan sign-in (live Dhan only)
+
+- Ported from `broker/dhan/api/auth_api.py` and the Dhan branch of `blueprints/brlogin.py`. Starting a sign-in asks Dhan for a consent under the client id and returns Dhan's consent page; the token id Dhan sends back is exchanged at `/app/consumeApp-consent`; a pasted access token (over 100 characters) is taken instead. Either token is proven with a read of the fund limits and refused when it is for another account than the configured client id, or when Dhan names no account.
+- New in the shared code: `IBrokerLoginStart` (a broker whose sign-in page has to be asked for first), used by `/broker-login/start`; the complete call passes the account's client id to the plugin.
+- Differences from OpenAlgo, on purpose: the configured client id is the key's `client_id:::` prefix, else the account's own client id (OpenAlgo checks only the prefix); a pasted token is also taken through the state-checked complete call, where OpenAlgo takes it from its own form; a pasted token is proven with one read of the fund limits where OpenAlgo makes two.
+- Contract: ten recorded cases, with the steps of `brlogin.py` replayed over the real Dhan functions by `sign_in_steps` in the scenario (the recorder runs it when a scenario names one). Integration: four tests (consent request and page, missing client id, account mismatch with nothing stored, headers). Mutation: `tools/mutation/tg7-dhan-login.json`, 13 mutants, all caught. One more was removed as dead code: a pasted token is by definition longer than 100 characters, so a length check below 50 could never run.
+- Dhan Sandbox has no sign-in here; its token is entered by hand as before.

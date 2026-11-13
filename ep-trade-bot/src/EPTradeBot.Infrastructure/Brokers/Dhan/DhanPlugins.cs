@@ -14,8 +14,21 @@ namespace EPTradeBot.Infrastructure.Brokers.Dhan;
 /// <summary>Dhan v2 (broker/dhan). Request and response mapping held to tools/contract-fixtures/dhan.fixtures.json.</summary>
 [BrokerPlugin]
 public sealed class DhanPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, IMarketSessions calendar, TimeProvider clock, ILogger<DhanPlugin> logger)
-    : DhanPluginBase(http, sessions, symbols, calendar, clock, logger)
+    : DhanPluginBase(http, sessions, symbols, calendar, clock, logger), IBrokerLoginStart
 {
+    public LoginMethod LoginMethod => LoginMethod.Redirect;
+
+    public IReadOnlyList<string> LoginFields { get; } = [];
+
+    /// <summary>Dhan's page cannot be worked out without asking Dhan, so the address comes from <see cref="StartAsync"/>.</summary>
+    public string? LoginUrl(IReadOnlyDictionary<string, string> keys, string state) => null;
+
+    public Task<LoginStart> StartAsync(IReadOnlyDictionary<string, string> keys, string? clientId, string state, CancellationToken cancellationToken) =>
+        ConsentAsync(keys, clientId, cancellationToken);
+
+    public Task<BrokerLoginResult> LoginAsync(IReadOnlyDictionary<string, string> keys, IReadOnlyDictionary<string, string> input, CancellationToken cancellationToken) =>
+        SignInAsync(keys, input, cancellationToken);
+
     public override string Name => "dhan";
     public override string DisplayName => "Dhan";
     protected override string DefaultBaseUrl => "https://api.dhan.co";
@@ -40,9 +53,9 @@ public sealed class DhanSandboxPlugin(IHttpClientFactory http, BrokerSessionFact
 /// <summary>
 /// The Dhan family. Port of broker/dhan and broker/dhan_sandbox: order_api.py, funds.py,
 /// data.py (quotes, depth), mapping/transform_data.py and mapping/order_data.py.
-/// Not ported yet, and refused rather than guessed: GTT, margin, login and the feed.
+/// Not ported yet, and refused rather than guessed: GTT and the feed. Sign-in is the live Dhan's only.
 /// </summary>
-public abstract class DhanPluginBase(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, IMarketSessions calendar, TimeProvider clock, ILogger logger)
+public abstract partial class DhanPluginBase(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, IMarketSessions calendar, TimeProvider clock, ILogger logger)
     : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin
 {
     public abstract string Name { get; }

@@ -228,8 +228,10 @@ for sc in SCENARIOS.SCENARIOS:
     if "login" in sc:
         # A broker sign-in is not an /api/v1 route: call the plugin's authenticate_broker directly and record what it returns.
         auth_api = importlib.import_module(f"broker.{BROKER}.api.auth_api")
-        result = tuple(auth_api.authenticate_broker(*sc["login"]))
-        token, feed, error = (result[0], None, result[1]) if len(result) == 2 else result
+        # A sign-in whose steps live in the login blueprint rather than in authenticate_broker names its own function: (token, feed, error, status).
+        result = tuple(SCENARIOS.sign_in_steps(*sc["login"]) if hasattr(SCENARIOS, "sign_in_steps") else auth_api.authenticate_broker(*sc["login"]))
+        token, feed, error = (result[0], None, result[1]) if len(result) == 2 else result[:3]
+        failed_status = result[3] if len(result) == 4 else 400
         if isinstance(error, dict):
             # Fyers returns its whole answer; a refusal is the message inside it.
             error = None if token else error.get("message")
@@ -241,13 +243,13 @@ for sc in SCENARIOS.SCENARIOS:
                 "auth": "admin",
                 "request": sc["request"],
                 "broker": state["canned"],
-                "expected": {"status": 400 if error else 200, "body": {"status": "error", "message": error} if error else {"status": "success"}},
+                "expected": {"status": failed_status if error else 200, "body": {"status": "error", "message": error} if error else {"status": "success"}},
                 "stored": None if error else {"auth_token": getattr(SCENARIOS, "stored", lambda t: t)(token), "feed_token": feed},
                 "sent": state["sent"],
                 "ignore": sc.get("ignore", []),
             }
         )
-        print(f"{400 if error else 200} {sc['name']}")
+        print(f"{failed_status if error else 200} {sc['name']}")
         continue
     body = dict(sc["request"])
     if sc.get("auth", "body") == "body":

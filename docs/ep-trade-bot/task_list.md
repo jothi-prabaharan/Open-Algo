@@ -70,8 +70,8 @@ Built already during TG3, kept as they are (contract-verified for the pieces lis
 - [x] Upstox (orders, books, funds, quotes, history, margin)
 - [x] Fyers (orders, books, funds, quotes, history, margin, option chain call)
 - [x] Delta Exchange (orders, books, funds, quotes, history, margin)
-- [x] Login for Upstox, Fyers and Delta Exchange (`verification/tg7.md`)
-- [ ] For the rest of those five: GTT, login (Dhan), market-data feeds, Dhan Sandbox margin, Delta leverage and fractional quantities
+- [x] Login for Upstox, Fyers, Delta Exchange and Dhan (`verification/tg7.md`)
+- [ ] For the rest of those five: GTT, market-data feeds, Dhan Sandbox margin, Delta leverage and fractional quantities
 
 Not started (30): fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, ibulls, iifl, iiflcapital, indmoney, jainamxts, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, wisdom, zebu
 - [ ] Gate 7 artifact (per-broker verification status for all of the above)

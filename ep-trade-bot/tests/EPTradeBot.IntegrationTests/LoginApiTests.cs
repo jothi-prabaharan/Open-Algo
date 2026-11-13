@@ -141,6 +141,72 @@ public sealed class LoginApiTests
         Assert.Empty(broker.Sent);
     }
 
+    private static TestHost DhanHost(FakeBroker broker, string apiKey) => new("Production", b =>
+    {
+        b.UseSetting("Brokers:Enabled:0", "dhan");
+        b.UseSetting("Brokers:Keys:dhan:ApiKey", apiKey);
+        b.UseSetting("Brokers:Keys:dhan:ApiSecret", "dhan-secret");
+        b.ConfigureServices(s => s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => broker)));
+    });
+
+    [PostgresFact]
+    public async Task Dhan_start_asks_dhan_for_a_consent_under_the_client_id_and_gives_its_page()
+    {
+        var broker = new FakeBroker();
+        broker.Reset(new Dictionary<string, (int, string)> { ["POST /app/generate-consent"] = (200, """{"status":"success","consentAppId":"consent-9"}""") });
+        await using var host = DhanHost(broker, "plain-key-without-client");
+        var account = await host.CreateAccountAsync(AccountType.LIVE, "dh", broker: "dhan", clientId: "DH7");
+
+        var (status, started) = await PostAsync(host, $"/api/v1/accounts/{account}/broker-login/start");
+        Assert.Equal(200, status);
+        Assert.Equal("https://auth.dhan.co/login/consentApp-login?consentAppId=consent-9", started["login_url"]!.GetValue<string>());
+        var sent = Assert.Single(broker.Sent);
+        Assert.Contains("client_id=DH7", sent.Query.Select(q => $"{q.Key}={q.Value}"));
+        Assert.Equal("plain-key-without-client", sent.Headers["app_id"]);
+        Assert.Equal("dhan-secret", sent.Headers["app_secret"]);
+    }
+
+    [PostgresFact]
+    public async Task Dhan_start_without_any_client_id_is_refused_before_calling_dhan()
+    {
+        var broker = new FakeBroker();
+        await using var host = DhanHost(broker, "plain-key-without-client");
+        var account = await host.CreateAccountAsync(AccountType.LIVE, "dh", broker: "dhan");
+        await using (var db = host.NewDb())
+        {
+            (await db.BrokerAccounts.FindAsync(account))!.ClientId = null;
+            await db.SaveChangesAsync();
+        }
+
+        var (status, answer) = await PostAsync(host, $"/api/v1/accounts/{account}/broker-login/start");
+        Assert.Equal(400, status);
+        Assert.Contains("client id", answer["message"]!.GetValue<string>());
+        Assert.Empty(broker.Sent);
+    }
+
+    [PostgresFact]
+    public async Task Dhan_token_for_another_account_than_the_accounts_client_id_is_refused_and_not_stored_even_when_the_key_names_none()
+    {
+        var broker = new FakeBroker();
+        broker.Reset(new Dictionary<string, (int, string)>
+        {
+            ["POST /app/generate-consent"] = (200, """{"status":"success","consentAppId":"consent-9"}"""),
+            ["POST /app/consumeApp-consent"] = (200, """{"accessToken":"dhan-new","dhanClientId":"DH9"}"""),
+            ["GET /v2/fundlimit"] = (200, """{"dhanClientId":"DH9"}"""),
+        });
+        await using var host = DhanHost(broker, "plain-key-without-client");
+        var account = await host.CreateAccountAsync(AccountType.LIVE, "dh", broker: "dhan", clientId: "DH7");
+        var (_, started) = await PostAsync(host, $"/api/v1/accounts/{account}/broker-login/start");
+        var state = started["state"]!.GetValue<string>();
+
+        var (status, answer) = await PostAsync(host, $"/api/v1/accounts/{account}/broker-login/complete", new { request_token = "tok", state });
+        Assert.Equal(409, status);
+        Assert.Contains("different account", answer["message"]!.GetValue<string>());
+        Assert.DoesNotContain(broker.Sent, r => r.Path == "/v2/fundlimit");
+        await using var db = host.NewDb();
+        Assert.Null((await db.BrokerAccounts.FindAsync(account))!.AuthTokenEncrypted);
+    }
+
     [PostgresFact]
     public async Task An_answer_without_a_state_started_here_is_refused_and_reaches_no_broker()
     {

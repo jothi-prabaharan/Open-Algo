@@ -68,6 +68,15 @@ public sealed class LoginDeltaHost : BrokerContractHost
     public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
 }
 
+public sealed class LoginDhanHost : BrokerContractHost
+{
+    public override string BrokerName => "dhan";
+    public override string FixtureFile => "login_dhan.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "DH1000:::dhan-app-key", ["ApiSecret"] = "dhan-app-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
 internal static class LoginDeviations
 {
     public const string Words = "OpenAlgo shows the broker's raw error text, prefixed with \"API error\" or not at all. EP Trade bot says in a sentence which broker refused and what to do next.";
@@ -169,6 +178,30 @@ public sealed class LoginDeltaContractTests(LoginDeltaHost host, ITestOutputHelp
     };
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("login_deltaexchange.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
+
+public sealed class LoginDhanContractTests(LoginDhanHost host, ITestOutputHelper output) : IClassFixture<LoginDhanHost>
+{
+    private const string NoToken = "Dhan accepted the sign-in but sent no access token. Start the sign-in again.";
+    private const string Other = "This Dhan sign-in is for a different account than the client id saved for Dhan. Sign in with that account, or change the client id in the server's settings.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_consent_refused"] = LoginDeviations.Refused("Dhan did not accept the sign-in. Start it again from the beginning."),
+        ["login_consent_without_an_access_token"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error(NoToken))),
+        ["login_consent_for_another_account"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 409, ContractRunner.Error(Other))),
+        ["login_consent_names_no_account"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 409, ContractRunner.Error("Dhan did not confirm which account this sign-in is for, so it was not stored. Sign in again."))),
+        ["login_token_fails_the_fund_limits_check"] = LoginDeviations.Refused("Dhan did not accept that access token. Sign in again to get a fresh one."),
+        ["login_token_fails_the_fund_limits_check_by_status"] = LoginDeviations.Refused("Dhan did not accept that access token. Sign in again to get a fresh one."),
+        ["login_pasted_access_token_for_another_account"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 409, ContractRunner.Error(Other))),
+        ["login_pasted_access_token_refused_by_dhan"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 401, ContractRunner.Error("Dhan did not accept that access token. Sign in again to get a fresh one."))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_dhan.fixtures.json");
 
     [PostgresTheory]
     [MemberData(nameof(Names))]

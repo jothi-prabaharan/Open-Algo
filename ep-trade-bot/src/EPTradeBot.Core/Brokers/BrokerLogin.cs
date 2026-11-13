@@ -32,6 +32,20 @@ public interface IBrokerLogin : IBrokerPlugin
     Task<BrokerLoginResult> LoginAsync(IReadOnlyDictionary<string, string> keys, IReadOnlyDictionary<string, string> input, CancellationToken cancellationToken);
 }
 
+/// <summary>A sign-in page that could be worked out, or the plain reason it could not.</summary>
+public sealed record LoginStart(string? Url, string Message, int HttpStatus = 409)
+{
+    public static LoginStart At(string url) => new(url, "", 200);
+    public static LoginStart Refused(string message, int status = 409) => new(null, message, status);
+}
+
+/// <summary>A redirect broker whose sign-in page has to be asked for first (Dhan issues a consent for each sign-in).</summary>
+public interface IBrokerLoginStart : IBrokerLogin
+{
+    /// <summary>Asks the broker for this sign-in's page. <paramref name="clientId"/> is the account's client id when it has one.</summary>
+    Task<LoginStart> StartAsync(IReadOnlyDictionary<string, string> keys, string? clientId, string state, CancellationToken cancellationToken);
+}
+
 /// <summary>Where and how to connect to a broker's market-data stream.</summary>
 public sealed record FeedEndpoint(Uri Url, IReadOnlyDictionary<string, string> Headers);
 

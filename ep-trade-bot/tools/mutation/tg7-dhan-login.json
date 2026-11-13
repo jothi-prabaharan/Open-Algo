@@ -1,0 +1,118 @@
+[
+ {
+  "name": "H1 pasted-token cut-off moved",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Login.cs",
+  "old": "given.Length > 100",
+  "new": "given.Length > 1000",
+  "filter": "FullyQualifiedName~LoginDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H3 consent mismatch skipped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Login.cs",
+  "old": "if (Mismatch(configured, reported) is { } early) return early;",
+  "new": "if (Environment.TickCount64 < 0) return BrokerLoginResult.Refused(\"\");",
+  "filter": "FullyQualifiedName~LoginDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H4 pasted mismatch skipped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Login.cs",
+  "old": "if (direct && Mismatch(configured, Str(fundBody[\"dhanClientId\"])) is { } late) return late;",
+  "new": "",
+  "filter": "FullyQualifiedName~LoginDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H5 invalid auth ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Login.cs",
+  "old": "Str(fundBody?[\"errorType\"]) == \"Invalid_Authentication\" ||",
+  "new": "",
+  "filter": "FullyQualifiedName~LoginDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H6 error status ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Login.cs",
+  "old": "|| Str(fundBody?[\"status\"]) == \"error\"",
+  "new": "",
+  "filter": "FullyQualifiedName~LoginDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H7 unnamed account allowed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Login.cs",
+  "old": "if (string.IsNullOrWhiteSpace(reported))\n            return BrokerLoginResult.Refused(\"Dhan did not confirm",
+  "new": "if (Environment.TickCount64 < 0)\n            return BrokerLoginResult.Refused(\"Dhan did not confirm",
+  "filter": "FullyQualifiedName~LoginDhan",
+  "project": "EPTradeBot.Contract.Tests",
+  "also": [
+   {
+    "old": "reported.Trim() == configured.Trim()",
+    "new": "reported?.Trim() == configured.Trim()"
+   }
+  ]
+ },
+ {
+  "name": "H8 consent http error ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Login.cs",
+  "old": "if (!response.IsSuccessStatusCode) return BrokerLoginResult.Refused(\"Dhan did not accept the sign-in.",
+  "new": "if (Environment.TickCount64 < 0) return BrokerLoginResult.Refused(\"Dhan did not accept the sign-in.",
+  "filter": "FullyQualifiedName~LoginDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H9 consume header missing",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Login.cs",
+  "old": "request.Headers.TryAddWithoutValidation(\"app_id\", appKey);",
+  "new": "request.Headers.TryAddWithoutValidation(\"app_id\", appSecret);",
+  "filter": "FullyQualifiedName~Dhan_",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H10 key prefix not split",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Login.cs",
+  "old": "apiKey.Split(\":::\", 2) is { Length: 2 } parts",
+  "new": "apiKey.Split(\":::::\", 2) is { Length: 2 } parts",
+  "filter": "FullyQualifiedName~LoginDhan",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H11 client id not used for consent",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Login.cs",
+  "old": "var clientId = keyClient ?? accountClientId;",
+  "new": "var clientId = keyClient;",
+  "filter": "FullyQualifiedName~Dhan_",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H12 no client id allowed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Login.cs",
+  "old": "if (string.IsNullOrWhiteSpace(clientId))\n            return LoginStart.Refused(\"Dhan needs",
+  "new": "if (Environment.TickCount64 < 0)\n            return LoginStart.Refused(\"Dhan needs",
+  "filter": "FullyQualifiedName~Dhan_",
+  "project": "EPTradeBot.IntegrationTests",
+  "also": [
+   {
+    "old": "Uri.EscapeDataString(clientId)",
+    "new": "Uri.EscapeDataString(clientId ?? \"\")"
+   }
+  ]
+ },
+ {
+  "name": "H13 account client id not checked",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Login.cs",
+  "old": "var configured = keyClient ?? Present(input, \"client_id\");",
+  "new": "var configured = keyClient;",
+  "filter": "FullyQualifiedName~Dhan_",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "H14 consent page address changed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Dhan/DhanPluginBase.Login.cs",
+  "old": "/login/consentApp-login?consentAppId=",
+  "new": "/login/other?consentAppId=",
+  "filter": "FullyQualifiedName~Dhan_",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]

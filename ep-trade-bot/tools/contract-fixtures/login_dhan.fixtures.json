@@ -1,0 +1,732 @@
+{
+  "broker": "dhan",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_consent_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "tok-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /app/generate-consent": {
+          "body": {
+            "status": "success",
+            "consentAppId": "consent-app-1"
+          }
+        },
+        "POST /app/consumeApp-consent": {
+          "body": {
+            "accessToken": "dhan-access-777",
+            "dhanClientId": "DH1000",
+            "dhanClientName": "T",
+            "givenPowerOfAttorney": false
+          }
+        },
+        "GET /v2/fundlimit": {
+          "body": {
+            "dhanClientId": "DH1000",
+            "availabelBalance": 100.0
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "dhan-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/generate-consent",
+          "query": [
+            [
+              "client_id",
+              "DH1000"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/consumeApp-consent",
+          "query": [
+            [
+              "tokenId",
+              "tok-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/fundlimit",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-777",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_consent_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "tok-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /app/generate-consent": {
+          "body": {
+            "status": "success",
+            "consentAppId": "consent-app-1"
+          }
+        },
+        "POST /app/consumeApp-consent": {
+          "status": 500,
+          "body": {
+            "error": "x"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Failed to consume consent: 500"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/generate-consent",
+          "query": [
+            [
+              "client_id",
+              "DH1000"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/consumeApp-consent",
+          "query": [
+            [
+              "tokenId",
+              "tok-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_consent_without_an_access_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "tok-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /app/generate-consent": {
+          "body": {
+            "status": "success",
+            "consentAppId": "consent-app-1"
+          }
+        },
+        "POST /app/consumeApp-consent": {
+          "body": {
+            "dhanClientId": "DH1000"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Access token not found in response"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/generate-consent",
+          "query": [
+            [
+              "client_id",
+              "DH1000"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/consumeApp-consent",
+          "query": [
+            [
+              "tokenId",
+              "tok-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_consent_for_another_account",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "tok-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /app/generate-consent": {
+          "body": {
+            "status": "success",
+            "consentAppId": "consent-app-1"
+          }
+        },
+        "POST /app/consumeApp-consent": {
+          "body": {
+            "accessToken": "dhan-access-777",
+            "dhanClientId": "DH2000"
+          }
+        },
+        "GET /v2/fundlimit": {
+          "body": {
+            "dhanClientId": "DH1000",
+            "availabelBalance": 100.0
+          }
+        }
+      },
+      "expected": {
+        "status": 409,
+        "body": {
+          "status": "error",
+          "message": "This Dhan login is for a different account than the client ID saved for Dhan. Log in with that account, or change the client ID under Broker Configuration."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/generate-consent",
+          "query": [
+            [
+              "client_id",
+              "DH1000"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/consumeApp-consent",
+          "query": [
+            [
+              "tokenId",
+              "tok-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_consent_names_no_account",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "tok-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /app/generate-consent": {
+          "body": {
+            "status": "success",
+            "consentAppId": "consent-app-1"
+          }
+        },
+        "POST /app/consumeApp-consent": {
+          "body": {
+            "accessToken": "dhan-access-777"
+          }
+        },
+        "GET /v2/fundlimit": {
+          "body": {
+            "dhanClientId": "DH1000",
+            "availabelBalance": 100.0
+          }
+        }
+      },
+      "expected": {
+        "status": 409,
+        "body": {
+          "status": "error",
+          "message": "Dhan did not confirm which account this login is for, so it was not stored. Log in again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/generate-consent",
+          "query": [
+            [
+              "client_id",
+              "DH1000"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/consumeApp-consent",
+          "query": [
+            [
+              "tokenId",
+              "tok-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_token_fails_the_fund_limits_check",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "tok-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /app/generate-consent": {
+          "body": {
+            "status": "success",
+            "consentAppId": "consent-app-1"
+          }
+        },
+        "POST /app/consumeApp-consent": {
+          "body": {
+            "accessToken": "dhan-access-777",
+            "dhanClientId": "DH1000",
+            "dhanClientName": "T",
+            "givenPowerOfAttorney": false
+          }
+        },
+        "GET /v2/fundlimit": {
+          "body": {
+            "errorType": "Invalid_Authentication",
+            "errorMessage": "Client ID or user generated consent is invalid"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication validation failed: Client ID or user generated consent is invalid"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/generate-consent",
+          "query": [
+            [
+              "client_id",
+              "DH1000"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/consumeApp-consent",
+          "query": [
+            [
+              "tokenId",
+              "tok-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/fundlimit",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-777",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_pasted_access_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /app/generate-consent": {
+          "body": {
+            "status": "success",
+            "consentAppId": "consent-app-1"
+          }
+        },
+        "GET /v2/fundlimit": {
+          "body": {
+            "dhanClientId": "DH1000",
+            "availabelBalance": 100.0
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/generate-consent",
+          "query": [
+            [
+              "client_id",
+              "DH1000"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/fundlimit",
+          "query": [],
+          "headers": {
+            "access-token": "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/fundlimit",
+          "query": [],
+          "headers": {
+            "access-token": "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_pasted_access_token_for_another_account",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /app/generate-consent": {
+          "body": {
+            "status": "success",
+            "consentAppId": "consent-app-1"
+          }
+        },
+        "GET /v2/fundlimit": {
+          "body": {
+            "dhanClientId": "DH2000"
+          }
+        }
+      },
+      "expected": {
+        "status": 409,
+        "body": {
+          "status": "error",
+          "message": "This Dhan login is for a different account than the client ID saved for Dhan. Log in with that account, or change the client ID under Broker Configuration."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/generate-consent",
+          "query": [
+            [
+              "client_id",
+              "DH1000"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/fundlimit",
+          "query": [],
+          "headers": {
+            "access-token": "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/fundlimit",
+          "query": [],
+          "headers": {
+            "access-token": "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_pasted_access_token_refused_by_dhan",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /app/generate-consent": {
+          "body": {
+            "status": "success",
+            "consentAppId": "consent-app-1"
+          }
+        },
+        "GET /v2/fundlimit": {
+          "body": {
+            "errorType": "Invalid_Authentication",
+            "errorMessage": "Token expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 401,
+        "body": {
+          "status": "error",
+          "message": "Token validation failed: Token expired"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/generate-consent",
+          "query": [
+            [
+              "client_id",
+              "DH1000"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/fundlimit",
+          "query": [],
+          "headers": {
+            "access-token": "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_token_fails_the_fund_limits_check_by_status",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "tok-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /app/generate-consent": {
+          "body": {
+            "status": "success",
+            "consentAppId": "consent-app-1"
+          }
+        },
+        "POST /app/consumeApp-consent": {
+          "body": {
+            "accessToken": "dhan-access-777",
+            "dhanClientId": "DH1000",
+            "dhanClientName": "T",
+            "givenPowerOfAttorney": false
+          }
+        },
+        "GET /v2/fundlimit": {
+          "body": {
+            "status": "error",
+            "errors": "Account blocked"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication validation failed: Account blocked"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/generate-consent",
+          "query": [
+            [
+              "client_id",
+              "DH1000"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "auth.dhan.co",
+          "path": "/app/consumeApp-consent",
+          "query": [
+            [
+              "tokenId",
+              "tok-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.dhan.co",
+          "path": "/v2/fundlimit",
+          "query": [],
+          "headers": {
+            "access-token": "dhan-access-777",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
