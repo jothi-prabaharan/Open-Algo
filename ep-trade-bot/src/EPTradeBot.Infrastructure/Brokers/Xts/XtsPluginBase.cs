@@ -561,3 +561,17 @@ public sealed class IbullsPlugin(IHttpClientFactory http, BrokerSessionFactory s
         return (order.PriceType, order.Price);
     }
 }
+
+/// <summary>Jainam's XTS server (broker/jainamxts). Its interactive sign-in carries an access token with the fixed value "jainamxts" in place of a source.</summary>
+[BrokerPlugin]
+public sealed class JainamXtsPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<JainamXtsPlugin> logger)
+    : XtsPluginBase(http, sessions, symbols, logger)
+{
+    public override string Name => "jainamxts";
+    public override string DisplayName => "Jainam";
+    protected override string DefaultBaseUrl => "https://jtrade.jainam.in:5000";
+    protected override string MarketDataPath => "/apibinarymarketdata";
+
+    protected override JsonObject SessionBody(string appKey, string secretKey) =>
+        new() { ["appKey"] = appKey, ["secretKey"] = secretKey, ["accessToken"] = "jainamxts" };
+}

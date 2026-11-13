@@ -13,15 +13,16 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | 5paisa XTS | yes | yes | yes | yes | no | no | yes | no |
 | IIFL (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | iBulls (XTS) | yes | yes | yes | yes | no | no | yes | no |
+| Jainam (XTS) | yes | yes | yes | yes | no | no | yes | no |
 
-The other 26 brokers in the task list are not started. The three other XTS brokers (jainamxts, compositedge, rmoney) are next: they share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
+The other 25 brokers in the task list are not started. The two other XTS brokers (compositedge, rmoney) are next: they share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
 ## Not done, and why Gate 7 is open
 
 - Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **The 26 brokers not started** (fivepaisa, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, jainamxts, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, zebu). Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **The 25 brokers not started** (fivepaisa, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, zebu). Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
 ## Upstox sign-in
 
@@ -148,7 +149,7 @@ The other 26 brokers in the task list are not started. The three other XTS broke
 - Deviations: a refused or empty quote is an error naming the broker and its reason (OpenAlgo says "Failed to fetch market data"); a refused depth is an error (OpenAlgo answers success with a depth of zeros, which reads as an empty market).
 - Not modelled: OpenAlgo refreshes an expired feed token itself (a market-data sign-in in the middle of a quote). EP Trade bot's plugin cannot store a new token, so an expired market-data session shows as the broker's refusal until the next sign-in.
 - Mutation: `tools/mutation/tg7-xts-data.json`, 11 mutants, all caught (three equivalent ones removed or simplified).
-- Still not ported for XTS: margin, the feed, and Jainam, CompositEdge and RMoney (different sign-in).
+- Still not ported for XTS: margin, the feed, and CompositEdge and RMoney (different sign-in).
 
 ## XTS history
 
@@ -162,3 +163,10 @@ The other 26 brokers in the task list are not started. The three other XTS broke
 - Same XTS base class, with the market-data service under `/apibinarymarketdata`. Held to `broker/ibulls`: 40 recorded cases for orders, books and funds (`ibulls.fixtures.json`), 8 for sign-in, 17 for quotes and depth, 19 for history.
 - iBulls turns a market order into a limit order priced from a quote: bid plus 0.1 percent to buy, ask minus 0.1 percent to sell, rounded to two places; with no usable quote (no market-data token, a refused quote, a bid or ask of zero) the order goes as a market order. Seven recorded cases pin this. OpenAlgo looks the market-data token up by the logged-in user's name, falling back to a name hard-coded in the plugin; EP Trade bot uses the account's own token.
 - Mutation: `tools/mutation/tg7-ibulls.json`, 10 mutants, all caught.
+
+## Jainam (XTS)
+
+- Same XTS base class, market data under `/apibinarymarketdata`, address `https://jtrade.jainam.in:5000`. Held to `broker/jainamxts`: 36 recorded cases for orders, books and funds, 8 for sign-in, 17 for quotes and depth, 19 for history (80 in all).
+- Its interactive sign-in sends an `accessToken` with the fixed word "jainamxts" instead of a source (the sign-in handler in OpenAlgo passes that word); the market-data sign-in is the usual one. Like IIFL, Jainam signs in to market data again when told the token is invalid; EP Trade bot reports the refusal instead.
+- OpenAlgo's Jainam plugin fails with an internal error on a trade with no price and on a position reply with no result (as 5paisa XTS and IIFL do); EP Trade bot answers as for a well-formed reply.
+- Mutation: `tools/mutation/tg7-jainam.json`, 2 mutants, both caught (the rest is the shared base).

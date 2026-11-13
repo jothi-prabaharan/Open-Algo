@@ -507,3 +507,116 @@ public sealed class IbullsHistoryContractTests(IbullsHistoryHost host, ITestOutp
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
 
+
+public sealed class JainamXtsHost : XtsHost
+{
+    public override string BrokerName => "jainamxts";
+    public override string FixtureFile => "jainamxts.fixtures.json";
+}
+
+/// <summary>Jainam against the Python implementation (tools/contract-fixtures/jainamxts.fixtures.json).</summary>
+public sealed class JainamXtsContractTests(JainamXtsHost host, ITestOutputHelper output) : IClassFixture<JainamXtsHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = Build();
+
+    private static Dictionary<string, Deviation> Build()
+    {
+        var d = XtsDeviations.WithCrashes("Jainam");
+        return d;
+    }
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("jainamxts.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class JainamXtsDataHost : XtsHost
+{
+    public override string BrokerName => "jainamxts";
+    public override string FixtureFile => "jainamxts_data.fixtures.json";
+}
+
+/// <summary>Jainam market data against the Python implementation (tools/contract-fixtures/jainamxts_data.fixtures.json).</summary>
+public sealed class JainamXtsDataContractTests(JainamXtsDataHost host, ITestOutputHelper output) : IClassFixture<JainamXtsDataHost>
+{
+    private const string Words = "OpenAlgo answers a refused or empty quote with \"Failed to fetch market data\"; EP Trade bot names the broker and passes its reason on.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["quotes_market_data_refused"] = new(Words, f => Expect(f, 500, Error("Jainam could not send the quote: Market data not enabled"))),
+        ["quotes_empty_list"] = new(Words, f => Expect(f, 500, Error("Jainam has no quote for SBIN right now."))),
+        ["multiquotes_refused"] = new(Words, f => Expect(f, 500, Error("Jainam could not send the quotes: Market data not enabled"))),
+        ["depth_market_data_refused"] = new(
+            "OpenAlgo answers success with a depth of zeros when the broker refuses, which reads as a market with no orders. EP Trade bot reports the refusal.",
+            f => Expect(f, 500, Error("Jainam could not send the quote: Market data not enabled"))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("jainamxts_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+
+public sealed class JainamXtsHistoryHost : XtsHost
+{
+    public override string BrokerName => "jainamxts";
+    public override string FixtureFile => "history_jainamxts.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>Jainam history against the Python implementation (tools/contract-fixtures/history_jainamxts.fixtures.json).</summary>
+public sealed class JainamXtsHistoryContractTests(JainamXtsHistoryHost host, ITestOutputHelper output) : IClassFixture<JainamXtsHistoryHost>
+{
+    private const string Quiet = "OpenAlgo fails with \"No objects to concatenate\" when no candle came back, which looks like a fault; EP Trade bot answers success with no candles.";
+
+    private static void Refused(JsonObject f, string from, string to) =>
+        Expect(f, 500, Error($"Jainam could not send the candles for {from} to {to}: Invalid Token"));
+
+    private const string NoRefresh = "Jainam signs in to market data again when it is told the token is invalid, then tries the call once more. EP Trade bot's plugin cannot store a new token, so it reports the refusal.";
+
+    private static Action<JsonObject> DropRefresh(Action<JsonObject> inner) => f =>
+    {
+        inner(f);
+        var sent = f["sent"]!.AsArray();
+        foreach (var s in sent.OfType<JsonObject>().Where(s => s["path"]!.GetValue<string>() == "/apibinarymarketdata/auth/login").ToList()) sent.Remove(s);
+    };
+
+    public static readonly Dictionary<string, Deviation> Deviations = Refreshing(new()
+    {
+        ["history_nothing_traded"] = new(Quiet, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray() })),
+        ["history_end_before_start"] = new(Quiet, f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray() })),
+        ["history_refused"] = new("OpenAlgo shows an internal-looking message; EP Trade bot says which days were refused and why.", f => Refused(f, "2026-11-02", "2026-11-02")),
+        ["history_unsupported_interval"] = new(
+            "OpenAlgo answers 500 with \"Unsupported timeframe: 4h\". EP Trade bot answers 400 and names what Jainam offers.",
+            f => Expect(f, 400, Error("Jainam does not offer 4h candles. Choose one of: 1s, 1m, 2m, 3m, 5m, 10m, 15m, 30m, 60m, D."))),
+        ["history_chunked_in_weeks"] = new(
+            "OpenAlgo ends every week but the last at midnight of its seventh day and starts the next on the day after, so the seventh day's trading is never asked for. EP Trade bot asks for the whole of each day.",
+            f =>
+            {
+                var sent = f["sent"]!.AsArray();
+                sent[0]!["query"]!.AsArray()[3]!.AsArray()[1] = "Oct 25 2026 235959";
+                sent[1]!["query"]!.AsArray()[3]!.AsArray()[1] = "Nov 01 2026 235959";
+            }),
+        ["history_one_chunk_refused"] = new("OpenAlgo shows an internal-looking message; EP Trade bot says which days were refused and why.", f =>
+        {
+            Refused(f, "2026-11-02", "2026-11-02");
+            f["sent"]!.AsArray()[0]!["query"]!.AsArray()[3]!.AsArray()[1] = "Nov 01 2026 235959";
+        }),
+    });
+
+    private static Dictionary<string, Deviation> Refreshing(Dictionary<string, Deviation> d)
+    {
+        foreach (var name in new[] { "history_refused", "history_one_chunk_refused" }) d[name] = new(NoRefresh + " " + d[name].Reason, DropRefresh(d[name].Adjust!));
+        return d;
+    }
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_jainamxts.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
