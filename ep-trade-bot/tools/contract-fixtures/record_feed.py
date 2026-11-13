@@ -72,5 +72,5 @@ for sc in SCENARIOS.SCENARIOS:
     print(f"ok {sc['name']}")
 
 dest = HERE / f"feed_{FIXTURE}.fixtures.json"
-dest.write_text(json.dumps({"broker": SCENARIOS.BROKER, "now_ms": NOW, "symbols": SCENARIOS.SYMBOLS, "scenarios": out}, indent=2) + "\n", encoding="utf-8")
+dest.write_text(json.dumps({"broker": SCENARIOS.BROKER, "access_token": getattr(SCENARIOS, "AUTH_TOKEN", None), "start_frames": getattr(SCENARIOS, "START_FRAMES", []), "now_ms": NOW, "symbols": SCENARIOS.SYMBOLS, "scenarios": out}, indent=2) + "\n", encoding="utf-8")
 print(f"wrote {len(out)} scenarios to {dest}")

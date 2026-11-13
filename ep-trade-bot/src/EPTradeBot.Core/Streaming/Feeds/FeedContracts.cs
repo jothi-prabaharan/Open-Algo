@@ -3,12 +3,12 @@ using System.Text.Json.Nodes;
 namespace EPTradeBot.Core.Streaming.Feeds;
 
 /// <summary>An instrument, with the broker's own token and exchange for it (the master contract's).</summary>
-public sealed record FeedTarget(string Exchange, string Symbol, string Token, string BrokerExchange, string? BrokerSymbol = null);
+public sealed record FeedTarget(string Exchange, string Symbol, string Token, string BrokerExchange, string? BrokerSymbol = null, string? Name = null);
 
 /// <summary>An instrument a client wants ticks for, at one depth.</summary>
-public sealed record FeedRequest(string Exchange, string Symbol, string Token, string BrokerExchange, StreamMode Mode, string? BrokerSymbol = null)
+public sealed record FeedRequest(string Exchange, string Symbol, string Token, string BrokerExchange, StreamMode Mode, string? BrokerSymbol = null, string? Name = null)
 {
-    public FeedTarget Target => new(Exchange, Symbol, Token, BrokerExchange, BrokerSymbol);
+    public FeedTarget Target => new(Exchange, Symbol, Token, BrokerExchange, BrokerSymbol, Name);
 }
 
 /// <summary>One tick ready for the bus: the topic (EXCHANGE_SYMBOL_MODE) and the OpenAlgo-shaped data.</summary>
@@ -42,4 +42,13 @@ public interface IFeedCodec
 
     /// <summary>True when the messages from <see cref="Subscribe"/> and the others are to go as binary frames rather than text (Upstox sends JSON that way).</summary>
     bool SendsBinary => false;
+
+    /// <summary>True when each message is hex text for the bytes to send (a protocol whose requests are raw bytes, not text).</summary>
+    bool MessagesAreHex => false;
+
+    /// <summary>Called with the session of each connection attempt, before anything is sent: a protocol that signs in with something in the session (a key inside the token) reads it here.</summary>
+    void Begin(EPTradeBot.Core.Brokers.BrokerSession session) { }
+
+    /// <summary>Messages the codec owes the broker because of what it just read (subscribing once a sign-in is accepted). Taken after every frame.</summary>
+    IReadOnlyList<string> TakeOutgoing() => [];
 }

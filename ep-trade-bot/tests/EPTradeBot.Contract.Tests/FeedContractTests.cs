@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using EPTradeBot.Core.Brokers;
 using EPTradeBot.Core.Streaming;
 using EPTradeBot.Core.Streaming.Feeds;
 
@@ -26,10 +27,18 @@ public static class FeedRunner
     {
         var fixtures = BrokerContractHost.Load(file);
         var now = fixtures["now_ms"]!.GetValue<long>();
-        var symbols = fixtures["symbols"]!.AsArray().OfType<JsonObject>().ToDictionary(s => (s["exchange"]!.GetValue<string>(), s["symbol"]!.GetValue<string>()), s => (Token: s["token"]!.GetValue<string>(), BrokerExchange: s["brexchange"]!.GetValue<string>(), BrokerSymbol: s["brsymbol"]!.GetValue<string>()));
+        var symbols = fixtures["symbols"]!.AsArray().OfType<JsonObject>().ToDictionary(s => (s["exchange"]!.GetValue<string>(), s["symbol"]!.GetValue<string>()), s => (Token: s["token"]!.GetValue<string>(), BrokerExchange: s["brexchange"]!.GetValue<string>(), BrokerSymbol: s["brsymbol"]!.GetValue<string>(), Name: s["name"]?.GetValue<string>()));
         var scenario = (JsonObject)fixtures["scenarios"]!.AsArray().OfType<JsonObject>().Single(s => s["name"]!.GetValue<string>() == name).DeepClone();
         adjust?.Invoke(scenario);
         var feed = codec();
+        if (fixtures["access_token"] is JsonValue token) feed.Begin(new BrokerSession(Guid.Empty, fixtures["broker"]!.GetValue<string>(), token.GetValue<string>(), null, null, new Dictionary<string, string>()));
+        // A scenario that starts signed in: the sign-in answer arrives before the first step.
+        foreach (var start in (fixtures["start_frames"] as JsonArray ?? []).Select(x => x!.GetValue<string>()))
+        {
+            feed.DecodeBinary(Convert.FromHexString(start), now);
+            feed.TakeOutgoing();
+        }
+
         var index = 0;
         foreach (var entry in scenario["steps"]!.AsArray().OfType<JsonObject>())
         {
@@ -45,21 +54,25 @@ public static class FeedRunner
                     sent = feed.Subscribe(step["subscribe"]!.AsArray().OfType<JsonObject>().Select(i =>
                     {
                         var (exchange, symbol) = (i["exchange"]!.GetValue<string>(), i["symbol"]!.GetValue<string>());
-                        var (token, brokerExchange, brokerSymbol) = symbols[(exchange, symbol)];
-                        return new FeedRequest(exchange, symbol, token, brokerExchange, (StreamMode)i["mode"]!.GetValue<int>(), brokerSymbol);
+                        var (token, brokerExchange, brokerSymbol, name) = symbols[(exchange, symbol)];
+                        return new FeedRequest(exchange, symbol, token, brokerExchange, (StreamMode)i["mode"]!.GetValue<int>(), brokerSymbol, name);
                     }).ToList(), now);
                     break;
                 case "unsubscribe":
                     var u = step["unsubscribe"]!.AsObject();
                     var (uExchange, uSymbol) = (u["exchange"]!.GetValue<string>(), u["symbol"]!.GetValue<string>());
-                    var (uToken, uBrokerExchange, uBrokerSymbol) = symbols[(uExchange, uSymbol)];
-                    sent = feed.Unsubscribe(new FeedTarget(uExchange, uSymbol, uToken, uBrokerExchange, uBrokerSymbol), u["mode"] is JsonValue m ? (StreamMode)m.GetValue<int>() : null, now);
+                    var (uToken, uBrokerExchange, uBrokerSymbol, uName) = symbols[(uExchange, uSymbol)];
+                    sent = feed.Unsubscribe(new FeedTarget(uExchange, uSymbol, uToken, uBrokerExchange, uBrokerSymbol, uName), u["mode"] is JsonValue m ? (StreamMode)m.GetValue<int>() : null, now);
                     break;
                 case "reconnect":
                     sent = feed.Resubscribe(now);
                     break;
+                case "signed_out":
+                    feed.Resubscribe(now);
+                    break;
                 case "frame":
                     published = feed.DecodeBinary(Convert.FromHexString(step["frame"]!.GetValue<string>()), now);
+                    sent = feed.TakeOutgoing();
                     break;
                 case "text":
                     // A text frame is recorded as the JSON it carried, or as the raw text when that was not JSON.
@@ -77,7 +90,7 @@ public static class FeedRunner
                 expectedSent = new JsonArray(expectedSent.GroupBy(x => x!.ToJsonString()).Select(g => g.First()!.DeepClone()).ToArray());
             }
 
-            if (kind == "reconnect")
+            if (kind == "reconnect" && !feed.MessagesAreHex)
             {
                 // OpenAlgo walks a Python set to repeat its subscriptions, whose order means nothing: the same messages, in any order, are the same.
                 expectedSent = new JsonArray(expectedSent.OrderBy(x => x!.ToJsonString(), StringComparer.Ordinal).Select(x => x!.DeepClone()).ToArray());
@@ -87,6 +100,13 @@ public static class FeedRunner
             Assert.True(expectedSent.Count == sent.Count, $"{label}: expected {expectedSent.Count} messages to the broker, got {sent.Count}: {string.Join(" | ", sent)}");
             for (var i = 0; i < sent.Count; i++)
             {
+                // A protocol of raw bytes records each message as hex text.
+                if (expectedSent[i] is JsonValue hex && hex.TryGetValue<string>(out var expectedHex))
+                {
+                    Assert.True(string.Equals(expectedHex, sent[i], StringComparison.OrdinalIgnoreCase), $"{label}: message {i} differs:\nexpected {expectedHex}\nactual   {sent[i]}");
+                    continue;
+                }
+
                 // A message id is new every time by design; the recording holds a stand-in.
                 var actual = JsonNode.Parse(sent[i]);
                 if (actual is JsonObject { } message && message["guid"] is not null) message["guid"] = "<guid>";
@@ -204,4 +224,26 @@ public sealed class DhanFeedContractTests
     [Theory]
     [MemberData(nameof(Names))]
     public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_dhan.fixtures.json", name, () => new DhanFeedCodec(), dropRepeatedRequests: true);
+}
+
+public sealed class FyersFeedContractTests
+{
+    private const string SbinFeedRequest = "0017040201001100010e73667c6e73655f636d7c333034350200010b";
+
+    /// <summary>
+    /// OpenAlgo drops a subscription made before the sign-in is accepted (the feed names are not remembered), and gives a feed it cannot place to the only
+    /// subscription there is. EP Trade bot holds the feed names until the sign-in is accepted, and does not guess.
+    /// </summary>
+    private static readonly Dictionary<string, Action<JsonObject>> Differences = new()
+    {
+        ["a_subscription_before_the_sign_in_is_accepted_waits"] = scenario => scenario["steps"]![2]!["result"]!["sent"] = new JsonArray(SbinFeedRequest),
+        ["a_subscription_after_a_reconnect_but_before_the_answer_waits"] = scenario => scenario["steps"]![2]!["result"]!["sent"] = new JsonArray(SbinFeedRequest),
+        ["a_feed_nobody_asked_for_is_not_guessed_at_even_with_one_subscription"] = scenario => scenario["steps"]![1]!["result"]!["published"] = new JsonArray(),
+    };
+
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_fyers.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_fyers.fixtures.json", name, () => new FyersFeedCodec(), Differences.GetValueOrDefault(name));
 }

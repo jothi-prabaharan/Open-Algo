@@ -13,7 +13,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Fyers;
 /// depth, mapping/transform_data.py, mapping/order_data.py), held to
 /// tools/contract-fixtures/fyers.fixtures.json. Fyers reports exchanges as numeric codes and
 /// orders, sides and states as numbers; they are translated as OpenAlgo does. Not ported yet,
-/// and refused rather than guessed: GTT and the Fyers feed.
+/// and refused rather than guessed: the 50-level tick-by-tick depth.
 /// </summary>
 [BrokerPlugin]
 public sealed partial class FyersPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<FyersPlugin> logger)
@@ -23,7 +23,7 @@ public sealed partial class FyersPlugin(IHttpClientFactory http, BrokerSessionFa
 
     public string Name => "fyers";
     public string DisplayName => "Fyers";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin | BrokerCapability.Gtt;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin | BrokerCapability.Gtt | BrokerCapability.Streaming;
 
     /// <summary>ApiKey: the Fyers app id, sent with the token as "app_id:token".</summary>
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];

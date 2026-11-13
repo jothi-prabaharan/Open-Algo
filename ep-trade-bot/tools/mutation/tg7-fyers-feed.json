@@ -1,0 +1,378 @@
+[
+ {
+  "name": "Y1 source name changed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "const string source = \"OpenAlgo-HSM\";",
+  "new": "const string source = \"Other\";",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y2 mode letter changed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "buffer.Add((byte)'P');",
+  "new": "buffer.Add((byte)'T');",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y3 auth length off by one",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "var size = 18 + key.Length + src.Length;",
+  "new": "var size = 17 + key.Length + src.Length;",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y4 channel changed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "message.Add(11);",
+  "new": "message.Add(12);",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y5 subscription length off",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "message.AddRange(Be16(6 + scrips.Count));",
+  "new": "message.AddRange(Be16(5 + scrips.Count));",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y6 depth uses the scrip prefix",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "{(depth ? \"dp\" : \"sf\")}|",
+  "new": "{(depth ? \"sf\" : \"sf\")}|",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y7 token suffix from the wrong place",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "fytoken[10..]}\";",
+  "new": "fytoken[9..]}\";",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y8 short tokens accepted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (fytoken.Length < 10) return null;",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y9 unknown segment accepted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (!Segments.TryGetValue(fytoken[..4], out var segment)) return null;",
+  "new": "var segment = Segments.GetValueOrDefault(fytoken[..4], \"nse_cm\");",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y10 index named by the symbol",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "var indexName = name is { Length: > 0 } ? name :",
+  "new": "var indexName = Environment.TickCount64 < 0 ? name :",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y11 subscribes before sign-in",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (authenticated) messages.Add(SubscriptionMessage(hsmTokens));",
+  "new": "messages.Add(SubscriptionMessage(hsmTokens)); authenticated |= true;",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y12 pending not remembered",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "foreach (var token in hsmTokens) if (!pendingHsm.Contains(token)) pendingHsm.Add(token);",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y13 duplicate pending kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (!pendingHsm.Contains(token)) pendingHsm.Add(token);",
+  "new": "pendingHsm.Add(token);",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y14 data types not grouped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "foreach (var group in queue.GroupBy(q => q.DataType))",
+  "new": "foreach (var group in queue.Select(q => new[] { q }.GroupBy(x => x.DataType).First()))",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y15 earlier request kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "else queue[at] = (dataType, full, r);",
+  "new": "else { }",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y16 invalid mode accepted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (mode is < 1 or > 3) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y17 unsubscribe sends something",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "return [];\n        }\n    }\n\n    public IReadOnlyList<string> Resubscribe",
+  "new": "return [\"00\"];\n        }\n    }\n\n    public IReadOnlyList<string> Resubscribe",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y19 reconnect keeps old sign-in",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "authenticated = false;\n            return AuthMessage()",
+  "new": "return AuthMessage()",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y20 rejected sign-in accepted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (!AuthAccepted(frame)) return [];",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y21 sign-in status read wrong",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "Encoding.UTF8.GetString(data.Slice(7, length)) == \"K\"",
+  "new": "Encoding.UTF8.GetString(data.Slice(7, length)) != \"X\"",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y23 subscribe after sign-in dropped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (pendingHsm.Count > 0) outgoing.Add(SubscriptionMessage(pendingHsm));",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y24 count of records ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "for (var i = 0; i < count; i++)",
+  "new": "for (var i = 0; i < 1; i++)",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y25 unknown record kind skipped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "else break;\n        }\n    }",
+  "new": "else continue;\n        }\n    }",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y26 missing value kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (value != Missing && index < fields.Length) state[fields[index]] = value;",
+  "new": "if (index < fields.Length) state[fields[index]] = value;",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y27 fields beyond the table accepted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (value != Missing && index < fields.Length) state",
+  "new": "if (value != Missing) state",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y28 scrip tail not read",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (hasTail)\n        {\n            offset += 2;",
+  "new": "if (Environment.TickCount64 < 0)\n        {\n            offset += 2;",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y29 update on an unknown topic read",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (state is null) return offset + count * 4;",
+  "new": "if (state is null) return offset;",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y30 unchanged update published",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (state[fields[index]] is JsonValue current && current.TryGetValue<int>(out var old) && old == value) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y31 update type not marked",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "copy[\"update_type\"] = \"live\";",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y32 multiplier ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "return (Math.Pow(10, precision) * multiplier, precision);",
+  "new": "return (Math.Pow(10, precision), precision);",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y33 zero multiplier kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (multiplier <= 0) multiplier = 1;",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y34 precision default wrong",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "var precision = data[\"precision\"] is null ? 2 :",
+  "new": "var precision = data[\"precision\"] is null ? 4 :",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y35 change not rounded to precision",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "change = BookFormatting.RoundPy(ltp - previous, precision);",
+  "new": "change = ltp - previous;",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y36 percent not rounded",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "changePercent = BookFormatting.RoundPy(change / previous * 100, 2);",
+  "new": "changePercent = change / previous * 100;",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y37 change when previous is zero",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (ltp != 0 && previous != 0)",
+  "new": "if (true)",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y38 depth keeps empty levels",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (bid > 0) buy.Add",
+  "new": "if (bid >= 0) buy.Add",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y39 depth ask uses the bid size",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "sell.Add(new JsonObject { [\"price\"] = ask, [\"quantity\"] = Int(data[$\"ask_size{i}\"])",
+  "new": "sell.Add(new JsonObject { [\"price\"] = ask, [\"quantity\"] = Int(data[$\"bid_size{i}\"])",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y40 index depth for no value",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (Int(data[\"ltp\"]) == 0) return null;",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y42 last price not kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (type is \"sf\" or \"if\" && mapped[\"ltp\"]!.GetValue<double>() != 0) lastLtp[full] =",
+  "new": "if (Environment.TickCount64 < 0) lastLtp[full] =",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y43 index not sent to quote",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (callbacks.Contains($\"SymbolUpdate_{full}\")) dispatches.Add((\"SymbolUpdate\", \"Quote\"));\n            if (callbacks.Contains($\"DepthUpdate_{full}\")) dispatches.Add((\"DepthUpdate\", \"Depth\"));",
+  "new": "if (callbacks.Contains($\"DepthUpdate_{full}\")) dispatches.Add((\"DepthUpdate\", \"Depth\"));",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y44 depth packet sent to quote subscribers",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (callbacks.Contains($\"DepthUpdate_{full}\")) dispatches.Add((\"DepthUpdate\", \"Depth\"));\n        }\n        else if (type == \"if\")",
+  "new": "if (callbacks.Contains($\"DepthUpdate_{full}\")) dispatches.Add((\"DepthUpdate\", \"Depth\"));\n            if (callbacks.Contains($\"SymbolUpdate_{full}\")) dispatches.Add((\"SymbolUpdate\", \"Quote\"));\n        }\n        else if (type == \"if\")",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y45 unsubscribed feed guessed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "|| !hsmToSymbol.TryGetValue(hsm, out var full) || !active.TryGetValue(full, out var sub)) return;",
+  "new": "|| !hsmToSymbol.TryGetValue(hsm, out var full) || !active.TryGetValue(full, out var sub)) { if (active.Count != 1) return; full = active.Keys.First(); sub = active[full]; }",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y46 earlier mode published",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "if (!registry.TryGetValue($\"{dataType}_{full}\", out var mode) || !subscriptions.ContainsKey($\"{sub.Exchange}:{sub.Symbol}:{mode}\")) continue;",
+  "new": "var mode = dataType == \"DepthUpdate\" ? 3 : 1;",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y47 dropped request still published",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "|| !subscriptions.ContainsKey($\"{sub.Exchange}:{sub.Symbol}:{mode}\")) continue;",
+  "new": ") continue;",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y48 timestamp in milliseconds",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "side[\"timestamp\"] = nowMs / 1000;\n\n            // The mode",
+  "new": "side[\"timestamp\"] = nowMs;\n\n            // The mode",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y49 symbol from the feed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "side[\"symbol\"] = sub.Symbol;",
+  "new": "side[\"symbol\"] = Str(data[\"symbol\"]);",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y50 hsm key expiry ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FyersFeedCodec.cs",
+  "old": "return expires - DateTimeOffset.UtcNow.ToUnixTimeSeconds() < 0 ? null : key;",
+  "new": "return key;",
+  "filter": "FullyQualifiedName~FyersFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

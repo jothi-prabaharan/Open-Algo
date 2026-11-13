@@ -7,14 +7,14 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Dhan | yes | yes | yes | yes | yes | yes | yes | yes (5-level) |
 | Dhan Sandbox | yes | yes | yes | yes | yes | no | no | no |
 | Upstox | yes | yes | yes | yes | yes | yes | yes | yes |
-| Fyers | yes | yes | yes | yes | yes | yes | yes | no |
+| Fyers | yes | yes | yes | yes | yes | yes | yes | yes |
 | Delta Exchange | yes | yes | yes | yes | yes | no | yes | yes |
 
 The other 30 brokers in the task list are not started.
 
 ## Not done, and why Gate 7 is open
 
-- **Market-data feed** for Fyers: its HSM binary protocol is about 3,000 lines of Python with a symbol token conversion, and needs its own codec held to the Python adapter, as the other feeds were. Dhan's 20-level depth connection is also not ported (a depth request is the 5-level packet).
+- Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
 - **The 30 brokers not started** (fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, ibulls, iifl, iiflcapital, indmoney, jainamxts, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, wisdom, zebu). Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
@@ -110,3 +110,9 @@ The other 30 brokers in the task list are not started.
 - Dhan tracks one mode per instrument, so asking for another replaces the first and stopping an instrument stops it in the mode it was last asked for; an unsubscribe for something not subscribed sends nothing. A tick is matched on security id and segment, else on the security id alone, and is published under the kind of packet that arrived, whatever mode was asked for.
 - Differences from OpenAlgo, on purpose: a reconnect sends each request once (OpenAlgo sends it twice, once from the socket's list and once from the adapter's); the cap of 5000 instruments per connection is the feed host's, not the codec's; a packet that claims zero length ends the frame where OpenAlgo's loop would never move on.
 - Contract: 36 scenarios replayed against the real Python adapter and client (`feed_dhan.fixtures.json`); integration: four tests of the address. Mutation: `tools/mutation/tg7-dhan-feed.json`, 26 mutants, all caught after five cases were added for the ones that first survived; two were removed as equivalent or moved to the host.
+
+## Fyers feed
+
+- Ported from `broker/fyers/streaming` (HSM binary protocol): the `hsm_key` is read from the access token (refused when expired or absent), sign-in is a binary message, subscriptions wait until the sign-in is accepted, and snapshot/update frames keep per-topic state and scaling. Quote, depth and index depth shapes match the Python adapter.
+- Contract: 43 recorded cases (`feed_fyers.fixtures.json`) plus 4 key tests. Deviations, each with its reason in the contract file: a subscription made before the sign-in is accepted is held and sent after it (OpenAlgo drops it), and a feed nobody asked for is never given to the only subscription (OpenAlgo guesses).
+- Mutation: `tools/mutation/tg7-fyers-feed.json`, all caught after survivors each got a recorded case or the equivalent code was removed.

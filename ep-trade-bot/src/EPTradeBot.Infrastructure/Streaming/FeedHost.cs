@@ -111,7 +111,7 @@ public sealed class FeedHost(
                 }
             }
 
-            var refusal = connection.Hold(new FeedRequest(exchange, symbol, instrument.Token, instrument.BrokerExchange, mode, instrument.BrokerSymbol));
+            var refusal = connection.Hold(new FeedRequest(exchange, symbol, instrument.Token, instrument.BrokerExchange, mode, instrument.BrokerSymbol, instrument.Name));
             if (refusal is not null) return FeedAnswer.Refused(refusal);
             bool current;
             lock (gate) current = connections.TryGetValue(accountId, out var now) && ReferenceEquals(now, connection);
@@ -265,6 +265,7 @@ public sealed class FeedHost(
                     return;
                 }
 
+                codec.Begin(session);
                 using var socket = new ClientWebSocket();
                 socket.Options.KeepAliveInterval = TimeSpan.FromSeconds(20);
                 foreach (var (name, value) in endpoint.Headers) socket.Options.SetRequestHeader(name, value);
@@ -336,13 +337,13 @@ public sealed class FeedHost(
                 connected = true;
             }
 
-            foreach (var m in resubscribe) await SendAsync(socket, m, codec.SendsBinary, linked.Token);
+            foreach (var m in resubscribe) await SendAsync(socket, m, codec, linked.Token);
             var queue = outbox;
             var sender = Task.Run(async () =>
             {
                 try
                 {
-                    await foreach (var m in queue.Reader.ReadAllAsync(linked.Token)) await SendAsync(socket, m, codec.SendsBinary, linked.Token);
+                    await foreach (var m in queue.Reader.ReadAllAsync(linked.Token)) await SendAsync(socket, m, codec, linked.Token);
                 }
                 catch (Exception ex) when (ex is OperationCanceledException or WebSocketException) { }
             }, linked.Token);
@@ -353,7 +354,7 @@ public sealed class FeedHost(
                     try
                     {
                         using var timer = new PeriodicTimer(plugin.FeedKeepAliveEvery);
-                        while (await timer.WaitForNextTickAsync(linked.Token)) await SendAsync(socket, text, codec.SendsBinary, linked.Token);
+                        while (await timer.WaitForNextTickAsync(linked.Token)) await SendAsync(socket, text, codec, linked.Token);
                     }
                     catch (Exception ex) when (ex is OperationCanceledException or WebSocketException) { }
                 }, linked.Token)
@@ -416,6 +417,11 @@ public sealed class FeedHost(
             {
                 var ticks = type == WebSocketMessageType.Binary ? codec.DecodeBinary(frame, Now) : codec.DecodeText(Encoding.UTF8.GetString(frame), Now);
                 foreach (var tick in ticks) host.publisher.Publish(tick.Topic, tick.Data);
+                // What reading the frame obliges the codec to send (subscribing once a sign-in is accepted) goes out behind it.
+                lock (sync)
+                {
+                    if (connected) foreach (var m in codec.TakeOutgoing()) outbox.Writer.TryWrite(m);
+                }
             }
             catch (Exception ex) when (ex is not OutOfMemoryException)
             {
@@ -427,9 +433,9 @@ public sealed class FeedHost(
         private static bool Refused(Exception ex) =>
             ex.Message.Contains("'401'", StringComparison.Ordinal) || ex.Message.Contains("'403'", StringComparison.Ordinal) || ex.Message.Contains("status code 401", StringComparison.Ordinal) || ex.Message.Contains("status code 403", StringComparison.Ordinal);
 
-        private static Task SendAsync(ClientWebSocket socket, string text, bool binary, CancellationToken ct) =>
+        private static Task SendAsync(ClientWebSocket socket, string text, IFeedCodec codec, CancellationToken ct) =>
             socket.State == WebSocketState.Open
-                ? socket.SendAsync(Encoding.UTF8.GetBytes(text).AsMemory(), binary ? WebSocketMessageType.Binary : WebSocketMessageType.Text, true, ct).AsTask()
+                ? socket.SendAsync((codec.MessagesAreHex ? Convert.FromHexString(text) : Encoding.UTF8.GetBytes(text)).AsMemory(), codec.SendsBinary || codec.MessagesAreHex ? WebSocketMessageType.Binary : WebSocketMessageType.Text, true, ct).AsTask()
                 : Task.CompletedTask;
     }
 }
