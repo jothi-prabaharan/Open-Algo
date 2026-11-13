@@ -373,6 +373,16 @@ public sealed class FeedHostTests
         Assert.Equal(0, broker.Connections);
     }
 
+    /// <summary>Holds a release (PUT) back for a moment, so the connection is being stopped while the broker is still being told.</summary>
+    private sealed class SlowRelease(HttpMessageHandler inner) : DelegatingHandler(inner)
+    {
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            if (request.Method == HttpMethod.Put) await Task.Delay(500, cancellationToken);
+            return await base.SendAsync(request, cancellationToken);
+        }
+    }
+
     [PostgresFact]
     public async Task An_XTS_feed_subscribes_over_http_once_the_socket_is_connected_and_reads_ticks_and_the_initial_quote()
     {
@@ -390,7 +400,7 @@ public sealed class FeedHostTests
             foreach (var name in new[] { "ApiKey", "ApiSecret", "ApiKeyMarket", "ApiSecretMarket" }) b.UseSetting($"Brokers:Keys:wisdom:{name}", "k");
             b.UseSetting("Brokers:FeedUrls:wisdom", socketServer.Address);
             b.UseSetting("Brokers:BaseUrls:wisdom", "http://xts.test");
-            b.ConfigureServices(s => s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => http)));
+            b.ConfigureServices(s => s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => new SlowRelease(http))));
         });
         var account = await host.CreateAccountAsync(AccountType.LIVE, "xts", broker: "wisdom", clientId: "XTSUSER");
         (await host.Admin.PutAsJsonAsync($"/api/v1/accounts/{account}/broker-session", new { auth_token = "trade-token", feed_token = "market-token" })).EnsureSuccessStatusCode();

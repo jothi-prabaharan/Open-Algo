@@ -155,6 +155,7 @@ public sealed class FeedHost(
         private bool connected;
         private BrokerSession? currentSession;
         private readonly SemaphoreSlim httpTurn = new(1, 1);
+        private Task httpWork = Task.CompletedTask;
 
         private long Now => host.clock.GetUtcNow().ToUnixTimeMilliseconds();
 
@@ -219,16 +220,28 @@ public sealed class FeedHost(
             }
 
             if (calls.Count == 0 || session is null) return;
-            _ = Task.Run(async () =>
+            // The calls are not cut short by the connection stopping: the unsubscribe that empties a connection is the last thing it sends, and stopping waits for it.
+            var limit = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+            var token = limit.Token;
+            var work = Task.Run(async () =>
             {
-                await httpTurn.WaitAsync(stop.Token);
+                try
+                {
+                    await httpTurn.WaitAsync(token);
+                }
+                catch (OperationCanceledException)
+                {
+                    limit.Dispose();
+                    return;
+                }
+
                 try
                 {
                     foreach (var call in calls)
                     {
                         try
                         {
-                            foreach (var quote in await sender.SendFeedCallAsync(session, call, stop.Token))
+                            foreach (var quote in await sender.SendFeedCallAsync(session, call, token))
                             {
                                 IReadOnlyList<FeedPublish> ticks;
                                 lock (sync) ticks = codec.DecodeText(quote, Now);
@@ -244,8 +257,10 @@ public sealed class FeedHost(
                 finally
                 {
                     httpTurn.Release();
+                    limit.Dispose();
                 }
-            }, stop.Token);
+            });
+            lock (sync) httpWork = Task.WhenAll(httpWork, work);
         }
 
         public void Start()
@@ -272,6 +287,9 @@ public sealed class FeedHost(
             }
 
             if (sending is not null) await Task.WhenAny(sending, Task.Delay(TimeSpan.FromSeconds(1)));
+            Task pending;
+            lock (sync) pending = httpWork;
+            await Task.WhenAny(pending, Task.Delay(TimeSpan.FromSeconds(5)));
             await stop.CancelAsync();
             Task? task;
             lock (sync) task = run;
