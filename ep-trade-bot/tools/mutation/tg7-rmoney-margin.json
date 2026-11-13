@@ -1,0 +1,98 @@
+[
+ {
+  "name": "M1 segment wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"exchange\"] = segment, [\"exchangeInstrumentId\"]",
+  "new": "[\"exchange\"] = segment + 1, [\"exchangeInstrumentId\"]",
+  "filter": "FullyQualifiedName~MarginRmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M3 price dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"price\"] = (double)l.Price, [\"stopPrice\"]",
+  "new": "[\"price\"] = 0.0, [\"stopPrice\"]",
+  "filter": "FullyQualifiedName~MarginRmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M4 stop dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"stopPrice\"] = (double)l.TriggerPrice, [\"orderSessionType\"]",
+  "new": "[\"stopPrice\"] = 0.0, [\"orderSessionType\"]",
+  "filter": "FullyQualifiedName~MarginRmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M5 session type",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"orderSessionType\"] = 1",
+  "new": "[\"orderSessionType\"] = 2",
+  "filter": "FullyQualifiedName~MarginRmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M6 order type unmapped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"productType\"] = l.Product, [\"orderType\"] = OrderType(l.PriceType)",
+  "new": "[\"productType\"] = l.Product, [\"orderType\"] = l.PriceType",
+  "filter": "FullyQualifiedName~MarginRmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M7 index allowed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "|| l.Instrument.Exchange.EndsWith(\"_INDEX\", StringComparison.Ordinal))",
+  "new": "|| false)",
+  "filter": "FullyQualifiedName~MarginRmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M8 shortfall from required",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"margin_shortfall\"] = JsonRead.Float(details[\"MarginShortfall\"])",
+  "new": "[\"margin_shortfall\"] = JsonRead.Float(details[\"MarginRequired\"])",
+  "filter": "FullyQualifiedName~MarginRmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M9 available from required",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"margin_available\"] = JsonRead.Float(details[\"MarginAvailable\"])",
+  "new": "[\"margin_available\"] = JsonRead.Float(details[\"MarginRequired\"])",
+  "filter": "FullyQualifiedName~MarginRmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M10 validity dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"is_valid\"] = JsonRead.Truthy(details[\"IsValid\"])",
+  "new": "[\"is_valid\"] = true",
+  "filter": "FullyQualifiedName~MarginRmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M11 error type ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (JsonRead.Str(reply[\"type\"]) != \"success\")\n                throw new BrokerException($\"{DisplayName} could not work out",
+  "new": "if (false)\n                throw new BrokerException($\"{DisplayName} could not work out",
+  "filter": "FullyQualifiedName~MarginRmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M12 expiry ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (response.StatusCode is System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.Forbidden)\n                throw new BrokerException($\"{DisplayName} says the session has expired. Log in to {DisplayName} again.\", 403);\n            if (JsonRead.Str(reply[\"type\"])",
+  "new": "if (JsonRead.Str(reply[\"type\"])",
+  "filter": "FullyQualifiedName~MarginRmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M13 error message dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"error_message\"] = JsonRead.Get(details, \"ErrorMessage\", \"\")",
+  "new": "[\"error_message\"] = \"\"",
+  "filter": "FullyQualifiedName~MarginRmoney",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

@@ -35,7 +35,7 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
     protected virtual Task<(string PriceType, decimal Price)> PriceAsync(BrokerSession session, BrokerOrder order, CancellationToken cancellationToken) =>
         Task.FromResult((order.PriceType, order.Price));
 
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
+    public virtual BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret", "ApiKeyMarket", "ApiSecretMarket"];
 
     private static readonly Dictionary<string, string> Segments = new()
@@ -45,7 +45,7 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
 
     private static readonly Dictionary<string, string> Exchanges = Segments.ToDictionary(kv => kv.Value, kv => kv.Key);
 
-    private static string OrderType(string priceType) => priceType switch { "LIMIT" => "LIMIT", "SL" => "STOPLIMIT", "SL-M" => "STOPMARKET", _ => "MARKET" };
+    protected static string OrderType(string priceType) => priceType switch { "LIMIT" => "LIMIT", "SL" => "STOPLIMIT", "SL-M" => "STOPMARKET", _ => "MARKET" };
 
     private static string BookPriceType(string orderType) => orderType switch { "Limit" => "LIMIT", "Market" => "MARKET", "StopLimit" => "SL", "StopMarket" => "SL-M", _ => orderType };
 
@@ -269,7 +269,7 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
 
     // ---- market data -----------------------------------------------------------------------------------------
 
-    private static readonly Dictionary<string, int> DataSegments = new()
+    protected static readonly Dictionary<string, int> DataSegments = new()
     {
         ["NSE"] = 1, ["NSE_INDEX"] = 1, ["NFO"] = 2, ["CDS"] = 3, ["BSE"] = 11, ["BSE_INDEX"] = 11, ["BFO"] = 12, ["MCX"] = 51,
     };
@@ -655,13 +655,63 @@ public sealed class CompositEdgePlugin(IHttpClientFactory http, BrokerSessionFac
 /// </summary>
 [BrokerPlugin]
 public sealed class RmoneyPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<RmoneyPlugin> logger)
-    : XtsPluginBase(http, sessions, symbols, logger)
+    : XtsPluginBase(http, sessions, symbols, logger), IBrokerMargin
 {
     public override string Name => "rmoney";
     public override string DisplayName => "RMoney";
     protected override string DefaultBaseUrl => "https://xts.rmoneyindia.co.in:3000";
     protected override string MarketDataPath => "/apibinarymarketdata";
     protected override bool RichMultiQuotes => true;
+
+    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.Margin;
+
+    /// <summary>The margin of a basket (POST /interactive/orders/margindetails): what is required, what is available, and any shortfall.</summary>
+    public async Task<JsonObject> CalculateMarginAsync(BrokerSession session, IReadOnlyList<MarginLeg> legs, CancellationToken cancellationToken)
+    {
+        var portfolio = new JsonArray();
+        foreach (var l in legs)
+        {
+            if (!DataSegments.TryGetValue(l.Instrument.Exchange, out var segment) || l.Instrument.Exchange.EndsWith("_INDEX", StringComparison.Ordinal))
+                throw new BrokerException($"{DisplayName} has no margin calculation for {l.Instrument.Exchange}.", 400);
+            portfolio.Add(new JsonObject
+            {
+                ["exchange"] = segment, ["exchangeInstrumentId"] = long.Parse(l.Instrument.Token, System.Globalization.CultureInfo.InvariantCulture),
+                ["productType"] = l.Product, ["orderType"] = OrderType(l.PriceType), ["orderSide"] = l.Action.ToUpperInvariant(),
+                ["quantity"] = l.Quantity, ["price"] = (double)l.Price, ["stopPrice"] = (double)l.TriggerPrice, ["orderSessionType"] = 1,
+            });
+        }
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, Sessions.BaseUrl(Name, DefaultBaseUrl) + "/interactive/orders/margindetails");
+        request.Headers.TryAddWithoutValidation("authorization", session.AuthToken);
+        request.Content = new StringContent(new JsonObject { ["portfolio"] = portfolio }.ToJsonString(), System.Text.Encoding.UTF8, "application/json");
+        HttpResponseMessage response;
+        try
+        {
+            response = await Http.CreateClient(Name).SendAsync(request, cancellationToken);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new BrokerException($"{DisplayName} did not answer. Check your connection, then try again.", 502, ex);
+        }
+
+        using (response)
+        {
+            var reply = await JsonRead.ReadAsync(response, cancellationToken) as JsonObject
+                ?? throw new BrokerException($"{DisplayName} sent a reply EP Trade bot could not read. Try again in a moment.", 502);
+            if (response.StatusCode is System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.Forbidden)
+                throw new BrokerException($"{DisplayName} says the session has expired. Log in to {DisplayName} again.", 403);
+            if (JsonRead.Str(reply["type"]) != "success")
+                throw new BrokerException($"{DisplayName} could not work out the margin: {(JsonRead.Str(reply["description"]) is { Length: > 0 } d ? d : "no reason was given.")}", response.IsSuccessStatusCode ? 400 : (int)response.StatusCode);
+            if ((reply["result"] as JsonObject)?["brokerageDeatils"] is not JsonObject { Count: > 0 } details)
+                throw new BrokerException($"{DisplayName} sent no margin details. Try again in a moment.", 502);
+            return new JsonObject
+            {
+                ["total_margin_required"] = JsonRead.Float(details["MarginRequired"]), ["margin_available"] = JsonRead.Float(details["MarginAvailable"]),
+                ["margin_shortfall"] = JsonRead.Float(details["MarginShortfall"]), ["is_valid"] = JsonRead.Truthy(details["IsValid"]),
+                ["error_message"] = JsonRead.Get(details, "ErrorMessage", ""),
+            };
+        }
+    }
 
     public override LoginMethod LoginMethod => LoginMethod.Redirect;
 

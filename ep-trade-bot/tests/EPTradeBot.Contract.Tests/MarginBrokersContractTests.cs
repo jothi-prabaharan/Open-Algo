@@ -212,3 +212,70 @@ public sealed class MarginDhanSandboxContractTests(MarginDhanSandboxHost host, I
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class MarginRmoneyHost : XtsHost
+{
+    public override string BrokerName => "rmoney";
+    public override string FixtureFile => "margin_rmoney.fixtures.json";
+}
+
+public sealed class MarginRmoneyContractTests(MarginRmoneyHost host, ITestOutputHelper output) : IClassFixture<MarginRmoneyHost>
+{
+    private const string Words = "Same outcome; the reason is worded for the trader.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = Build();
+
+    private static Dictionary<string, Deviation> Build()
+    {
+        string Unknown(string symbol) => $"{symbol} on NSE is not in the RMoney master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again.";
+        return new()
+        {
+            ["margin_broker_refuses"] = new(Words, f => ContractRunner.Expect(f, 400, ContractRunner.Error("RMoney could not work out the margin: Invalid instrument"))),
+            ["margin_error_type_with_ok_status"] = new(
+                "RMoney refuses with a 200 and an error in the body, and OpenAlgo passes that on as a success status with an error message. EP Trade bot answers an error status.",
+                f => ContractRunner.Expect(f, 400, ContractRunner.Error("RMoney could not work out the margin: Not allowed"))),
+            ["margin_session_expired"] = new(Words, f => ContractRunner.Expect(f, 403, ContractRunner.Error("RMoney says the session has expired. Log in to RMoney again."))),
+            ["margin_no_details"] = new(
+                "OpenAlgo answers a success status with an error message; EP Trade bot answers an error status.",
+                f => ContractRunner.Expect(f, 502, ContractRunner.Error("RMoney sent no margin details. Try again in a moment."))),
+            ["margin_unknown_symbol_alone"] = new("Same status; EP Trade bot names the symbol, where OpenAlgo says no symbol was valid.", f => ContractRunner.Expect(f, 400, ContractRunner.Error(Unknown("NOSUCH")))),
+            ["margin_unknown_symbol_among_others"] = new(
+                "OpenAlgo leaves the position whose symbol it cannot find out of the basket and calculates the rest, which understates the margin. EP Trade bot refuses and names the symbol.",
+                f =>
+                {
+                    ContractRunner.Expect(f, 400, ContractRunner.Error(Unknown("NOSUCH")));
+                    f["sent"]!.AsArray().Clear();
+                }),
+            ["margin_index_exchange"] = new(
+                "Same status; EP Trade bot says RMoney has no margin calculation for an index, where OpenAlgo says no symbol was valid.",
+                f => ContractRunner.Expect(f, 400, ContractRunner.Error("RMoney has no margin calculation for NSE_INDEX."))),
+        };
+    }
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin_rmoney.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
+
+public sealed class MarginWisdomHost : XtsHost
+{
+    public override string BrokerName => "wisdom";
+    public override string FixtureFile => "margin_wisdom.fixtures.json";
+}
+
+/// <summary>An XTS broker with no margin calculator answers that plainly instead of failing.</summary>
+public sealed class MarginWisdomContractTests(MarginWisdomHost host, ITestOutputHelper output) : IClassFixture<MarginWisdomHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["margin_has_no_calculator"] = new("Same status; the words differ (EP Trade bot names the broker and says margin is not available for it).", Status: 501),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin_wisdom.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

@@ -1,0 +1,1296 @@
+{
+  "broker": "rmoney",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "wisdom-session-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [
+    "/interactive/orders/margindetails"
+  ],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSECM",
+      "token": "22",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSECM",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSEFO",
+      "token": "35001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSEFO",
+      "token": "40001",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "OPTIDX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "CRUDEOIL",
+      "brsymbol": "CRUDEOIL",
+      "name": "CRUDEOIL",
+      "exchange": "MCX",
+      "brexchange": "MCXFO",
+      "token": "50001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 100,
+      "instrumenttype": "FUTCOM",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "USDINR25NOV26FUT",
+      "brsymbol": "USDINR",
+      "name": "USDINR",
+      "exchange": "CDS",
+      "brexchange": "NSECD",
+      "token": "60001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 1000,
+      "instrumenttype": "FUTCUR",
+      "tick_size": 0.0025
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "Nifty 50",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE_INDEX",
+      "token": "26000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "margin_one_position",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "body": {
+            "type": "success",
+            "code": "s-calculatemargin-0001",
+            "description": "Request sent",
+            "result": {
+              "brokerageDeatils": {
+                "IsValid": true,
+                "MarginRequired": 150,
+                "MarginAvailable": 9816624.5775,
+                "MarginShortfall": 0,
+                "ErrorMessage": ""
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "error_message": "",
+            "is_valid": true,
+            "margin_available": 9816624.5775,
+            "margin_shortfall": 0.0,
+            "total_margin_required": 150.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/orders/margindetails",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "portfolio": [
+              {
+                "exchange": 1,
+                "exchangeInstrumentId": 22,
+                "productType": "MIS",
+                "orderType": "MARKET",
+                "orderSide": "BUY",
+                "quantity": 10,
+                "price": 0.0,
+                "stopPrice": 0.0,
+                "orderSessionType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_limit_order_with_price",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "body": {
+            "type": "success",
+            "code": "s-calculatemargin-0001",
+            "description": "Request sent",
+            "result": {
+              "brokerageDeatils": {
+                "IsValid": true,
+                "MarginRequired": 2000.5,
+                "MarginAvailable": 9816624.5775,
+                "MarginShortfall": 0,
+                "ErrorMessage": ""
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "error_message": "",
+            "is_valid": true,
+            "margin_available": 9816624.5775,
+            "margin_shortfall": 0.0,
+            "total_margin_required": 2000.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/orders/margindetails",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "portfolio": [
+              {
+                "exchange": 1,
+                "exchangeInstrumentId": 22,
+                "productType": "MIS",
+                "orderType": "LIMIT",
+                "orderSide": "BUY",
+                "quantity": 10,
+                "price": 805.5,
+                "stopPrice": 0.0,
+                "orderSessionType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_stop_loss_with_trigger",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "sell",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "SL",
+            "price": "800",
+            "trigger_price": "801.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "body": {
+            "type": "success",
+            "code": "s-calculatemargin-0001",
+            "description": "Request sent",
+            "result": {
+              "brokerageDeatils": {
+                "IsValid": true,
+                "MarginRequired": 150,
+                "MarginAvailable": 9816624.5775,
+                "MarginShortfall": 0,
+                "ErrorMessage": ""
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "error_message": "",
+            "is_valid": true,
+            "margin_available": 9816624.5775,
+            "margin_shortfall": 0.0,
+            "total_margin_required": 150.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/orders/margindetails",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "portfolio": [
+              {
+                "exchange": 1,
+                "exchangeInstrumentId": 22,
+                "productType": "MIS",
+                "orderType": "STOPLIMIT",
+                "orderSide": "SELL",
+                "quantity": 10,
+                "price": 800.0,
+                "stopPrice": 801.5,
+                "orderSessionType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_stop_loss_market",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "SL-M",
+            "trigger_price": "801.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "body": {
+            "type": "success",
+            "code": "s-calculatemargin-0001",
+            "description": "Request sent",
+            "result": {
+              "brokerageDeatils": {
+                "IsValid": true,
+                "MarginRequired": 150,
+                "MarginAvailable": 9816624.5775,
+                "MarginShortfall": 0,
+                "ErrorMessage": ""
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "error_message": "",
+            "is_valid": true,
+            "margin_available": 9816624.5775,
+            "margin_shortfall": 0.0,
+            "total_margin_required": 150.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/orders/margindetails",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "portfolio": [
+              {
+                "exchange": 1,
+                "exchangeInstrumentId": 22,
+                "productType": "MIS",
+                "orderType": "STOPMARKET",
+                "orderSide": "BUY",
+                "quantity": 10,
+                "price": 0.0,
+                "stopPrice": 801.5,
+                "orderSessionType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_futures_nrml",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "body": {
+            "type": "success",
+            "code": "s-calculatemargin-0001",
+            "description": "Request sent",
+            "result": {
+              "brokerageDeatils": {
+                "IsValid": true,
+                "MarginRequired": 120000,
+                "MarginAvailable": 9816624.5775,
+                "MarginShortfall": 0,
+                "ErrorMessage": ""
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "error_message": "",
+            "is_valid": true,
+            "margin_available": 9816624.5775,
+            "margin_shortfall": 0.0,
+            "total_margin_required": 120000.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/orders/margindetails",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "portfolio": [
+              {
+                "exchange": 2,
+                "exchangeInstrumentId": 35001,
+                "productType": "NRML",
+                "orderType": "MARKET",
+                "orderSide": "SELL",
+                "quantity": 75,
+                "price": 0.0,
+                "stopPrice": 0.0,
+                "orderSessionType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_mcx_and_currency",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "CRUDEOIL",
+            "exchange": "MCX",
+            "action": "BUY",
+            "quantity": "1",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "USDINR25NOV26FUT",
+            "exchange": "CDS",
+            "action": "BUY",
+            "quantity": "1",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "body": {
+            "type": "success",
+            "code": "s-calculatemargin-0001",
+            "description": "Request sent",
+            "result": {
+              "brokerageDeatils": {
+                "IsValid": true,
+                "MarginRequired": 5000,
+                "MarginAvailable": 9816624.5775,
+                "MarginShortfall": 0,
+                "ErrorMessage": ""
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "error_message": "",
+            "is_valid": true,
+            "margin_available": 9816624.5775,
+            "margin_shortfall": 0.0,
+            "total_margin_required": 5000.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/orders/margindetails",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "portfolio": [
+              {
+                "exchange": 51,
+                "exchangeInstrumentId": 50001,
+                "productType": "NRML",
+                "orderType": "MARKET",
+                "orderSide": "BUY",
+                "quantity": 1,
+                "price": 0.0,
+                "stopPrice": 0.0,
+                "orderSessionType": 1
+              },
+              {
+                "exchange": 3,
+                "exchangeInstrumentId": 60001,
+                "productType": "NRML",
+                "orderType": "MARKET",
+                "orderSide": "BUY",
+                "quantity": 1,
+                "price": 0.0,
+                "stopPrice": 0.0,
+                "orderSessionType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_basket_of_two",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "body": {
+            "type": "success",
+            "code": "s-calculatemargin-0001",
+            "description": "Request sent",
+            "result": {
+              "brokerageDeatils": {
+                "IsValid": true,
+                "MarginRequired": 130000.25,
+                "MarginAvailable": 9816624.5775,
+                "MarginShortfall": 0,
+                "ErrorMessage": ""
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "error_message": "",
+            "is_valid": true,
+            "margin_available": 9816624.5775,
+            "margin_shortfall": 0.0,
+            "total_margin_required": 130000.25
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/orders/margindetails",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "portfolio": [
+              {
+                "exchange": 2,
+                "exchangeInstrumentId": 35001,
+                "productType": "NRML",
+                "orderType": "MARKET",
+                "orderSide": "SELL",
+                "quantity": 75,
+                "price": 0.0,
+                "stopPrice": 0.0,
+                "orderSessionType": 1
+              },
+              {
+                "exchange": 1,
+                "exchangeInstrumentId": 22,
+                "productType": "MIS",
+                "orderType": "MARKET",
+                "orderSide": "BUY",
+                "quantity": 10,
+                "price": 0.0,
+                "stopPrice": 0.0,
+                "orderSessionType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_shortfall_and_invalid",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "body": {
+            "type": "success",
+            "code": "s-calculatemargin-0001",
+            "description": "Request sent",
+            "result": {
+              "brokerageDeatils": {
+                "IsValid": false,
+                "MarginRequired": 500,
+                "MarginAvailable": 100,
+                "MarginShortfall": 400,
+                "ErrorMessage": "Insufficient funds"
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "error_message": "Insufficient funds",
+            "is_valid": false,
+            "margin_available": 100.0,
+            "margin_shortfall": 400.0,
+            "total_margin_required": 500.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/orders/margindetails",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "portfolio": [
+              {
+                "exchange": 1,
+                "exchangeInstrumentId": 22,
+                "productType": "MIS",
+                "orderType": "MARKET",
+                "orderSide": "BUY",
+                "quantity": 10,
+                "price": 0.0,
+                "stopPrice": 0.0,
+                "orderSessionType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_figures_as_text",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "body": {
+            "type": "success",
+            "code": "s-calculatemargin-0001",
+            "description": "Request sent",
+            "result": {
+              "brokerageDeatils": {
+                "IsValid": true,
+                "MarginRequired": "250.5",
+                "MarginAvailable": "100",
+                "MarginShortfall": "x",
+                "ErrorMessage": ""
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "error_message": "",
+            "is_valid": true,
+            "margin_available": 100.0,
+            "margin_shortfall": 0.0,
+            "total_margin_required": 250.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/orders/margindetails",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "portfolio": [
+              {
+                "exchange": 1,
+                "exchangeInstrumentId": 22,
+                "productType": "MIS",
+                "orderType": "MARKET",
+                "orderSide": "BUY",
+                "quantity": 10,
+                "price": 0.0,
+                "stopPrice": 0.0,
+                "orderSessionType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "status": 400,
+          "body": {
+            "type": "error",
+            "code": "e-margin-0001",
+            "description": "Invalid instrument"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Invalid instrument",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/orders/margindetails",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "portfolio": [
+              {
+                "exchange": 1,
+                "exchangeInstrumentId": 22,
+                "productType": "MIS",
+                "orderType": "MARKET",
+                "orderSide": "BUY",
+                "quantity": 10,
+                "price": 0.0,
+                "stopPrice": 0.0,
+                "orderSessionType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_error_type_with_ok_status",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "body": {
+            "type": "error",
+            "description": "Not allowed"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "Not allowed",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/orders/margindetails",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "portfolio": [
+              {
+                "exchange": 1,
+                "exchangeInstrumentId": 22,
+                "productType": "MIS",
+                "orderType": "MARKET",
+                "orderSide": "BUY",
+                "quantity": 10,
+                "price": 0.0,
+                "stopPrice": 0.0,
+                "orderSessionType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_session_expired",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "status": 401,
+          "body": {
+            "type": "error",
+            "description": "Invalid Token"
+          }
+        }
+      },
+      "expected": {
+        "status": 401,
+        "body": {
+          "message": "Invalid Token",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/orders/margindetails",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "portfolio": [
+              {
+                "exchange": 1,
+                "exchangeInstrumentId": 22,
+                "productType": "MIS",
+                "orderType": "MARKET",
+                "orderSide": "BUY",
+                "quantity": 10,
+                "price": 0.0,
+                "stopPrice": 0.0,
+                "orderSessionType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_no_details",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "body": {
+            "type": "success",
+            "result": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "No margin details in response",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/orders/margindetails",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "portfolio": [
+              {
+                "exchange": 1,
+                "exchangeInstrumentId": 22,
+                "productType": "MIS",
+                "orderType": "MARKET",
+                "orderSide": "BUY",
+                "quantity": 10,
+                "price": 0.0,
+                "stopPrice": 0.0,
+                "orderSessionType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_alone",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "No valid positions to calculate margin. Check if symbols are valid.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_among_others",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "body": {
+            "type": "success",
+            "code": "s-calculatemargin-0001",
+            "description": "Request sent",
+            "result": {
+              "brokerageDeatils": {
+                "IsValid": true,
+                "MarginRequired": 150,
+                "MarginAvailable": 9816624.5775,
+                "MarginShortfall": 0,
+                "ErrorMessage": ""
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "error_message": "",
+            "is_valid": true,
+            "margin_available": 9816624.5775,
+            "margin_shortfall": 0.0,
+            "total_margin_required": 150.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "xts.rmoneyindia.co.in:3000",
+          "path": "/interactive/orders/margindetails",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "wisdom-session-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "portfolio": [
+              {
+                "exchange": 1,
+                "exchangeInstrumentId": 22,
+                "productType": "MIS",
+                "orderType": "MARKET",
+                "orderSide": "BUY",
+                "quantity": 10,
+                "price": 0.0,
+                "stopPrice": 0.0,
+                "orderSessionType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_index_exchange",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY",
+            "exchange": "NSE_INDEX",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /interactive/orders/margindetails": {
+          "body": {
+            "type": "success",
+            "code": "s-calculatemargin-0001",
+            "description": "Request sent",
+            "result": {
+              "brokerageDeatils": {
+                "IsValid": true,
+                "MarginRequired": 150,
+                "MarginAvailable": 9816624.5775,
+                "MarginShortfall": 0,
+                "ErrorMessage": ""
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "No valid positions to calculate margin. Check if symbols are valid.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_no_positions",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'positions': ['Positions must contain 1 to 50 items.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}

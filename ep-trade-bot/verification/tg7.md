@@ -15,7 +15,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | iBulls (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | Jainam (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | CompositEdge (XTS) | yes | yes | yes | yes | no | no | yes | no |
-| RMoney (XTS) | yes | yes | yes | yes | no | no | yes | no |
+| RMoney (XTS) | yes | yes | yes | yes | yes | no | yes | no |
 
 The other 23 brokers in the task list are not started. All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -151,7 +151,7 @@ The other 23 brokers in the task list are not started. All seven XTS brokers sha
 - Deviations: a refused or empty quote is an error naming the broker and its reason (OpenAlgo says "Failed to fetch market data"); a refused depth is an error (OpenAlgo answers success with a depth of zeros, which reads as an empty market).
 - Not modelled: OpenAlgo refreshes an expired feed token itself (a market-data sign-in in the middle of a quote). EP Trade bot's plugin cannot store a new token, so an expired market-data session shows as the broker's refusal until the next sign-in.
 - Mutation: `tools/mutation/tg7-xts-data.json`, 11 mutants, all caught (three equivalent ones removed or simplified).
-- Still not ported for XTS: margin and the feed (all seven brokers).
+- Still not ported for XTS: the feed (all seven brokers). Margin: only RMoney has a calculator (below); OpenAlgo's other six XTS plugins raise "does not support margin calculator API" and EP Trade bot answers the same 501.
 
 ## XTS history
 
@@ -187,3 +187,9 @@ The other 23 brokers in the task list are not started. All seven XTS brokers sha
 - Sign-in: the trader signs in on RMoney's page, which posts back a session holding the interactive token itself (JSON, sometimes a JSON string holding JSON). RMoney is asked who the token belongs to (its `/interactive/user/profile`, under any of four spellings of the client id), and the user id posted beside the token is never trusted. The market-data keys' session must name the same account (letters and spaces ignored; no check if it names none); a refused market-data sign-in leaves the session without a feed token rather than failing, as in OpenAlgo.
 - OpenAlgo's RMoney plugin fails with an internal error on a position reply whose result is a list, on a trade with no price and on a position reply with no result; EP Trade bot lists the positions as for a well-formed reply. RMoney's host lookup (`/hostlookup`) is not called by OpenAlgo's sign-in and is not ported.
 - Mutation: `tools/mutation/tg7-rmoney.json`, 14 mutants, all caught (four first needed a recorded case or a rewritten pattern; one equivalent mutant was dropped).
+
+## RMoney margin, and XTS brokers without one
+
+- RMoney: ported from `broker/rmoney` `margin_api.py` and `mapping/margin_data.py` (POST `/interactive/orders/margindetails` with a portfolio of positions); the answer is the margin required, the margin available, any shortfall, whether the basket is valid and the broker's error message. 17 recorded cases (`margin_rmoney.fixtures.json`). Deviations: a position whose symbol is not in the master contract refuses the basket and names it (OpenAlgo leaves it out and understates the margin); a refusal sent with an OK status is an error status; an index has no calculation and says so; an expired session says so.
+- Mutation: `tools/mutation/tg7-rmoney-margin.json`, 12 mutants, all caught (the order side's upper-casing is already done before the plugin, so that mutant was dropped as equivalent).
+- Wisdom Capital, iBulls, Jainam, 5paisa XTS, IIFL and CompositEdge have no margin calculator in OpenAlgo; one recorded case (`margin_wisdom.fixtures.json`) holds the 501 answer.
