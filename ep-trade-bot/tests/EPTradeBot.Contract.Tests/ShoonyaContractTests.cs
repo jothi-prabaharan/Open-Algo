@@ -188,3 +188,47 @@ public sealed class ShoonyaHistoryContractTests(ShoonyaHistoryHost host, ITestOu
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class ZebuHistoryHost : ShoonyaBaseHost
+{
+    public override string BrokerName => "zebu";
+    public override string FixtureFile => "history_zebu.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "FA12345:::zebu-client-id", ["ApiSecret"] = "zebu-secret" };
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>Zebu history (tools/contract-fixtures/history_zebu.fixtures.json), run with the clock stopped at the recording.</summary>
+public sealed class ZebuHistoryContractTests(ZebuHistoryHost host, ITestOutputHelper output) : IClassFixture<ZebuHistoryHost>
+{
+    private const string Chart = "OpenAlgo's Zebu plugin fails with an internal error when the chart answers with an error or with something that is not a list of bars. EP Trade bot says Zebu did not send the candles (and, for a daily range, still builds today's bar from a quote).";
+    private const string Repair = "OpenAlgo's Zebu plugin passes every bar on as received, so a bar whose range leaves out its own open or close, a volume below zero or two bars with one timestamp reach the chart, which rejects the whole series. EP Trade bot repairs and de-duplicates as it does for Shoonya.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_intraday_answers_with_an_error"] = new(Chart, f => Expect(f, 500, Error("Zebu did not send the candles: Error Occurred : 5 \"no data\""))),
+        ["history_daily_chart_answers_with_an_error"] = new(Chart, f => Expect(f, 500, Error("Zebu did not send the candles: Error Occurred : 5 \"no data\""))),
+        ["history_daily_chart_fails_so_the_quote_is_all_there_is"] = new(Chart, f => Expect(f, 200, new JsonObject
+        {
+            ["status"] = "success",
+            ["data"] = new JsonArray(new JsonObject { ["timestamp"] = 1794508200, ["open"] = 802.45, ["high"] = 809.45, ["low"] = 800.45, ["close"] = 805.45, ["volume"] = 1234567.0, ["oi"] = 0.0 }),
+        })),
+        ["history_zero_and_unreadable_bars_are_left_out"] = new(Repair, f =>
+        {
+            var rows = f["expected"]!["body"]!["data"]!.AsArray();
+            rows[0]!["high"] = 803.0;
+            rows[0]!["low"] = 801.0;
+            rows[1]!["high"] = 806.0;
+            rows[1]!["volume"] = 0.0;
+        }),
+        ["history_duplicate_timestamps_are_kept"] = new(Repair, f => f["expected"]!["body"]!["data"]!.AsArray().RemoveAt(0)),
+        ["history_interval_zebu_lacks"] = new(
+            "OpenAlgo answers 500 with \"Unsupported interval '20m'\". EP Trade bot answers 400 and names what Zebu offers.",
+            f => Expect(f, 400, Error("Zebu does not offer 20m candles. Choose one of: 1m, 3m, 5m, 10m, 15m, 30m, 1h, 2h, 4h, D."))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_zebu.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}

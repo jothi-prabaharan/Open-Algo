@@ -712,9 +712,128 @@ public sealed class ShoonyaPlugin(IHttpClientFactory http, BrokerSessionFactory 
 /// carry the product, profit and loss on each row, with the held quantity counted as held shares plus the larger of the T1 and demat quantities.
 /// </summary>
 [BrokerPlugin]
-public sealed class ZebuPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<ZebuPlugin> logger)
-    : NorenPluginBase(http, sessions, symbols, logger)
+public sealed class ZebuPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<ZebuPlugin> logger)
+    : NorenPluginBase(http, sessions, symbols, logger), IBrokerHistory
 {
+    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.History;
+
+    private static readonly Dictionary<string, string> Resolutions = new()
+    {
+        ["1m"] = "1", ["3m"] = "3", ["5m"] = "5", ["10m"] = "10", ["15m"] = "15", ["30m"] = "30", ["1h"] = "60", ["2h"] = "120", ["4h"] = "240", ["D"] = "D",
+    };
+
+    private static readonly TimeSpan IstOffset = TimeSpan.FromHours(5.5);
+
+    public IReadOnlyList<string> HistoryTimeframes { get; } = [.. Resolutions.Keys];
+
+    private static long IstEpoch(DateOnly day, TimeOnly time) => new DateTimeOffset(day.ToDateTime(time), IstOffset).ToUnixTimeSeconds();
+
+    /// <summary>
+    /// One call for the whole range (Zebu is asked once, not in windows). Intraday bars carry their time as text (IST); daily bars carry an epoch second. Unlike
+    /// OpenAlgo's plugin, bars are sorted with one per timestamp and a bar whose range leaves out its open or close is widened and a volume below zero zeroed,
+    /// because a chart client rejects the whole series over one such bar.
+    /// </summary>
+    public async Task<JsonArray> GetHistoryAsync(BrokerSession session, SymbolRecord instrument, string interval, DateOnly start, DateOnly end, CancellationToken cancellationToken)
+    {
+        if (!Resolutions.TryGetValue(interval, out var resolution))
+            throw new BrokerException($"{DisplayName} does not offer {interval} candles. Choose one of: {string.Join(", ", Resolutions.Keys)}.", 400);
+
+        var exchange = DataExchangeOf(instrument.Exchange);
+        var startTs = IstEpoch(start, new TimeOnly(0, 0, 0));
+        var endTs = IstEpoch(end, new TimeOnly(23, 59, 59));
+        var daily = interval == "D";
+        JsonNode? answer = null;
+        string? failure = null;
+        try
+        {
+            answer = await PostJsonAsync(session, daily ? "/EODChartData" : "/TPSeries", daily
+                ? new JsonObject { ["sym"] = $"{exchange}:{instrument.BrokerSymbol}", ["from"] = startTs.ToString(CultureInfo.InvariantCulture), ["to"] = endTs.ToString(CultureInfo.InvariantCulture), ["uid"] = UserIdOf(session) }
+                : new JsonObject { ["exch"] = exchange, ["token"] = instrument.Token, ["st"] = startTs.ToString(CultureInfo.InvariantCulture), ["et"] = endTs.ToString(CultureInfo.InvariantCulture), ["intrv"] = resolution, ["uid"] = UserIdOf(session) },
+                cancellationToken);
+        }
+        catch (BrokerException ex) when (ex.HttpStatus == 502)
+        {
+            failure = ex.Message;
+        }
+
+        if (answer is JsonObject error) failure = $"{DisplayName} did not send the candles: {JsonRead.Str(error["emsg"]) ?? "no reason was given."}";
+        else if (answer is not JsonArray && failure is null) failure = $"{DisplayName} did not send the candles. Try again in a moment.";
+        // A daily chart that fails still lets today's candle be built from a quote; an intraday one has nothing to fall back on.
+        if (failure is not null && !daily) throw new BrokerException(failure);
+
+        var candles = new SortedDictionary<long, double[]>();
+        foreach (var node in answer as JsonArray ?? [])
+        {
+            var candle = node is JsonValue v && v.TryGetValue<string>(out var text) ? TryObject(text) : node as JsonObject;
+            if (candle is null) continue;
+            if (!Num(candle["into"], out var open) || !Num(candle["inth"], out var high) || !Num(candle["intl"], out var low) || !Num(candle["intc"], out var close)) continue;
+            if (!Num(candle.ContainsKey("intv") ? candle["intv"] : 0, out var volume) || !Num(candle.ContainsKey("oi") ? candle["oi"] : 0, out var oi)) continue;
+            long stamp;
+            if (daily)
+            {
+                stamp = long.TryParse(JsonRead.Str(candle["ssboe"]), NumberStyles.Integer, CultureInfo.InvariantCulture, out var s) ? s : 0;
+            }
+            else
+            {
+                if (open == 0 && high == 0 && low == 0 && close == 0) continue;
+                if (!DateTime.TryParseExact(JsonRead.Str(candle["time"]), "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var local)) continue;
+                stamp = new DateTimeOffset(local, IstOffset).ToUnixTimeSeconds();
+            }
+
+            candles[stamp] = [open, high, low, close, volume, oi];
+        }
+
+        if (daily)
+        {
+            var today = DateOnly.FromDateTime(clock.GetUtcNow().ToOffset(IstOffset).DateTime);
+            var todayTs = IstEpoch(today, new TimeOnly(0, 0, 0));
+            if (todayTs >= startTs && todayTs <= endTs && (candles.Count == 0 || candles.Keys.Max() < todayTs))
+            {
+                try
+                {
+                    if (await PostJsonAsync(session, "/GetQuotes", new JsonObject { ["exch"] = exchange, ["token"] = instrument.Token, ["uid"] = UserIdOf(session) }, cancellationToken) is JsonObject quote && JsonRead.Str(quote["stat"]) == "Ok")
+                        candles[todayTs] = [JsonRead.Float(quote["o"]), JsonRead.Float(quote["h"]), JsonRead.Float(quote["l"]), JsonRead.Float(quote["lp"]), JsonRead.Float(quote["v"]), JsonRead.Float(quote["oi"])];
+                }
+                catch (BrokerException)
+                {
+                }
+            }
+
+            if (candles.Count == 0 && failure is not null) throw new BrokerException(failure);
+        }
+
+        var result = new JsonArray();
+        foreach (var (stamp, c) in candles)
+        {
+            result.Add(new JsonObject
+            {
+                ["timestamp"] = stamp, ["open"] = c[0], ["high"] = Math.Max(Math.Max(c[0], c[1]), Math.Max(c[2], c[3])), ["low"] = Math.Min(Math.Min(c[0], c[1]), Math.Min(c[2], c[3])),
+                ["close"] = c[3], ["volume"] = c[4] < 0 ? 0 : c[4], ["oi"] = c[5],
+            });
+        }
+
+        return result;
+    }
+
+    private static JsonObject? TryObject(string text)
+    {
+        try
+        {
+            return JsonNode.Parse(text) as JsonObject;
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return null;
+        }
+    }
+
+    private static bool Num(JsonNode? node, out double value)
+    {
+        value = 0;
+        if (node is null) return false;
+        return BookFormatting.Number(node) is { } n ? (value = n) == n : double.TryParse(JsonRead.Str(node), NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+    }
+
     public override string Name => "zebu";
     public override string DisplayName => "Zebu";
     protected override string Host => "https://go.mynt.in";

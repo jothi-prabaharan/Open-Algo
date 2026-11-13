@@ -17,7 +17,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | CompositEdge (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | RMoney (XTS) | yes | yes | yes | yes | yes | no | yes | no |
 | Shoonya | yes | yes | yes | yes | yes | no | yes | no |
-| Zebu | yes | yes | yes | no | n/a (no calculator) | no | yes | no |
+| Zebu | yes | yes | yes | yes | n/a (no calculator) | no | yes | no |
 
 The other 21 brokers in the task list are not started (Shoonya and Zebu are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -26,7 +26,7 @@ The other 21 brokers in the task list are not started (Shoonya and Zebu are part
 - Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **The 21 brokers not started** (fivepaisa, aliceblue, arrow, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rupeezy, sahi, samco, tradejini, tradesmart), and the feed for Shoonya and Zebu, and history for Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **The 21 brokers not started** (fivepaisa, aliceblue, arrow, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rupeezy, sahi, samco, tradejini, tradesmart), and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
 ## Upstox sign-in
 
@@ -218,7 +218,7 @@ The other 21 brokers in the task list are not started (Shoonya and Zebu are part
 - Differences from Shoonya, recorded: a stop-market order is sent as it is (only market orders are priced from a quote); holdings carry the product and profit and loss on each row, the held quantity is held shares plus the larger of the T1 and demat quantities, and the totals are Zebu's own (value counts every quantity, invested counts the held quantity only, profit is zero); the sign-in address is `go.mynt.in/OAuthlogin/authorize/oauth`.
 - OpenAlgo's Zebu plugin takes whatever quote comes back, including another instrument's. EP Trade bot checks every quote as it does for Shoonya (the Noren backend is the same) and asks again, then refuses; the three recorded cases that show the difference are deviations.
 - Mutation: `tools/mutation/tg7-zebu.json`, 11 mutants for what is specific to Zebu, all caught (one first needed a holding whose product is not CNC); the shared Noren code is covered by Shoonya's 34.
-- Not yet ported for Zebu: history and the feed. Zebu has no position-specific margin calculator (OpenAlgo raises "does not support"; EP Trade bot answers 501, one recorded case in `margin_zebu.fixtures.json`).
+- Not yet ported for Zebu: the feed. Zebu has no position-specific margin calculator (OpenAlgo raises "does not support"; EP Trade bot answers 501, one recorded case in `margin_zebu.fixtures.json`).
 
 ## Shoonya margin
 
@@ -232,3 +232,9 @@ The other 21 brokers in the task list are not started (Shoonya and Zebu are part
 - Candles: sorted, one per timestamp (the last received kept), bars with no price dropped, a bar whose range leaves out its own open or close widened to cover them, a volume below zero set to zero. A bar with no epoch second has its time text read (a time as IST, a day as midnight UTC, as OpenAlgo does). A daily range that includes today gets today's candle from a quote when the history does not hold it; the clock is stopped at the recording for this.
 - 26 recorded cases (`history_shoonya.fixtures.json`) plus an integration test of the form body. Deviations: wording of the refusals (a lapsed session is a 403, an unsupported interval a 400 naming the choices, every window failing says Shoonya did not send the candles).
 - Mutation: `tools/mutation/tg7-shoonya-history.json`, 26 mutants, all caught (four first needed a recorded case or an integration test; one mutant that looped forever was replaced).
+
+## Zebu history
+
+- Ported from `broker/zebu/api/data.py` `get_history`: one EODChartData or TPSeries call for the whole range (no windows), intraday bars read by their time text (IST), daily bars by their epoch second, and today's candle built from a quote when a daily range includes today and the history does not hold it. 16 recorded cases (`history_zebu.fixtures.json`), the clock stopped at the recording.
+- Deviations: OpenAlgo's Zebu plugin passes bars on as received, so a bar whose range leaves out its own open or close, a negative volume or two bars with one timestamp reach the chart (which rejects the whole series, as seen on Shoonya); EP Trade bot sorts, keeps one bar per timestamp, widens and zeroes as it does for Shoonya. When the chart answers with an error or with something that is not a list OpenAlgo fails with an internal error; EP Trade bot says Zebu did not send the candles, and for a daily range still builds today's bar from a quote. An unsupported interval is a 400 naming the choices.
+- Mutation: `tools/mutation/tg7-zebu-history.json`, 11 mutants, all caught (one needed a rewritten pattern).

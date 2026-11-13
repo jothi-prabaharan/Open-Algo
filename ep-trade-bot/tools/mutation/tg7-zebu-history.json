@@ -1,0 +1,90 @@
+[
+ {
+  "name": "ZH1 chart name from symbol",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"sym\"] = $\"{exchange}:{instrument.BrokerSymbol}\", [\"from\"] = startTs.ToString(CultureInfo.InvariantCulture), [\"to\"] = endTs.ToString(CultureInfo.InvariantCulture), [\"uid\"] = UserIdOf(session) }",
+  "new": "[\"sym\"] = $\"{exchange}:{instrument.Symbol}\", [\"from\"] = startTs.ToString(CultureInfo.InvariantCulture), [\"to\"] = endTs.ToString(CultureInfo.InvariantCulture), [\"uid\"] = UserIdOf(session) }",
+  "filter": "FullyQualifiedName~ZebuHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ZH2 daily ts from time text",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "stamp = long.TryParse(JsonRead.Str(candle[\"ssboe\"]), NumberStyles.Integer, CultureInfo.InvariantCulture, out var s) ? s : 0;",
+  "new": "stamp = 5;",
+  "filter": "FullyQualifiedName~ZebuHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ZH3 intraday zero bars kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "                if (open == 0 && high == 0 && low == 0 && close == 0) continue;\n                if (!DateTime.TryParseExact(JsonRead.Str(candle[\"time\"])",
+  "new": "                if (!DateTime.TryParseExact(JsonRead.Str(candle[\"time\"])",
+  "filter": "FullyQualifiedName~ZebuHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ZH4 intraday time utc",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "stamp = new DateTimeOffset(local, IstOffset).ToUnixTimeSeconds();\n            }\n\n            candles[stamp]",
+  "new": "stamp = new DateTimeOffset(local, TimeSpan.Zero).ToUnixTimeSeconds();\n            }\n\n            candles[stamp]",
+  "filter": "FullyQualifiedName~ZebuHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ZH5 today only when empty",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "todayTs <= endTs && (candles.Count == 0 || candles.Keys.Max() < todayTs))\n            {\n                try\n                {\n                    if (await PostJsonAsync(session, \"/GetQuotes\", new JsonObject { [\"exch\"] = exchange, [\"token\"]",
+  "new": "todayTs <= endTs && candles.Count == 0)\n            {\n                try\n                {\n                    if (await PostJsonAsync(session, \"/GetQuotes\", new JsonObject { [\"exch\"] = exchange, [\"token\"]",
+  "filter": "FullyQualifiedName~ZebuHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ZH6 daily chart failure fatal",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (failure is not null && !daily) throw new BrokerException(failure);",
+  "new": "if (failure is not null) throw new BrokerException(failure);",
+  "filter": "FullyQualifiedName~ZebuHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ZH7 intraday failure ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (failure is not null && !daily) throw new BrokerException(failure);",
+  "new": "if (false) throw new BrokerException(failure);",
+  "filter": "FullyQualifiedName~ZebuHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ZH8 widen high",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"high\"] = Math.Max(Math.Max(c[0], c[1]), Math.Max(c[2], c[3])), [\"low\"] = Math.Min(Math.Min(c[0], c[1]), Math.Min(c[2], c[3])),\n                [\"close\"] = c[3], [\"volume\"] = c[4] < 0 ? 0 : c[4], [\"oi\"] = c[5],\n            });\n        }\n\n        return result;\n    }\n\n    private static JsonObject? TryObject",
+  "new": "[\"high\"] = c[1], [\"low\"] = Math.Min(Math.Min(c[0], c[1]), Math.Min(c[2], c[3])),\n                [\"close\"] = c[3], [\"volume\"] = c[4] < 0 ? 0 : c[4], [\"oi\"] = c[5],\n            });\n        }\n\n        return result;\n    }\n\n    private static JsonObject? TryObject",
+  "filter": "FullyQualifiedName~ZebuHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ZH9 negative volume kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"close\"] = c[3], [\"volume\"] = c[4] < 0 ? 0 : c[4], [\"oi\"] = c[5],\n            });\n        }\n\n        return result;\n    }\n\n    private static JsonObject? TryObject",
+  "new": "[\"close\"] = c[3], [\"volume\"] = c[4], [\"oi\"] = c[5],\n            });\n        }\n\n        return result;\n    }\n\n    private static JsonObject? TryObject",
+  "filter": "FullyQualifiedName~ZebuHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ZH10 duplicates keep first",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "candles[stamp] = [open, high, low, close, volume, oi];\n        }\n\n        if (daily)\n        {\n            var today = DateOnly.FromDateTime(clock.GetUtcNow().ToOffset(IstOffset).DateTime);\n            var todayTs = IstEpoch(today, new TimeOnly(0, 0, 0));",
+  "new": "candles.TryAdd(stamp, [open, high, low, close, volume, oi]);\n        }\n\n        if (daily)\n        {\n            var today = DateOnly.FromDateTime(clock.GetUtcNow().ToOffset(IstOffset).DateTime);\n            var todayTs = IstEpoch(today, new TimeOnly(0, 0, 0));",
+  "filter": "FullyQualifiedName~ZebuHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ZH11 today offset added",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var todayTs = IstEpoch(today, new TimeOnly(0, 0, 0));\n            if (todayTs >= startTs && todayTs <= endTs && (candles.Count == 0 || candles.Keys.Max() < todayTs))\n            {\n                try\n                {\n                    if (await PostJsonAsync(session, \"/GetQuotes\", new JsonObject { [\"exch\"] = exchange,",
+  "new": "var todayTs = IstEpoch(today, new TimeOnly(0, 0, 0)) + 19800;\n            if (todayTs >= startTs && todayTs <= endTs && (candles.Count == 0 || candles.Keys.Max() < todayTs))\n            {\n                try\n                {\n                    if (await PostJsonAsync(session, \"/GetQuotes\", new JsonObject { [\"exch\"] = exchange,",
+  "filter": "FullyQualifiedName~ZebuHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]
