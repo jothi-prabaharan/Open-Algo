@@ -1447,6 +1447,41 @@ public sealed class TradesmartPlugin(IHttpClientFactory http, BrokerSessionFacto
     protected override string BearerOf(BrokerSession session) =>
         session.AuthToken.Contains(":::", StringComparison.Ordinal) ? session.AuthToken.Split(":::", 2)[1] : session.AuthToken;
 
+    protected override JsonObject QuoteData(JsonObject q) => new()
+    {
+        ["bid"] = JsonRead.Float(q["bp1"]), ["ask"] = JsonRead.Float(q["sp1"]), ["bid_qty"] = JsonRead.Int(q["bq1"]), ["ask_qty"] = JsonRead.Int(q["sq1"]),
+        ["open"] = JsonRead.Float(q["o"]), ["high"] = JsonRead.Float(q["h"]), ["low"] = JsonRead.Float(q["l"]), ["ltp"] = JsonRead.Float(q["lp"]),
+        ["prev_close"] = q.ContainsKey("c") ? JsonRead.Float(q["c"]) : 0, ["volume"] = JsonRead.Int(q["v"]), ["oi"] = JsonRead.Int(q["oi"]),
+        ["tick_size"] = JsonRead.Truthy(q["ti"]) ? JsonRead.Float(q["ti"]) : null,
+    };
+
+    /// <summary>Five levels a side, each with the number of orders, and the open interest.</summary>
+    public override async Task<JsonObject> GetDepthAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken)
+    {
+        var record = await Symbols.FindAsync(Name, symbol, exchange, cancellationToken)
+            ?? throw new BrokerException($"{symbol} on {exchange} is not in the {DisplayName} master contract. Check the symbol, or download the master contract again.", 400);
+        var q = await QuoteForMarginAsync(session, record, cancellationToken);
+        var bids = new JsonArray();
+        var asks = new JsonArray();
+        long totalBuy = 0, totalSell = 0;
+        for (var i = 1; i <= 5; i++)
+        {
+            bids.Add(new JsonObject { ["price"] = JsonRead.Float(q[$"bp{i}"]), ["quantity"] = JsonRead.Int(q[$"bq{i}"]), ["orders"] = JsonRead.Int(q[$"bo{i}"]) });
+            asks.Add(new JsonObject { ["price"] = JsonRead.Float(q[$"sp{i}"]), ["quantity"] = JsonRead.Int(q[$"sq{i}"]), ["orders"] = JsonRead.Int(q[$"so{i}"]) });
+            totalBuy += JsonRead.Int(q[$"bq{i}"]);
+            totalSell += JsonRead.Int(q[$"sq{i}"]);
+        }
+
+        return new JsonObject
+        {
+            ["bids"] = bids, ["asks"] = asks, ["totalbuyqty"] = totalBuy, ["totalsellqty"] = totalSell, ["high"] = JsonRead.Float(q["h"]), ["low"] = JsonRead.Float(q["l"]),
+            ["ltp"] = JsonRead.Float(q["lp"]), ["ltq"] = JsonRead.Int(q["ltq"]), ["open"] = JsonRead.Float(q["o"]), ["prev_close"] = JsonRead.Float(q["c"]),
+            ["volume"] = (long)Math.Truncate(JsonRead.Float(q["v"])), ["oi"] = JsonRead.Int(q["oi"]),
+        };
+    }
+
+    // ---- books -----------------------------------------------------------------------------------------------
+
     protected override void ShapeOrder(JsonObject body)
     {
         body.Remove("mkt_protection");
