@@ -16,8 +16,8 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Jainam (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | CompositEdge (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | RMoney (XTS) | yes | yes | yes | yes | yes | no | yes | no |
-| Shoonya | yes | yes | yes | no | no | no | yes | no |
-| Zebu | yes | yes | yes | no | no | no | yes | no |
+| Shoonya | yes | yes | yes | no | yes | no | yes | no |
+| Zebu | yes | yes | yes | no | n/a (no calculator) | no | yes | no |
 
 The other 21 brokers in the task list are not started (Shoonya and Zebu are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -26,7 +26,7 @@ The other 21 brokers in the task list are not started (Shoonya and Zebu are part
 - Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **The 21 brokers not started** (fivepaisa, aliceblue, arrow, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rupeezy, sahi, samco, tradejini, tradesmart), and history, margin and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **The 21 brokers not started** (fivepaisa, aliceblue, arrow, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rupeezy, sahi, samco, tradejini, tradesmart), and history and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
 ## Upstox sign-in
 
@@ -204,7 +204,7 @@ The other 21 brokers in the task list are not started (Shoonya and Zebu are part
 - Platform fix found by this broker: order status read the trade's average price only when it was a JSON number; a broker that sends it as text ("1499.95") showed 0. It is now read as OpenAlgo reads it.
 - Held as OpenAlgo has them (not corrected, flagged): a holding's quantity counts held shares and the demat quantity both (it takes the larger of the two other quantities and adds the held ones), as the Python plugin does.
 - Mutation: `tools/mutation/tg7-shoonya.json`, 34 mutants, all caught (three first needed recorded cases; two equivalent ones were dropped: a spelling that falls through to the same text, and a short-position formula that is algebraically the same).
-- Not yet ported for Shoonya: history, margin and the feed. The sign-in is below.
+- Not yet ported for Shoonya: history and the feed. Margin and the sign-in are below.
 
 ## Shoonya sign-in
 
@@ -218,4 +218,10 @@ The other 21 brokers in the task list are not started (Shoonya and Zebu are part
 - Differences from Shoonya, recorded: a stop-market order is sent as it is (only market orders are priced from a quote); holdings carry the product and profit and loss on each row, the held quantity is held shares plus the larger of the T1 and demat quantities, and the totals are Zebu's own (value counts every quantity, invested counts the held quantity only, profit is zero); the sign-in address is `go.mynt.in/OAuthlogin/authorize/oauth`.
 - OpenAlgo's Zebu plugin takes whatever quote comes back, including another instrument's. EP Trade bot checks every quote as it does for Shoonya (the Noren backend is the same) and asks again, then refuses; the three recorded cases that show the difference are deviations.
 - Mutation: `tools/mutation/tg7-zebu.json`, 11 mutants for what is specific to Zebu, all caught (one first needed a holding whose product is not CNC); the shared Noren code is covered by Shoonya's 34.
-- Not yet ported for Zebu: history, margin and the feed.
+- Not yet ported for Zebu: history and the feed. Zebu has no position-specific margin calculator (OpenAlgo raises "does not support"; EP Trade bot answers 501, one recorded case in `margin_zebu.fixtures.json`).
+
+## Shoonya margin
+
+- Ported from `broker/shoonya` `margin_api.py` and `mapping/margin_data.py`: the basket goes to GetBasketMargin (the first position at the top level of the request, the rest in `basketlists`), and the answer is the margin used (span and exposure are not split out and are 0). Market and stop-market positions are converted to limit and stop-limit as on orders, priced from a quote; with no usable quote the converted position carries the price given (market) or the trigger (stop-market).
+- 17 recorded cases (`margin_shoonya.fixtures.json`). Deviations: a refusal is an error status with the reason (OpenAlgo answers a success status with an error message); a lapsed session says so; a position whose symbol is not in the master contract refuses the basket and names it (OpenAlgo leaves it out and understates the margin).
+- Mutation: `tools/mutation/tg7-shoonya-margin.json`, 16 mutants, all caught (two needed a rewritten pattern).

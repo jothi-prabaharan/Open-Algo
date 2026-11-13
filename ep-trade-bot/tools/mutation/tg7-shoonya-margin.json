@@ -1,0 +1,130 @@
+[
+ {
+  "name": "G1 first order not top level",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "foreach (var (key, value) in orders[0]) body[key] = value?.DeepClone();",
+  "new": "foreach (var (key, value) in orders[1 % orders.Count]) body[key] = value?.DeepClone();",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G2 basket includes first",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "body[\"basketlists\"] = new JsonArray(orders.Skip(1)",
+  "new": "body[\"basketlists\"] = new JsonArray(orders.Skip(0)",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G3 limit price dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "return (type, l.Price == 0 ? \"0\" : Plain(l.Price));",
+  "new": "return (type, \"0\");",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G4 market stays market",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var converted = l.PriceType == \"MARKET\" ? \"LMT\" : \"SL-LMT\";",
+  "new": "var converted = l.PriceType == \"MARKET\" ? \"MKT\" : \"SL-LMT\";",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G5 stop market stays",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var converted = l.PriceType == \"MARKET\" ? \"LMT\" : \"SL-LMT\";",
+  "new": "var converted = l.PriceType == \"MARKET\" ? \"LMT\" : \"SL-MKT\";",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G6 market fallback ignores price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var fallback = l.PriceType == \"MARKET\" ? (l.Price == 0 ? \"0\" : Plain(l.Price))",
+  "new": "var fallback = l.PriceType == \"MARKET\" ? \"0\"",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G7 stop fallback ignores trigger",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": ": (l.TriggerPrice == 0 ? \"0\" : Plain(l.TriggerPrice));\n        try",
+  "new": ": \"0\";\n        try",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G8 zero ltp priced",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (ltp > 0)\n            {\n                var tick",
+  "new": "if (ltp >= 0)\n            {\n                var tick",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G9 tick ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var tick = JsonRead.Truthy(quote[\"ti\"]) ? JsonRead.Float(quote[\"ti\"]) : (double?)null;\n                return (converted",
+  "new": "double? tick = null;\n                return (converted",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G10 side wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"trantype\"] = l.Action.Equals(\"BUY\", StringComparison.OrdinalIgnoreCase) ? \"B\" : \"S\", [\"prctyp\"] = type,",
+  "new": "[\"trantype\"] = l.Action.Equals(\"BUY\", StringComparison.OrdinalIgnoreCase) ? \"S\" : \"B\", [\"prctyp\"] = type,",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G11 trigger dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"trgprc\"] = l.TriggerPrice == 0 ? \"0\" : Plain(l.TriggerPrice), [\"prd\"]",
+  "new": "[\"trgprc\"] = \"0\", [\"prd\"]",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G12 ampersand",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": ".Replace(\"&\", \"%26\", StringComparison.Ordinal),\n                [\"qty\"]",
+  "new": ".Replace(\"&\", \"%25\", StringComparison.Ordinal),\n                [\"qty\"]",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G13 remarks ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "JsonRead.Str(reply[\"remarks\"]) is { Length: > 0 } r ? r :",
+  "new": "false ? \"\" :",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G14 margin figure",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"total_margin_required\"] = JsonRead.Float(reply[\"marginused\"]), [\"span_margin\"] = 0",
+  "new": "[\"total_margin_required\"] = JsonRead.Float(reply[\"marginused\"]) + 1, [\"span_margin\"] = 0",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G15 expiry hidden",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (SessionLapsed(JsonRead.Str(reply[\"emsg\"]))) throw new BrokerException($\"{DisplayName} says the session has expired. Log in to {DisplayName} again.\", 403);\n            var reason",
+  "new": "var reason",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G16 status ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (JsonRead.Str(reply[\"stat\"]) != \"Ok\")\n        {\n            if (SessionLapsed",
+  "new": "if (Environment.TickCount64 < 0 && JsonRead.Str(reply[\"stat\"]) != \"Ok\")\n        {\n            if (SessionLapsed",
+  "filter": "FullyQualifiedName~MarginShoonya",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

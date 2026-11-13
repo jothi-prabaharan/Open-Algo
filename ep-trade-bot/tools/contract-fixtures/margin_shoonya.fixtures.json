@@ -1,0 +1,1497 @@
+{
+  "broker": "shoonya",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "shoonya-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [
+    "/NorenWClientAPI/OrderBook",
+    "/NorenWClientAPI/TradeBook",
+    "/NorenWClientAPI/PositionBook",
+    "/NorenWClientAPI/Holdings",
+    "/NorenWClientAPI/Limits",
+    "/NorenWClientAPI/GetQuotes",
+    "/NorenWClientAPI/GetBasketMargin"
+  ],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN-EQ",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "M&M",
+      "brsymbol": "M&M-EQ",
+      "name": "MAHINDRA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "2031",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY-EQ",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY25NOV26F",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "35001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY25NOV2624000CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "40001",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "OPTIDX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "CRUDEOIL",
+      "brsymbol": "CRUDEOIL",
+      "name": "CRUDEOIL",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "50001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 100,
+      "instrumenttype": "FUTCOM",
+      "tick_size": 1.0
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "margin_limit_order",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "marginused": "1608.05",
+            "remarks": "Successfully Completed"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_market_priced_from_a_quote",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetQuotes": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "token": "3045",
+            "lp": "805.45",
+            "o": "802.45",
+            "h": "809.45",
+            "l": "800.45",
+            "c": "803.95",
+            "v": "1234567",
+            "ltq": "25",
+            "bp1": "805.4",
+            "sp1": "805.5",
+            "oi": "0",
+            "ti": "0.05",
+            "bq1": "100",
+            "sq1": "110",
+            "bp2": "805.35",
+            "bq2": "200",
+            "sp2": "805.55",
+            "sq2": "220",
+            "bp3": "805.3",
+            "bq3": "300",
+            "sp3": "805.6",
+            "sq3": "330",
+            "bp4": "805.25",
+            "bq4": "400",
+            "sp4": "805.65",
+            "sq4": "440",
+            "bp5": "805.2",
+            "bq5": "500",
+            "sp5": "805.7",
+            "sq5": "550"
+          }
+        },
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "marginused": "1608.05",
+            "remarks": "Successfully Completed"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": "3045",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "809.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_sell_market_priced_from_a_quote",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "SELL",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetQuotes": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "token": "3045",
+            "lp": "805.45",
+            "o": "802.45",
+            "h": "809.45",
+            "l": "800.45",
+            "c": "803.95",
+            "v": "1234567",
+            "ltq": "25",
+            "bp1": "805.4",
+            "sp1": "805.5",
+            "oi": "0",
+            "ti": "0.05",
+            "bq1": "100",
+            "sq1": "110",
+            "bp2": "805.35",
+            "bq2": "200",
+            "sp2": "805.55",
+            "sq2": "220",
+            "bp3": "805.3",
+            "bq3": "300",
+            "sp3": "805.6",
+            "sq3": "330",
+            "bp4": "805.25",
+            "bq4": "400",
+            "sp4": "805.65",
+            "sq4": "440",
+            "bp5": "805.2",
+            "bq5": "500",
+            "sp5": "805.7",
+            "sq5": "550"
+          }
+        },
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "marginused": "1608.05",
+            "remarks": "Successfully Completed"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": "3045",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "801.4",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "S",
+            "prctyp": "LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_market_without_a_quote_keeps_the_price_given",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET",
+            "price": "800"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetQuotes": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "no quote"
+          }
+        },
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "marginused": "1608.05",
+            "remarks": "Successfully Completed"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": "3045",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "800",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_market_quote_has_no_price",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET",
+            "price": "801.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetQuotes": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "token": "3045",
+            "lp": "0",
+            "o": "802.45",
+            "h": "809.45",
+            "l": "800.45",
+            "c": "803.95",
+            "v": "1234567",
+            "ltq": "25",
+            "bp1": "805.4",
+            "sp1": "805.5",
+            "oi": "0",
+            "ti": "0.05",
+            "bq1": "100",
+            "sq1": "110",
+            "bp2": "805.35",
+            "bq2": "200",
+            "sp2": "805.55",
+            "sq2": "220",
+            "bp3": "805.3",
+            "bq3": "300",
+            "sp3": "805.6",
+            "sq3": "330",
+            "bp4": "805.25",
+            "bq4": "400",
+            "sp4": "805.65",
+            "sq4": "440",
+            "bp5": "805.2",
+            "bq5": "500",
+            "sp5": "805.7",
+            "sq5": "550"
+          }
+        },
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "marginused": "1608.05",
+            "remarks": "Successfully Completed"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": "3045",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "801.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_stop_market_priced_from_a_quote",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "SL-M",
+            "trigger_price": "801.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetQuotes": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "token": "3045",
+            "lp": "805.45",
+            "o": "802.45",
+            "h": "809.45",
+            "l": "800.45",
+            "c": "803.95",
+            "v": "1234567",
+            "ltq": "25",
+            "bp1": "805.4",
+            "sp1": "805.5",
+            "oi": "0",
+            "ti": "0.05",
+            "bq1": "100",
+            "sq1": "110",
+            "bp2": "805.35",
+            "bq2": "200",
+            "sp2": "805.55",
+            "sq2": "220",
+            "bp3": "805.3",
+            "bq3": "300",
+            "sp3": "805.6",
+            "sq3": "330",
+            "bp4": "805.25",
+            "bq4": "400",
+            "sp4": "805.65",
+            "sq4": "440",
+            "bp5": "805.2",
+            "bq5": "500",
+            "sp5": "805.7",
+            "sq5": "550"
+          }
+        },
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "marginused": "1608.05",
+            "remarks": "Successfully Completed"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": "3045",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "809.5",
+            "trgprc": "801.5",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "SL-LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_stop_market_without_a_quote_uses_the_trigger",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "SL-M",
+            "trigger_price": "801.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetQuotes": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "no quote"
+          }
+        },
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "marginused": "1608.05",
+            "remarks": "Successfully Completed"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetQuotes",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "exch": "NSE",
+            "token": "3045",
+            "uid": "FA12345"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "801.5",
+            "trgprc": "801.5",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "SL-LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "SL",
+            "price": "800",
+            "trigger_price": "801.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "marginused": "1608.05",
+            "remarks": "Successfully Completed"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "800",
+            "trgprc": "801.5",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "SL-LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_futures_nrml",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "24005"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "marginused": "1608.05",
+            "remarks": "Successfully Completed"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NFO",
+            "tsym": "NIFTY25NOV26F",
+            "qty": "75",
+            "prc": "24005",
+            "trgprc": "0",
+            "prd": "M",
+            "trantype": "S",
+            "prctyp": "LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_ampersand_symbol",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "M&M",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "2800"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "marginused": "1608.05",
+            "remarks": "Successfully Completed"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "M%26M-EQ",
+            "qty": "10",
+            "prc": "2800",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_basket_of_three",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE",
+            "action": "SELL",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "1500"
+          },
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "BUY",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "24000"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "marginused": "1608.05",
+            "remarks": "Successfully Completed"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "basketlists": [
+              {
+                "exch": "NSE",
+                "tsym": "INFY-EQ",
+                "qty": "10",
+                "prc": "1500",
+                "trgprc": "0",
+                "prd": "I",
+                "trantype": "S",
+                "prctyp": "LMT"
+              },
+              {
+                "exch": "NFO",
+                "tsym": "NIFTY25NOV26F",
+                "qty": "75",
+                "prc": "24000",
+                "trgprc": "0",
+                "prd": "M",
+                "trantype": "B",
+                "prctyp": "LMT"
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Invalid Input : bad basket"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "Invalid Input : bad basket",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_refuses_with_remarks_only",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Not_Ok",
+            "remarks": "Insufficient data"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "Insufficient data",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_refuses_with_nothing",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Not_Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "Failed to calculate margin",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_session_expired",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Session Expired : Invalid Session Key"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "Session Expired : Invalid Session Key",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_alone",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "No valid positions to calculate margin. Check if symbols are valid.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_among_others",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPI/GetBasketMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "marginused": "1608.05",
+            "remarks": "Successfully Completed"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.shoonya.com",
+          "path": "/NorenWClientAPI/GetBasketMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer shoonya-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "basketlists": []
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

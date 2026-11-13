@@ -32,7 +32,7 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
 
     /// <summary>Whether a quote is checked to be for the instrument asked about and asked for again when it is not (a fault seen on Shoonya's Noren backend; Zebu runs the same one).</summary>
     protected virtual bool GuardsQuotes => true;
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
+    public virtual BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     // ---- plumbing --------------------------------------------------------------------------------------------
@@ -81,6 +81,18 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
     }
 
     // ---- orders ----------------------------------------------------------------------------------------------
+
+    protected static string MapProduct(string product) => Product(product);
+
+    protected static string MapType(string priceType) => OrderType(priceType);
+
+    protected static bool SessionLapsed(string? message) => SessionExpired(message);
+
+    protected Task<JsonNode?> PostJsonAsync(BrokerSession session, string endpoint, JsonObject payload, CancellationToken cancellationToken) => PostAsync(session, endpoint, payload, cancellationToken);
+
+    protected Task<JsonObject> QuoteForMarginAsync(BrokerSession session, SymbolRecord instrument, CancellationToken cancellationToken) => QuoteAsync(session, instrument.Exchange, instrument.Token, cancellationToken);
+
+    protected string UserIdOf(BrokerSession session) => UserId(session);
 
     private static string Product(string product) => product switch { "CNC" => "C", "NRML" => "M", "MIS" => "I", _ => "I" };
 
@@ -439,8 +451,71 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
 /// <summary>Shoonya (broker/shoonya), api.shoonya.com.</summary>
 [BrokerPlugin]
 public sealed class ShoonyaPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<ShoonyaPlugin> logger)
-    : NorenPluginBase(http, sessions, symbols, logger)
+    : NorenPluginBase(http, sessions, symbols, logger), IBrokerMargin
 {
+    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.Margin;
+
+    /// <summary>
+    /// The margin of a basket (GetBasketMargin). Shoonya refuses market and stop-market types here as it does on orders, so they are converted
+    /// the same way; with no usable quote the converted order carries the price given (a market order) or the trigger (a stop-market).
+    /// </summary>
+    public async Task<JsonObject> CalculateMarginAsync(BrokerSession session, IReadOnlyList<MarginLeg> legs, CancellationToken cancellationToken)
+    {
+        var orders = new List<JsonObject>();
+        foreach (var l in legs)
+        {
+            var (type, price) = await MarginPriceAsync(session, l, cancellationToken);
+            orders.Add(new JsonObject
+            {
+                ["exch"] = l.Instrument.Exchange, ["tsym"] = l.Instrument.BrokerSymbol.Replace("&", "%26", StringComparison.Ordinal),
+                ["qty"] = l.Quantity.ToString(System.Globalization.CultureInfo.InvariantCulture), ["prc"] = price,
+                ["trgprc"] = l.TriggerPrice == 0 ? "0" : Plain(l.TriggerPrice), ["prd"] = MapProduct(l.Product), ["trantype"] = l.Action.Equals("BUY", StringComparison.OrdinalIgnoreCase) ? "B" : "S", ["prctyp"] = type,
+            });
+        }
+
+        var id = UserIdOf(session);
+        var body = new JsonObject { ["uid"] = id, ["actid"] = id };
+        foreach (var (key, value) in orders[0]) body[key] = value?.DeepClone();
+        body["basketlists"] = new JsonArray(orders.Skip(1).Select(o => (JsonNode?)o).ToArray());
+
+        var reply = await PostJsonAsync(session, "/GetBasketMargin", body, cancellationToken) as JsonObject
+            ?? throw new BrokerException($"{DisplayName} sent a reply EP Trade bot could not read. Try again in a moment.", 502);
+        if (JsonRead.Str(reply["stat"]) != "Ok")
+        {
+            if (SessionLapsed(JsonRead.Str(reply["emsg"]))) throw new BrokerException($"{DisplayName} says the session has expired. Log in to {DisplayName} again.", 403);
+            var reason = JsonRead.Str(reply["emsg"]) is { Length: > 0 } e ? e : JsonRead.Str(reply["remarks"]) is { Length: > 0 } r ? r : "no reason was given.";
+            throw new BrokerException($"{DisplayName} could not work out the margin: {reason}", 400);
+        }
+
+        return new JsonObject { ["total_margin_required"] = JsonRead.Float(reply["marginused"]), ["span_margin"] = 0, ["exposure_margin"] = 0 };
+    }
+
+    private async Task<(string Type, string Price)> MarginPriceAsync(BrokerSession session, MarginLeg l, CancellationToken cancellationToken)
+    {
+        var type = MapType(l.PriceType);
+        if (l.PriceType is not ("MARKET" or "SL-M")) return (type, l.Price == 0 ? "0" : Plain(l.Price));
+        var converted = l.PriceType == "MARKET" ? "LMT" : "SL-LMT";
+        var fallback = l.PriceType == "MARKET" ? (l.Price == 0 ? "0" : Plain(l.Price)) : (l.TriggerPrice == 0 ? "0" : Plain(l.TriggerPrice));
+        try
+        {
+            var quote = await QuoteForMarginAsync(session, l.Instrument, cancellationToken);
+            var ltp = JsonRead.Float(quote["lp"]);
+            if (ltp > 0)
+            {
+                var tick = JsonRead.Truthy(quote["ti"]) ? JsonRead.Float(quote["ti"]) : (double?)null;
+                return (converted, Plain((decimal)MarketPriceProtection.ProtectedPrice(ltp, l.Action, MarketPriceProtection.InstrumentType(null, l.Instrument.Symbol), tick)));
+            }
+        }
+        catch (BrokerException)
+        {
+        }
+
+        return (converted, fallback);
+    }
+
+    /// <summary>Python's str() of a price: the figure with no trailing zeros ("805.5", "24010.0" for a whole number sent as a float).</summary>
+    private static string Plain(decimal value) => value.ToString("0.0###############", System.Globalization.CultureInfo.InvariantCulture);
+
     public override string Name => "shoonya";
     public override string DisplayName => "Shoonya";
     protected override string Host => "https://api.shoonya.com";
