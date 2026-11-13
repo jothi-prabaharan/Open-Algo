@@ -1,0 +1,410 @@
+[
+ {
+  "name": "T1 remarks dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "body[\"remarks\"] = \"openalgo\";",
+  "new": "body[\"remarks\"] = \"x\";",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T2 market protection kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "body.Remove(\"mkt_protection\");",
+  "new": "",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T3 average price ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (JsonRead.Truthy(o[\"avgprc\"]) && JsonRead.Float(o[\"avgprc\"]) > 0) row[\"price\"]",
+  "new": "if (false && JsonRead.Truthy(o[\"avgprc\"]) && JsonRead.Float(o[\"avgprc\"]) > 0) row[\"price\"]",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T4 reported price ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "else if (row[\"pricetype\"]?.GetValue<string>() is \"MARKET\" or \"SL-M\" && JsonRead.Float(o[\"prc\"]) == 0.0 &&",
+  "new": "else if (false && row[\"pricetype\"]?.GetValue<string>() is \"MARKET\" or \"SL-M\" && JsonRead.Float(o[\"prc\"]) == 0.0 &&",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T5 reported price any type",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "else if (row[\"pricetype\"]?.GetValue<string>() is \"MARKET\" or \"SL-M\" && JsonRead.Float(o[\"prc\"]) == 0.0 &&",
+  "new": "else if (JsonRead.Float(o[\"prc\"]) == 0.0 &&",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T6 reported price when priced",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "else if (row[\"pricetype\"]?.GetValue<string>() is \"MARKET\" or \"SL-M\" && JsonRead.Float(o[\"prc\"]) == 0.0 && JsonRead.Truthy(o[\"rprc\"])",
+  "new": "else if (row[\"pricetype\"]?.GetValue<string>() is \"MARKET\" or \"SL-M\" && JsonRead.Truthy(o[\"rprc\"])",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T7 trade average not rounded",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var average = Math.Round(JsonRead.Float(t[\"avgprc\"]), 2, MidpointRounding.ToEven);\n        var quantity",
+  "new": "var average = JsonRead.Float(t[\"avgprc\"]);\n        var quantity",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T9 trade time cut",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "row[\"timestamp\"] = JsonRead.Str(t[\"norentm\"]) ?? \"\";\n    }\n\n    private static (double Realised, double Unrealised) Pnl",
+  "new": "row[\"timestamp\"] = (JsonRead.Str(t[\"norentm\"]) ?? \"\").Split(' ')[0];\n    }\n\n    private static (double Realised, double Unrealised) Pnl",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T10 trade quantity rounded",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var quantity = (long)Math.Truncate(JsonRead.Float(t[\"qty\"]));\n        row[\"average_price\"] = average;",
+  "new": "var quantity = (long)Math.Round(JsonRead.Float(t[\"qty\"]));\n        row[\"average_price\"] = average;",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T11 pnl price factor",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "* JsonRead.Float(p[\"netqty\"]) * (p.ContainsKey(\"prcftr\") ? JsonRead.Float(p[\"prcftr\"]) : 1.0);",
+  "new": "* JsonRead.Float(p[\"netqty\"]);",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T12 pnl computed even when reported",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (unrealised == 0 && JsonRead.Float(p[\"netqty\"]) != 0)\n            unrealised =",
+  "new": "if (JsonRead.Float(p[\"netqty\"]) != 0)\n            unrealised =",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T15 holdings quantity depository",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "(long)Math.Max(Math.Truncate(JsonRead.Float(h[\"npoadqty\"])), Math.Truncate(JsonRead.Float(h[\"dpqty\"])))",
+  "new": "(long)Math.Truncate(JsonRead.Float(h[\"npoadqty\"]))",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T16 holdings value without used",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "+ depository - JsonRead.Float(h[\"usedqty\"])) * price;",
+  "new": "+ depository) * price;",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T17 holdings invested includes btst",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "invested += (JsonRead.Float(h[\"holdqty\"]) + depository) * price;",
+  "new": "invested += (JsonRead.Float(h[\"holdqty\"]) + depository + JsonRead.Float(h[\"btstqty\"])) * price;",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T18 holdings price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"product\"] = JsonRead.Get(entry, \"product\", \"CNC\"), [\"average_price\"] = price,",
+  "new": "[\"product\"] = JsonRead.Get(entry, \"product\", \"CNC\"), [\"average_price\"] = 0.0,",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T19 funds realised sign",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var used = JsonRead.Float(limits![\"marginused\"]);\n        return new JsonObject\n        {\n            [\"availablecash\"] = BookFormatting.Fixed2(JsonRead.Float(limits[\"cash\"]) + JsonRead.Float(limits[\"payin\"]) - used), [\"collateral\"] = BookFormatting.Fixed2(JsonRead.Float(limits[\"brkcollamt\"])),\n            [\"m2munrealized\"] = BookFormatting.Fixed2(unrealised), [\"m2mrealized\"] = BookFormatting.Fixed2(realised), [\"utiliseddebits\"] = BookFormatting.Fixed2(used),\n        };",
+  "new": "var used = JsonRead.Float(limits![\"marginused\"]);\n        return new JsonObject\n        {\n            [\"availablecash\"] = BookFormatting.Fixed2(JsonRead.Float(limits[\"cash\"]) + JsonRead.Float(limits[\"payin\"]) - used), [\"collateral\"] = BookFormatting.Fixed2(JsonRead.Float(limits[\"brkcollamt\"])),\n            [\"m2munrealized\"] = BookFormatting.Fixed2(unrealised), [\"m2mrealized\"] = BookFormatting.Fixed2(-realised), [\"utiliseddebits\"] = BookFormatting.Fixed2(used),\n        };",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T20 funds unrealised ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var used = JsonRead.Float(limits![\"marginused\"]);\n        return new JsonObject\n        {\n            [\"availablecash\"] = BookFormatting.Fixed2(JsonRead.Float(limits[\"cash\"]) + JsonRead.Float(limits[\"payin\"]) - used), [\"collateral\"] = BookFormatting.Fixed2(JsonRead.Float(limits[\"brkcollamt\"])),\n            [\"m2munrealized\"] = BookFormatting.Fixed2(unrealised), [\"m2mrealized\"] = BookFormatting.Fixed2(realised), [\"utiliseddebits\"] = BookFormatting.Fixed2(used),\n        };",
+  "new": "var used = JsonRead.Float(limits![\"marginused\"]);\n        return new JsonObject\n        {\n            [\"availablecash\"] = BookFormatting.Fixed2(JsonRead.Float(limits[\"cash\"]) + JsonRead.Float(limits[\"payin\"]) - used), [\"collateral\"] = BookFormatting.Fixed2(JsonRead.Float(limits[\"brkcollamt\"])),\n            [\"m2munrealized\"] = BookFormatting.Fixed2(0), [\"m2mrealized\"] = BookFormatting.Fixed2(realised), [\"utiliseddebits\"] = BookFormatting.Fixed2(used),\n        };",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T21 funds cash only",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"availablecash\"] = BookFormatting.Fixed2(JsonRead.Float(limits[\"cash\"]) + JsonRead.Float(limits[\"payin\"]) - used), [\"collateral\"] = BookFormatting.Fixed2(JsonRead.Float(limits[\"brkcollamt\"])),\n            [\"m2munrealized\"] = BookFormatting.Fixed2(unrealised)",
+  "new": "[\"availablecash\"] = BookFormatting.Fixed2(JsonRead.Float(limits[\"cash\"]) - used), [\"collateral\"] = BookFormatting.Fixed2(JsonRead.Float(limits[\"brkcollamt\"])),\n            [\"m2munrealized\"] = BookFormatting.Fixed2(unrealised)",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T22 market priced off nothing",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var target = order.PriceType == \"MARKET\" ? \"LMT\" : \"SL-LMT\";",
+  "new": "var target = order.PriceType == \"MARKET\" ? \"MKT\" : \"SL-LMT\";",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T23 stop target",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var target = order.PriceType == \"MARKET\" ? \"LMT\" : \"SL-LMT\";",
+  "new": "var target = order.PriceType == \"MARKET\" ? \"LMT\" : \"SL-MKT\";",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T24 market fallback ignores price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var fallback = order.PriceType == \"MARKET\" ? (order.Price == 0 ? \"0\" : PyFloat((double)order.Price)) :",
+  "new": "var fallback = order.PriceType == \"MARKET\" ? \"0\" :",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T25 stop fallback ignores trigger",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var fallback = order.PriceType == \"MARKET\" ? (order.Price == 0 ? \"0\" : PyFloat((double)order.Price)) : (order.TriggerPrice == 0 ? \"0\" : PyFloat((double)order.TriggerPrice));",
+  "new": "var fallback = order.PriceType == \"MARKET\" ? (order.Price == 0 ? \"0\" : PyFloat((double)order.Price)) : \"0\";",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T26 stop basis ignores trigger",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var basis = order.PriceType == \"MARKET\" ? ltp : ((double)order.TriggerPrice is var t && t != 0 ? t : ltp);",
+  "new": "var basis = ltp;",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T27 market basis trigger",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var basis = order.PriceType == \"MARKET\" ? ltp :",
+  "new": "var basis = order.PriceType == \"MARKET\" ? (double)order.TriggerPrice :",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T28 no protection",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "return (target, PyFloat(MarketPriceProtection.ProtectedPrice(basis, action, MarketPriceProtection.InstrumentType(null, order.Symbol), tick)));",
+  "new": "return (target, PyFloat(basis));",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T29 tick ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "double? tick = JsonRead.Truthy(quote[\"ti\"]) ? JsonRead.Float(quote[\"ti\"]) : null;\n            var basis = order.PriceType == \"MARKET\" ? ltp",
+  "new": "double? tick = null;\n            var basis = order.PriceType == \"MARKET\" ? ltp",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T30 quote failure not tolerated",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "        catch (BrokerException)\n        {\n        }\n\n        return (target, fallback);",
+  "new": "        catch (BrokerException) when (Environment.TickCount64 < 0)\n        {\n        }\n\n        return (target, fallback);",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T31 bearer with user",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "session.AuthToken.Contains(\":::\", StringComparison.Ordinal) ? session.AuthToken.Split(\":::\", 2)[1] : session.AuthToken;",
+  "new": "session.AuthToken;",
+  "filter": "FullyQualifiedName~TradesmartLogin",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "T32 user from key only",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (session.AuthToken.Contains(\":::\", StringComparison.Ordinal)) return session.AuthToken.Split(\":::\", 2)[0];\n        var key = session.Key(\"ApiKey\");",
+  "new": "var key = session.Key(\"ApiKey\");",
+  "filter": "FullyQualifiedName~TradesmartLogin",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "T33 margin legs not added",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "total += raw is null ? 0 : Num(raw, out var n) ? n : 0;",
+  "new": "total = raw is null ? 0 : Num(raw, out var n) ? n : 0;",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T34 margin field order",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var raw = reply[\"ordermargin\"] ?? reply[\"marginused\"];",
+  "new": "var raw = reply[\"marginused\"] ?? reply[\"ordermargin\"];",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T35 margin rorgqty",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"rorgqty\"] = \"0\", [\"rorgprc\"] = \"0\",",
+  "new": "[\"rorgqty\"] = \"1\", [\"rorgprc\"] = \"0\",",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T36 login composite",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "return BrokerLoginResult.Success(user is null ? token : $\"{user}:::{token}\", null);",
+  "new": "return BrokerLoginResult.Success(token, null);",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T37 login user key order",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "new[] { \"actid\", \"uid\", \"accountId\", \"actId\", \"client_id\", \"uname\" }",
+  "new": "new[] { \"uid\", \"actid\", \"accountId\", \"actId\", \"client_id\", \"uname\" }",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T38 login token key",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "new[] { \"access_token\", \"accesstoken\", \"token\", \"susertoken\" }",
+  "new": "new[] { \"access_token\", \"token\", \"susertoken\" }",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T39 history no data not empty",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "reason.Contains(\"no data\", StringComparison.OrdinalIgnoreCase)) return [];",
+  "new": "reason.Contains(\"no data\", StringComparison.OrdinalIgnoreCase) && false) return [];",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T40 history zero bar kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (open == 0 && high == 0 && low == 0 && close == 0) continue;\n            }\n\n            candles.Add((stamp, open, high, low, close, Math.Truncate(volume), Math.Truncate(oi)));",
+  "new": "}\n\n            candles.Add((stamp, open, high, low, close, Math.Truncate(volume), Math.Truncate(oi)));",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T41 history ssboe fallback",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "else if (JsonRead.Truthy(candle[\"ssboe\"]) && Num(candle[\"ssboe\"], out var epoch2)) stamp = (long)epoch2;\n                else continue;",
+  "new": "else continue;",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T42 history missing counts as skipped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "double Field(string key) => candle.ContainsKey(key) ? (Num(candle[key], out var n) ? n : double.NaN) : 0;",
+  "new": "double Field(string key) => candle.ContainsKey(key) ? (Num(candle[key], out var n) ? n : double.NaN) : double.NaN;",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T43 history text kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (double.IsNaN(open) || double.IsNaN(high)",
+  "new": "if (false && double.IsNaN(open) || double.IsNaN(high)",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T44 history unsorted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "foreach (var c in candles.OrderBy(c => c.Stamp))",
+  "new": "foreach (var c in candles)",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "T45 history today window",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (startTs <= todayTs && todayTs <= endTs && (candles.Count == 0 || candles.Max(c => c.Stamp) < todayTs))",
+  "new": "if (todayTs <= endTs && (candles.Count == 0 || candles.Max(c => c.Stamp) < todayTs))",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C1 compact ltp keeps time",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (mode == 1)\n        {\n            tick[style.TimestampKey] = Int(d[\"ft\"]);\n            return tick;\n        }",
+  "new": "if (mode == 1 && Environment.TickCount64 < 0)\n        {\n            tick[style.TimestampKey] = Int(d[\"ft\"]);\n            return tick;\n        }",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C2 compact oi key",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "tick[style.OpenInterestKey] = Int(d[\"oi\"]);",
+  "new": "tick[style.OpenInterestKey] = Int(d[\"tbq\"]);",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C3 compact depth only for 3",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (mode != 3) return tick;\n        JsonArray Side",
+  "new": "if (mode != 2 && mode != 3) return tick;\n        JsonArray Side",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C4 compact book sides",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "tick[\"depth\"] = new JsonObject { [\"buy\"] = Side(\"bp\", \"bq\", \"bo\"), [\"sell\"] = Side(\"sp\", \"sq\", \"so\") };\n        tick[\"depth_level\"]",
+  "new": "tick[\"depth\"] = new JsonObject { [\"buy\"] = Side(\"sp\", \"sq\", \"so\"), [\"sell\"] = Side(\"bp\", \"bq\", \"bo\") };\n        tick[\"depth_level\"]",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C5 compact limits",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "tick[\"upper_circuit\"] = Float(d[\"uc\"]);\n        tick[\"lower_circuit\"] = Float(d[\"lc\"]);",
+  "new": "tick[\"upper_circuit\"] = Float(d[\"lc\"]);\n        tick[\"lower_circuit\"] = Float(d[\"uc\"]);",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C6 compact total quantities",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "tick[\"total_buy_quantity\"] = Int(d[\"tbq\"]);\n        tick[\"total_sell_quantity\"] = Int(d[\"tsq\"]);",
+  "new": "tick[\"total_buy_quantity\"] = Int(d[\"tsq\"]);\n        tick[\"total_sell_quantity\"] = Int(d[\"tbq\"]);",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C7 compact style off",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "var tick = style.CompactTicks ? Compact(merged, owner.Mode) :",
+  "new": "var tick = false ? Compact(merged, owner.Mode) :",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C8 composite split",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (style.CompactTicks && token.Contains(\":::\", StringComparison.Ordinal))",
+  "new": "if (false && token.Contains(\":::\", StringComparison.Ordinal))",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C9 composite user kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "userId = parts[0];\n                token = parts[1];",
+  "new": "token = parts[1];",
+  "filter": "FullyQualifiedName~Tradesmart",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

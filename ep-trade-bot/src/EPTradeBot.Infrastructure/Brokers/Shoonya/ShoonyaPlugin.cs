@@ -1429,14 +1429,96 @@ public sealed class FlattradePlugin(IHttpClientFactory http, BrokerSessionFactor
 /// </summary>
 [BrokerPlugin]
 public sealed class TradesmartPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<TradesmartPlugin> logger)
-    : NorenPluginBase(http, sessions, symbols, logger), IBrokerHistory
+    : NorenPluginBase(http, sessions, symbols, logger), IBrokerHistory, IBrokerMargin, IBrokerFeed
 {
     public override string Name => "tradesmart";
     public override string DisplayName => "TradeSmart";
     protected override string Host => "https://v2api.tradesmartonline.in";
     protected override string Api => "/NorenWClientAPIv2";
 
-    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.History;
+    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.History | BrokerCapability.Margin | BrokerCapability.Streaming;
+
+    // ---- feed ------------------------------------------------------------------------------------------------
+
+    public IFeedCodec CreateFeedCodec() => new NorenFeedCodec("tradesmart");
+
+    public FeedEndpoint? FeedEndpoint(BrokerSession session, string? overrideUrl) =>
+        session.AuthToken.Length > 0 ? new FeedEndpoint(new Uri(overrideUrl ?? "wss://v2api.tradesmartonline.in/NorenWSAPI/"), new Dictionary<string, string>()) : null;
+
+    public string? FeedKeepAliveText => """{"t":"h"}""";
+
+    public TimeSpan FeedKeepAliveEvery => TimeSpan.FromSeconds(30);
+
+    // ---- sign-in ---------------------------------------------------------------------------------------------
+
+    /// <summary>The code is exchanged at GenAcsTok. The token may be named in several ways and the answer may carry the user id, which is then saved in front of the token ("user:::token") so every call can name its user.</summary>
+    public override async Task<BrokerLoginResult> LoginAsync(IReadOnlyDictionary<string, string> keys, IReadOnlyDictionary<string, string> input, CancellationToken cancellationToken)
+    {
+        if (ClientId(keys) is not { } clientId)
+            return BrokerLoginResult.Refused($"The {DisplayName} key must be saved as the user id, \":::\" and the client id. Fix it in the server's settings, then sign in again.", 409);
+        if (!keys.TryGetValue("ApiSecret", out var secret) || string.IsNullOrWhiteSpace(secret))
+            return BrokerLoginResult.Refused($"The {DisplayName} secret is not set on this server. Add it to the server's settings, then sign in again.", 409);
+        if (!input.TryGetValue("code", out var code) || string.IsNullOrWhiteSpace(code))
+            return BrokerLoginResult.Refused($"{DisplayName} did not send the sign-in back. Start the sign-in again.");
+
+        var checksum = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(clientId + secret.Trim() + code))).ToLowerInvariant();
+        using var request = new HttpRequestMessage(HttpMethod.Post, Sessions.BaseUrl(Name, Host) + Api + "/GenAcsTok")
+        {
+            Content = new StringContent("jData=" + new JsonObject { ["code"] = code, ["checksum"] = checksum }.ToJsonString(), System.Text.Encoding.UTF8, "text/plain"),
+        };
+        try
+        {
+            using var response = await Http.CreateClient(Name).SendAsync(request, cancellationToken);
+            var body = await JsonRead.ReadAsync(response, cancellationToken) as JsonObject;
+            if (JsonRead.Str(body?["stat"]) == "Ok")
+            {
+                var token = new[] { "access_token", "accesstoken", "token", "susertoken" }.Select(k => JsonRead.Str(body![k])).FirstOrDefault(v => !string.IsNullOrEmpty(v));
+                if (token is null) return BrokerLoginResult.Refused($"{DisplayName} accepted the sign-in but sent no access token. Start it again from the beginning.");
+                var user = new[] { "actid", "uid", "accountId", "actId", "client_id", "uname" }.Select(k => JsonRead.Str(body![k])).FirstOrDefault(v => !string.IsNullOrEmpty(v));
+                return BrokerLoginResult.Success(user is null ? token : $"{user}:::{token}", null);
+            }
+
+            return JsonRead.Str(body?["emsg"]) is { Length: > 0 } reason
+                ? BrokerLoginResult.Refused($"{DisplayName} did not accept the sign-in: {reason}")
+                : BrokerLoginResult.Refused($"{DisplayName} did not accept the sign-in. Start it again from the beginning.");
+        }
+        catch (HttpRequestException)
+        {
+            return BrokerLoginResult.Refused($"{DisplayName} did not answer. Check your connection, then try again.", 502);
+        }
+    }
+
+    // ---- margin ----------------------------------------------------------------------------------------------
+
+    /// <summary>TradeSmart prices one order at a time (GetOrderMargin), so each leg is asked about as it was given (a market leg is not priced) and the margins are added up. A leg the broker refuses stops the sum.</summary>
+    public async Task<JsonObject> CalculateMarginAsync(BrokerSession session, IReadOnlyList<MarginLeg> legs, CancellationToken cancellationToken)
+    {
+        var id = UserId(session);
+        double total = 0;
+        foreach (var l in legs)
+        {
+            var body = new JsonObject
+            {
+                ["uid"] = id, ["actid"] = id, ["exch"] = l.Instrument.Exchange, ["tsym"] = l.Instrument.BrokerSymbol.Replace("&", "%26", StringComparison.Ordinal),
+                ["qty"] = l.Quantity.ToString(CultureInfo.InvariantCulture), ["prc"] = l.Price == 0 ? "0" : PyFloat((double)l.Price), ["trgprc"] = l.TriggerPrice == 0 ? "0" : PyFloat((double)l.TriggerPrice),
+                ["prd"] = MapProduct(l.Product), ["trantype"] = l.Action.Equals("BUY", StringComparison.OrdinalIgnoreCase) ? "B" : "S", ["prctyp"] = MapType(l.PriceType), ["rorgqty"] = "0", ["rorgprc"] = "0",
+            };
+            var reply = await PostAsync(session, "/GetOrderMargin", body, cancellationToken) as JsonObject
+                ?? throw new BrokerException($"{DisplayName} sent a reply EP Trade bot could not read. Try again in a moment.", 502);
+            if (JsonRead.Str(reply["stat"]) != "Ok")
+            {
+                var reason = JsonRead.Str(reply["emsg"]);
+                if (reason is not null && new[] { "session expired", "invalid session", "session key" }.Any(x => reason.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    throw new BrokerException($"{DisplayName} says the session has expired. Log in to {DisplayName} again.", 403);
+                throw new BrokerException($"{DisplayName} could not work out the margin: {(reason is { Length: > 0 } ? reason : "no reason was given.")}", 400);
+            }
+
+            var raw = reply["ordermargin"] ?? reply["marginused"];
+            total += raw is null ? 0 : Num(raw, out var n) ? n : 0;
+        }
+
+        return new JsonObject { ["total_margin_required"] = total, ["span_margin"] = 0, ["exposure_margin"] = 0 };
+    }
 
     // ---- history ---------------------------------------------------------------------------------------------
 

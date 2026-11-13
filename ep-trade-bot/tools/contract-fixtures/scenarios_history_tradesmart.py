@@ -41,6 +41,7 @@ TODAY_BAR = {"body": [dbar(1794528000, 800.0, 806.0, 797.0, 805.0, 5)]}
 HTTP_DOWN = {"status": 500, "body": "<html>down</html>"}
 ONLY_STAT_OK = {"body": {"stat": "Ok"}}
 
+SSBOE_ONLY = {"body": [{"stat": "Ok", "time": "garbled", "ssboe": str(T + 60), "into": "810", "inth": "811", "intl": "809", "intc": "810.5", "intv": "10"}, bar(T, 800.0, 802.5, 799.0, 801.25, 120000)]}
 SCENARIOS = [
     hist("history_5m_equity_newest_first_is_sorted", {}, {TP: M5}),
     hist("history_3m", {"interval": "3m"}, {TP: M5}),
@@ -55,6 +56,7 @@ SCENARIOS = [
     hist("history_negative_volume_is_zeroed", {}, {TP: NEG}),
     hist("history_zero_and_unreadable_bars_are_left_out", {}, {TP: BAD}),
     hist("history_a_row_that_is_not_json_text", {}, {TP: TEXT_ROW}),
+    hist("history_time_text_unreadable_uses_the_epoch", {}, {TP: SSBOE_ONLY}),
     hist("history_duplicate_timestamps_are_kept", {}, {TP: DUP}),
     hist("history_daily", {"interval": "D", "start_date": "2026-10-29", "end_date": "2026-10-30"}, {EOD: DAILY}),
     hist("history_daily_range_is_widened_and_volume_kept", {"interval": "D", "start_date": "2026-10-29", "end_date": "2026-10-30"}, {EOD: DAILY_WIDE}),

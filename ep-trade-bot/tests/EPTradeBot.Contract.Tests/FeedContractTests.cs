@@ -679,3 +679,34 @@ public sealed class RmoneyFeedContractTests
     [MemberData(nameof(Names))]
     public void Matches_the_python_adapter(string name) => XtsFeedRunner.Run("feed_rmoney.fixtures.json", name, () => new XtsFeedCodec("rmoney", batch: 50, rmoney: true), "/apimarketdata", name == "an_event_for_another_mode_is_ignored" ? null : XtsFeedDeviations.Common.GetValueOrDefault(name), stampsCode: true);
 }
+
+public sealed class TradesmartFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_tradesmart.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_tradesmart.fixtures.json", name, SignedIn, ZebuFeedContractTests.Adjustments.GetValueOrDefault(name), anyOrderAcrossInstruments: true);
+
+    private static IFeedCodec SignedIn()
+    {
+        var codec = new NorenFeedCodec("tradesmart");
+        codec.Begin(new BrokerSession(Guid.Empty, "tradesmart", "tradesmart-session-token", null, null, new Dictionary<string, string> { ["ApiKey"] = "FA12345:::tradesmart-api-key" }));
+        codec.Resubscribe(0);
+        return codec;
+    }
+}
+
+public sealed class TradesmartFeedSignInTests
+{
+    [Fact]
+    public void The_user_id_saved_in_front_of_the_token_signs_the_socket_in_and_the_token_is_sent_alone()
+    {
+        var codec = new NorenFeedCodec("tradesmart");
+        codec.Begin(new BrokerSession(Guid.Empty, "tradesmart", "TS0001:::tok-1", null, null, new Dictionary<string, string> { ["ApiKey"] = "FA12345:::cid" }));
+        var auth = System.Text.Json.Nodes.JsonNode.Parse(codec.Resubscribe(0).Single())!;
+        Assert.Equal("TS0001", auth["uid"]!.GetValue<string>());
+        Assert.Equal("TS0001", auth["actid"]!.GetValue<string>());
+        Assert.Equal("tok-1", auth["accesstoken"]!.GetValue<string>());
+    }
+}

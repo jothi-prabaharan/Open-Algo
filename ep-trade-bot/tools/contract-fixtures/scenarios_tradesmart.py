@@ -71,6 +71,10 @@ ORDERS_PRICES = {"body": [
     _order("2004", "NSE", "SBIN-EQ", "3045", "B", "MKT", "I", 10, "0.00", 0, "OPEN", "10:20:04 03-11-2026", rprc="0"),
     _order("2005", "NSE", "SBIN-EQ", "3045", "B", "LMT", "I", 10, "700.00", 0, "OPEN", "10:20:05 03-11-2026", instname="EQ", avgprc="0.00", rprc="1"),
 ]}
+LMT_REPORTED = {"body": [_order("2010", "NSE", "SBIN-EQ", "3045", "B", "LMT", "I", 10, "0.00", 0, "OPEN", "10:20:10 03-11-2026", rprc="5")]}
+FRACTIONAL_TRADES = {"body": [{"stat": "Ok", "norenordno": "3001", "exch": "NSE", "tsym": "SBIN-EQ", "token": "3045", "trantype": "B", "prd": "I", "qty": "2.7", "avgprc": "10.0149", "norentm": "10:30:00 03-11-2026"}]}
+MKT_PRICED = {"body": [_order("2011", "NSE", "SBIN-EQ", "3045", "B", "SL-MKT", "I", 10, "5.00", "4", "OPEN", "10:20:11 03-11-2026", rprc="6")]}
+ROUND_POSITIONS = {"body": [{"stat": "Ok", "tsym": "SBIN-EQ", "exch": "NSE", "token": "3045", "prd": "I", "netqty": "10", "netavgprc": "800.00", "lp": "805.00", "rpnl": "1.234", "urmtom": "2.345", "prcftr": "1"}]}
 GARBLED = {"body": [_order("2006", "NSE", "SBIN-EQ", "3045", "B", "LMT", "I", 10, "700.00", 0, "OPEN", "10:20:06 03-11-2026", fillshares="12", avgprc="x")]}
 LIMITED = {"body": {"stat": "Not_Ok", "emsg": "Invalid Input : Order Recieved 11 in a current second exceeds Limit 10 for user"}}
 NEGATIVE_REPORTED = {"body": [
@@ -165,6 +169,11 @@ SCENARIOS = [
     req("orderbook", "/api/v1/orderbook", {}, {f"POST {BASE}/OrderBook": ORDERS}),
     req("orderbook_average_and_reported_prices", "/api/v1/orderbook", {}, {f"POST {BASE}/OrderBook": ORDERS_PRICES}),
     req("orderbook_garbled_average_price", "/api/v1/orderbook", {}, {f"POST {BASE}/OrderBook": GARBLED}),
+    req("orderbook_reported_price_of_a_priced_order_is_ignored", "/api/v1/orderbook", {}, {f"POST {BASE}/OrderBook": LMT_REPORTED}),
+    req("tradebook_fractional_quantity", "/api/v1/tradebook", {}, {f"POST {BASE}/TradeBook": FRACTIONAL_TRADES}),
+    req("placeorder_market_without_a_quote_keeps_the_price_given", "/api/v1/placeorder", {**PLACE, "pricetype": "MARKET", "price": "800"}, {Q: {"body": {"stat": "Not_Ok", "emsg": "no quote"}}, PLACE_EP: ORDER_OK}),
+    req("orderbook_reported_price_of_a_priced_market_order_is_ignored", "/api/v1/orderbook", {}, {f"POST {BASE}/OrderBook": MKT_PRICED}),
+    req("positionbook_pnl_is_rounded", "/api/v1/positionbook", {}, {f"POST {BASE}/PositionBook": ROUND_POSITIONS}),
     req("orderbook_empty", "/api/v1/orderbook", {}, {f"POST {BASE}/OrderBook": NO_ORDERS}),
     req("tradebook", "/api/v1/tradebook", {}, {f"POST {BASE}/TradeBook": TRADES}),
     req("tradebook_rounding", "/api/v1/tradebook", {}, {f"POST {BASE}/TradeBook": TRADES_ROUNDING}),

@@ -1432,6 +1432,95 @@
       "ignore": []
     },
     {
+      "name": "history_time_text_unreadable_uses_the_epoch",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/TPSeries": {
+          "body": [
+            {
+              "stat": "Ok",
+              "time": "garbled",
+              "ssboe": "1793591160",
+              "into": "810",
+              "inth": "811",
+              "intl": "809",
+              "intc": "810.5",
+              "intv": "10"
+            },
+            {
+              "stat": "Ok",
+              "time": "02-11-2026 09:15:00",
+              "ssboe": "1793591100",
+              "into": "800.0",
+              "inth": "802.5",
+              "intl": "799.0",
+              "intc": "801.25",
+              "intv": "120000",
+              "v": "1000"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.25,
+              "high": 802.5,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793591100,
+              "volume": 120000
+            },
+            {
+              "close": 810.5,
+              "high": 811.0,
+              "low": 809.0,
+              "oi": 0,
+              "open": 810.0,
+              "timestamp": 1793591160,
+              "volume": 10
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/TPSeries",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "exch": "NSE",
+            "token": "3045",
+            "st": "1793557800",
+            "et": "1793644199",
+            "intrv": "5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "history_duplicate_timestamps_are_kept",
       "method": "POST",
       "path": "/api/v1/history",

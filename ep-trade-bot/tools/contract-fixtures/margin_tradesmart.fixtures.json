@@ -1,0 +1,1475 @@
+{
+  "broker": "tradesmart",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "FA12345:::tradesmart-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [
+    "/NorenWClientAPIv2/OrderBook",
+    "/NorenWClientAPIv2/TradeBook",
+    "/NorenWClientAPIv2/PositionBook",
+    "/NorenWClientAPIv2/Holdings",
+    "/NorenWClientAPIv2/Limits",
+    "/NorenWClientAPIv2/GetQuotes",
+    "/NorenWClientAPIv2/GetOrderMargin"
+  ],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN-EQ",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "M&M",
+      "brsymbol": "M&M-EQ",
+      "name": "MAHINDRA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "2031",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY-EQ",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY25NOV26F",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "35001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY25NOV2624000CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "40001",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "OPTIDX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "CRUDEOIL",
+      "brsymbol": "CRUDEOIL",
+      "name": "CRUDEOIL",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "50001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 100,
+      "instrumenttype": "FUTCOM",
+      "tick_size": 1.0
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "margin_one_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "ordermargin": "1608.05"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_market_leg_is_not_priced",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "ordermargin": "1608.05"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "0",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "MKT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_stop_market_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "SL-M",
+            "trigger_price": "801.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "ordermargin": "1608.05"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "0",
+            "trgprc": "801.5",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "SL-MKT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_stop_limit_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "SL",
+            "price": "800",
+            "trigger_price": "801.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "ordermargin": "1608.05"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "800",
+            "trgprc": "801.5",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "SL-LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_sell_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "SELL",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "ordermargin": "1608.05"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "S",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_futures_nrml",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "24005"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "ordermargin": "150000.5"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 150000.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NFO",
+            "tsym": "NIFTY25NOV26F",
+            "qty": "75",
+            "prc": "24005",
+            "trgprc": "0",
+            "prd": "M",
+            "trantype": "S",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_ampersand_symbol",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "M&M",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "2800"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "ordermargin": "1608.05"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "M%26M-EQ",
+            "qty": "10",
+            "prc": "2800",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_legs_are_added_up",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE",
+            "action": "SELL",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "1500"
+          },
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "BUY",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "24000"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": [
+          {
+            "body": {
+              "stat": "Ok",
+              "request_time": "10:20:30 03-11-2026",
+              "ordermargin": "100.5"
+            }
+          },
+          {
+            "body": {
+              "stat": "Ok",
+              "request_time": "10:20:30 03-11-2026",
+              "ordermargin": "200.25"
+            }
+          },
+          {
+            "body": {
+              "stat": "Ok",
+              "request_time": "10:20:30 03-11-2026",
+              "ordermargin": "300"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 600.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "INFY-EQ",
+            "qty": "10",
+            "prc": "1500",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "S",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NFO",
+            "tsym": "NIFTY25NOV26F",
+            "qty": "75",
+            "prc": "24000",
+            "trgprc": "0",
+            "prd": "M",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_falls_back_to_margin_used",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "marginused": "777.7"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 777.7
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_both_fields_prefers_the_order_margin",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "ordermargin": "100.5",
+            "marginused": "999"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 100.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_with_neither_field_is_zero",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 0.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_with_a_blank_field_is_zero",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "ordermargin": ""
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 0.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_with_text_that_is_not_a_number",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "ordermargin": "abc"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 0.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Invalid Input : bad order"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Invalid Input : bad order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_refuses_with_nothing",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Not_Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to calculate margin",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_second_leg_refused_stops_there",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "1500"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "800"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": [
+          {
+            "body": {
+              "stat": "Ok",
+              "request_time": "10:20:30 03-11-2026",
+              "ordermargin": "100"
+            }
+          },
+          {
+            "body": {
+              "stat": "Not_Ok",
+              "emsg": "Insufficient data"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Insufficient data",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "INFY-EQ",
+            "qty": "10",
+            "prc": "1500",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_session_expired",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Session Expired : Invalid Session Key"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Session Expired : Invalid Session Key",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_alone",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "No valid positions to calculate margin. Check if symbols are valid.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_among_others",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "805.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GetOrderMargin": {
+          "body": {
+            "stat": "Ok",
+            "request_time": "10:20:30 03-11-2026",
+            "ordermargin": "1608.05"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1608.05
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GetOrderMargin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain",
+            "authorization": "Bearer tradesmart-access-token"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "805.5",
+            "trgprc": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "rorgqty": "0",
+            "rorgprc": "0"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

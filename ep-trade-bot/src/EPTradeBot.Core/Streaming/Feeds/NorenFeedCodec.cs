@@ -12,11 +12,12 @@ namespace EPTradeBot.Core.Streaming.Feeds;
 /// each scrip keeps a non-zero open, high, low, close and average price over a zero that follows it.
 /// </summary>
 /// <summary>What differs between the brokers that run the Noren socket: the names a tick carries and how a sign-in and a subscription are sent.</summary>
-public sealed record NorenFeedStyle(string Broker, string TimestampKey, string OpenInterestKey, bool LtpCarriesTradeTime, bool SubscribesAfterSignIn, bool ClearsCacheOnSignIn, int BatchSize)
+public sealed record NorenFeedStyle(string Broker, string TimestampKey, string OpenInterestKey, bool LtpCarriesTradeTime, bool SubscribesAfterSignIn, bool ClearsCacheOnSignIn, int BatchSize, bool CompactTicks = false)
 {
     public static NorenFeedStyle For(string broker) => broker switch
     {
         "zebu" => new("zebu", "zebu_timestamp", "total_traded_value", false, false, false, 0),
+        "tradesmart" => new("tradesmart", "tradesmart_timestamp", "oi", false, false, false, int.MaxValue, CompactTicks: true),
         "flattrade" => new("flattrade", "flattrade_timestamp", "total_traded_value", false, false, false, int.MaxValue),
         _ => new("shoonya", "shoonya_timestamp", "open_interest", true, true, true, 100),
     };
@@ -57,6 +58,13 @@ public sealed class NorenFeedCodec(NorenFeedStyle style, string source = "API") 
             var key = session.Keys.TryGetValue("ApiKey", out var k) ? k : "";
             userId = key.Contains(":::", StringComparison.Ordinal) ? key.Split(":::")[0] : key;
             token = session.AuthToken;
+            // TradeSmart saves the user id in front of the token ("user:::token"); the socket is signed in with the two apart.
+            if (style.CompactTicks && token.Contains(":::", StringComparison.Ordinal))
+            {
+                var parts = token.Split(":::", 2);
+                userId = parts[0];
+                token = parts[1];
+            }
             authenticated = false;
             SignInRefused = false;
         }
@@ -252,7 +260,7 @@ public sealed class NorenFeedCodec(NorenFeedStyle style, string source = "API") 
         {
             if ((owner.Mode == 3) != wantsDepth) continue;
             var merged = Merge(scrip, data);
-            var tick = owner.Mode switch { 1 => Ltp(merged), 2 => Quote(merged), _ => Depth(merged) };
+            var tick = style.CompactTicks ? Compact(merged, owner.Mode) : owner.Mode switch { 1 => Ltp(merged), 2 => Quote(merged), _ => Depth(merged) };
             tick["symbol"] = named.Symbol;
             tick["exchange"] = named.Exchange;
             tick["timestamp"] = nowMs;
@@ -307,6 +315,41 @@ public sealed class NorenFeedCodec(NorenFeedStyle style, string source = "API") 
     }
 
     private static long Int(JsonNode? node) => (long)Math.Truncate(Float(node));
+
+    /// <summary>TradeSmart's ticks: an LTP carries the price and the time stamp only; a quote and a depth carry the same fields, with the open interest as "oi"; a depth adds the book and the limits.</summary>
+    private JsonObject Compact(JsonObject d, int mode)
+    {
+        var tick = new JsonObject { ["mode"] = mode, ["ltp"] = Float(d["lp"]) };
+        if (mode == 1)
+        {
+            tick[style.TimestampKey] = Int(d["ft"]);
+            return tick;
+        }
+
+        tick["volume"] = Int(d["v"]);
+        tick["open"] = Float(d["o"]);
+        tick["high"] = Float(d["h"]);
+        tick["low"] = Float(d["l"]);
+        tick["close"] = Float(d["c"]);
+        tick["average_price"] = Float(d["ap"]);
+        tick["percent_change"] = Float(d["pc"]);
+        tick["last_quantity"] = Int(d["ltq"]);
+        tick["last_trade_time"] = d["ltt"]?.DeepClone();
+        tick["total_buy_quantity"] = Int(d["tbq"]);
+        tick["total_sell_quantity"] = Int(d["tsq"]);
+        tick[style.OpenInterestKey] = Int(d["oi"]);
+        tick[style.TimestampKey] = Int(d["ft"]);
+        if (mode != 3) return tick;
+        JsonArray Side(string price, string quantity, string orders) =>
+            new(Enumerable.Range(1, 5).Select(i => (JsonNode?)new JsonObject { ["price"] = Float(d[$"{price}{i}"]), ["quantity"] = Int(d[$"{quantity}{i}"]), ["orders"] = Int(d[$"{orders}{i}"]) }).ToArray());
+        tick["depth"] = new JsonObject { ["buy"] = Side("bp", "bq", "bo"), ["sell"] = Side("sp", "sq", "so") };
+        tick["depth_level"] = 5;
+        tick["upper_circuit"] = Float(d["uc"]);
+        tick["lower_circuit"] = Float(d["lc"]);
+        tick["52_week_high"] = Float(d["52h"]);
+        tick["52_week_low"] = Float(d["52l"]);
+        return tick;
+    }
 
     private JsonObject Ltp(JsonObject d)
     {

@@ -19,7 +19,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Shoonya | yes | yes | yes | yes | yes | no | yes | yes |
 | Zebu | yes | yes | yes | yes | n/a (no calculator) | no | yes | yes |
 | Flattrade | yes | yes | yes | yes | yes | no | yes | yes |
-| TradeSmart (Noren v2) | yes | yes | no | no | no | no | no | no |
+| TradeSmart (Noren v2) | yes | yes | yes | yes | yes | no | yes | yes |
 
 The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -232,7 +232,10 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 
 - `TradesmartPlugin` on the Noren base (Bearer header with a text/plain `jData=` body, the user id read from a saved token of the form `user:::token`), held to `broker/tradesmart` by 47 recorded cases (`tradesmart.fixtures.json`). Its own rules: the market types are refused over its API, so a market order goes as a limit order priced off the last price and a stop-market as a stop-limit priced off its trigger (the last price when it has none), moved by the protection slab, and when no price can be had the order is still converted at the price it was given; the order body carries `remarks` and no market protection field; books pass most values on as they were sent (positions keep the broker's text, with realised and unrealised profit); an order shows its average price once it has one; funds add the day's profit up from the position book.
 - Recorded differences from OpenAlgo: an order the broker turns away for going over its rate limit is a success with no order id there, and a refusal with the broker's reason here; one order whose average price is not a number fails the whole book there, and is shown at its placed price here.
-- Not yet ported for TradeSmart: quotes and depth, history, margin, sign-in, the feed, and the mutation set.
+- Quotes, depth and several quotes (18 recorded cases): the quote carries the best bid and ask sizes and the tick size; depth carries the order count on each level; a quote for another instrument is asked for again, as on the other Noren brokers. Several quotes go over REST only: OpenAlgo serves them from a streaming quote cache first and falls back to REST, and the cache is not ported (the answers are the same, and so are the limits of what can be asked each second).
+- History (32 recorded cases): one call per range, no pre-open bar rule and no widening, a missing price counts as zero and a bar of four zeros is left out, "no data" is an empty list, and a daily range that includes today gets today's bar from a quote. Margin (19 recorded cases): one GetOrderMargin call per leg, the margins added up, a refused leg stops the sum. Sign-in (13 recorded cases and three integration tests): the code is exchanged at GenAcsTok and the user id the answer carries is saved in front of the token, and every call names that user and shows the broker the token alone.
+- Feed: the Noren codec with TradeSmart's own tick shape (an LTP tick carries the price and time stamp only; quote and depth share their fields, with "oi"), 75 recorded scenarios, and the user id read from the saved token to sign the socket in.
+- Mutation set `tools/mutation/tg7-tradesmart.json`: 52 mutants, all caught (four dropped as equivalent: values the platform's own book formatting rounds or zeroes, and a product that is zero either way).
 
 ## Shoonya sign-in
 

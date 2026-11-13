@@ -1,0 +1,594 @@
+{
+  "broker": "tradesmart",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_code_and_keeps_the_user_id",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GenAcsTok": {
+          "body": {
+            "stat": "Ok",
+            "access_token": "tradesmart-access-777",
+            "actid": "TS0001",
+            "request_time": "10:20:30 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "TS0001:::tradesmart-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "cd465901289af3b9f4424d3fa930d485c471d9889fcc4286427eb3cf62cfceac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_code_with_odd_characters",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "a/b+c=d&e",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GenAcsTok": {
+          "body": {
+            "stat": "Ok",
+            "access_token": "tradesmart-access-777",
+            "actid": "TS0001",
+            "request_time": "10:20:30 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "TS0001:::tradesmart-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "a/b+c=d&e",
+            "checksum": "f5baae96c8be9279cb7d34e901ced193f06fbb9a2c52ad8671aaee6ba7ec1adf"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_token_without_a_user_id",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GenAcsTok": {
+          "body": {
+            "stat": "Ok",
+            "access_token": "tradesmart-access-777"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "tradesmart-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "cd465901289af3b9f4424d3fa930d485c471d9889fcc4286427eb3cf62cfceac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_token_under_another_name",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GenAcsTok": {
+          "body": {
+            "stat": "Ok",
+            "accesstoken": "tok-2",
+            "uid": "U9"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "U9:::tok-2",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "cd465901289af3b9f4424d3fa930d485c471d9889fcc4286427eb3cf62cfceac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_token_under_a_third_name",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GenAcsTok": {
+          "body": {
+            "stat": "Ok",
+            "token": "tok-3",
+            "accountId": "A7"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "A7:::tok-3",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "cd465901289af3b9f4424d3fa930d485c471d9889fcc4286427eb3cf62cfceac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_token_under_a_fourth_name",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GenAcsTok": {
+          "body": {
+            "stat": "Ok",
+            "susertoken": "tok-4",
+            "uname": "N5"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "N5:::tok-4",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "cd465901289af3b9f4424d3fa930d485c471d9889fcc4286427eb3cf62cfceac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_user_id_as_client_id",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GenAcsTok": {
+          "body": {
+            "stat": "Ok",
+            "access_token": "tok-5",
+            "client_id": "C3"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "C3:::tok-5",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "cd465901289af3b9f4424d3fa930d485c471d9889fcc4286427eb3cf62cfceac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_both_user_ids_prefers_the_account_id",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GenAcsTok": {
+          "body": {
+            "stat": "Ok",
+            "access_token": "tok-6",
+            "actid": "ACT1",
+            "uid": "UID2"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "ACT1:::tok-6",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "cd465901289af3b9f4424d3fa930d485c471d9889fcc4286427eb3cf62cfceac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GenAcsTok": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Invalid code"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid code"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "cd465901289af3b9f4424d3fa930d485c471d9889fcc4286427eb3cf62cfceac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GenAcsTok": {
+          "body": {
+            "stat": "Not_Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "cd465901289af3b9f4424d3fa930d485c471d9889fcc4286427eb3cf62cfceac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_ok_without_a_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GenAcsTok": {
+          "body": {
+            "stat": "Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication succeeded but no access token in response"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "cd465901289af3b9f4424d3fa930d485c471d9889fcc4286427eb3cf62cfceac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_token_without_ok_status",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GenAcsTok": {
+          "body": {
+            "access_token": "x"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "cd465901289af3b9f4424d3fa930d485c471d9889fcc4286427eb3cf62cfceac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_http_error",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /NorenWClientAPIv2/GenAcsTok": {
+          "status": 500,
+          "body": {
+            "error": "down"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "v2api.tradesmartonline.in",
+          "path": "/NorenWClientAPIv2/GenAcsTok",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "text/plain"
+          },
+          "json": {
+            "code": "auth-code-abc",
+            "checksum": "cd465901289af3b9f4424d3fa930d485c471d9889fcc4286427eb3cf62cfceac"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
