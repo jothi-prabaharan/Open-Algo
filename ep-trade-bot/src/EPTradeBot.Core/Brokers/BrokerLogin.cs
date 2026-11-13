@@ -63,3 +63,10 @@ public interface IBrokerFeed : IBrokerPlugin
 
     TimeSpan FeedKeepAliveEvery { get; }
 }
+
+/// <summary>A feed whose address has to be asked for first (Upstox hands out a one-use socket address for the token). <see cref="IBrokerFeed.FeedEndpoint"/> then only says whether the session can have one.</summary>
+public interface IBrokerFeedAuthorize : IBrokerFeed
+{
+    /// <summary>The address and headers for this connection, or null when the broker would not give one.</summary>
+    Task<FeedEndpoint?> AuthorizeAsync(BrokerSession session, string? overrideUrl, CancellationToken cancellationToken);
+}

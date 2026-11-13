@@ -255,7 +255,10 @@ public sealed class FeedHost(
                     session = account is null ? null : host.sessions.Create(account);
                 }
 
-                var endpoint = session is null ? null : plugin.FeedEndpoint(session, host.brokerOptions.Value.FeedUrls.GetValueOrDefault(plugin.Name));
+                var feedUrl = host.brokerOptions.Value.FeedUrls.GetValueOrDefault(plugin.Name);
+                var endpoint = session is null ? null
+                    : plugin is IBrokerFeedAuthorize authorize ? await authorize.AuthorizeAsync(session, feedUrl, ct)
+                    : plugin.FeedEndpoint(session, feedUrl);
                 if (session is null || endpoint is null)
                 {
                     host.logger.LogWarning("The {Broker} feed of {AccountId} cannot start: the account is not signed in to {Broker}. Sign in, then subscribe again.", plugin.Name, accountId, plugin.Name);
@@ -333,13 +336,13 @@ public sealed class FeedHost(
                 connected = true;
             }
 
-            foreach (var m in resubscribe) await SendAsync(socket, m, linked.Token);
+            foreach (var m in resubscribe) await SendAsync(socket, m, codec.SendsBinary, linked.Token);
             var queue = outbox;
             var sender = Task.Run(async () =>
             {
                 try
                 {
-                    await foreach (var m in queue.Reader.ReadAllAsync(linked.Token)) await SendAsync(socket, m, linked.Token);
+                    await foreach (var m in queue.Reader.ReadAllAsync(linked.Token)) await SendAsync(socket, m, codec.SendsBinary, linked.Token);
                 }
                 catch (Exception ex) when (ex is OperationCanceledException or WebSocketException) { }
             }, linked.Token);
@@ -350,7 +353,7 @@ public sealed class FeedHost(
                     try
                     {
                         using var timer = new PeriodicTimer(plugin.FeedKeepAliveEvery);
-                        while (await timer.WaitForNextTickAsync(linked.Token)) await SendAsync(socket, text, linked.Token);
+                        while (await timer.WaitForNextTickAsync(linked.Token)) await SendAsync(socket, text, codec.SendsBinary, linked.Token);
                     }
                     catch (Exception ex) when (ex is OperationCanceledException or WebSocketException) { }
                 }, linked.Token)
@@ -424,7 +427,9 @@ public sealed class FeedHost(
         private static bool Refused(Exception ex) =>
             ex.Message.Contains("'401'", StringComparison.Ordinal) || ex.Message.Contains("'403'", StringComparison.Ordinal) || ex.Message.Contains("status code 401", StringComparison.Ordinal) || ex.Message.Contains("status code 403", StringComparison.Ordinal);
 
-        private static Task SendAsync(ClientWebSocket socket, string text, CancellationToken ct) =>
-            socket.State == WebSocketState.Open ? socket.SendAsync(Encoding.UTF8.GetBytes(text).AsMemory(), WebSocketMessageType.Text, true, ct).AsTask() : Task.CompletedTask;
+        private static Task SendAsync(ClientWebSocket socket, string text, bool binary, CancellationToken ct) =>
+            socket.State == WebSocketState.Open
+                ? socket.SendAsync(Encoding.UTF8.GetBytes(text).AsMemory(), binary ? WebSocketMessageType.Binary : WebSocketMessageType.Text, true, ct).AsTask()
+                : Task.CompletedTask;
     }
 }

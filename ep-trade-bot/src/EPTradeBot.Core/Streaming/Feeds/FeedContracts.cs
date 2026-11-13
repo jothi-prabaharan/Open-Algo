@@ -39,4 +39,7 @@ public interface IFeedCodec
 
     /// <summary>Forgets every subscription (a new sign-in, or the host stopping).</summary>
     void Reset();
+
+    /// <summary>True when the messages from <see cref="Subscribe"/> and the others are to go as binary frames rather than text (Upstox sends JSON that way).</summary>
+    bool SendsBinary => false;
 }

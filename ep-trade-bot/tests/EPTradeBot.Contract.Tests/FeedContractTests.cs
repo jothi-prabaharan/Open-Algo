@@ -10,11 +10,19 @@ namespace EPTradeBot.Contract.Tests;
 /// </summary>
 public static class FeedRunner
 {
+    /// <summary>A message with its id replaced by a stand-in (the id is new every time by design).</summary>
+    private static string Stand(string message)
+    {
+        var node = JsonNode.Parse(message);
+        if (node is JsonObject o && o["guid"] is not null) o["guid"] = "<guid>";
+        return node!.ToJsonString();
+    }
+
     public static IEnumerable<object[]> Names(string file) =>
         BrokerContractHost.Load(file)["scenarios"]!.AsArray().Select(s => new object[] { s!["name"]!.GetValue<string>() });
 
     /// <param name="adjust">A deliberate difference: the recorded scenario is changed to the answer EP Trade bot gives instead, then compared in full.</param>
-    public static void Run(string file, string name, Func<IFeedCodec> codec, Action<JsonObject>? adjust = null)
+    public static void Run(string file, string name, Func<IFeedCodec> codec, Action<JsonObject>? adjust = null, bool anyOrderAcrossInstruments = false)
     {
         var fixtures = BrokerContractHost.Load(file);
         var now = fixtures["now_ms"]!.GetValue<long>();
@@ -67,18 +75,28 @@ public static class FeedRunner
             {
                 // OpenAlgo walks a Python set to repeat its subscriptions, whose order means nothing: the same messages, in any order, are the same.
                 expectedSent = new JsonArray(expectedSent.OrderBy(x => x!.ToJsonString(), StringComparer.Ordinal).Select(x => x!.DeepClone()).ToArray());
-                sent = sent.OrderBy(x => JsonNode.Parse(x)!.ToJsonString(), StringComparer.Ordinal).ToList();
+                sent = sent.Select(x => Stand(x)).OrderBy(x => JsonNode.Parse(x)!.ToJsonString(), StringComparer.Ordinal).ToList();
             }
 
             Assert.True(expectedSent.Count == sent.Count, $"{label}: expected {expectedSent.Count} messages to the broker, got {sent.Count}: {string.Join(" | ", sent)}");
             for (var i = 0; i < sent.Count; i++)
             {
-                var diffs = JsonCompare.Differences(expectedSent[i], JsonNode.Parse(sent[i]));
+                // A message id is new every time by design; the recording holds a stand-in.
+                var actual = JsonNode.Parse(sent[i]);
+                if (actual is JsonObject { } message && message["guid"] is not null) message["guid"] = "<guid>";
+                var diffs = JsonCompare.Differences(expectedSent[i], actual);
                 Assert.True(diffs.Count == 0, $"{label}: message {i} differs:\n{string.Join("\n", diffs)}");
             }
 
             // The ticks: same topics in the same order, same data.
             var expectedPublished = result["published"]!.AsArray();
+            if (anyOrderAcrossInstruments)
+            {
+                // A frame's instruments come out of a hash map on the Python side, whose order means nothing: the same ticks, in any order, are the same.
+                expectedPublished = new JsonArray(expectedPublished.OrderBy(x => x!["topic"]!.GetValue<string>(), StringComparer.Ordinal).Select(x => x!.DeepClone()).ToArray());
+                published = published.OrderBy(p => p.Topic, StringComparer.Ordinal).ToList();
+            }
+
             Assert.True(expectedPublished.Count == published.Count,
                 $"{label}: expected {expectedPublished.Count} ticks, got {published.Count}: {string.Join(", ", published.Select(p => p.Topic))}");
             for (var i = 0; i < published.Count; i++)
@@ -162,4 +180,13 @@ public sealed class DeltaFeedContractTests
     [Theory]
     [MemberData(nameof(Names))]
     public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_deltaexchange.fixtures.json", name, () => new DeltaFeedCodec());
+}
+
+public sealed class UpstoxFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_upstox.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_upstox.fixtures.json", name, () => new UpstoxFeedCodec(), anyOrderAcrossInstruments: true);
 }

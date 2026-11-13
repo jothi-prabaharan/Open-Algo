@@ -1,0 +1,298 @@
+[
+ {
+  "name": "U1 quote is ltpc",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "private static string ModeOf(int mode) => mode == 1 ? \"ltpc\" : \"full\";",
+  "new": "private static string ModeOf(int mode) => mode == 3 ? \"full\" : \"ltpc\";",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U2 duplicate keys sent twice",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "if (already.Contains(key) || !seen.Add(key)) continue;",
+  "new": "if (already.Contains(key)) continue;",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U3 keys already held sent again",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "if (already.Contains(key) || !seen.Add(key)) continue;",
+  "new": "if (!seen.Add(key)) continue;",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U4 per-mode cap ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "if (fresh.Count > room) fresh = fresh.Take(room).ToList();",
+  "new": "",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U5 combined cap ignored",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "if (fresh.Count > left) fresh = fresh.Take(left).ToList();",
+  "new": "",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U6 combined budget is the larger",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "modesInUse.Min(m => CombinedLimits",
+  "new": "modesInUse.Max(m => CombinedLimits",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U7 unsubscribe keeps the budget",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "foreach (var set in keysByMode.Values) set.Remove(s.InstrumentKey);",
+  "new": "",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U8 reconnect keeps old keys",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "keysByMode.Clear();\n            return Send([.. subs]);",
+  "new": "return Send([.. subs]);",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U9 same subscription twice sent",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "if (subs.Any(s => s.Symbol == r.Symbol && s.Exchange == r.Exchange && s.Mode == mode)) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U10 key keeps the whole token",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "var token = r.Token.Contains('|', StringComparison.Ordinal) ? r.Token[(r.Token.LastIndexOf('|') + 1)..] : r.Token;",
+  "new": "var token = r.Token;",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U11 match by suffix dropped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "return s.Token == token || s.Token == feedKey;",
+  "new": "return false;",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U12 market info published",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "type == \"market_info\") return [];",
+  "new": "type == \"x\") return [];",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U13 depth buys ascending",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "Five(buys.OrderByDescending(l => l.Price))",
+  "new": "Five(buys.OrderBy(l => l.Price))",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U14 depth sells descending",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "Five(sells.OrderBy(l => l.Price))",
+  "new": "Five(sells.OrderByDescending(l => l.Price))",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U15 zero prices kept in depth",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "if (bid > 0) buys.Add",
+  "new": "if (bid >= 0) buys.Add",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U16 depth not padded",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "while (list.Count < 5) list.Add",
+  "new": "while (list.Count < 0) list.Add",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U17 depth not cut to five",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "list.Take(5)",
+  "new": "list.Take(7)",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U18 daily candle not preferred",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "candles.FirstOrDefault(c => c[\"interval\"] is JsonValue i && i.TryGetValue<string>(out var s) && s == \"1d\") ?? candles.FirstOrDefault() ?? []",
+  "new": "candles.FirstOrDefault() ?? []",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U19 no candle falls back to nothing",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "?? candles.FirstOrDefault() ?? [];",
+  "new": "?? [];",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U20 timestamp always the frame time",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "candle[\"ts\"] is not null ? Whole(candle[\"ts\"]) : Whole(currentTs)",
+  "new": "Whole(currentTs)",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U21 indicative price from the wrapper dropped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": ": Obj(ff[\"ltpc\"])[\"iep\"] is { } wrapped ? Float(wrapped) : null;",
+  "new": ": null;",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U22 imbalance made unsigned",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "JsonValue.Create(Whole(total))",
+  "new": "JsonValue.Create(Math.Abs(Whole(total)))",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U23 auction flag dropped",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "if (ff[\"casEligible\"] is { } eligible)",
+  "new": "if (Environment.TickCount64 < 0 && ff[\"casEligible\"] is { } eligible)",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U24 last price not cached",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "if (tickLtpc.Count > 0) lastPrice[instrumentKey] = (JsonObject)tickLtpc.DeepClone();",
+  "new": "",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U25 empty result not filled from the cache",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "if (lastPrice.TryGetValue(instrumentKey, out var cached) && cached.Count > 0)\n            {\n                result = (JsonObject)baseData.DeepClone();",
+  "new": "if (Environment.TickCount64 < 0 && lastPrice.TryGetValue(instrumentKey, out var cached) && cached.Count > 0)\n            {\n                result = (JsonObject)baseData.DeepClone();",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U26 zero price not filled from the cache",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "if (lastPrice.TryGetValue(instrumentKey, out var cached) && Float(cached[\"ltp\"]) != 0) result[\"ltp\"] = Float(cached[\"ltp\"]);",
+  "new": "",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U27 indicative price carried forward",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "result[\"timestamp\"] = currentTs.DeepClone();\n            }",
+  "new": "result[\"timestamp\"] = currentTs.DeepClone();\n                if (cached.ContainsKey(\"iep\")) result[\"indicative_equilibrium_price\"] = Float(cached[\"iep\"]);\n            }",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U29 ltp mode adds depth fields",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxFeedCodec.cs",
+  "old": "data[\"cp\"] = Float(ltpc[\"cp\"]);",
+  "new": "data[\"cp\"] = Float(ltpc[\"cp\"]); data[\"extra\"] = 1;",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P1 64-bit numbers as numbers",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxProtobuf.cs",
+  "old": "JsonValue.Create(((long)scalar).ToString(System.Globalization.CultureInfo.InvariantCulture))",
+  "new": "JsonValue.Create((long)scalar)",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P2 zero doubles kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxProtobuf.cs",
+  "old": "return d == 0 ? null : JsonValue.Create(d);",
+  "new": "return JsonValue.Create(d);",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P3 zero numbers kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxProtobuf.cs",
+  "old": "return scalar == 0 ? null : JsonValue.Create(((long)scalar)",
+  "new": "return JsonValue.Create(((long)scalar)",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P4 wrapper not flattened",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxProtobuf.cs",
+  "old": "return inner[\"value\"]?.DeepClone() ?? JsonValue.Create(0.0);",
+  "new": "return inner;",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P5 unknown fields rejected",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxProtobuf.cs",
+  "old": "if (!fields.TryGetValue(number, out var field)) continue;",
+  "new": "if (!fields.TryGetValue(number, out var field)) throw new FormatException(\"x\");",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P6 cut-short length accepted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxProtobuf.cs",
+  "old": "if (length > (ulong)(bytes.Length - position)) throw new FormatException(\"Cut short.\");",
+  "new": "if (length > (ulong)(bytes.Length - position)) length = (ulong)(bytes.Length - position);",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P7 enum shown as number",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxProtobuf.cs",
+  "old": "scalar < (ulong)names.Length ? JsonValue.Create(names[scalar]) :",
+  "new": "scalar < 0 ? JsonValue.Create(names[scalar]) :",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P8 map becomes a list",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxProtobuf.cs",
+  "old": "if (field.Map)\n            {",
+  "new": "if (Environment.TickCount64 < 0)\n            {",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P9 false flag kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/UpstoxProtobuf.cs",
+  "old": "return scalar == 0 ? null : JsonValue.Create(true);",
+  "new": "return JsonValue.Create(scalar != 0);",
+  "filter": "FullyQualifiedName~UpstoxFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

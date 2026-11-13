@@ -6,7 +6,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 |---|---|---|---|---|---|---|---|---|
 | Dhan | yes | yes | yes | yes | yes | yes | yes | no |
 | Dhan Sandbox | yes | yes | yes | yes | yes | no | no | no |
-| Upstox | yes | yes | yes | yes | yes | yes | yes | no |
+| Upstox | yes | yes | yes | yes | yes | yes | yes | yes |
 | Fyers | yes | yes | yes | yes | yes | yes | yes | no |
 | Delta Exchange | yes | yes | yes | yes | yes | no | yes | yes |
 
@@ -14,7 +14,7 @@ The other 30 brokers in the task list are not started.
 
 ## Not done, and why Gate 7 is open
 
-- **Market-data feeds** for Dhan, Upstox and Fyers. What the Upstox one needs beyond the codec itself: subscribe messages that are JSON sent as binary frames (the feed contract carries text only), a stream address fetched from Upstox with the token before connecting (the contract builds it without a call), a protobuf reader for its `FeedResponse` messages, and the per-mode key limits of its adapter. Each is a separate wire protocol (Dhan binary, Upstox protobuf, Fyers HSM binary) and needs its own codec held to the Python adapter, as the Zerodha, Angel One, Paytm Money and Delta Exchange feeds were.
+- **Market-data feeds** for Dhan and Fyers. Each is a separate binary wire protocol (Dhan about 2,000 lines of Python, Fyers' HSM about 3,000 with a symbol token conversion) and needs its own codec held to the Python adapter, as the Zerodha, Angel One, Paytm Money, Delta Exchange and Upstox feeds were.
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
 - **The 30 brokers not started** (fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, ibulls, iifl, iiflcapital, indmoney, jainamxts, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, wisdom, zebu). Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
@@ -94,3 +94,12 @@ The other 30 brokers in the task list are not started.
 - A refused leverage call lets the order go at the leverage the product has, as OpenAlgo does, unless `Brokers:Keys:deltaexchange:AbortOnLeverageFailure` is `true` (case and spaces ignored); then the order is refused with a plain message naming the leverage, where OpenAlgo answers an internal error (deviation, recorded in the contract file).
 - OpenAlgo also accepts a `leverage` field on the order itself. The `/api/v1` order request here has no such field, so only the saved and default values apply.
 - Contract: 11 recorded cases (`deltaexchange_leverage.fixtures.json`; the recorder can now seed the saved leverage and environment settings per scenario). Mutation: `tools/mutation/tg7-delta-leverage.json`, 11 mutants, all caught.
+
+## Upstox feed
+
+- Ported from `broker/upstox/streaming/upstox_client.py` and `upstox_adapter.py`. Two contract changes it needed, now shared: a codec can say its messages go as binary frames (`SendsBinary`; Upstox sends its JSON subscribe messages that way), and a broker can hand out its socket address per connection (`IBrokerFeedAuthorize`; Upstox gives one for the login token, and a refusal at that step is the login having expired or the account being at its limit of concurrent feeds).
+- `UpstoxProtobuf` reads the market-data protobuf from the published schema without a protobuf library, into the shape OpenAlgo gets from `MessageToDict`: 64-bit numbers as text, enums by name, defaults left out, the wrapped indicative price flattened. A malformed or cut-off frame publishes nothing.
+- `UpstoxFeedCodec` holds to the adapter: LTP is the `ltpc` mode, Quote and Depth share the `full` mode and one message; Upstox's per-mode key caps (5000, 3000, 2000, 50) and the combined cap across modes (the smallest of those in use) are applied, a mode that has an entry counts as in use even when emptied, and a reconnect repeats everything. A tick without a price takes the last one seen for the instrument; the indicative auction fields are never carried forward. The timestamps in depth and carried-forward ticks stay the text Upstox sent, as OpenAlgo's do.
+- Contract: 50 scenarios replayed against the real Python adapter and client (`feed_upstox.fixtures.json`, built with the real protobuf classes plus hand-built frames for zero values on the wire, unknown fields and a length past the frame). The unordered ticks of a frame with several instruments are compared in any order, because Python reads them from a hash map. Integration: four tests of the address request.
+- Mutation: `tools/mutation/tg7-upstox-feed.json`, 38 mutants, all caught after nine cases were added for the ones that first survived. One equivalent mutant was removed (a fallback for a depth timestamp that is always set).
+- Not part of this feed: Upstox's health check that forces a reconnect after 90 seconds of silence; the feed host reconnects on its own schedule.
