@@ -1,0 +1,4281 @@
+{
+  "broker": "rupeezy",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "rupeezy-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE_EQ",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE_EQ",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY25NOV26FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE_FO",
+      "token": "35001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "GOLDM25NOV26FUT",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "MCX_FO",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 10,
+      "instrumenttype": "FUTCOM",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "NIFTY",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE_EQ",
+      "token": "26000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "ORD0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "INTRADAY",
+            "variety": "RL",
+            "quantity": 10,
+            "price": 800.5,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "ORD0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "INTRADAY",
+            "variety": "RL-MKT",
+            "quantity": 10,
+            "price": 0.0,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_cnc_with_disclosed_quantity",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "2",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "ORD0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "DELIVERY",
+            "variety": "RL",
+            "quantity": 10,
+            "price": 800.5,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 2,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL",
+        "product": "MIS",
+        "price": "800",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "ORD0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "INTRADAY",
+            "variety": "SL",
+            "quantity": 10,
+            "price": 800.0,
+            "trigger_price": 801.5,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "ORD0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "INTRADAY",
+            "variety": "SL-MKT",
+            "quantity": 10,
+            "price": 0.0,
+            "trigger_price": 801.5,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit_carries_no_trigger",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "799",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "ORD0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "INTRADAY",
+            "variety": "RL",
+            "quantity": 10,
+            "price": 800.5,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_futures_nrml",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "24005",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "ORD0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:NIFTY25NOV26FUT",
+            "transaction_type": "BUY",
+            "product": "DELIVERY",
+            "variety": "RL",
+            "quantity": 75,
+            "price": 24005.0,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_mcx_counts_lots",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "GOLDM25NOV26FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "20",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "75000",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "ORD0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "MCX:GOLDM25NOV26FUT",
+            "transaction_type": "BUY",
+            "product": "DELIVERY",
+            "variety": "RL",
+            "quantity": 2,
+            "price": 75000.0,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_mcx_disclosed_quantity_counts_lots",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "GOLDM25NOV26FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "20",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "75000",
+        "trigger_price": "0",
+        "disclosed_quantity": "10",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "ORD0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "MCX:GOLDM25NOV26FUT",
+            "transaction_type": "BUY",
+            "product": "DELIVERY",
+            "variety": "RL",
+            "quantity": 2,
+            "price": 75000.0,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 1,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_mcx_not_a_whole_number_of_lots",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "GOLDM25NOV26FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "15",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "75000",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Quantity 15 is not a multiple of the lot size 10.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_strategy_name_is_cut_to_fifty",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "ORD0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "INTRADAY",
+            "variety": "RL",
+            "quantity": 10,
+            "price": 800.5,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "ssssssssssssssssssssssssssssssssssssssssssssssssss"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "code": "insufficient_funds",
+            "message": "Insufficient funds to place this order"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Insufficient funds to place this order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "INTRADAY",
+            "variety": "RL",
+            "quantity": 10,
+            "price": 800.5,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_reply_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "status": 502,
+          "body": "<html>bad gateway</html>"
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to place order due to internal error",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "INTRADAY",
+            "variety": "RL",
+            "quantity": 10,
+            "price": 800.5,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_success_without_an_order_id",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "INTRADAY",
+            "variety": "RL",
+            "quantity": 10,
+            "price": 800.5,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Symbol NOPE not found on NSE. Download the master contract.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "O1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/O1": {
+          "body": {
+            "status": "success",
+            "orders": [
+              {
+                "order_id": "O1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "INTRADAY",
+                "total_quantity": 10,
+                "order_price": 800.5,
+                "trigger_price": 0,
+                "status": "PENDING",
+                "traded_quantity": 4,
+                "order_created_at": "2026-11-03 10:20:01"
+              }
+            ]
+          }
+        },
+        "PUT /v2/trading/orders/regular/O1": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "O1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/O1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular/O1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "RL",
+            "quantity": 12,
+            "traded_quantity": 4,
+            "price": 801.0,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_limit_passes_the_traded_quantity",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "orderid": "O3",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "SL",
+        "product": "NRML",
+        "price": "24020",
+        "disclosed_quantity": "5",
+        "trigger_price": "24005",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/O3": {
+          "body": {
+            "status": "success",
+            "orders": [
+              {
+                "order_id": "O3",
+                "ticker": "NSE:NIFTY25NOV26FUT",
+                "exchange": "NSE_FO",
+                "transaction_type": "BUY",
+                "variety": "SL",
+                "product": "DELIVERY",
+                "total_quantity": 75,
+                "order_price": 24010,
+                "trigger_price": 24000,
+                "status": "TRIGGER PENDING",
+                "traded_quantity": 25,
+                "order_created_at": "2026-11-03 10:20:01"
+              }
+            ]
+          }
+        },
+        "PUT /v2/trading/orders/regular/O3": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "O3",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/O3",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular/O3",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "SL",
+            "quantity": 75,
+            "traded_quantity": 25,
+            "price": 24020.0,
+            "trigger_price": 24005.0,
+            "disclosed_quantity": 5,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_to_market",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "O1",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/O1": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "order_id": "O1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "INTRADAY",
+                "total_quantity": 10,
+                "order_price": 800.5,
+                "trigger_price": 0,
+                "status": "PENDING",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:20:01"
+              }
+            ]
+          }
+        },
+        "PUT /v2/trading/orders/regular/O1": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "O1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/O1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular/O1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "RL-MKT",
+            "quantity": 10,
+            "traded_quantity": 0,
+            "price": 0.0,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_mcx_counts_lots",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "GOLDM25NOV26FUT",
+        "exchange": "MCX",
+        "orderid": "O7",
+        "action": "BUY",
+        "quantity": "30",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "75010",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/O7": {
+          "body": {
+            "status": "success",
+            "orders": [
+              {
+                "order_id": "O7",
+                "ticker": "MCX:GOLDM25NOV26FUT",
+                "exchange": "MCX_FO",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "DELIVERY",
+                "total_quantity": 2,
+                "order_price": 75000,
+                "trigger_price": 0,
+                "status": "PENDING",
+                "traded_quantity": 1,
+                "order_created_at": "2026-11-03 10:20:01"
+              }
+            ]
+          }
+        },
+        "PUT /v2/trading/orders/regular/O7": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "O7",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/O7",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular/O7",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "RL",
+            "quantity": 3,
+            "traded_quantity": 1,
+            "price": 75010.0,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_order_not_found",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "O9",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/O9": {
+          "body": {
+            "status": "success",
+            "orders": []
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "message": "Order O9 was not found.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/O9",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_history_unreadable",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "O1",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/O1": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "Invalid token"
+          }
+        }
+      },
+      "expected": {
+        "status": 502,
+        "body": {
+          "message": "Invalid token",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/O1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "O1",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/O1": {
+          "body": {
+            "status": "success",
+            "orders": [
+              {
+                "order_id": "O1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "INTRADAY",
+                "total_quantity": 10,
+                "order_price": 800.5,
+                "trigger_price": 0,
+                "status": "PENDING",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:20:01"
+              }
+            ]
+          }
+        },
+        "PUT /v2/trading/orders/regular/O1": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "code": "insufficient_funds",
+            "message": "Insufficient funds to place this order"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Insufficient funds to place this order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/O1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular/O1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "RL",
+            "quantity": 10,
+            "traded_quantity": 0,
+            "price": 801.0,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "O1",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/trading/orders/regular/O1": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "O1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular/O1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_with_a_question_mark_in_the_id",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "OFPIM00001?:",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/trading/orders/regular/OFPIM00001%3F%3A": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "OFPIM00001?:",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular/OFPIM00001%3F%3A",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "O2",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/trading/orders/regular/O2": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "message": "Order already executed"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Order already executed",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular/O2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders": {
+          "body": {
+            "status": "success",
+            "orders": [
+              {
+                "order_id": "O1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "INTRADAY",
+                "total_quantity": 10,
+                "order_price": 800.5,
+                "trigger_price": 0,
+                "status": "PENDING",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:20:01"
+              },
+              {
+                "order_id": "O2",
+                "ticker": "NSE:INFY",
+                "exchange": "NSE_EQ",
+                "transaction_type": "SELL",
+                "variety": "RL-MKT",
+                "product": "DELIVERY",
+                "total_quantity": 5,
+                "order_price": 0,
+                "trigger_price": 0,
+                "status": "EXECUTED",
+                "traded_quantity": 5,
+                "order_created_at": "2026-11-03 10:21:11"
+              },
+              {
+                "order_id": "O3",
+                "ticker": "NSE:NIFTY25NOV26FUT",
+                "exchange": "NSE_FO",
+                "transaction_type": "BUY",
+                "variety": "SL",
+                "product": "DELIVERY",
+                "total_quantity": 75,
+                "order_price": 24010,
+                "trigger_price": 24000,
+                "status": "TRIGGER PENDING",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:22:00"
+              },
+              {
+                "order_id": "O4",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "SELL",
+                "variety": "SL-MKT",
+                "product": "INTRADAY",
+                "total_quantity": 1,
+                "order_price": 0,
+                "trigger_price": 790.5,
+                "status": "REJECTED",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:23:00"
+              },
+              {
+                "order_id": "O5",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "INTRADAY",
+                "total_quantity": 2,
+                "order_price": 700,
+                "trigger_price": 0,
+                "status": "CANCELLED",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:24:00"
+              },
+              {
+                "order_id": "O6",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "MTF",
+                "total_quantity": 3,
+                "order_price": 700,
+                "trigger_price": 0,
+                "status": "OMSXMITTED",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:25:00"
+              },
+              {
+                "order_id": "O7",
+                "ticker": "MCX:GOLDM25NOV26FUT",
+                "exchange": "MCX_FO",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "DELIVERY",
+                "total_quantity": 2,
+                "order_price": 75000,
+                "trigger_price": 0,
+                "status": "EXECUTED",
+                "traded_quantity": 2,
+                "order_created_at": "2026-11-03 10:26:00",
+                "lot_size": 10
+              },
+              {
+                "order_id": "O8",
+                "ticker": "NSE:UNKNOWN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "XX",
+                "product": "WHATEVER",
+                "total_quantity": 1,
+                "order_price": 5,
+                "trigger_price": 0,
+                "status": "SOMETHING ELSE",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:27:00"
+              }
+            ]
+          }
+        },
+        "DELETE /v2/trading/orders/regular/O1": {
+          "body": {
+            "status": "success"
+          }
+        },
+        "DELETE /v2/trading/orders/regular/O3": {
+          "body": {
+            "status": "success"
+          }
+        },
+        "DELETE /v2/trading/orders/regular/O6": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "message": "no"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "O1",
+            "O3"
+          ],
+          "failed_cancellations": [
+            "O6"
+          ],
+          "message": "Canceled 2 orders. Failed to cancel 1 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders",
+          "query": [
+            [
+              "limit",
+              "500"
+            ],
+            [
+              "offset",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular/O1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular/O3",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular/O6",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_book_empty",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders": {
+          "body": {
+            "status": "success",
+            "orders": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders",
+          "query": [
+            [
+              "limit",
+              "500"
+            ],
+            [
+              "offset",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders": {
+          "body": {
+            "status": "success",
+            "orders": [
+              {
+                "order_id": "O1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "INTRADAY",
+                "total_quantity": 10,
+                "order_price": 800.5,
+                "trigger_price": 0,
+                "status": "PENDING",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:20:01"
+              },
+              {
+                "order_id": "O2",
+                "ticker": "NSE:INFY",
+                "exchange": "NSE_EQ",
+                "transaction_type": "SELL",
+                "variety": "RL-MKT",
+                "product": "DELIVERY",
+                "total_quantity": 5,
+                "order_price": 0,
+                "trigger_price": 0,
+                "status": "EXECUTED",
+                "traded_quantity": 5,
+                "order_created_at": "2026-11-03 10:21:11"
+              },
+              {
+                "order_id": "O3",
+                "ticker": "NSE:NIFTY25NOV26FUT",
+                "exchange": "NSE_FO",
+                "transaction_type": "BUY",
+                "variety": "SL",
+                "product": "DELIVERY",
+                "total_quantity": 75,
+                "order_price": 24010,
+                "trigger_price": 24000,
+                "status": "TRIGGER PENDING",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:22:00"
+              },
+              {
+                "order_id": "O4",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "SELL",
+                "variety": "SL-MKT",
+                "product": "INTRADAY",
+                "total_quantity": 1,
+                "order_price": 0,
+                "trigger_price": 790.5,
+                "status": "REJECTED",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:23:00"
+              },
+              {
+                "order_id": "O5",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "INTRADAY",
+                "total_quantity": 2,
+                "order_price": 700,
+                "trigger_price": 0,
+                "status": "CANCELLED",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:24:00"
+              },
+              {
+                "order_id": "O6",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "MTF",
+                "total_quantity": 3,
+                "order_price": 700,
+                "trigger_price": 0,
+                "status": "OMSXMITTED",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:25:00"
+              },
+              {
+                "order_id": "O7",
+                "ticker": "MCX:GOLDM25NOV26FUT",
+                "exchange": "MCX_FO",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "DELIVERY",
+                "total_quantity": 2,
+                "order_price": 75000,
+                "trigger_price": 0,
+                "status": "EXECUTED",
+                "traded_quantity": 2,
+                "order_created_at": "2026-11-03 10:26:00",
+                "lot_size": 10
+              },
+              {
+                "order_id": "O8",
+                "ticker": "NSE:UNKNOWN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "XX",
+                "product": "WHATEVER",
+                "total_quantity": 1,
+                "order_price": 5,
+                "trigger_price": 0,
+                "status": "SOMETHING ELSE",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:27:00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "O1",
+                "price": 800.5,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 10,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "O2",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": 5,
+                "symbol": "INFY",
+                "timestamp": "2026-11-03 10:21:11",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NFO",
+                "order_status": "trigger pending",
+                "orderid": "O3",
+                "price": 24010.0,
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": 75,
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "2026-11-03 10:22:00",
+                "trigger_price": 24000.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "rejected",
+                "orderid": "O4",
+                "price": 0.0,
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": 1,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:23:00",
+                "trigger_price": 790.5
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "cancelled",
+                "orderid": "O5",
+                "price": 700.0,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 2,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:24:00",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "O6",
+                "price": 700.0,
+                "pricetype": "LIMIT",
+                "product": "CNC",
+                "quantity": 3,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:25:00",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "MCX",
+                "order_status": "complete",
+                "orderid": "O7",
+                "price": 75000.0,
+                "pricetype": "LIMIT",
+                "product": "NRML",
+                "quantity": 20,
+                "symbol": "GOLDM25NOV26FUT",
+                "timestamp": "2026-11-03 10:26:00",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "something else",
+                "orderid": "O8",
+                "price": 5.0,
+                "pricetype": "XX",
+                "product": "WHATEVER",
+                "quantity": 1,
+                "symbol": "UNKNOWN",
+                "timestamp": "2026-11-03 10:27:00",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 6,
+              "total_completed_orders": 2,
+              "total_open_orders": 3,
+              "total_rejected_orders": 1,
+              "total_sell_orders": 2
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders",
+          "query": [
+            [
+              "limit",
+              "500"
+            ],
+            [
+              "offset",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_empty",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders": {
+          "body": {
+            "status": "success",
+            "orders": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders",
+          "query": [
+            [
+              "limit",
+              "500"
+            ],
+            [
+              "offset",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_refused",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "Invalid token"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Invalid token",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders",
+          "query": [
+            [
+              "limit",
+              "500"
+            ],
+            [
+              "offset",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/trades": {
+          "body": {
+            "status": "success",
+            "trades": [
+              {
+                "order_id": "O2",
+                "trade_no": "T1",
+                "trade_price": 1499.95,
+                "trade_quantity": 5,
+                "traded_at": "2026-11-03 10:21:12",
+                "ticker": "NSE:INFY",
+                "exchange": "NSE_EQ",
+                "transaction_type": "SELL",
+                "product": "DELIVERY"
+              },
+              {
+                "order_id": "O7",
+                "trade_no": "T2",
+                "trade_price": 75000.5,
+                "trade_quantity": 2,
+                "traded_at": "2026-11-03 10:21:12",
+                "ticker": "MCX:GOLDM25NOV26FUT",
+                "exchange": "MCX_FO",
+                "transaction_type": "BUY",
+                "product": "DELIVERY",
+                "lot_size": 10
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "SELL",
+              "average_price": 1499.95,
+              "exchange": "NSE",
+              "orderid": "O2",
+              "product": "CNC",
+              "quantity": 5,
+              "symbol": "INFY",
+              "timestamp": "2026-11-03 10:21:12",
+              "trade_value": 7499.75
+            },
+            {
+              "action": "BUY",
+              "average_price": 75000.5,
+              "exchange": "MCX",
+              "orderid": "O7",
+              "product": "NRML",
+              "quantity": 20,
+              "symbol": "GOLDM25NOV26FUT",
+              "timestamp": "2026-11-03 10:21:12",
+              "trade_value": 1500010.0
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/trades",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_rows_without_a_ticker_are_completed_from_the_orders",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/trades": {
+          "body": {
+            "status": "success",
+            "trades": [
+              {
+                "order_id": "O2",
+                "trade_no": "T1",
+                "trade_price": 1499.95,
+                "trade_quantity": 5,
+                "traded_at": "2026-11-03 10:21:12"
+              },
+              {
+                "order_id": "OX",
+                "trade_no": "T3",
+                "trade_price": 10,
+                "trade_quantity": 1,
+                "traded_at": "2026-11-03 10:21:12"
+              }
+            ]
+          }
+        },
+        "GET /v2/trading/orders": {
+          "body": {
+            "status": "success",
+            "orders": [
+              {
+                "order_id": "O1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "INTRADAY",
+                "total_quantity": 10,
+                "order_price": 800.5,
+                "trigger_price": 0,
+                "status": "PENDING",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:20:01"
+              },
+              {
+                "order_id": "O2",
+                "ticker": "NSE:INFY",
+                "exchange": "NSE_EQ",
+                "transaction_type": "SELL",
+                "variety": "RL-MKT",
+                "product": "DELIVERY",
+                "total_quantity": 5,
+                "order_price": 0,
+                "trigger_price": 0,
+                "status": "EXECUTED",
+                "traded_quantity": 5,
+                "order_created_at": "2026-11-03 10:21:11"
+              },
+              {
+                "order_id": "O3",
+                "ticker": "NSE:NIFTY25NOV26FUT",
+                "exchange": "NSE_FO",
+                "transaction_type": "BUY",
+                "variety": "SL",
+                "product": "DELIVERY",
+                "total_quantity": 75,
+                "order_price": 24010,
+                "trigger_price": 24000,
+                "status": "TRIGGER PENDING",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:22:00"
+              },
+              {
+                "order_id": "O4",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "SELL",
+                "variety": "SL-MKT",
+                "product": "INTRADAY",
+                "total_quantity": 1,
+                "order_price": 0,
+                "trigger_price": 790.5,
+                "status": "REJECTED",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:23:00"
+              },
+              {
+                "order_id": "O5",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "INTRADAY",
+                "total_quantity": 2,
+                "order_price": 700,
+                "trigger_price": 0,
+                "status": "CANCELLED",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:24:00"
+              },
+              {
+                "order_id": "O6",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "MTF",
+                "total_quantity": 3,
+                "order_price": 700,
+                "trigger_price": 0,
+                "status": "OMSXMITTED",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:25:00"
+              },
+              {
+                "order_id": "O7",
+                "ticker": "MCX:GOLDM25NOV26FUT",
+                "exchange": "MCX_FO",
+                "transaction_type": "BUY",
+                "variety": "RL",
+                "product": "DELIVERY",
+                "total_quantity": 2,
+                "order_price": 75000,
+                "trigger_price": 0,
+                "status": "EXECUTED",
+                "traded_quantity": 2,
+                "order_created_at": "2026-11-03 10:26:00",
+                "lot_size": 10
+              },
+              {
+                "order_id": "O8",
+                "ticker": "NSE:UNKNOWN",
+                "exchange": "NSE_EQ",
+                "transaction_type": "BUY",
+                "variety": "XX",
+                "product": "WHATEVER",
+                "total_quantity": 1,
+                "order_price": 5,
+                "trigger_price": 0,
+                "status": "SOMETHING ELSE",
+                "traded_quantity": 0,
+                "order_created_at": "2026-11-03 10:27:00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "SELL",
+              "average_price": 1499.95,
+              "exchange": "NSE",
+              "orderid": "O2",
+              "product": "CNC",
+              "quantity": 5,
+              "symbol": "INFY",
+              "timestamp": "2026-11-03 10:21:12",
+              "trade_value": 7499.75
+            },
+            {
+              "action": "",
+              "average_price": 10.0,
+              "exchange": "",
+              "orderid": "OX",
+              "product": "",
+              "quantity": 1,
+              "symbol": "",
+              "timestamp": "2026-11-03 10:21:12",
+              "trade_value": 10.0
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/trades",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders",
+          "query": [
+            [
+              "limit",
+              "500"
+            ],
+            [
+              "offset",
+              "1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_empty",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/trades": {
+          "body": {
+            "status": "success",
+            "trades": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/trades",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "ticker": "NSE:SBIN",
+                  "exchange": "NSE_EQ",
+                  "product": "INTRADAY",
+                  "quantity": 10,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "average_price": 801.1234
+                },
+                {
+                  "ticker": "NSE:NIFTY25NOV26FUT",
+                  "exchange": "NSE_FO",
+                  "product": "DELIVERY",
+                  "quantity": -75,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "average_price": 24005.5
+                },
+                {
+                  "ticker": "NSE:INFY",
+                  "exchange": "NSE_EQ",
+                  "product": "DELIVERY",
+                  "quantity": 0,
+                  "buy_value": 7500,
+                  "sell_value": 7495,
+                  "average_price": 0
+                },
+                {
+                  "ticker": "MCX:GOLDM25NOV26FUT",
+                  "exchange": "MCX_FO",
+                  "product": "DELIVERY",
+                  "quantity": 1,
+                  "buy_value": 750000,
+                  "sell_value": 0,
+                  "average_price": 75000.0,
+                  "lot_size": 10,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        },
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45
+              },
+              "NSE:NIFTY25NOV26FUT": {
+                "last_trade_price": 24000.0
+              },
+              "MCX:GOLDM25NOV26FUT": {
+                "last_trade_price": 75100.0
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "801.12",
+              "exchange": "NSE",
+              "ltp": 805.45,
+              "pnl": 43.27,
+              "product": "MIS",
+              "quantity": "10",
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": "24005.50",
+              "exchange": "NFO",
+              "ltp": 24000.0,
+              "pnl": 412.5,
+              "product": "NRML",
+              "quantity": "-75",
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": "0.00",
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": -5.0,
+              "product": "CNC",
+              "quantity": "0",
+              "symbol": "INFY"
+            },
+            {
+              "average_price": "75000.00",
+              "exchange": "MCX",
+              "ltp": 75100.0,
+              "pnl": 1000.0,
+              "product": "NRML",
+              "quantity": "10",
+              "symbol": "GOLDM25NOV26FUT"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "MCX:GOLDM25NOV26FUT"
+            ],
+            [
+              "q",
+              "NSE:NIFTY25NOV26FUT"
+            ],
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "ltp"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_some_prices_missing",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "ticker": "NSE:SBIN",
+                  "exchange": "NSE_EQ",
+                  "product": "INTRADAY",
+                  "quantity": 10,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "average_price": 801.1234
+                },
+                {
+                  "ticker": "NSE:NIFTY25NOV26FUT",
+                  "exchange": "NSE_FO",
+                  "product": "DELIVERY",
+                  "quantity": -75,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "average_price": 24005.5
+                },
+                {
+                  "ticker": "NSE:INFY",
+                  "exchange": "NSE_EQ",
+                  "product": "DELIVERY",
+                  "quantity": 0,
+                  "buy_value": 7500,
+                  "sell_value": 7495,
+                  "average_price": 0
+                },
+                {
+                  "ticker": "MCX:GOLDM25NOV26FUT",
+                  "exchange": "MCX_FO",
+                  "product": "DELIVERY",
+                  "quantity": 1,
+                  "buy_value": 750000,
+                  "sell_value": 0,
+                  "average_price": 75000.0,
+                  "lot_size": 10,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        },
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "801.12",
+              "exchange": "NSE",
+              "ltp": 805.45,
+              "pnl": 43.27,
+              "product": "MIS",
+              "quantity": "10",
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": "24005.50",
+              "exchange": "NFO",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "NRML",
+              "quantity": "-75",
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": "0.00",
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": -5.0,
+              "product": "CNC",
+              "quantity": "0",
+              "symbol": "INFY"
+            },
+            {
+              "average_price": "75000.00",
+              "exchange": "MCX",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "NRML",
+              "quantity": "10",
+              "symbol": "GOLDM25NOV26FUT"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "MCX:GOLDM25NOV26FUT"
+            ],
+            [
+              "q",
+              "NSE:NIFTY25NOV26FUT"
+            ],
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "ltp"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_quotes_refused",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "ticker": "NSE:SBIN",
+                  "exchange": "NSE_EQ",
+                  "product": "INTRADAY",
+                  "quantity": 10,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "average_price": 801.1234
+                },
+                {
+                  "ticker": "NSE:NIFTY25NOV26FUT",
+                  "exchange": "NSE_FO",
+                  "product": "DELIVERY",
+                  "quantity": -75,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "average_price": 24005.5
+                },
+                {
+                  "ticker": "NSE:INFY",
+                  "exchange": "NSE_EQ",
+                  "product": "DELIVERY",
+                  "quantity": 0,
+                  "buy_value": 7500,
+                  "sell_value": 7495,
+                  "average_price": 0
+                },
+                {
+                  "ticker": "MCX:GOLDM25NOV26FUT",
+                  "exchange": "MCX_FO",
+                  "product": "DELIVERY",
+                  "quantity": 1,
+                  "buy_value": 750000,
+                  "sell_value": 0,
+                  "average_price": 75000.0,
+                  "lot_size": 10,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        },
+        "GET /v2/data/quotes": {
+          "status": 500,
+          "body": {
+            "status": "error",
+            "message": "down"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "801.12",
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "MIS",
+              "quantity": "10",
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": "24005.50",
+              "exchange": "NFO",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "NRML",
+              "quantity": "-75",
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": "0.00",
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": -5.0,
+              "product": "CNC",
+              "quantity": "0",
+              "symbol": "INFY"
+            },
+            {
+              "average_price": "75000.00",
+              "exchange": "MCX",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "NRML",
+              "quantity": "10",
+              "symbol": "GOLDM25NOV26FUT"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "MCX:GOLDM25NOV26FUT"
+            ],
+            [
+              "q",
+              "NSE:NIFTY25NOV26FUT"
+            ],
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "ltp"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_empty",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/portfolio/holdings": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "isin": "INE001",
+                "total_free": 38,
+                "t1_quantity": 2,
+                "average_price": 1400.0,
+                "last_price": 1499.0,
+                "nse": {
+                  "ticker": "NSE:INFY",
+                  "exchange": "NSE_EQ"
+                }
+              },
+              {
+                "isin": "INE002",
+                "total_free": 10,
+                "t1_quantity": 1,
+                "average_price": 12.5,
+                "last_price": 0,
+                "nse": {
+                  "ticker": "NSE:OLD",
+                  "exchange": "NSE_EQ"
+                }
+              },
+              {
+                "isin": "INE003",
+                "total_free": 7,
+                "t1_quantity": 0,
+                "average_price": 50.0,
+                "last_price": 55.0,
+                "bse": {
+                  "ticker": "BSE:XYZ",
+                  "exchange": "BSE_EQ"
+                }
+              },
+              {
+                "isin": "INE004",
+                "total_free": 1,
+                "t1_quantity": 0,
+                "average_price": 0,
+                "last_price": 10.0
+              }
+            ]
+          }
+        },
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:INFY": {
+                "last_trade_price": 1510.0
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "average_price": 1400.0,
+                "exchange": "NSE",
+                "ltp": 1499.0,
+                "pnl": 3960.0,
+                "pnlpercent": 7.07,
+                "product": "CNC",
+                "quantity": 40,
+                "symbol": "INFY"
+              },
+              {
+                "average_price": 12.5,
+                "exchange": "NSE",
+                "ltp": 0.0,
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 11,
+                "symbol": "OLD"
+              },
+              {
+                "average_price": 50.0,
+                "exchange": "BSE",
+                "ltp": 55.0,
+                "pnl": 35.0,
+                "pnlpercent": 10.0,
+                "product": "CNC",
+                "quantity": 7,
+                "symbol": "XYZ"
+              },
+              {
+                "average_price": 0.0,
+                "exchange": "",
+                "ltp": 10.0,
+                "pnl": 10.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 1,
+                "symbol": "INE004"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 60355.0,
+              "totalinvvalue": 56487.5,
+              "totalpnlpercentage": 7.09,
+              "totalprofitandloss": 4005.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/portfolio/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:OLD"
+            ],
+            [
+              "mode",
+              "ltp"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_priced_from_a_quote_when_the_row_has_none",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/portfolio/holdings": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "isin": "INE001",
+                "total_free": 38,
+                "t1_quantity": 2,
+                "average_price": 1400.0,
+                "last_price": 0,
+                "nse": {
+                  "ticker": "NSE:INFY",
+                  "exchange": "NSE_EQ"
+                }
+              }
+            ]
+          }
+        },
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:INFY": {
+                "last_trade_price": 1510.0
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "average_price": 1400.0,
+                "exchange": "NSE",
+                "ltp": 1510.0,
+                "pnl": 4400.0,
+                "pnlpercent": 7.86,
+                "product": "CNC",
+                "quantity": 40,
+                "symbol": "INFY"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 60400.0,
+              "totalinvvalue": 56000.0,
+              "totalpnlpercentage": 7.86,
+              "totalprofitandloss": 4400.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/portfolio/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "NSE:INFY"
+            ],
+            [
+              "mode",
+              "ltp"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_empty",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/portfolio/holdings": {
+          "body": {
+            "status": "success",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/portfolio/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/user/funds": {
+          "body": {
+            "status": "success",
+            "data": {
+              "exchange_combined": {
+                "net_available": 101225.8,
+                "collateral": 1500.0,
+                "total_utilization": -274.95,
+                "booked_profit": 7.0,
+                "mtm_and_booked_loss": -2.0
+              }
+            }
+          }
+        },
+        "GET /v2/trading/portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "ticker": "NSE:SBIN",
+                  "exchange": "NSE_EQ",
+                  "product": "INTRADAY",
+                  "quantity": 10,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "average_price": 801.1234
+                },
+                {
+                  "ticker": "NSE:NIFTY25NOV26FUT",
+                  "exchange": "NSE_FO",
+                  "product": "DELIVERY",
+                  "quantity": -75,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "average_price": 24005.5
+                },
+                {
+                  "ticker": "NSE:INFY",
+                  "exchange": "NSE_EQ",
+                  "product": "DELIVERY",
+                  "quantity": 0,
+                  "buy_value": 7500,
+                  "sell_value": 7495,
+                  "average_price": 0
+                },
+                {
+                  "ticker": "MCX:GOLDM25NOV26FUT",
+                  "exchange": "MCX_FO",
+                  "product": "DELIVERY",
+                  "quantity": 1,
+                  "buy_value": 750000,
+                  "sell_value": 0,
+                  "average_price": 75000.0,
+                  "lot_size": 10,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        },
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45
+              },
+              "NSE:NIFTY25NOV26FUT": {
+                "last_trade_price": 24000.0
+              },
+              "MCX:GOLDM25NOV26FUT": {
+                "last_trade_price": 75100.0
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "101225.80",
+            "collateral": "1500.00",
+            "m2mrealized": "-5.00",
+            "m2munrealized": "1455.77",
+            "utiliseddebits": "274.95"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/user/funds",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "MCX:GOLDM25NOV26FUT"
+            ],
+            [
+              "q",
+              "NSE:NIFTY25NOV26FUT"
+            ],
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "ltp"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_two_exchanges_added_up",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/user/funds": {
+          "body": {
+            "status": "success",
+            "data": {
+              "nse": {
+                "net_available": 1000.5,
+                "collateral": 10,
+                "total_utilization": -5,
+                "booked_profit": 1,
+                "mtm_and_booked_loss": 2
+              },
+              "mcx": {
+                "net_available": 200.25,
+                "collateral": 5,
+                "total_utilization": -7,
+                "booked_profit": 3,
+                "mtm_and_booked_loss": 4
+              }
+            }
+          }
+        },
+        "GET /v2/trading/portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "1200.75",
+            "collateral": "15.00",
+            "m2mrealized": "0.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "12.00"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/user/funds",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_positions_unreadable_uses_the_booked_figures",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/user/funds": {
+          "body": {
+            "status": "success",
+            "data": {
+              "exchange_combined": {
+                "net_available": 101225.8,
+                "collateral": 1500.0,
+                "total_utilization": -274.95,
+                "booked_profit": 7.0,
+                "mtm_and_booked_loss": -2.0
+              }
+            }
+          }
+        },
+        "GET /v2/trading/portfolio/positions": {
+          "status": 500,
+          "body": {
+            "status": "error",
+            "message": "down"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "101225.80",
+            "collateral": "1500.00",
+            "m2mrealized": "5.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "274.95"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/user/funds",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_refused",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/user/funds": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "Invalid token"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/user/funds",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_long",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "ticker": "NSE:SBIN",
+                  "exchange": "NSE_EQ",
+                  "product": "INTRADAY",
+                  "quantity": 10,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "average_price": 801.1234
+                },
+                {
+                  "ticker": "NSE:NIFTY25NOV26FUT",
+                  "exchange": "NSE_FO",
+                  "product": "DELIVERY",
+                  "quantity": -75,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "average_price": 24005.5
+                },
+                {
+                  "ticker": "NSE:INFY",
+                  "exchange": "NSE_EQ",
+                  "product": "DELIVERY",
+                  "quantity": 0,
+                  "buy_value": 7500,
+                  "sell_value": 7495,
+                  "average_price": 0
+                },
+                {
+                  "ticker": "MCX:GOLDM25NOV26FUT",
+                  "exchange": "MCX_FO",
+                  "product": "DELIVERY",
+                  "quantity": 1,
+                  "buy_value": 750000,
+                  "sell_value": 0,
+                  "average_price": 75000.0,
+                  "lot_size": 10,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        },
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45
+              },
+              "NSE:NIFTY25NOV26FUT": {
+                "last_trade_price": 24000.0
+              },
+              "MCX:GOLDM25NOV26FUT": {
+                "last_trade_price": 75100.0
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": "10",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/data/quotes",
+          "query": [
+            [
+              "q",
+              "MCX:GOLDM25NOV26FUT"
+            ],
+            [
+              "q",
+              "NSE:NIFTY25NOV26FUT"
+            ],
+            [
+              "q",
+              "NSE:SBIN"
+            ],
+            [
+              "mode",
+              "ltp"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "ticker": "NSE:SBIN",
+                  "exchange": "NSE_EQ",
+                  "product": "INTRADAY",
+                  "quantity": 10,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "average_price": 801.1234
+                },
+                {
+                  "ticker": "NSE:NIFTY25NOV26FUT",
+                  "exchange": "NSE_FO",
+                  "product": "DELIVERY",
+                  "quantity": -75,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "average_price": 24005.5
+                },
+                {
+                  "ticker": "NSE:INFY",
+                  "exchange": "NSE_EQ",
+                  "product": "DELIVERY",
+                  "quantity": 0,
+                  "buy_value": 7500,
+                  "sell_value": 7495,
+                  "average_price": 0
+                },
+                {
+                  "ticker": "MCX:GOLDM25NOV26FUT",
+                  "exchange": "MCX_FO",
+                  "product": "DELIVERY",
+                  "quantity": 1,
+                  "buy_value": 750000,
+                  "sell_value": 0,
+                  "average_price": 75000.0,
+                  "lot_size": 10,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        },
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        },
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45
+              },
+              "NSE:NIFTY25NOV26FUT": {
+                "last_trade_price": 24000.0
+              },
+              "MCX:GOLDM25NOV26FUT": {
+                "last_trade_price": 75100.0
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "SELL",
+            "product": "INTRADAY",
+            "variety": "RL-MKT",
+            "quantity": 10,
+            "price": 0.0,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "Squareoff"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:NIFTY25NOV26FUT",
+            "transaction_type": "BUY",
+            "product": "DELIVERY",
+            "variety": "RL-MKT",
+            "quantity": 75,
+            "price": 0.0,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "Squareoff"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "MCX:GOLDM25NOV26FUT",
+            "transaction_type": "SELL",
+            "product": "DELIVERY",
+            "variety": "RL-MKT",
+            "quantity": 1,
+            "price": 0.0,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "Squareoff"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_nothing_open",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [],
+              "day": []
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_reduce",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/portfolio/positions": {
+          "body": {
+            "status": "success",
+            "data": {
+              "net": [
+                {
+                  "ticker": "NSE:SBIN",
+                  "exchange": "NSE_EQ",
+                  "product": "INTRADAY",
+                  "quantity": 10,
+                  "buy_value": 8011.234,
+                  "sell_value": 0,
+                  "average_price": 801.1234
+                },
+                {
+                  "ticker": "NSE:NIFTY25NOV26FUT",
+                  "exchange": "NSE_FO",
+                  "product": "DELIVERY",
+                  "quantity": -75,
+                  "buy_value": 0,
+                  "sell_value": 1800412.5,
+                  "average_price": 24005.5
+                },
+                {
+                  "ticker": "NSE:INFY",
+                  "exchange": "NSE_EQ",
+                  "product": "DELIVERY",
+                  "quantity": 0,
+                  "buy_value": 7500,
+                  "sell_value": 7495,
+                  "average_price": 0
+                },
+                {
+                  "ticker": "MCX:GOLDM25NOV26FUT",
+                  "exchange": "MCX_FO",
+                  "product": "DELIVERY",
+                  "quantity": 1,
+                  "buy_value": 750000,
+                  "sell_value": 0,
+                  "average_price": 75000.0,
+                  "lot_size": 10,
+                  "multiplier": 1
+                }
+              ],
+              "day": []
+            }
+          }
+        },
+        "POST /v2/trading/orders/regular": {
+          "body": {
+            "status": "success",
+            "code": "order_placed",
+            "message": "Order placed",
+            "data": {
+              "order_id": "ORD0001"
+            }
+          }
+        },
+        "GET /v2/data/quotes": {
+          "body": {
+            "status": "success",
+            "data": {
+              "NSE:SBIN": {
+                "last_trade_price": 805.45
+              },
+              "NSE:NIFTY25NOV26FUT": {
+                "last_trade_price": 24000.0
+              },
+              "MCX:GOLDM25NOV26FUT": {
+                "last_trade_price": 75100.0
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "ORD0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "SELL",
+            "product": "INTRADAY",
+            "variety": "RL",
+            "quantity": 6,
+            "price": 800.5,
+            "trigger_price": 0.0,
+            "disclosed_quantity": 0,
+            "validity": "DAY",
+            "is_amo": false,
+            "order_identifier": "t"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
