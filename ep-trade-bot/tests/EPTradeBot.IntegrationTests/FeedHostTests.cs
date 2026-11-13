@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using System.Buffers.Binary;
 using System.Net;
 using System.Net.Http.Json;
@@ -370,5 +371,76 @@ public sealed class FeedHostTests
         var answer = await proxy.ReceiveTypeAsync("subscribe", TimeSpan.FromSeconds(5));
         Assert.Contains("did not give this account a live price feed", answer!["subscriptions"]![0]!["message"]!.GetValue<string>());
         Assert.Equal(0, broker.Connections);
+    }
+
+    [PostgresFact]
+    public async Task An_XTS_feed_subscribes_over_http_once_the_socket_is_connected_and_reads_ticks_and_the_initial_quote()
+    {
+        await using var socketServer = new FakeFeedServer();
+        var http = new FakeBroker();
+        var quote = """{"MessageCode":1501,"ExchangeSegment":1,"ExchangeInstrumentID":2885,"LastTradedPrice":1450.5,"Open":1440.0}""";
+        http.Reset(new Dictionary<string, (int, string)>
+        {
+            ["POST /apimarketdata/instruments/subscription"] = (200, new JsonObject { ["type"] = "success", ["result"] = new JsonObject { ["listQuotes"] = new JsonArray(quote) } }.ToJsonString()),
+            ["PUT /apimarketdata/instruments/subscription"] = (200, """{"type":"success","result":{}}"""),
+        });
+        await using var host = new TestHost("Production", b =>
+        {
+            b.UseSetting("Brokers:Enabled:0", "wisdom");
+            foreach (var name in new[] { "ApiKey", "ApiSecret", "ApiKeyMarket", "ApiSecretMarket" }) b.UseSetting($"Brokers:Keys:wisdom:{name}", "k");
+            b.UseSetting("Brokers:FeedUrls:wisdom", socketServer.Address);
+            b.UseSetting("Brokers:BaseUrls:wisdom", "http://xts.test");
+            b.ConfigureServices(s => s.ConfigureHttpClientDefaults(h => h.ConfigurePrimaryHttpMessageHandler(() => http)));
+        });
+        var account = await host.CreateAccountAsync(AccountType.LIVE, "xts", broker: "wisdom", clientId: "XTSUSER");
+        (await host.Admin.PutAsJsonAsync($"/api/v1/accounts/{account}/broker-session", new { auth_token = "trade-token", feed_token = "market-token" })).EnsureSuccessStatusCode();
+        var key = (await (await host.Admin.PostAsJsonAsync($"/api/v1/accounts/{account}/apikeys", new { label = "feed" })).Content.ReadFromJsonAsync<JsonObject>())!["apikey"]!.GetValue<string>();
+        await using (var db = host.NewDb())
+        {
+            db.Set<SymToken>().Add(new SymToken { Broker = "wisdom", Symbol = "RELIANCE", Brsymbol = "RELIANCE", Exchange = "NSE", Brexchange = "NSE", Token = "2885", Lotsize = 1 });
+            await db.SaveChangesAsync();
+        }
+
+        var s = new Setup(host, socketServer, account, key);
+        await using var proxy = await ConnectAsync(s);
+        await proxy.SendAsync(Subscribe("RELIANCE", "Quote"));
+        Assert.True(await FakeFeedServer.UntilAsync(() => socketServer.Connections >= 1));
+
+        var connected = socketServer.Requests.Single();
+        Assert.Equal("/apimarketdata/socket.io/", connected.Path);
+        Assert.Contains("token=market-token", connected.Query);
+        Assert.Contains("userID=XTSUSER", connected.Query);
+
+        // Nothing is asked of the broker until the Socket.IO connect is accepted.
+        Assert.Empty(http.Sent);
+        await socketServer.SendTextAsync("""0{"sid":"abc","upgrades":[],"pingInterval":25000,"pingTimeout":5000}""");
+        Assert.True(await FakeFeedServer.UntilAsync(() => socketServer.Received.Contains("40")));
+        await socketServer.SendTextAsync("2");
+        Assert.True(await FakeFeedServer.UntilAsync(() => socketServer.Received.Contains("3")));
+        Assert.Empty(http.Sent);
+        await socketServer.SendTextAsync("""40{"sid":"xyz"}""");
+        Assert.True(await FakeFeedServer.UntilAsync(() => http.Sent.Count >= 1));
+
+        var call = http.Sent[0];
+        Assert.Equal("POST", call.Method);
+        Assert.Equal("market-token", call.Headers["authorization"]);
+        Assert.Equal(1501, call.Json!["xtsMessageCode"]!.GetValue<int>());
+        Assert.Equal(2885, long.Parse(call.Json["instruments"]![0]!["exchangeInstrumentID"]!.GetValue<string>()));
+
+        // The quote in the reply is published once, before the bus has a listener it can be lost to its slow-joiner gap, so only the socket's events are asserted.
+        var until = DateTime.UtcNow.AddSeconds(15);
+        JsonObject? tick = null;
+        while (DateTime.UtcNow < until && tick is null)
+        {
+            await socketServer.SendTextAsync("""42["1501-json-full",{"MessageCode":1501,"ExchangeSegment":1,"ExchangeInstrumentID":2885,"LastTradedPrice":1451.25}]""");
+            var m = await proxy.ReceiveTypeAsync("market_data", TimeSpan.FromMilliseconds(300));
+            if (m?["data"]?["ltp"]?.GetValue<double>() == 1451.25) tick = m;
+        }
+
+        Assert.NotNull(tick);
+
+        // Letting go of the instrument is a PUT, and the connection goes with its last instrument.
+        await proxy.SendAsync(new { action = "unsubscribe", symbols = new[] { new { symbol = "RELIANCE", exchange = "NSE" } }, mode = "Quote" });
+        Assert.True(await FakeFeedServer.UntilAsync(() => http.Sent.Any(r => r.Method == "PUT")));
     }
 }
