@@ -129,3 +129,40 @@ public sealed class DhanGttContractTests(DhanGttHost host, ITestOutputHelper out
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+/// <summary>Fyers GTT (tools/contract-fixtures/fyers_gtt.fixtures.json). A leg has only a price, a trigger and a quantity; an OCO is two legs of one trigger.</summary>
+public sealed class FyersGttHost : BrokerContractHost
+{
+    public override string BrokerName => "fyers";
+    public override string FixtureFile => "fyers_gtt.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "FYAPPID-100" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class FyersGttContractTests(FyersGttHost host, ITestOutputHelper output) : IClassFixture<FyersGttHost>
+{
+    private const string UnknownSymbol = "OpenAlgo sends the trigger with no symbol when the symbol is missing from the master contract. EP Trade bot names the symbol and says what to do.";
+
+    private const string OkButRefused = "Fyers refused the change but answered with an OK status. OpenAlgo reads the OK status and tells the caller it worked, so the trigger the caller believes changed is not. EP Trade bot reports the refusal.";
+
+    private static void NoSymbol(System.Text.Json.Nodes.JsonObject f)
+    {
+        ContractRunner.Expect(f, 400, ContractRunner.Error("NOPE on NSE is not in the Fyers master contract. Check the symbol, or download the master contract again."));
+        f["sent"]!.AsArray().Clear();
+    }
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["place_unknown_symbol"] = new(UnknownSymbol, f => NoSymbol(f)),
+        ["modify_unknown_symbol"] = new(UnknownSymbol, f => NoSymbol(f)),
+        ["modify_error_status_in_an_ok_answer"] = new(OkButRefused, f => ContractRunner.Expect(f, 500, ContractRunner.Error("Rejected in an ok answer"))),
+        ["book_error_word_in_an_ok_answer"] = new("Fyers could not give the book but answered with an OK status. OpenAlgo passes that status on with an error body; EP Trade bot reports a failure status.", f => ContractRunner.Expect(f, 500, ContractRunner.Error("Book unavailable"))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("fyers_gtt.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

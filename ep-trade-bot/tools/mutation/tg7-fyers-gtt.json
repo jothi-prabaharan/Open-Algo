@@ -1,0 +1,234 @@
+[
+ {
+  "name": "Y1 side reversed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "string.Equals(order.Action, \"BUY\", StringComparison.OrdinalIgnoreCase) ? 1 : -1",
+  "new": "string.Equals(order.Action, \"BUY\", StringComparison.OrdinalIgnoreCase) ? -1 : 1",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y2 symbol is the openalgo symbol",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "[\"symbol\"] = order.Instrument.BrokerSymbol,",
+  "new": "[\"symbol\"] = order.Instrument.Symbol,",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y3 legs swapped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "[\"leg1\"] = Leg(target, (double)order.TriggerTg, order.Quantity), [\"leg2\"] = Leg(stopLoss, (double)order.TriggerSl, order.Quantity)",
+  "new": "[\"leg1\"] = Leg(stopLoss, (double)order.TriggerSl, order.Quantity), [\"leg2\"] = Leg(target, (double)order.TriggerTg, order.Quantity)",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y4 single uses the stoploss price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "[\"leg1\"] = Leg(price, (double)order.Trigger, order.Quantity)",
+  "new": "[\"leg1\"] = Leg(stopLoss, (double)order.Trigger, order.Quantity)",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y5 market single not protected",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "if (last > 0) price = Protect(last);",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y6 market oco stop not protected",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "if (order.TriggerSl > 0) stopLoss = Protect((double)order.TriggerSl);",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y7 market oco target not protected",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "if (order.TriggerTg > 0) target = Protect((double)order.TriggerTg);",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y8 market treated as limit",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "if (!string.Equals(order.PriceType, \"MARKET\", StringComparison.OrdinalIgnoreCase)) return (price, stopLoss, target);",
+  "new": "if (Environment.TickCount64 > 0) return (price, stopLoss, target);",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y9 tag not cleaned",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": ".Where(char.IsLetterOrDigit)",
+  "new": ".Where(c => true)",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y10 tag not cut",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "if (cleaned.Length > 20) cleaned = cleaned[..20];",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y11 empty tag allowed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "return cleaned.Length > 0 ? cleaned : \"openalgo\";",
+  "new": "return cleaned;",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y12 ok answer without id is success",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "if (GttOk(reply) && Str(reply?[\"id\"]) is { Length: > 0 } id) return GttResult.Success(id);",
+  "new": "if (GttOk(reply)) return GttResult.Success(Str(reply?[\"id\"]) ?? \"x\");",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y13 error word not final",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "if (word == \"error\") return false;",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y14 code fallback dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "return reply[\"code\"] is not null && (int)Float(reply[\"code\"]) is 200 or 201 or 1101 or 1102 or 1103;",
+  "new": "return false;",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y15 modify sends side and symbol",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "var body = new JsonObject { [\"id\"] = triggerId, [\"orderInfo\"] = OrderInfo(order, price, stopLoss, target) };",
+  "new": "var body = new JsonObject { [\"id\"] = triggerId, [\"side\"] = 1, [\"orderInfo\"] = OrderInfo(order, price, stopLoss, target) };",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y16 ok error reported as success on write",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "return GttResult.Refused(status == 200 ? 500 : status, Str(reply?[\"message\"]) ?? failure);",
+  "new": "return GttResult.Success(triggerId);",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y17 given id not kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "Str(reply![\"id\"]) is { Length: > 0 } id ? id : triggerId",
+  "new": "Str(reply![\"id\"]) ?? \"\"",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y18 settled triggers listed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "if (rawStatus is not (4 or 6)) continue;",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y19 transit shown as active",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "[\"status\"] = rawStatus == 4 ? \"transit\" : \"active\",",
+  "new": "[\"status\"] = \"active\",",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y20 sell read as buy",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "(int)Float(row[\"tran_side\"]) == 1 ? \"BUY\" : \"SELL\"",
+  "new": "(int)Float(row[\"tran_side\"]) == 1 ? \"SELL\" : \"BUY\"",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y21 triggers not sorted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "triggers.Sort();",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y22 second leg dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "legs.Add(BookLeg(action, product, row[\"price2_limit\"], row[\"qty2\"]));",
+  "new": "",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y23 unknown indicator not single",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "_ => \"SINGLE\" }",
+  "new": "_ => \"single\" }",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y24 bse exchange wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "(12, 10) => \"BSE\"",
+  "new": "(12, 10) => \"NSE\"",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y25 margin product wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "\"MARGIN\" => \"NRML\", \"INTRADAY\" => \"MIS\"",
+  "new": "\"MARGIN\" => \"MIS\", \"INTRADAY\" => \"MIS\"",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y26 unknown product hidden",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "_ => rawProduct };",
+  "new": "_ => \"\" };",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y27 last price not shown",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "[\"last_price\"] = Float(row[\"ltp\"]),",
+  "new": "[\"last_price\"] = 0,",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y28 quote failure not tolerated",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "catch (BrokerException ex)\n        {\n            logger.LogWarning(ex, \"Fyers GTT could not read",
+  "new": "catch (BrokerException ex) when (Environment.TickCount64 < 0)\n        {\n            logger.LogWarning(ex, \"Fyers GTT could not read",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Y30 book failure status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Fyers/FyersPlugin.Gtt.cs",
+  "old": "status == 200 ? 500 : status);\n\n        var book",
+  "new": "status);\n\n        var book",
+  "filter": "FullyQualifiedName~FyersGtt",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

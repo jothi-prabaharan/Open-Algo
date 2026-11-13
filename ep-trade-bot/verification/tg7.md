@@ -7,7 +7,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Dhan | yes | yes | yes | yes | yes | yes | yes | no |
 | Dhan Sandbox | yes | yes | yes | yes | no | no | no | no |
 | Upstox | yes | yes | yes | yes | yes | yes | yes | no |
-| Fyers | yes | yes | yes | yes | yes | no | yes | no |
+| Fyers | yes | yes | yes | yes | yes | yes | yes | no |
 | Delta Exchange | yes | yes | yes | yes | yes | no | yes | no |
 
 The other 30 brokers in the task list are not started.
@@ -57,3 +57,11 @@ The other 30 brokers in the task list are not started.
 - Contract: 39 recorded cases (`dhan_gtt.fixtures.json`). The recorder now lets a scenario replace a broker's own HTTP client (Dhan builds one for HTTP/1.1).
 - Deviations, each with its reason in the contract file: a symbol missing from the master contract is refused by name where OpenAlgo sends the order with the security id "None"; a refused placement carries Dhan's reason where OpenAlgo says only "Failed to place GTT"; a modify or cancel answered with an OK status and no order id is a failure here, where OpenAlgo reports success.
 - Mutation: `tools/mutation/tg7-dhan-gtt.json`, 24 mutants, all caught. Not exercised: the network-failure branch of the book read before a SINGLE modify (the test harness cannot make a call fail to connect); it only falls back to the entry leg, as OpenAlgo does.
+
+## Fyers GTT
+
+- Ported from `broker/fyers/api/gtt_api.py` and `mapping/gtt_data.py`. A trigger leg has only a price, a trigger and a quantity, so the order it fires is always a LIMIT: a MARKET request becomes a protected limit (the last price for a SINGLE, each leg's own trigger for an OCO, moved by the protection slab and rounded to the tick; if the last price cannot be read the given price is sent). An OCO is two legs of one trigger, the one above the last price first.
+- The strategy name is the order tag, reduced to letters and digits, at most 20, else "openalgo".
+- Contract: 43 recorded cases (`fyers_gtt.fixtures.json`). Deviations, each with its reason in the contract file: a missing symbol is refused by name where OpenAlgo sends the trigger with no symbol; a modify answered with an OK status but an error word is a failure where OpenAlgo reports success; a book refused inside an OK answer is a failure status where OpenAlgo passes the OK status on.
+- Not ported: OpenAlgo swaps the two OCO legs when a caller gives the stoploss trigger at or above the target trigger. The request validation refuses that before it reaches the broker, so the swap could never run here.
+- Mutation: `tools/mutation/tg7-fyers-gtt.json`, 29 mutants, all caught.

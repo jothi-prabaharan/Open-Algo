@@ -1937,6 +1937,84 @@
       "ignore": []
     },
     {
+      "name": "place_error_word_with_a_success_code",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /data/depth": {
+          "body": {
+            "s": "ok",
+            "message": "",
+            "d": {
+              "NSE:SBIN-EQ": {
+                "ltp": 805.45,
+                "bids": [],
+                "ask": [],
+                "tick_Size": 0.05,
+                "oi": 0
+              }
+            }
+          }
+        },
+        "POST /api/v3/gtt/orders/sync": {
+          "body": {
+            "s": "error",
+            "code": 1101,
+            "id": "G1003",
+            "message": "Error word wins"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error word wins",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/gtt/orders/sync",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "side": 1,
+            "symbol": "NSE:SBIN-EQ",
+            "productType": "CNC",
+            "orderInfo": {
+              "leg1": {
+                "price": 790.0,
+                "triggerPrice": 795.0,
+                "qty": 10
+              }
+            },
+            "orderTag": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "place_answer_with_a_code_and_no_status",
       "method": "POST",
       "path": "/api/v1/placegttorder",
@@ -3877,6 +3955,45 @@
         "body": {
           "data": [],
           "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api-t1.fyers.in",
+          "path": "/api/v3/gtt/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "FYAPPID-100:fyers-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_error_word_in_an_ok_answer",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /api/v3/gtt/orders": {
+          "body": {
+            "s": "error",
+            "code": 200,
+            "message": "Book unavailable"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "Book unavailable",
+          "status": "error"
         }
       },
       "sent": [

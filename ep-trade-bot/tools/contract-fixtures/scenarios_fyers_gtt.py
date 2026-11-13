@@ -104,6 +104,7 @@ SCENARIOS = [
     place("place_broker_session_expired", order(), reply=failure(401, "Could not authenticate the user", -16)),
     place("place_ok_answer_without_an_id", order(), reply={"body": {"s": "ok", "code": 1101, "message": "done"}}),
     place("place_error_status_in_an_ok_answer", order(), reply={"body": {"s": "error", "code": -50, "message": "Rejected in an ok answer"}}),
+    place("place_error_word_with_a_success_code", order(), reply={"body": {"s": "error", "code": 1101, "id": "G1003", "message": "Error word wins"}}),
     place("place_answer_with_a_code_and_no_status", order(), reply={"body": {"code": 1101, "id": "G1002", "message": "no status field"}}),
     place("place_unknown_symbol", order(symbol="NOPE")),
     # Modify.
@@ -126,5 +127,6 @@ SCENARIOS = [
     {"name": "book_active_only", "path": B, "request": {}, "broker": {BOOK_URL: BOOK}},
     {"name": "book_all_active_first", "path": B, "request": {"status": "all"}, "broker": {BOOK_URL: BOOK}},
     {"name": "book_empty", "path": B, "request": {}, "broker": {BOOK_URL: EMPTY_BOOK}},
+    {"name": "book_error_word_in_an_ok_answer", "path": B, "request": {}, "broker": {BOOK_URL: {"body": {"s": "error", "code": 200, "message": "Book unavailable"}}}},
     {"name": "book_broker_refuses", "path": B, "request": {}, "broker": {BOOK_URL: failure(401, "Could not authenticate the user", -16)}},
 ]
