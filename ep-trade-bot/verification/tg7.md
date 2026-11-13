@@ -15,7 +15,7 @@ The other 30 brokers in the task list are not started.
 ## Not done, and why Gate 7 is open
 
 - **Market-data feeds** for Dhan, Upstox and Fyers. Each is a separate wire protocol (Dhan binary, Upstox protobuf, Fyers HSM binary) and needs its own codec held to the Python adapter, as the Zerodha, Angel One, Paytm Money and Delta Exchange feeds were.
-- **Delta Exchange leverage and fractional (spot) quantities.** Both cross the request model, not only the plugin: quantity is whole everywhere in the order pipeline today, and leverage comes from OpenAlgo's leverage setting, which EP Trade bot does not have yet.
+- **Delta Exchange fractional (spot) quantities.** This crosses the request model, not only the plugin: quantity is whole everywhere in the order pipeline today.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
 - **The 30 brokers not started** (fivepaisa, fivepaisaxts, aliceblue, arrow, compositedge, definedge, firstock, flattrade, groww, hdfcsecurities, hdfcsky, ibulls, iifl, iiflcapital, indmoney, jainamxts, kotak, motilal, mstock, nubra, pocketful, rmoney, rupeezy, sahi, samco, shoonya, tradejini, tradesmart, wisdom, zebu). Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
@@ -87,3 +87,10 @@ The other 30 brokers in the task list are not started.
 - Contract: 37 scenarios replayed against the real Python adapter and socket client (`feed_deltaexchange.fixtures.json`; the recorder feeds JSON text frames).
 - Not part of this feed: Delta's signed account socket (order, position and margin events). OpenAlgo publishes those to its order topic from the same adapter; EP Trade bot's order updates come from its own order stream.
 - Mutation: `tools/mutation/tg7-delta-feed.json`, 27 mutants, all caught (one equivalent mutant removed).
+
+## Delta Exchange leverage
+
+- Ported from `broker/deltaexchange/api/order_api.py` (`_set_leverage`). Delta sets leverage with a call of its own, `POST /v2/products/{id}/orders/leverage`, before the order. The saved common leverage (the `leverage_config` row) decides; with none saved, the configured default (`Brokers:Keys:deltaexchange:DefaultLeverage`); a value of 0 or nothing means no call and the product keeps its leverage.
+- A refused leverage call lets the order go at the leverage the product has, as OpenAlgo does, unless `Brokers:Keys:deltaexchange:AbortOnLeverageFailure` is `true` (case and spaces ignored); then the order is refused with a plain message naming the leverage, where OpenAlgo answers an internal error (deviation, recorded in the contract file).
+- OpenAlgo also accepts a `leverage` field on the order itself. The `/api/v1` order request here has no such field, so only the saved and default values apply.
+- Contract: 11 recorded cases (`deltaexchange_leverage.fixtures.json`; the recorder can now seed the saved leverage and environment settings per scenario). Mutation: `tools/mutation/tg7-delta-leverage.json`, 11 mutants, all caught.

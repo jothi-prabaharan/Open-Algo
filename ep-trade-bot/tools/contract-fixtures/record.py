@@ -202,7 +202,15 @@ if hasattr(SCENARIOS, "patch"):
 
 
 def _seed(sc):
-    """Per-scenario stored state: chart preferences and sandbox positions of the key's user."""
+    """Per-scenario stored state: chart preferences and sandbox positions of the key's user, the common leverage, and environment settings."""
+    for _name in list(os.environ):
+        if _name.startswith("DELTA_") and _name not in getattr(SCENARIOS, "ENV", {}):
+            del os.environ[_name]
+    os.environ.update(sc.get("env", {}))
+    if "leverage" in sc:
+        import database.leverage_db as lv
+
+        lv.set_leverage(sc["leverage"])
     if "chart_prefs" in sc:
         import database.chart_prefs_db as cp
 
@@ -275,7 +283,7 @@ for sc in SCENARIOS.SCENARIOS:
                          **({"text": resp.get_data(as_text=True), "content_type": resp.content_type} if resp.get_json(silent=True) is None else {})},
             "sent": state["sent"],
             "ignore": sc.get("ignore", []),
-            **{k: sc[k] for k in ("analyze", "chart_prefs", "sandbox_positions") if k in sc},
+            **{k: sc[k] for k in ("analyze", "chart_prefs", "sandbox_positions", "leverage", "env") if k in sc},
         }
     )
     print(f"{resp.status_code} {sc['name']}")

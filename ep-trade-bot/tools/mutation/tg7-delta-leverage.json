@@ -1,0 +1,90 @@
+[
+ {
+  "name": "V1 saved leverage ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "if (saved is > 0) leverage",
+  "new": "if (Environment.TickCount64 < 0 && saved is > 0) leverage",
+  "filter": "FullyQualifiedName~DeltaLeverage",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "V2 default ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "if (leverage.Length == 0) leverage = session.Key(\"DefaultLeverage\") ?? \"\";",
+  "new": "",
+  "filter": "FullyQualifiedName~DeltaLeverage",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "V3 zero default sent",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "if (leverage.Length == 0 || leverage == \"0\") return null;",
+  "new": "if (leverage.Length == 0) return null;",
+  "filter": "FullyQualifiedName~DeltaLeverage",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "V4 default beats saved",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "if (leverage.Length == 0) leverage = session.Key(\"DefaultLeverage\") ?? \"\";",
+  "new": "leverage = session.Key(\"DefaultLeverage\") is { Length: > 0 } d ? d : leverage;",
+  "filter": "FullyQualifiedName~DeltaLeverage",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "V5 abort ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "return stop\n            ?",
+  "new": "return false\n            ?",
+  "filter": "FullyQualifiedName~DeltaLeverage",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "V6 abort case-sensitive",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "string.Equals(session.Key(\"AbortOnLeverageFailure\")?.Trim(), \"true\", StringComparison.OrdinalIgnoreCase)",
+  "new": "string.Equals(session.Key(\"AbortOnLeverageFailure\")?.Trim(), \"true\", StringComparison.Ordinal)",
+  "filter": "FullyQualifiedName~DeltaLeverage",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "V7 abort not trimmed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "session.Key(\"AbortOnLeverageFailure\")?.Trim()",
+  "new": "session.Key(\"AbortOnLeverageFailure\")",
+  "filter": "FullyQualifiedName~DeltaLeverage",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "V8 success not checked",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "if (Truthy(reply?[\"success\"])) return null;",
+  "new": "if (Environment.TickCount64 > 0) return null;",
+  "filter": "FullyQualifiedName~DeltaLeverage",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "V9 wrong product",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "$\"/v2/products/{productId}/orders/leverage\"",
+  "new": "\"/v2/products/27/orders/leverage\"",
+  "filter": "FullyQualifiedName~DeltaLeverage",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "V10 field renamed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "new JsonObject { [\"leverage\"] = leverage }",
+  "new": "new JsonObject { [\"lev\"] = leverage }",
+  "filter": "FullyQualifiedName~DeltaLeverage",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "V11 leverage set after the order is built only for market",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "if (await SetLeverageAsync(session, instrument.Token, cancellationToken) is { } refused) return refused;",
+  "new": "if (order.PriceType == \"MARKET\" && await SetLeverageAsync(session, instrument.Token, cancellationToken) is { } refused) return refused;",
+  "filter": "FullyQualifiedName~DeltaLeverage",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

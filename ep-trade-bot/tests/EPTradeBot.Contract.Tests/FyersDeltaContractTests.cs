@@ -25,7 +25,7 @@ public sealed class FyersHost : BrokerContractHost
     };
 }
 
-public sealed class DeltaHost : BrokerContractHost
+public class DeltaHost : BrokerContractHost
 {
     private const string Secret = "delta-api-secret";
 
@@ -153,4 +153,52 @@ public sealed class DeltaContractTests(DeltaHost host, ITestOutputHelper output)
     [PostgresTheory]
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+/// <summary>Delta Exchange leverage (tools/contract-fixtures/deltaexchange_leverage.fixtures.json): the saved common leverage and the configured default.</summary>
+public sealed class DeltaLeverageHost : DeltaHost
+{
+    public override string FixtureFile => "deltaexchange_leverage.fixtures.json";
+
+    public override async Task PrepareAsync(System.Text.Json.Nodes.JsonObject fixture)
+    {
+        await using (var db = Host!.NewDb())
+        {
+            var value = fixture["leverage"] is { } v ? v.GetValue<double>() : 0;
+            var row = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.FirstOrDefaultAsync(db.Set<EPTradeBot.Core.Entities.Legacy.Core.LeverageConfig>());
+            if (row is null) db.Add(new EPTradeBot.Core.Entities.Legacy.Core.LeverageConfig { Id = 1, Leverage = value });
+            else
+            {
+                db.Update(row);
+                row.Leverage = value;
+            }
+
+            await db.SaveChangesAsync();
+        }
+
+        // The environment settings of the recording become the broker's configuration.
+        var keys = Host.Get<Microsoft.Extensions.Options.IOptionsMonitor<EPTradeBot.Core.Configuration.BrokerOptions>>().CurrentValue.Keys["deltaexchange"];
+        keys.Remove("DefaultLeverage");
+        keys.Remove("AbortOnLeverageFailure");
+        var env = fixture["env"] as System.Text.Json.Nodes.JsonObject;
+        if (env?["DELTA_DEFAULT_LEVERAGE"] is { } d) keys["DefaultLeverage"] = d.GetValue<string>();
+        if (env?["DELTA_ABORT_ON_LEVERAGE_FAILURE"] is { } a) keys["AbortOnLeverageFailure"] = a.GetValue<string>();
+    }
+}
+
+public sealed class DeltaLeverageContractTests(DeltaLeverageHost host, ITestOutputHelper output) : IClassFixture<DeltaLeverageHost>
+{
+    private const string Stopped = "Delta Exchange refused the leverage and the configuration asks to stop. OpenAlgo answers an internal error; EP Trade bot says what happened and what to fix.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["a_refused_leverage_call_stops_the_order_when_asked"] = new(Stopped, f => Expect(f, 400, Error("Delta Exchange would not set the leverage to 10x (invalid_leverage), so the order was not sent. Fix the leverage setting, or remove it."))),
+        ["abort_flag_is_read_ignoring_case_and_spaces"] = new(Stopped, f => Expect(f, 400, Error("Delta Exchange would not set the leverage to 10x (invalid_leverage), so the order was not sent. Fix the leverage setting, or remove it."))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("deltaexchange_leverage.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }

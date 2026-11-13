@@ -5,6 +5,9 @@ using System.Text;
 using System.Text.Json.Nodes;
 using EPTradeBot.Core.Brokers;
 using EPTradeBot.Core.Time;
+using EPTradeBot.Core.Entities.Legacy.Core;
+using EPTradeBot.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using static EPTradeBot.Infrastructure.Brokers.JsonRead;
 
@@ -17,8 +20,8 @@ namespace EPTradeBot.Infrastructure.Brokers.Delta;
 /// tools/contract-fixtures/deltaexchange.fixtures.json. Private requests are signed with
 /// HMAC-SHA256 over method, timestamp, path, query and body. Order ids are
 /// "product_id:order_id", as OpenAlgo forms them, so a cancel needs no lookup.
-/// Not ported yet, and refused rather than guessed: fractional (spot) quantities,
-/// leverage setting, bracket orders.
+/// Not ported yet, and refused rather than guessed: fractional (spot) quantities
+/// and bracket orders.
 /// </summary>
 [BrokerPlugin]
 public sealed partial class DeltaExchangePlugin(
@@ -26,6 +29,7 @@ public sealed partial class DeltaExchangePlugin(
     BrokerSessionFactory sessions,
     ISymbolMaster symbols,
     TimeProvider clock,
+    IDbContextFactory<EpTradeDbContext> contexts,
     ILogger<DeltaExchangePlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerQuotes, IBrokerHistory, IBrokerMargin, IBrokerLogin
 {
     private const string BaseUrl = "https://api.india.delta.exchange";
@@ -52,6 +56,7 @@ public sealed partial class DeltaExchangePlugin(
     {
         var instrument = await symbols.FindAsync(Name, order.Symbol, order.Exchange, cancellationToken);
         if (instrument is null) return BrokerCallResult.Refused(400, $"{order.Symbol} is not in the Delta Exchange master contract. Check the symbol, or download the master contract again.");
+        if (await SetLeverageAsync(session, instrument.Token, cancellationToken) is { } refused) return refused;
         var type = OrderType(order.PriceType);
         var body = new JsonObject
         {
@@ -86,6 +91,34 @@ public sealed partial class DeltaExchangePlugin(
                 return BrokerCallResult.Success($"{Str(result["product_id"]) ?? instrument.Token}:{Str(result["id"])}");
             return BrokerCallResult.Refused(400, ErrorText(reply));
         }
+    }
+
+    /// <summary>
+    /// Delta sets leverage with a call of its own before the order. The saved common leverage decides, else the configured default; none means the
+    /// product keeps the leverage it has. A refusal lets the order go at the leverage the product has, unless the configuration asks to stop.
+    /// </summary>
+    private async Task<BrokerCallResult?> SetLeverageAsync(BrokerSession session, string productId, CancellationToken cancellationToken)
+    {
+        string leverage = "";
+        await using (var db = await contexts.CreateDbContextAsync(cancellationToken))
+        {
+            var saved = await db.Set<LeverageConfig>().AsNoTracking().OrderBy(l => l.Id).Select(l => (double?)l.Leverage).FirstOrDefaultAsync(cancellationToken);
+            if (saved is > 0) leverage = ((int)saved.Value).ToString(CultureInfo.InvariantCulture);
+        }
+
+        if (leverage.Length == 0) leverage = session.Key("DefaultLeverage") ?? "";
+        if (leverage.Length == 0 || leverage == "0") return null;
+
+        using var request = Signed(session, HttpMethod.Post, $"/v2/products/{productId}/orders/leverage", "", new JsonObject { ["leverage"] = leverage });
+        using var response = await SendAsync(request, cancellationToken);
+        var reply = await ReadAsync(response, cancellationToken) as JsonObject;
+        if (Truthy(reply?["success"])) return null;
+
+        logger.LogWarning("Delta Exchange would not set the leverage of product {Product} to {Leverage}: {Reason}", productId, leverage, ErrorText(reply));
+        var stop = string.Equals(session.Key("AbortOnLeverageFailure")?.Trim(), "true", StringComparison.OrdinalIgnoreCase);
+        return stop
+            ? BrokerCallResult.Refused(400, $"Delta Exchange would not set the leverage to {leverage}x ({ErrorText(reply)}), so the order was not sent. Fix the leverage setting, or remove it.")
+            : null;
     }
 
     public async Task<BrokerCallResult> ModifyAsync(BrokerSession session, BrokerOrderChange change, CancellationToken cancellationToken)

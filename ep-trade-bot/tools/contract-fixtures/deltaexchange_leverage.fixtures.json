@@ -1,0 +1,929 @@
+{
+  "broker": "deltaexchange",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "delta-api-key",
+  "client_id": null,
+  "recorded_at": "2026-11-13T06:59:54+00:00",
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "BTCUSD",
+      "brsymbol": "BTCUSD",
+      "name": "Bitcoin perpetual",
+      "exchange": "CRYPTO",
+      "brexchange": "CRYPTO",
+      "token": "27",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "PERPFUT",
+      "tick_size": 0.5,
+      "contract_value": 0.001
+    },
+    {
+      "symbol": "ETHUSD",
+      "brsymbol": "ETHUSD",
+      "name": "Ether perpetual",
+      "exchange": "CRYPTO",
+      "brexchange": "CRYPTO",
+      "token": "3136",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "PERPFUT",
+      "tick_size": 0.05,
+      "contract_value": 0.01
+    },
+    {
+      "symbol": "SOL_INR",
+      "brsymbol": "SOL_INR",
+      "name": "Solana spot",
+      "exchange": "CRYPTO",
+      "brexchange": "CRYPTO",
+      "token": "1001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "SPOT",
+      "tick_size": 0.01,
+      "contract_value": 1.0
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "no_leverage_anywhere_sends_no_leverage_call",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/products/27/orders/leverage": {
+          "body": {
+            "success": true,
+            "result": {
+              "leverage": "10",
+              "product_id": 27
+            }
+          }
+        },
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 1,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": [],
+      "leverage": 0
+    },
+    {
+      "name": "saved_leverage_is_set_before_the_order",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/products/27/orders/leverage": {
+          "body": {
+            "success": true,
+            "result": {
+              "leverage": "10",
+              "product_id": 27
+            }
+          }
+        },
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/orders/leverage",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "leverage": "10"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 1,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": [],
+      "leverage": 10
+    },
+    {
+      "name": "saved_leverage_applies_to_a_limit_order",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "67000",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/products/27/orders/leverage": {
+          "body": {
+            "success": true,
+            "result": {
+              "leverage": "10",
+              "product_id": 27
+            }
+          }
+        },
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/orders/leverage",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "leverage": "5"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 1,
+            "side": "buy",
+            "order_type": "limit_order",
+            "time_in_force": "gtc",
+            "limit_price": "67000.0"
+          }
+        }
+      ],
+      "ignore": [],
+      "leverage": 5
+    },
+    {
+      "name": "environment_default_is_used_when_nothing_is_saved",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/products/27/orders/leverage": {
+          "body": {
+            "success": true,
+            "result": {
+              "leverage": "10",
+              "product_id": 27
+            }
+          }
+        },
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/orders/leverage",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "leverage": "7"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 1,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": [],
+      "leverage": 0,
+      "env": {
+        "DELTA_DEFAULT_LEVERAGE": "7"
+      }
+    },
+    {
+      "name": "saved_leverage_wins_over_the_environment",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/products/27/orders/leverage": {
+          "body": {
+            "success": true,
+            "result": {
+              "leverage": "10",
+              "product_id": 27
+            }
+          }
+        },
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/orders/leverage",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "leverage": "10"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 1,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": [],
+      "leverage": 10,
+      "env": {
+        "DELTA_DEFAULT_LEVERAGE": "7"
+      }
+    },
+    {
+      "name": "environment_zero_means_none",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/products/27/orders/leverage": {
+          "body": {
+            "success": true,
+            "result": {
+              "leverage": "10",
+              "product_id": 27
+            }
+          }
+        },
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 1,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": [],
+      "leverage": 0,
+      "env": {
+        "DELTA_DEFAULT_LEVERAGE": "0"
+      }
+    },
+    {
+      "name": "a_refused_leverage_call_does_not_stop_the_order",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/products/27/orders/leverage": {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": {
+              "code": "invalid_leverage"
+            }
+          }
+        },
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/orders/leverage",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "leverage": "10"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 1,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": [],
+      "leverage": 10
+    },
+    {
+      "name": "a_refused_leverage_call_stops_the_order_when_asked",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/products/27/orders/leverage": {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": {
+              "code": "invalid_leverage"
+            }
+          }
+        },
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to place order due to internal error",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/orders/leverage",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "leverage": "10"
+          }
+        }
+      ],
+      "ignore": [],
+      "leverage": 10,
+      "env": {
+        "DELTA_ABORT_ON_LEVERAGE_FAILURE": "true"
+      }
+    },
+    {
+      "name": "abort_flag_is_read_ignoring_case_and_spaces",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/products/27/orders/leverage": {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": {
+              "code": "invalid_leverage"
+            }
+          }
+        },
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to place order due to internal error",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/orders/leverage",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "leverage": "10"
+          }
+        }
+      ],
+      "ignore": [],
+      "leverage": 10,
+      "env": {
+        "DELTA_ABORT_ON_LEVERAGE_FAILURE": " TRUE "
+      }
+    },
+    {
+      "name": "abort_flag_off_lets_the_order_through",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/products/27/orders/leverage": {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": {
+              "code": "invalid_leverage"
+            }
+          }
+        },
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/27/orders/leverage",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "leverage": "10"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 1,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": [],
+      "leverage": 10,
+      "env": {
+        "DELTA_ABORT_ON_LEVERAGE_FAILURE": "false"
+      }
+    },
+    {
+      "name": "leverage_for_another_product_uses_its_own_id",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "ETHUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "1",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/products/3136/orders/leverage": {
+          "body": {
+            "success": true,
+            "result": {
+              "leverage": "10",
+              "product_id": 27
+            }
+          }
+        },
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9011,
+              "product_id": 3136
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "3136:9011",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/products/3136/orders/leverage",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "leverage": "3"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 3136,
+            "product_symbol": "ETHUSD",
+            "size": 1,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": [],
+      "leverage": 3
+    }
+  ]
+}
