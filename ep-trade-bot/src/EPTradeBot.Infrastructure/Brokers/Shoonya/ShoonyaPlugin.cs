@@ -43,7 +43,7 @@ public abstract partial class NorenPluginBase(IHttpClientFactory http, BrokerSes
         session.Key("ApiKey") is { Length: > 0 } key ? key.Split(":::")[0] : throw new BrokerException($"The {DisplayName} key is not set on this server. Add it to the server's settings.", 409);
 
     /// <summary>Python's str(float): "800.5", "24010.0", "0.0".</summary>
-    private static string PyFloat(double value)
+    protected static string PyFloat(double value)
     {
         var text = value.ToString("R", CultureInfo.InvariantCulture);
         return text.Contains('E') || text.Contains('.') ? text : text + ".0";
@@ -885,12 +885,88 @@ public sealed class ZebuPlugin(IHttpClientFactory http, BrokerSessionFactory ses
 /// </summary>
 [BrokerPlugin]
 public sealed class FlattradePlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<FlattradePlugin> logger)
-    : NorenPluginBase(http, sessions, symbols, logger)
+    : NorenPluginBase(http, sessions, symbols, logger), IBrokerMargin
 {
     public override string Name => "flattrade";
     public override string DisplayName => "Flattrade";
     protected override string Host => "https://piconnect.flattrade.in";
     protected override string Api => "/PiConnectAPI";
+
+    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.Margin;
+
+    // ---- margin ----------------------------------------------------------------------------------------------
+
+    private static double Positive(double value) => value > 0 ? value : 0;
+
+    /// <summary>
+    /// The margin of a basket (GetBasketMargin). The basket takes only limit and stop-limit legs with a price above zero, so a market leg is priced off the last price
+    /// and a stop-market leg off its trigger (the last price only when it has none), moved by the protection slab and rounded to the tick (the quote's, else the master
+    /// contract's). A leg that cannot be priced refuses the whole basket, because leaving one out would report the margin of another basket.
+    /// </summary>
+    public async Task<JsonObject> CalculateMarginAsync(BrokerSession session, IReadOnlyList<MarginLeg> legs, CancellationToken cancellationToken)
+    {
+        var orders = new List<JsonObject>();
+        foreach (var l in legs)
+        {
+            var (type, price) = await LegPriceAsync(session, l, cancellationToken);
+            orders.Add(new JsonObject
+            {
+                ["exch"] = l.Instrument.Exchange, ["tsym"] = l.Instrument.BrokerSymbol.Replace("&", "%26", StringComparison.Ordinal),
+                ["qty"] = l.Quantity.ToString(CultureInfo.InvariantCulture), ["prc"] = price, ["trgprc"] = l.TriggerPrice == 0 ? "0" : PyFloat((double)l.TriggerPrice),
+                ["prd"] = MapProduct(l.Product), ["trantype"] = l.Action.Equals("BUY", StringComparison.OrdinalIgnoreCase) ? "B" : "S", ["prctyp"] = type,
+            });
+        }
+
+        var id = UserIdOf(session);
+        var body = new JsonObject { ["uid"] = id, ["actid"] = id };
+        foreach (var (key, value) in orders[0]) body[key] = value?.DeepClone();
+        body["basketlists"] = new JsonArray(orders.Skip(1).Select(o => (JsonNode?)o).ToArray());
+
+        var reply = await PostAsync(session, "/GetBasketMargin", body, cancellationToken) as JsonObject
+            ?? throw new BrokerException($"{DisplayName} sent a reply EP Trade bot could not read. Try again in a moment.", 502);
+        if (JsonRead.Str(reply["stat"]) != "Ok")
+        {
+            if (SessionLapsed(JsonRead.Str(reply["emsg"]))) throw new BrokerException($"{DisplayName} says the session has expired. Log in to {DisplayName} again.", 403);
+            var reason = JsonRead.Str(reply["emsg"]) is { Length: > 0 } e ? e : JsonRead.Str(reply["remarks"]) is { Length: > 0 } r ? r : "no reason was given.";
+            throw new BrokerException($"{DisplayName} could not work out the margin: {reason}", 400);
+        }
+
+        var used = JsonRead.Str(reply["marginusedtrade"]) is { Length: > 0 } ? reply["marginusedtrade"] : reply["marginused"];
+        return new JsonObject { ["total_margin_required"] = JsonRead.Float(used), ["span_margin"] = 0, ["exposure_margin"] = 0 };
+    }
+
+    private async Task<(string Type, string Price)> LegPriceAsync(BrokerSession session, MarginLeg l, CancellationToken cancellationToken)
+    {
+        var type = MapType(l.PriceType);
+        var given = l.Price == 0 ? "0" : PyFloat((double)l.Price);
+        if (l.PriceType is not ("MARKET" or "SL-M")) return (type, given);
+        var converted = l.PriceType == "MARKET" ? "LMT" : "SL-LMT";
+        var trigger = Positive((double)l.TriggerPrice);
+        var fallback = l.PriceType == "MARKET" ? Positive((double)l.Price) : trigger;
+        var reference = l.PriceType == "SL-M" ? trigger : 0.0;
+        double? tick = null;
+        var instrumentType = MarketPriceProtection.InstrumentType(null, l.Instrument.Symbol);
+        try
+        {
+            var quote = await QuoteForMarginAsync(session, l.Instrument, cancellationToken);
+            var ltp = Positive(JsonRead.Float(quote["lp"]));
+            tick = JsonRead.Truthy(quote["ti"]) ? JsonRead.Float(quote["ti"]) : null;
+            if (reference == 0) reference = ltp;
+            if (tick is null or 0) tick = l.Instrument.TickSize is { } t and > 0 ? t : null;
+            if (reference != 0 && tick is null) return (converted, PyFloat(reference));
+            if (reference != 0)
+            {
+                var protectedPrice = MarketPriceProtection.ProtectedPrice(reference, l.Action, instrumentType, tick);
+                if (Positive(protectedPrice) != 0) return (converted, PyFloat(protectedPrice));
+            }
+        }
+        catch (BrokerException)
+        {
+        }
+
+        if (fallback != 0) return (converted, PyFloat(fallback));
+        throw new BrokerException($"Could not get a live price for {l.Instrument.Symbol}. Enter a price for this leg, or try again in a moment.", 400);
+    }
 
     // ---- sign-in -----------------------------------------------------------------------------------------------
 

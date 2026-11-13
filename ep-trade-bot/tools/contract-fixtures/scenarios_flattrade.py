@@ -72,7 +72,18 @@ ORDERS_PRICES = {"body": [
     _order("2005", "NSE", "SBIN-EQ", "3045", "B", "LMT", "I", 10, "700.00", 0, "OPEN", "10:20:05 03-11-2026", instname="EQ", avgprc="0.00", rprc="1"),
     _order("2006", "NSE", "SBIN-EQ", "3045", "B", "LMT", "I", 10, "700.00", 0, "OPEN", "10:20:06 03-11-2026", fillshares="12", avgprc="x"),
 ]}
+LIMITED = {"body": {"stat": "Not_Ok", "emsg": "Invalid Input : Order Recieved 11 in a current second exceeds Limit 10 for user"}}
+NEGATIVE_REPORTED = {"body": [
+    _order("2007", "NSE", "SBIN-EQ", "3045", "B", "SL-MKT", "I", 10, "0.00", "790.5", "OPEN", "10:20:07 03-11-2026", rprc="-1"),
+    _order("2008", "NSE", "SBIN-EQ", "3045", "B", "SL-MKT", "I", 10, "0.00", "790.5", "OPEN", "10:20:08 03-11-2026", rprc="791.25"),
+    _order("2009", "NSE", "SBIN-EQ", "3045", "B", "LMT", "I", 10, "800.00", 0, "COMPLETE", "10:20:09 03-11-2026", instname="EQ", avgprc="805.45", fillshares="10"),
+    _order("2010", "NSE", "SBIN-EQ", "3045", "B", "LMT", "I", 10, "800.00", 0, "OPEN", "10:20:10 03-11-2026", instname="EQ", avgprc="0.00", fillshares="0"),
+]}
 NO_ORDERS = {"body": {"stat": "Not_Ok", "request_time": "10:20:30 03-11-2026", "emsg": "Error Occurred : 5 \"no data\""}}
+TRADES_ROUNDING = {"body": [
+    {"stat": "Ok", "norenordno": "1011", "uid": "FA12345", "actid": "FA12345", "exch": "NSE", "prctyp": "LMT", "ret": "DAY", "prd": "I", "flid": "9004", "fltm": "10:28:01 03-11-2026",
+     "trantype": "B", "tsym": "SBIN-EQ", "qty": "3", "token": "3045", "fillshares": "3", "flqty": "3", "prc": "10.00", "flprc": "10.005", "norentm": "10:28:00 03-11-2026", "avgprc": "10.005"},
+]}
 TRADES = {"body": [
     {"stat": "Ok", "norenordno": "1002", "uid": "FA12345", "actid": "FA12345", "exch": "NSE", "prctyp": "MKT", "ret": "DAY", "prd": "C", "flid": "9001", "fltm": "10:21:12 03-11-2026",
      "trantype": "S", "tsym": "INFY-EQ", "qty": "5", "token": "1594", "fillshares": "5", "flqty": "5", "prc": "0.00", "flprc": "1499.95", "norentm": "10:21:11 03-11-2026", "avgprc": "1499.95"},
@@ -99,6 +110,7 @@ POSITIONS = {"body": [
     _pos("NFO", "NIFTY25NOV2624000CE", "40001", "M", -50, "120.00", "110.00", "2.00", "0.00"),
     _pos("NFO", "NIFTY25NOV26F", "35001", "C", 0, "0.00", "24010.00", "1.00", "0.00", totbuyavgprc="24000.00"),
 ]}
+FACTOR_POSITIONS = {"body": [_pos("MCX", "CRUDEOIL", "50001", "M", 10, "100.00", "110.00", "0.00", "0.00", prcftr="0.5")]}
 NO_POSITIONS = {"body": {"stat": "Not_Ok", "request_time": "10:20:30 03-11-2026", "emsg": "Error Occurred : 5 \"no data\""}}
 HOLDINGS = {"body": [
     {"stat": "Ok", "exch_tsym": [{"exch": "NSE", "token": "1594", "tsym": "INFY-EQ", "pp": "2", "ti": "0.05", "ls": "1"}, {"exch": "BSE", "token": "500209", "tsym": "INFY", "pp": "2", "ti": "0.05", "ls": "1"}],
@@ -154,6 +166,12 @@ SCENARIOS = [
     req("orderbook_average_and_reported_prices", "/api/v1/orderbook", {}, {f"POST {BASE}/OrderBook": ORDERS_PRICES}),
     req("orderbook_empty", "/api/v1/orderbook", {}, {f"POST {BASE}/OrderBook": NO_ORDERS}),
     req("tradebook", "/api/v1/tradebook", {}, {f"POST {BASE}/TradeBook": TRADES}),
+    req("tradebook_rounding", "/api/v1/tradebook", {}, {f"POST {BASE}/TradeBook": TRADES_ROUNDING}),
+    req("positionbook_price_factor", "/api/v1/positionbook", {}, {f"POST {BASE}/PositionBook": FACTOR_POSITIONS}),
+    req("orderbook_negative_reported_price_is_ignored", "/api/v1/orderbook", {}, {f"POST {BASE}/OrderBook": NEGATIVE_REPORTED}),
+    req("orderbook_rate_limited_then_answered", "/api/v1/orderbook", {}, {f"POST {BASE}/OrderBook": [LIMITED, ORDERS]}),
+    req("orderbook_rate_limited_every_time", "/api/v1/orderbook", {}, {f"POST {BASE}/OrderBook": LIMITED}),
+    req("placeorder_rate_limited_is_not_asked_again", "/api/v1/placeorder", PLACE, {PLACE_EP: LIMITED}),
     req("tradebook_empty", "/api/v1/tradebook", {}, {f"POST {BASE}/TradeBook": NO_ORDERS}),
     req("positionbook", "/api/v1/positionbook", {}, {f"POST {BASE}/PositionBook": POSITIONS}),
     req("positionbook_empty", "/api/v1/positionbook", {}, {f"POST {BASE}/PositionBook": NO_POSITIONS}),

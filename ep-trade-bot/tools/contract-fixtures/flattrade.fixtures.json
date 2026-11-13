@@ -3711,6 +3711,928 @@
       "ignore": []
     },
     {
+      "name": "tradebook_rounding",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /PiConnectAPI/TradeBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "norenordno": "1011",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "prd": "I",
+              "flid": "9004",
+              "fltm": "10:28:01 03-11-2026",
+              "trantype": "B",
+              "tsym": "SBIN-EQ",
+              "qty": "3",
+              "token": "3045",
+              "fillshares": "3",
+              "flqty": "3",
+              "prc": "10.00",
+              "flprc": "10.005",
+              "norentm": "10:28:00 03-11-2026",
+              "avgprc": "10.005"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "BUY",
+              "average_price": 10.01,
+              "exchange": "NSE",
+              "orderid": "1011",
+              "product": "MIS",
+              "quantity": 3,
+              "symbol": "SBIN",
+              "timestamp": "10:28:00 03-11-2026",
+              "trade_value": 30.03
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "piconnect.flattrade.in",
+          "path": "/PiConnectAPI/TradeBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          },
+          "form": {
+            "jKey": "flattrade-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_price_factor",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /PiConnectAPI/PositionBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "MCX",
+              "tsym": "CRUDEOIL",
+              "token": "50001",
+              "prd": "M",
+              "netqty": "10",
+              "netavgprc": "100.00",
+              "lp": "110.00",
+              "rpnl": "0.00",
+              "urmtom": "0.00",
+              "daybuyavgprc": "0.00",
+              "totbuyavgprc": "0.00",
+              "prcftr": "0.5"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "100.00",
+              "exchange": "MCX",
+              "ltp": "110.00",
+              "pnl": 50.0,
+              "product": "NRML",
+              "quantity": "10",
+              "realized_pnl": 0.0,
+              "symbol": "CRUDEOIL",
+              "unrealized_pnl": 50.0
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "piconnect.flattrade.in",
+          "path": "/PiConnectAPI/PositionBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          },
+          "form": {
+            "jKey": "flattrade-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_negative_reported_price_is_ignored",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /PiConnectAPI/OrderBook": {
+          "body": [
+            {
+              "stat": "Ok",
+              "norenordno": "2007",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "SL-MKT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "OPEN",
+              "norentm": "10:20:07 03-11-2026",
+              "prc": "0.00",
+              "trgprc": "790.5",
+              "rprc": "-1"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "2008",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "SL-MKT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "OPEN",
+              "norentm": "10:20:08 03-11-2026",
+              "prc": "0.00",
+              "trgprc": "790.5",
+              "rprc": "791.25"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "2009",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "COMPLETE",
+              "norentm": "10:20:09 03-11-2026",
+              "prc": "800.00",
+              "instname": "EQ",
+              "avgprc": "805.45",
+              "fillshares": "10"
+            },
+            {
+              "stat": "Ok",
+              "norenordno": "2010",
+              "uid": "FA12345",
+              "actid": "FA12345",
+              "exch": "NSE",
+              "tsym": "SBIN-EQ",
+              "qty": "10",
+              "trantype": "B",
+              "prctyp": "LMT",
+              "ret": "DAY",
+              "token": "3045",
+              "prd": "I",
+              "status": "OPEN",
+              "norentm": "10:20:10 03-11-2026",
+              "prc": "800.00",
+              "instname": "EQ",
+              "avgprc": "0.00",
+              "fillshares": "0"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "filled_quantity": 0,
+                "order_status": "open",
+                "orderid": "2007",
+                "pending_quantity": 10,
+                "price": "0.00",
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:07 03-11-2026",
+                "trigger_price": "790.5"
+              },
+              {
+                "action": "BUY",
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "filled_quantity": 0,
+                "order_status": "open",
+                "orderid": "2008",
+                "pending_quantity": 10,
+                "price": "791.25",
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:08 03-11-2026",
+                "trigger_price": "790.5"
+              },
+              {
+                "action": "BUY",
+                "average_price": 805.45,
+                "exchange": "NSE",
+                "filled_quantity": 10,
+                "order_status": "complete",
+                "orderid": "2009",
+                "pending_quantity": 0,
+                "price": "805.45",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:09 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "filled_quantity": 0,
+                "order_status": "open",
+                "orderid": "2010",
+                "pending_quantity": 10,
+                "price": "800.00",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:10 03-11-2026",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 4,
+              "total_completed_orders": 1,
+              "total_open_orders": 3,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "piconnect.flattrade.in",
+          "path": "/PiConnectAPI/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          },
+          "form": {
+            "jKey": "flattrade-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_rate_limited_then_answered",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /PiConnectAPI/OrderBook": [
+          {
+            "body": {
+              "stat": "Not_Ok",
+              "emsg": "Invalid Input : Order Recieved 11 in a current second exceeds Limit 10 for user"
+            }
+          },
+          {
+            "body": [
+              {
+                "stat": "Ok",
+                "norenordno": "1001",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NSE",
+                "tsym": "SBIN-EQ",
+                "qty": "10",
+                "trantype": "B",
+                "prctyp": "LMT",
+                "ret": "DAY",
+                "token": "3045",
+                "prd": "I",
+                "status": "OPEN",
+                "norentm": "10:20:01 03-11-2026",
+                "prc": "800.50"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1002",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NSE",
+                "tsym": "INFY-EQ",
+                "qty": "5",
+                "trantype": "S",
+                "prctyp": "MKT",
+                "ret": "DAY",
+                "token": "1594",
+                "prd": "C",
+                "status": "COMPLETE",
+                "norentm": "10:21:11 03-11-2026",
+                "prc": "0.00",
+                "avgprc": "1499.95"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1003",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NFO",
+                "tsym": "NIFTY25NOV26F",
+                "qty": "75",
+                "trantype": "B",
+                "prctyp": "SL-LMT",
+                "ret": "DAY",
+                "token": "35001",
+                "prd": "M",
+                "status": "TRIGGER_PENDING",
+                "norentm": "10:22:00 03-11-2026",
+                "prc": "24010.00",
+                "trgprc": "24000.00"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1004",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NSE",
+                "tsym": "SBIN-EQ",
+                "qty": "1",
+                "trantype": "S",
+                "prctyp": "SL-MKT",
+                "ret": "DAY",
+                "token": "3045",
+                "prd": "I",
+                "status": "REJECTED",
+                "norentm": "10:23:00 03-11-2026",
+                "prc": "0.00",
+                "trgprc": "790.50",
+                "rejreason": "RMS:Margin Exceeds"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1005",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NSE",
+                "tsym": "SBIN-EQ",
+                "qty": "2",
+                "trantype": "B",
+                "prctyp": "LMT",
+                "ret": "DAY",
+                "token": "3045",
+                "prd": "I",
+                "status": "CANCELED",
+                "norentm": "10:24:00 03-11-2026",
+                "prc": "700.00"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1006",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NSE",
+                "tsym": "UNLISTED-EQ",
+                "qty": "1",
+                "trantype": "B",
+                "prctyp": "LMT",
+                "ret": "DAY",
+                "token": "99999",
+                "prd": "M",
+                "status": "PENDING",
+                "norentm": "10:25:00 03-11-2026",
+                "prc": "10.00"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1007",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "MCX",
+                "tsym": "CRUDEOIL",
+                "qty": "1",
+                "trantype": "B",
+                "prctyp": "LMT",
+                "ret": "DAY",
+                "token": "50001",
+                "prd": "M",
+                "status": "OPEN",
+                "norentm": "10:26:00 03-11-2026",
+                "prc": "6500.00"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1008",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NSE",
+                "tsym": "SBIN-EQ",
+                "qty": "1",
+                "trantype": "B",
+                "prctyp": "LMT",
+                "ret": "DAY",
+                "token": "3045",
+                "prd": "I",
+                "status": "Open Pending",
+                "norentm": "10:27:00 03-11-2026",
+                "prc": "700.00"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1012",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NSE",
+                "tsym": "SBIN-EQ",
+                "qty": "1",
+                "trantype": "S",
+                "prctyp": "LMT",
+                "ret": "DAY",
+                "token": "3045",
+                "prd": "I",
+                "status": "CANCELLED",
+                "norentm": "10:28:00 03-11-2026",
+                "prc": "900.00"
+              },
+              {
+                "stat": "Ok",
+                "norenordno": "1013",
+                "uid": "FA12345",
+                "actid": "FA12345",
+                "exch": "NFO",
+                "tsym": "NIFTY25NOV26F",
+                "qty": "75",
+                "trantype": "S",
+                "prctyp": "LMT",
+                "ret": "DAY",
+                "token": "35001",
+                "prd": "C",
+                "status": "COMPLETE",
+                "norentm": "10:29:00 03-11-2026",
+                "prc": "24100.00"
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "filled_quantity": 0,
+                "order_status": "open",
+                "orderid": "1001",
+                "pending_quantity": 10,
+                "price": "800.50",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:01 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "average_price": 1499.95,
+                "exchange": "NSE",
+                "filled_quantity": 0,
+                "order_status": "complete",
+                "orderid": "1002",
+                "pending_quantity": 5,
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": "5",
+                "symbol": "INFY",
+                "timestamp": "10:21:11 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "average_price": 0.0,
+                "exchange": "NFO",
+                "filled_quantity": 0,
+                "order_status": "open",
+                "orderid": "1003",
+                "pending_quantity": 75,
+                "price": "24010.00",
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": "75",
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "10:22:00 03-11-2026",
+                "trigger_price": "24000.00"
+              },
+              {
+                "action": "SELL",
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "filled_quantity": 0,
+                "order_status": "rejected",
+                "orderid": "1004",
+                "pending_quantity": 1,
+                "price": "0.00",
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": "1",
+                "symbol": "SBIN",
+                "timestamp": "10:23:00 03-11-2026",
+                "trigger_price": "790.50"
+              },
+              {
+                "action": "BUY",
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "filled_quantity": 0,
+                "order_status": "cancelled",
+                "orderid": "1005",
+                "pending_quantity": 2,
+                "price": "700.00",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "2",
+                "symbol": "SBIN",
+                "timestamp": "10:24:00 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "filled_quantity": 0,
+                "order_status": "open",
+                "orderid": "1006",
+                "pending_quantity": 1,
+                "price": "10.00",
+                "pricetype": "LIMIT",
+                "product": "M",
+                "quantity": "1",
+                "symbol": "UNLISTED-EQ",
+                "timestamp": "10:25:00 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "average_price": 0.0,
+                "exchange": "MCX",
+                "filled_quantity": 0,
+                "order_status": "open",
+                "orderid": "1007",
+                "pending_quantity": 1,
+                "price": "6500.00",
+                "pricetype": "LIMIT",
+                "product": "NRML",
+                "quantity": "1",
+                "symbol": "CRUDEOIL",
+                "timestamp": "10:26:00 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "filled_quantity": 0,
+                "order_status": "open",
+                "orderid": "1008",
+                "pending_quantity": 1,
+                "price": "700.00",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "1",
+                "symbol": "SBIN",
+                "timestamp": "10:27:00 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "filled_quantity": 0,
+                "order_status": "cancelled",
+                "orderid": "1012",
+                "pending_quantity": 1,
+                "price": "900.00",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "1",
+                "symbol": "SBIN",
+                "timestamp": "10:28:00 03-11-2026",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "average_price": 0.0,
+                "exchange": "NFO",
+                "filled_quantity": 0,
+                "order_status": "complete",
+                "orderid": "1013",
+                "pending_quantity": 75,
+                "price": "24100.00",
+                "pricetype": "LIMIT",
+                "product": "C",
+                "quantity": "75",
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "10:29:00 03-11-2026",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 6,
+              "total_completed_orders": 2,
+              "total_open_orders": 5,
+              "total_rejected_orders": 1,
+              "total_sell_orders": 4
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "piconnect.flattrade.in",
+          "path": "/PiConnectAPI/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          },
+          "form": {
+            "jKey": "flattrade-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "piconnect.flattrade.in",
+          "path": "/PiConnectAPI/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          },
+          "form": {
+            "jKey": "flattrade-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_rate_limited_every_time",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /PiConnectAPI/OrderBook": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Invalid Input : Order Recieved 11 in a current second exceeds Limit 10 for user"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "piconnect.flattrade.in",
+          "path": "/PiConnectAPI/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          },
+          "form": {
+            "jKey": "flattrade-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "piconnect.flattrade.in",
+          "path": "/PiConnectAPI/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          },
+          "form": {
+            "jKey": "flattrade-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "piconnect.flattrade.in",
+          "path": "/PiConnectAPI/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          },
+          "form": {
+            "jKey": "flattrade-access-token"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "piconnect.flattrade.in",
+          "path": "/PiConnectAPI/OrderBook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345"
+          },
+          "form": {
+            "jKey": "flattrade-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_rate_limited_is_not_asked_again",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /PiConnectAPI/PlaceOrder": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Invalid Input : Order Recieved 11 in a current second exceeds Limit 10 for user"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "piconnect.flattrade.in",
+          "path": "/PiConnectAPI/PlaceOrder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "json": {
+            "uid": "FA12345",
+            "actid": "FA12345",
+            "exch": "NSE",
+            "tsym": "SBIN-EQ",
+            "qty": "10",
+            "prc": "800.5",
+            "trgprc": "0.0",
+            "dscqty": "0",
+            "prd": "I",
+            "trantype": "B",
+            "prctyp": "LMT",
+            "mkt_protection": "0",
+            "ret": "DAY",
+            "ordersource": "API"
+          },
+          "form": {
+            "jKey": "flattrade-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "tradebook_empty",
       "method": "POST",
       "path": "/api/v1/tradebook",

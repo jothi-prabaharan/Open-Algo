@@ -238,6 +238,7 @@ public sealed class FlattradeHost : ShoonyaBaseHost
     public override string BrokerName => "flattrade";
     public override string FixtureFile => "flattrade.fixtures.json";
     public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "FA12345:::flattrade-api-key", ["ApiSecret"] = "flattrade-secret" };
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["Brokers:RetryBackoffMs:flattrade"] = "0" };
     public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>
     {
         ["POST /PiConnectAPI/PositionBook"] = """{"stat":"Not_Ok","emsg":"no data"}""",
@@ -247,7 +248,16 @@ public sealed class FlattradeHost : ShoonyaBaseHost
 /// <summary>Flattrade against the Python implementation (tools/contract-fixtures/flattrade.fixtures.json).</summary>
 public sealed class FlattradeContractTests(FlattradeHost host, ITestOutputHelper output) : IClassFixture<FlattradeHost>
 {
-    public static readonly Dictionary<string, Deviation> Deviations = ShoonyaContractTests.For("Flattrade");
+    public static readonly Dictionary<string, Deviation> Deviations = Build();
+
+    private static Dictionary<string, Deviation> Build()
+    {
+        var d = ShoonyaContractTests.For("Flattrade");
+        d["placeorder_rate_limited_is_not_asked_again"] = new(
+            "OpenAlgo answers success with no order id when Flattrade turns an order away. EP Trade bot refuses with Flattrade's reason (and, like OpenAlgo, never sends the order twice).",
+            f => Expect(f, 500, Error("Invalid Input : Order Recieved 11 in a current second exceeds Limit 10 for user")));
+        return d;
+    }
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("flattrade.fixtures.json");
 

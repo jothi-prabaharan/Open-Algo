@@ -1,0 +1,178 @@
+[
+ {
+  "name": "H1 first order not top level",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "foreach (var (key, value) in orders[0]) body[key] = value?.DeepClone();\n        body[\"basketlists\"] = new JsonArray(orders.Skip(1).Select(o => (JsonNode?)o).ToArray());\n\n        var reply = await PostAsync(session, \"/GetBasketMargin\", body, cancellationToken) as JsonObject\n            ?? throw new BrokerException($\"{DisplayName} sent a reply EP Trade bot could not read. Try again in a moment.\", 502);\n        if (JsonRead.Str(reply[\"stat\"]) != \"Ok\")\n        {\n            if (SessionLapsed(JsonRead.Str(reply[\"emsg\"]))) throw new BrokerException($\"{DisplayName} says the session has expired. Log in to {DisplayName} again.\", 403);\n            var reason = JsonRead.Str(reply[\"emsg\"]) is { Length: > 0 } e ? e : JsonRead.Str(reply[\"remarks\"])",
+  "new": "foreach (var (key, value) in orders[1 % orders.Count]) body[key] = value?.DeepClone();\n        body[\"basketlists\"] = new JsonArray(orders.Skip(1).Select(o => (JsonNode?)o).ToArray());\n\n        var reply = await PostAsync(session, \"/GetBasketMargin\", body, cancellationToken) as JsonObject\n            ?? throw new BrokerException($\"{DisplayName} sent a reply EP Trade bot could not read. Try again in a moment.\", 502);\n        if (JsonRead.Str(reply[\"stat\"]) != \"Ok\")\n        {\n            if (SessionLapsed(JsonRead.Str(reply[\"emsg\"]))) throw new BrokerException($\"{DisplayName} says the session has expired. Log in to {DisplayName} again.\", 403);\n            var reason = JsonRead.Str(reply[\"emsg\"]) is { Length: > 0 } e ? e : JsonRead.Str(reply[\"remarks\"])",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H2 basket includes first",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "new JsonArray(orders.Skip(1).Select(o => (JsonNode?)o).ToArray());\n\n        var reply = await PostAsync(session, \"/GetBasketMargin\", body, cancellationToken) as JsonObject\n            ?? throw new BrokerException($\"{DisplayName} sent a reply EP Trade bot could not read. Try again in a moment.\", 502);\n        if (JsonRead.Str(reply[\"stat\"]) != \"Ok\")\n        {\n            if (SessionLapsed(JsonRead.Str(reply[\"emsg\"]))) throw new BrokerException($\"{DisplayName} says the session has expired. Log in to {DisplayName} again.\", 403);\n            var reason = JsonRead.Str(reply[\"emsg\"]) is { Length: > 0 } e ? e : JsonRead.Str(reply[\"remarks\"])",
+  "new": "new JsonArray(orders.Skip(0).Select(o => (JsonNode?)o).ToArray());\n\n        var reply = await PostAsync(session, \"/GetBasketMargin\", body, cancellationToken) as JsonObject\n            ?? throw new BrokerException($\"{DisplayName} sent a reply EP Trade bot could not read. Try again in a moment.\", 502);\n        if (JsonRead.Str(reply[\"stat\"]) != \"Ok\")\n        {\n            if (SessionLapsed(JsonRead.Str(reply[\"emsg\"]))) throw new BrokerException($\"{DisplayName} says the session has expired. Log in to {DisplayName} again.\", 403);\n            var reason = JsonRead.Str(reply[\"emsg\"]) is { Length: > 0 } e ? e : JsonRead.Str(reply[\"remarks\"])",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H3 limit price dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (l.PriceType is not (\"MARKET\" or \"SL-M\")) return (type, given);",
+  "new": "if (l.PriceType is not (\"MARKET\" or \"SL-M\")) return (type, \"0\");",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H4 market stays market",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var converted = l.PriceType == \"MARKET\" ? \"LMT\" : \"SL-LMT\";\n        var trigger = Positive(",
+  "new": "var converted = l.PriceType == \"MARKET\" ? \"MKT\" : \"SL-LMT\";\n        var trigger = Positive(",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H5 stop market stays",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var converted = l.PriceType == \"MARKET\" ? \"LMT\" : \"SL-LMT\";\n        var trigger = Positive(",
+  "new": "var converted = l.PriceType == \"MARKET\" ? \"LMT\" : \"SL-MKT\";\n        var trigger = Positive(",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H6 market fallback ignores price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var fallback = l.PriceType == \"MARKET\" ? Positive((double)l.Price) : trigger;",
+  "new": "var fallback = l.PriceType == \"MARKET\" ? 0 : trigger;",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H7 stop fallback ignores trigger",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var fallback = l.PriceType == \"MARKET\" ? Positive((double)l.Price) : trigger;",
+  "new": "var fallback = l.PriceType == \"MARKET\" ? Positive((double)l.Price) : 0;",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H8 stop reference not trigger",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var reference = l.PriceType == \"SL-M\" ? trigger : 0.0;",
+  "new": "var reference = 0.0;",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H9 trigger reference overrides nothing",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (reference == 0) reference = ltp;",
+  "new": "reference = ltp;",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H10 quote tick ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "tick = JsonRead.Truthy(quote[\"ti\"]) ? JsonRead.Float(quote[\"ti\"]) : null;",
+  "new": "tick = null;",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H11 master tick ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (tick is null or 0) tick = l.Instrument.TickSize is { } t and > 0 ? t : null;",
+  "new": "if (tick is null or 0) tick = null;",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H12 no tick still protected",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (reference != 0 && tick is null) return (converted, PyFloat(reference));",
+  "new": "if (reference != 0 && tick is null) return (converted, \"0\");",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H13 protection skipped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var protectedPrice = MarketPriceProtection.ProtectedPrice(reference, l.Action, instrumentType, tick);",
+  "new": "var protectedPrice = reference;",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H14 sell treated as buy",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "MarketPriceProtection.ProtectedPrice(reference, l.Action,",
+  "new": "MarketPriceProtection.ProtectedPrice(reference, \"BUY\",",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H16 refusal dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "throw new BrokerException($\"Could not get a live price for {l.Instrument.Symbol}. Enter a price for this leg, or try again in a moment.\", 400);",
+  "new": "return (converted, \"0\");",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H17 margin after trade ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var used = JsonRead.Str(reply[\"marginusedtrade\"]) is { Length: > 0 } ? reply[\"marginusedtrade\"] : reply[\"marginused\"];",
+  "new": "var used = reply[\"marginused\"];",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H18 total ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "? reply[\"marginusedtrade\"] : reply[\"marginused\"];",
+  "new": "? reply[\"marginusedtrade\"] : reply[\"marginusedtrade\"];",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H19 qty dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"qty\"] = l.Quantity.ToString(CultureInfo.InvariantCulture), [\"prc\"] = price, [\"trgprc\"]",
+  "new": "[\"qty\"] = \"1\", [\"prc\"] = price, [\"trgprc\"]",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H20 trigger dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"trgprc\"] = l.TriggerPrice == 0 ? \"0\" : PyFloat((double)l.TriggerPrice),",
+  "new": "[\"trgprc\"] = \"0\",",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H21 ampersand unescaped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"tsym\"] = l.Instrument.BrokerSymbol.Replace(\"&\", \"%26\", StringComparison.Ordinal),\n                [\"qty\"] = l.Quantity.ToString(CultureInfo.InvariantCulture), [\"prc\"] = price, [\"trgprc\"]",
+  "new": "[\"tsym\"] = l.Instrument.BrokerSymbol,\n                [\"qty\"] = l.Quantity.ToString(CultureInfo.InvariantCulture), [\"prc\"] = price, [\"trgprc\"]",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H22 side swapped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "PyFloat((double)l.TriggerPrice),\n                [\"prd\"] = MapProduct(l.Product), [\"trantype\"] = l.Action.Equals(\"BUY\", StringComparison.OrdinalIgnoreCase) ? \"B\" : \"S\"",
+  "new": "PyFloat((double)l.TriggerPrice),\n                [\"prd\"] = MapProduct(l.Product), [\"trantype\"] = l.Action.Equals(\"BUY\", StringComparison.OrdinalIgnoreCase) ? \"S\" : \"B\"",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H23 expiry not recognised",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (SessionLapsed(JsonRead.Str(reply[\"emsg\"]))) throw new BrokerException($\"{DisplayName} says the session has expired. Log in to {DisplayName} again.\", 403);\n            var reason = JsonRead.Str(reply[\"emsg\"]) is { Length: > 0 } e ? e : JsonRead.Str(reply[\"remarks\"]) is { Length: > 0 } r ? r : \"no reason was given.\";\n            throw new BrokerException($\"{DisplayName} could not work out the margin: {reason}\", 400);\n        }\n\n        var used",
+  "new": "if (Environment.TickCount64 < 0 && SessionLapsed(JsonRead.Str(reply[\"emsg\"]))) throw new BrokerException($\"{DisplayName} says the session has expired. Log in to {DisplayName} again.\", 403);\n            var reason = JsonRead.Str(reply[\"emsg\"]) is { Length: > 0 } e ? e : JsonRead.Str(reply[\"remarks\"]) is { Length: > 0 } r ? r : \"no reason was given.\";\n            throw new BrokerException($\"{DisplayName} could not work out the margin: {reason}\", 400);\n        }\n\n        var used",
+  "filter": "FullyQualifiedName~MarginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

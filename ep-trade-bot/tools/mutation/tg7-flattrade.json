@@ -1,0 +1,210 @@
+[
+ {
+  "name": "F1 books as form",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var type = book && endpoint != \"/Holdings\" ? \"application/json\" : \"application/x-www-form-urlencoded\";",
+  "new": "var type = \"application/x-www-form-urlencoded\";",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F2 holdings as json",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var type = book && endpoint != \"/Holdings\" ? \"application/json\"",
+  "new": "var type = book ? \"application/json\"",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F3 token dropped",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "+ \"&jKey=\" + session.AuthToken, System.Text.Encoding.UTF8, type)",
+  "new": "+ \"&jKey=\", System.Text.Encoding.UTF8, type)",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F4 quote without account",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"token\"] = token, [\"actid\"] = UserIdOf(session) };",
+  "new": "[\"token\"] = token };",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F5 quote volume as text",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "data[\"volume\"] = (long)Math.Truncate(JsonRead.Float(q[\"v\"]));",
+  "new": "data[\"volume\"] = 0;",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F6 average price used",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (JsonRead.Float(o[\"avgprc\"]) > 0) price",
+  "new": "if (Environment.TickCount64 < 0 && JsonRead.Float(o[\"avgprc\"]) > 0) price",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F7 reported price used",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "price = o[\"rprc\"]!.DeepClone();",
+  "new": "price = JsonRead.Get(o, \"prc\", 0.0);",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F8 reported price needs positive",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "JsonRead.Truthy(o[\"rprc\"]) && JsonRead.Float(o[\"rprc\"]) > 0)",
+  "new": "JsonRead.Truthy(o[\"rprc\"]))",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F9 pending quantity",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"pending_quantity\"] = Math.Max(quantity - filled, 0)",
+  "new": "[\"pending_quantity\"] = quantity - filled",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F10 filled quantity",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"filled_quantity\"] = filled,",
+  "new": "[\"filled_quantity\"] = 0,",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F11 order average",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"average_price\"] = JsonRead.Float(o[\"avgprc\"]),\n            });\n        }\n\n        return new BrokerBook(orders",
+  "new": "[\"average_price\"] = 0.0,\n            });\n        }\n\n        return new BrokerBook(orders",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F13 trade average rounding",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var average = BookFormatting.Round2(JsonRead.Float(t[\"avgprc\"]));\n            var quantity = JsonRead.Int(t[\"qty\"]);",
+  "new": "var average = JsonRead.Float(t[\"avgprc\"]);\n            var quantity = JsonRead.Int(t[\"qty\"]);",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F14 position fallback pnl",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "unrealised = (JsonRead.Float(p[\"lp\"]) - JsonRead.Float(p[\"netavgprc\"])) * JsonRead.Float(p[\"netqty\"]) * factor;",
+  "new": "unrealised = 0;",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F15 price factor",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var factor = p.ContainsKey(\"prcftr\") ? JsonRead.Float(p[\"prcftr\"]) : 1;",
+  "new": "var factor = 1.0;",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F16 position pnl sum",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"pnl\"] = BookFormatting.Round2(realised + unrealised),",
+  "new": "[\"pnl\"] = BookFormatting.Round2(unrealised),",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F17 holdings average",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"avg_price\"] = JsonRead.Float(h[\"upldprc\"]), [\"pnl\"] = 0.0",
+  "new": "[\"avg_price\"] = 0.0, [\"pnl\"] = 0.0",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F18 holdings quantity",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "JsonRead.Int(h[\"holdqty\"]) + Math.Max(JsonRead.Int(h[\"npoadqty\"]), JsonRead.Int(h[\"dpqty\"]));\n            foreach (var entry in entries)\n            {\n                var brokerSymbol = JsonRead.Str(entry[\"tsym\"]) ?? \"\";\n                holdings.Add(new JsonObject\n                {\n                    [\"symbol\"] = await SymbolByBrokerSymbolAsync(brokerSymbol, \"NSE\", cancellationToken) ?? brokerSymbol, [\"exchange\"] = JsonRead.Str(entry[\"exch\"]),\n                    [\"quantity\"] = quantity, [\"product\"] = JsonRead.Get(entry, \"product\", \"CNC\"), [\"avg_price\"]",
+  "new": "JsonRead.Int(h[\"holdqty\"]);\n            foreach (var entry in entries)\n            {\n                var brokerSymbol = JsonRead.Str(entry[\"tsym\"]) ?? \"\";\n                holdings.Add(new JsonObject\n                {\n                    [\"symbol\"] = await SymbolByBrokerSymbolAsync(brokerSymbol, \"NSE\", cancellationToken) ?? brokerSymbol, [\"exchange\"] = JsonRead.Str(entry[\"exch\"]),\n                    [\"quantity\"] = quantity, [\"product\"] = JsonRead.Get(entry, \"product\", \"CNC\"), [\"avg_price\"]",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F19 funds collateral fallback",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (collateral == 0) collateral",
+  "new": "if (Environment.TickCount64 < 0 && collateral == 0) collateral",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F20 funds m2m",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"m2munrealized\"] = BookFormatting.Fixed2(unrealised), [\"m2mrealized\"] = BookFormatting.Fixed2(realised), [\"utiliseddebits\"] = BookFormatting.Fixed2(used),\n        };\n    }\n}",
+  "new": "[\"m2munrealized\"] = BookFormatting.Fixed2(realised), [\"m2mrealized\"] = BookFormatting.Fixed2(unrealised), [\"utiliseddebits\"] = BookFormatting.Fixed2(used),\n        };\n    }\n}",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F21 depth orders",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"orders\"] = JsonRead.Int(q[$\"bo{i}\"]) });",
+  "new": "[\"orders\"] = 0 });",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F22 depth open interest",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"volume\"] = (long)Math.Truncate(JsonRead.Float(q[\"v\"])), [\"oi\"] = JsonRead.Int(q[\"oi\"]),",
+  "new": "[\"volume\"] = (long)Math.Truncate(JsonRead.Float(q[\"v\"])), [\"oi\"] = 0,",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F23 retry off",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (!overLimit || IsOrderCall(endpoint) || attempt >= 3) return reply;",
+  "new": "if (Environment.TickCount64 >= 0 || !overLimit || IsOrderCall(endpoint) || attempt >= 3) return reply;",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F24 orders retried",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (!overLimit || IsOrderCall(endpoint) || attempt >= 3) return reply;",
+  "new": "if (!overLimit || attempt >= 3) return reply;",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F25 login hash order",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "appKey + code + secret.Trim()",
+  "new": "appKey + secret.Trim() + code",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F26 login app key",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"api_key\"] = appKey, [\"request_code\"]",
+  "new": "[\"api_key\"] = \"x\", [\"request_code\"]",
+  "filter": "FullyQualifiedName~FlattradeContract|FullyQualifiedName~FlattradeDataContract|FullyQualifiedName~LoginFlattrade",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F27 login url",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "$\"https://auth.flattrade.in/?app_key={Uri.EscapeDataString(appKey)}\"",
+  "new": "$\"https://auth.flattrade.in/?app={Uri.EscapeDataString(appKey)}\"",
+  "filter": "FullyQualifiedName~FlattradeLoginTests",
+  "project": "EPTradeBot.IntegrationTests"
+ }
+]
