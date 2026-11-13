@@ -9,9 +9,9 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Upstox | yes | yes | yes | yes | yes | yes | yes | yes |
 | Fyers | yes | yes | yes | yes | yes | yes | yes | yes |
 | Delta Exchange | yes | yes | yes | yes | yes | no | yes | yes |
-| Wisdom Capital (XTS) | yes | yes | no | no | no | no | yes | no |
-| 5paisa XTS | yes | yes | no | no | no | no | yes | no |
-| IIFL (XTS) | yes | yes | no | no | no | no | yes | no |
+| Wisdom Capital (XTS) | yes | yes | yes | no | no | no | yes | no |
+| 5paisa XTS | yes | yes | yes | no | no | no | yes | no |
+| IIFL (XTS) | yes | yes | yes | no | no | no | yes | no |
 
 The other 27 brokers in the task list are not started. The four other XTS brokers (ibulls, jainamxts, compositedge, rmoney) are next: they share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -140,3 +140,11 @@ The other 27 brokers in the task list are not started. The four other XTS broker
 - Extra deviations for these two: OpenAlgo fails with an internal error on a trade that has no price and on a position reply without a result; EP Trade bot answers as it does for a well-formed reply. Order status reads the average price from the trade book, so it differs for the same reason.
 - Not mutation-tested again: the mapping code is the shared Wisdom base, whose 29 mutants are all caught; what is specific to these two (display name, address) is held by the contract paths and hosts.
 - iBulls is not done: its Python plugin turns a market order into a limit order priced from a quote (bid plus 0.1 percent to buy, ask minus 0.1 percent to sell), so it needs the XTS market-data service ported first.
+
+## XTS quotes, depth and several quotes
+
+- Ported from `broker/wisdom/api/data.py` into the shared XTS base: a quote and its open interest are two calls to `/apimarketdata/instruments/quotes` (message codes 1502 and 1510) with the feed token; several quotes go in batches of 50. 17 recorded cases for Wisdom Capital (`wisdom_data.fixtures.json`) and the same set recorded against 5paisa XTS and IIFL.
+- Deviations: a refused or empty quote is an error naming the broker and its reason (OpenAlgo says "Failed to fetch market data"); a refused depth is an error (OpenAlgo answers success with a depth of zeros, which reads as an empty market).
+- Not modelled: OpenAlgo refreshes an expired feed token itself (a market-data sign-in in the middle of a quote). EP Trade bot's plugin cannot store a new token, so an expired market-data session shows as the broker's refusal until the next sign-in.
+- Mutation: `tools/mutation/tg7-xts-data.json`, 11 mutants, all caught (three equivalent ones removed or simplified).
+- Still not ported for XTS: history, margin, the feed, and iBulls (needs this quote to price market orders), Jainam, CompositEdge and RMoney (different sign-in).

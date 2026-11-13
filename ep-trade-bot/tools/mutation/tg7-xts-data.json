@@ -1,0 +1,88 @@
+[
+ {
+  "name": "Q1 feed token ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "string.IsNullOrEmpty(session.FeedToken) ? session.AuthToken : session.FeedToken",
+  "new": "session.AuthToken",
+  "filter": "FullyQualifiedName~WisdomDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q2 index segment wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"NSE_INDEX\"] = 1,",
+  "new": "[\"NSE_INDEX\"] = 2,",
+  "filter": "FullyQualifiedName~WisdomDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q3 mcx segment wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"MCX\"] = 51",
+  "new": "[\"MCX\"] = 50",
+  "filter": "FullyQualifiedName~WisdomDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q4 bse segment wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"BSE\"] = 11,",
+  "new": "[\"BSE\"] = 12,",
+  "filter": "FullyQualifiedName~WisdomDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q5 oi code wrong",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "1510, cancellationToken);",
+  "new": "1502, cancellationToken);",
+  "filter": "FullyQualifiedName~WisdomDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q8 depth six levels",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "(side as JsonArray ?? []).Take(5)",
+  "new": "(side as JsonArray ?? []).Take(6)",
+  "filter": "FullyQualifiedName~WisdomDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q9 ltq key",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "Get(t, \"LastTradedQunatity\", 0)",
+  "new": "Get(t, \"LastTradedQuantity\", 0)",
+  "filter": "FullyQualifiedName~WisdomDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q10 prev close from open",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "[\"prev_close\"] = Get(t, \"Close\", 0), [\"volume\"] = Get(t, \"TotalTradedQuantity\", 0), [\"oi\"] = oi,\n        };\n    }",
+  "new": "[\"prev_close\"] = Get(t, \"Open\", 0), [\"volume\"] = Get(t, \"TotalTradedQuantity\", 0), [\"oi\"] = oi,\n        };\n    }",
+  "filter": "FullyQualifiedName~WisdomDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "Q12 unmatched answer kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (match.Record is null) continue;",
+  "new": "if (Environment.TickCount64 < 0 && match.Record is null) continue;",
+  "filter": "FullyQualifiedName~WisdomDataContract",
+  "project": "EPTradeBot.Contract.Tests",
+  "also": [
+   {
+    "old": "[\"symbol\"] = match.Record.Symbol, [\"exchange\"] = match.Record.Exchange, [\"data\"]",
+    "new": "[\"symbol\"] = match.Record?.Symbol, [\"exchange\"] = match.Record?.Exchange, [\"data\"]"
+   }
+  ]
+ },
+ {
+  "name": "Q13 refusal ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Xts/XtsPluginBase.cs",
+  "old": "if (refusal is not null) throw new BrokerException($\"{DisplayName} could not send the quotes: {refusal}\");",
+  "new": "if (false) { }",
+  "filter": "FullyQualifiedName~WisdomDataContract",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

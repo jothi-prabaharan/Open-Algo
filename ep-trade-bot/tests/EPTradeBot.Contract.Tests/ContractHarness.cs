@@ -76,6 +76,9 @@ public abstract class BrokerContractHost : IAsyncLifetime
     /// <summary>The broker takes a number and its text form alike, and OpenAlgo itself sends both, so request bodies compare by value.</summary>
     public virtual bool NumbersMayBeText => false;
 
+    /// <summary>The market-data token the recorder handed the plugin ("feed-token"), for a broker whose quotes use one.</summary>
+    public virtual string? RecordedFeedToken => null;
+
     public static JsonObject Load(string file) =>
         (JsonObject)JsonNode.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", file)))!;
 
@@ -97,7 +100,7 @@ public abstract class BrokerContractHost : IAsyncLifetime
         var clientId = Fixtures["client_id"]?.GetValue<string>() ?? "contract";
         var accountId = await Host.CreateAccountAsync(AccountType.LIVE, "Contract", maxLoss: 1_000_000_000m, maxQty: 100_000, maxValue: 100_000_000_000m,
             broker: BrokerName, clientId: clientId);
-        (await Host.Admin.PutAsJsonAsync($"/api/v1/accounts/{accountId}/broker-session", new { auth_token = Fixtures["auth_token"]!.GetValue<string>() })).EnsureSuccessStatusCode();
+        (await Host.Admin.PutAsJsonAsync($"/api/v1/accounts/{accountId}/broker-session", new { auth_token = Fixtures["auth_token"]!.GetValue<string>(), feed_token = RecordedFeedToken })).EnsureSuccessStatusCode();
         ApiKey = (await Host.Get<ApiKeyService>().IssueAsync(accountId, "contract tests")).Key;
         AccountId = accountId;
         if (WithSandboxAccount)
@@ -189,7 +192,7 @@ public static class ContractRunner
         var recordedToken = host.Fixtures["auth_token"]!.GetValue<string>();
         if (admin)
         {
-            (await host.Host!.Admin.PutAsJsonAsync($"/api/v1/accounts/{host.AccountId}/broker-session", new { auth_token = recordedToken })).EnsureSuccessStatusCode();
+            (await host.Host!.Admin.PutAsJsonAsync($"/api/v1/accounts/{host.AccountId}/broker-session", new { auth_token = recordedToken, feed_token = host.RecordedFeedToken })).EnsureSuccessStatusCode();
             if (request["state"] is JsonValue issued && issued.GetValue<string>() == "<issued>")
             {
                 using var started = await host.Host.Admin.PostAsync($"/api/v1/accounts/{host.AccountId}/broker-login/start", null);

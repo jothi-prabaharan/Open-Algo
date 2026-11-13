@@ -15,6 +15,8 @@ public abstract class XtsHost : BrokerContractHost
 
     public override bool NumbersMayBeText => true;
 
+    public override string? RecordedFeedToken => "feed-token";
+
     public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>
     {
         ["GET /interactive/portfolio/positions"] = """{"type":"success","result":{"positionList":[]}}""",
@@ -154,6 +156,90 @@ public sealed class IiflContractTests(IiflHost host, ITestOutputHelper output) :
     public static readonly Dictionary<string, Deviation> Deviations = XtsDeviations.WithCrashes("IIFL");
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("iifl.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class WisdomDataHost : XtsHost
+{
+    public override string BrokerName => "wisdom";
+    public override string FixtureFile => "wisdom_data.fixtures.json";
+}
+
+/// <summary>Wisdom Capital market data against the Python implementation (tools/contract-fixtures/wisdom_data.fixtures.json).</summary>
+public sealed class WisdomDataContractTests(WisdomDataHost host, ITestOutputHelper output) : IClassFixture<WisdomDataHost>
+{
+    private const string Words = "OpenAlgo answers a refused or empty quote with \"Failed to fetch market data\"; EP Trade bot names the broker and passes its reason on.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["quotes_market_data_refused"] = new(Words, f => Expect(f, 500, Error("Wisdom Capital could not send the quote: Market data not enabled"))),
+        ["quotes_empty_list"] = new(Words, f => Expect(f, 500, Error("Wisdom Capital has no quote for SBIN right now."))),
+        ["multiquotes_refused"] = new(Words, f => Expect(f, 500, Error("Wisdom Capital could not send the quotes: Market data not enabled"))),
+        ["depth_market_data_refused"] = new(
+            "OpenAlgo answers success with a depth of zeros when the broker refuses, which reads as a market with no orders. EP Trade bot reports the refusal.",
+            f => Expect(f, 500, Error("Wisdom Capital could not send the quote: Market data not enabled"))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("wisdom_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class FivepaisaXtsDataHost : XtsHost
+{
+    public override string BrokerName => "fivepaisaxts";
+    public override string FixtureFile => "fivepaisaxts_data.fixtures.json";
+}
+
+/// <summary>5paisa XTS market data against the Python implementation (tools/contract-fixtures/fivepaisaxts_data.fixtures.json).</summary>
+public sealed class FivepaisaXtsDataContractTests(FivepaisaXtsDataHost host, ITestOutputHelper output) : IClassFixture<FivepaisaXtsDataHost>
+{
+    private const string Words = "OpenAlgo answers a refused or empty quote with \"Failed to fetch market data\"; EP Trade bot names the broker and passes its reason on.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["quotes_market_data_refused"] = new(Words, f => Expect(f, 500, Error("5paisa XTS could not send the quote: Market data not enabled"))),
+        ["quotes_empty_list"] = new(Words, f => Expect(f, 500, Error("5paisa XTS has no quote for SBIN right now."))),
+        ["multiquotes_refused"] = new(Words, f => Expect(f, 500, Error("5paisa XTS could not send the quotes: Market data not enabled"))),
+        ["depth_market_data_refused"] = new(
+            "OpenAlgo answers success with a depth of zeros when the broker refuses, which reads as a market with no orders. EP Trade bot reports the refusal.",
+            f => Expect(f, 500, Error("5paisa XTS could not send the quote: Market data not enabled"))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("fivepaisaxts_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class IiflDataHost : XtsHost
+{
+    public override string BrokerName => "iifl";
+    public override string FixtureFile => "iifl_data.fixtures.json";
+}
+
+/// <summary>IIFL market data against the Python implementation (tools/contract-fixtures/iifl_data.fixtures.json).</summary>
+public sealed class IiflDataContractTests(IiflDataHost host, ITestOutputHelper output) : IClassFixture<IiflDataHost>
+{
+    private const string Words = "OpenAlgo answers a refused or empty quote with \"Failed to fetch market data\"; EP Trade bot names the broker and passes its reason on.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["quotes_market_data_refused"] = new(Words, f => Expect(f, 500, Error("IIFL could not send the quote: Market data not enabled"))),
+        ["quotes_empty_list"] = new(Words, f => Expect(f, 500, Error("IIFL has no quote for SBIN right now."))),
+        ["multiquotes_refused"] = new(Words, f => Expect(f, 500, Error("IIFL could not send the quotes: Market data not enabled"))),
+        ["depth_market_data_refused"] = new(
+            "OpenAlgo answers success with a depth of zeros when the broker refuses, which reads as a market with no orders. EP Trade bot reports the refusal.",
+            f => Expect(f, 500, Error("IIFL could not send the quote: Market data not enabled"))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("iifl_data.fixtures.json");
 
     [PostgresTheory]
     [MemberData(nameof(Names))]

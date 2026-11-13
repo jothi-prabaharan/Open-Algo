@@ -10,10 +10,10 @@ namespace EPTradeBot.Infrastructure.Brokers.Xts;
 /// <summary>
 /// The XTS family (Symphony Fintech's trading front end API), which Wisdom Capital, iBulls, Jainam, 5paisa XTS, IIFL, CompositEdge and RMoney share.
 /// Port of broker/wisdom: api/order_api.py, api/funds.py and mapping/order_data.py. Held to tools/contract-fixtures/wisdom.fixtures.json.
-/// Not ported yet, and refused rather than guessed: quotes, depth and history (a separate market-data service), margin, and the feed.
+/// Quotes, depth and several quotes (api/data.py) come from the market-data service. Not ported yet, and refused rather than guessed: history, margin, and the feed.
 /// </summary>
 public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger logger)
-    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerLogin
+    : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerLogin, IBrokerMultiQuotes
 {
     public abstract string Name { get; }
     public abstract string DisplayName { get; }
@@ -21,7 +21,7 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
     /// <summary>The address of the broker's XTS server, without the /interactive path.</summary>
     protected abstract string DefaultBaseUrl { get; }
 
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret", "ApiKeyMarket", "ApiSecretMarket"];
 
     private static readonly Dictionary<string, string> Segments = new()
@@ -249,6 +249,122 @@ public abstract partial class XtsPluginBase(IHttpClientFactory http, BrokerSessi
             ["availablecash"] = Field("netMarginAvailable"), ["collateral"] = Field("collateral"), ["m2munrealized"] = Field("UnrealizedMTM"),
             ["m2mrealized"] = Field("RealizedMTM"), ["utiliseddebits"] = Field("marginUtilized"),
         };
+    }
+
+
+    // ---- market data -----------------------------------------------------------------------------------------
+
+    private static readonly Dictionary<string, int> DataSegments = new()
+    {
+        ["NSE"] = 1, ["NSE_INDEX"] = 1, ["NFO"] = 2, ["CDS"] = 3, ["BSE"] = 11, ["BSE_INDEX"] = 11, ["BFO"] = 12, ["MCX"] = 51,
+    };
+
+    /// <summary>POST /apimarketdata/instruments/quotes with the feed token. The quotes of the answer, or the reason the broker gave.</summary>
+    private async Task<(List<JsonObject> Quotes, string? Refusal)> QuotesAsync(BrokerSession session, JsonArray instruments, int code, CancellationToken cancellationToken)
+    {
+        var body = new JsonObject { ["instruments"] = instruments, ["xtsMessageCode"] = code, ["publishFormat"] = "JSON" };
+        using var request = new HttpRequestMessage(HttpMethod.Post, sessions.BaseUrl(Name, DefaultBaseUrl) + "/apimarketdata/instruments/quotes");
+        request.Headers.TryAddWithoutValidation("authorization", string.IsNullOrEmpty(session.FeedToken) ? session.AuthToken : session.FeedToken);
+        request.Content = new StringContent(body.ToJsonString(), Encoding.UTF8, "application/json");
+        using var response = await SendAsync(request, cancellationToken);
+        var reply = await ReadAsync(response, cancellationToken) as JsonObject;
+        if (Str(reply?["type"]) != "success") return ([], Str(reply?["description"]) is { Length: > 0 } d ? d : "no reason was given.");
+        var quotes = new List<JsonObject>();
+        foreach (var raw in ((reply!["result"] as JsonObject)?["listQuotes"] as JsonArray) ?? [])
+        {
+            var node = raw is JsonValue v && v.TryGetValue<string>(out var text) && text.Length > 0 ? JsonNode.Parse(text) : raw;
+            if (node is JsonObject q) quotes.Add(q);
+        }
+
+        return (quotes, null);
+    }
+
+    private static JsonArray Instrument(SymbolRecord r, int segment) => new(new JsonObject { ["exchangeSegment"] = segment, ["exchangeInstrumentID"] = r.Token });
+
+    private async Task<(JsonObject Market, double Oi)> MarketAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken)
+    {
+        var record = await symbols.FindAsync(Name, symbol, exchange, cancellationToken)
+            ?? throw new BrokerException($"{symbol} on {exchange} is not in the {DisplayName} master contract. Check the symbol, or download the master contract again.", 400);
+        if (!DataSegments.TryGetValue(exchange, out var segment)) throw new BrokerException($"{DisplayName} has no market data for {exchange}.", 400);
+        var (quotes, refusal) = await QuotesAsync(session, Instrument(record, segment), 1502, cancellationToken);
+        if (refusal is not null) throw new BrokerException($"{DisplayName} could not send the quote: {refusal}");
+        if (quotes.Count == 0) throw new BrokerException($"{DisplayName} has no quote for {symbol} right now.");
+        // Open interest is a second call that may fail without spoiling the quote.
+        double oi = 0;
+        try
+        {
+            var (interest, _) = await QuotesAsync(session, Instrument(record, segment), 1510, cancellationToken);
+            if (interest.Count > 0) oi = Float(interest[0]["OpenInterest"]);
+        }
+        catch (BrokerException)
+        {
+        }
+
+        return (quotes[0], oi);
+    }
+
+    private static JsonObject QuoteFrom(JsonObject market, double oi)
+    {
+        var t = market["Touchline"] as JsonObject;
+        return new JsonObject
+        {
+            ["ask"] = Get(t?["AskInfo"] as JsonObject, "Price", 0), ["bid"] = Get(t?["BidInfo"] as JsonObject, "Price", 0),
+            ["high"] = Get(t, "High", 0), ["low"] = Get(t, "Low", 0), ["ltp"] = Get(t, "LastTradedPrice", 0), ["open"] = Get(t, "Open", 0),
+            ["prev_close"] = Get(t, "Close", 0), ["volume"] = Get(t, "TotalTradedQuantity", 0), ["oi"] = oi,
+        };
+    }
+
+    public async Task<JsonObject> GetQuoteAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken)
+    {
+        var (market, oi) = await MarketAsync(session, symbol, exchange, cancellationToken);
+        return QuoteFrom(market, oi);
+    }
+
+    public async Task<JsonObject> GetDepthAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken)
+    {
+        var (market, oi) = await MarketAsync(session, symbol, exchange, cancellationToken);
+        var t = market["Touchline"] as JsonObject;
+        static JsonArray Levels(JsonNode? side) => new((side as JsonArray ?? []).Take(5).Select(l => (JsonNode?)new JsonObject
+        {
+            ["price"] = Get(l as JsonObject, "Price", 0), ["quantity"] = Get(l as JsonObject, "Size", 0),
+        }).ToArray());
+        return new JsonObject
+        {
+            ["bids"] = Levels(market["Bids"]), ["asks"] = Levels(market["Asks"]), ["high"] = Get(t, "High", 0), ["low"] = Get(t, "Low", 0),
+            ["ltp"] = Get(t, "LastTradedPrice", 0), ["ltq"] = Get(t, "LastTradedQunatity", 0), ["open"] = Get(t, "Open", 0),
+            ["prev_close"] = Get(t, "Close", 0), ["volume"] = Get(t, "TotalTradedQuantity", 0), ["oi"] = oi,
+            ["totalbuyqty"] = Get(t, "TotalBuyQuantity", 0), ["totalsellqty"] = Get(t, "TotalSellQuantity", 0),
+        };
+    }
+
+    public async Task<JsonArray> GetMultiQuotesAsync(BrokerSession session, IReadOnlyList<SymbolRecord> instruments, CancellationToken cancellationToken)
+    {
+        const int batch = 50;
+        var results = new JsonArray();
+        var skipped = new JsonArray();
+        var wanted = new List<(SymbolRecord Record, int Segment)>();
+        foreach (var r in instruments)
+        {
+            if (DataSegments.TryGetValue(r.Exchange, out var segment)) wanted.Add((r, segment));
+            else skipped.Add(new JsonObject { ["symbol"] = r.Symbol, ["exchange"] = r.Exchange, ["error"] = $"{DisplayName} has no market data for {r.Exchange}." });
+        }
+
+        for (var i = 0; i < wanted.Count; i += batch)
+        {
+            var chunk = wanted.Skip(i).Take(batch).ToList();
+            var (quotes, refusal) = await QuotesAsync(session, new JsonArray(chunk.Select(c => Instrument(c.Record, c.Segment)[0]!.DeepClone()).ToArray()), 1502, cancellationToken);
+            if (refusal is not null) throw new BrokerException($"{DisplayName} could not send the quotes: {refusal}");
+            foreach (var q in quotes)
+            {
+                var key = $"{Str(q["ExchangeSegment"])}_{Str(q["ExchangeInstrumentID"])}";
+                var match = chunk.FirstOrDefault(c => $"{c.Segment}_{c.Record.Token}" == key);
+                if (match.Record is null) continue;
+                results.Add(new JsonObject { ["symbol"] = match.Record.Symbol, ["exchange"] = match.Record.Exchange, ["data"] = QuoteFrom(q, 0) });
+            }
+        }
+
+        foreach (var node in results) skipped.Add(node!.DeepClone());
+        return skipped;
     }
 
     // ---- plumbing --------------------------------------------------------------------------------------------
