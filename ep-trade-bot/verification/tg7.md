@@ -18,7 +18,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | RMoney (XTS) | yes | yes | yes | yes | yes | no | yes | no |
 | Shoonya | yes | yes | yes | yes | yes | no | yes | no |
 | Zebu | yes | yes | yes | yes | n/a (no calculator) | no | yes | no |
-| Flattrade | yes | yes | yes | no | yes | no | yes | no |
+| Flattrade | yes | yes | yes | yes | yes | no | yes | no |
 
 The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -247,4 +247,5 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Same deviations as Shoonya (refusals carry the broker's reason; an empty book is an empty book; a position whose symbol is not in the master contract is named as still open); and, as for Zebu, a quote for another instrument is refused and asked for again where OpenAlgo takes it.
 - Margin (27 recorded cases, `margin_flattrade.fixtures.json`): a basket to GetBasketMargin; a market leg is priced off the last price and a stop-market leg off its trigger (last price only when it has none), moved by the protection slab and rounded to the quote's tick, else the master contract's; with no tick the reference goes unprotected; a leg that cannot be priced refuses the whole basket with the trader-worded message. The total is the margin after the trade, else the total margin. A refusal is a success status in OpenAlgo and an error status here (recorded deviation).
 - Mutation sets: 26 mutants on orders, books and funds and 22 on margin, all caught (one margin mutant, protection returning a non-positive price, is dropped as unreachable: the slab never yields zero).
-- Not yet ported for Flattrade: history and the feed.
+- History (31 recorded cases, `history_flattrade.fixtures.json`): one TPSeries call for intraday bars and one EODChartData call for daily ones; the 09:14 pre-open bar on cash and F&O is left out (commodities keep theirs), bars missing a price are skipped, negative intraday volume is zeroed, a daily bar whose range leaves out its open or close is widened, and today's bar is built from a quote when the daily range includes today and the chart has none. Differences, recorded: OpenAlgo stamps today's bar 5 hours 30 minutes late and fails the whole request over one unreadable row or a chart it cannot reach; EP Trade bot stamps midnight India time, skips the row, builds today's bar from the quote, keeps one bar per timestamp and words errors for the trader (a lapsed session says to log in again). Mutation set: 29 mutants, all caught.
+- Not yet ported for Flattrade: the feed.

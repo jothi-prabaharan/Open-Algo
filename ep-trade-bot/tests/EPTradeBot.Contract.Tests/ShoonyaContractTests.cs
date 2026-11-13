@@ -299,3 +299,54 @@ public sealed class FlattradeDataContractTests(FlattradeDataHost host, ITestOutp
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class FlattradeHistoryHost : ShoonyaBaseHost
+{
+    public override string BrokerName => "flattrade";
+    public override string FixtureFile => "history_flattrade.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "FA12345:::flattrade-api-key", ["ApiSecret"] = "flattrade-secret" };
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["OpenAlgoApi:HistorySpacingMs"] = "0", ["Brokers:RetryBackoffMs:flattrade"] = "0" };
+}
+
+/// <summary>Flattrade history (tools/contract-fixtures/history_flattrade.fixtures.json), run with the clock stopped at the recording.</summary>
+public sealed class FlattradeHistoryContractTests(FlattradeHistoryHost host, ITestOutputHelper output) : IClassFixture<FlattradeHistoryHost>
+{
+    private const string Chart = "OpenAlgo's Flattrade plugin fails with an internal error when the chart answers with an error or with something that is not a list of bars. EP Trade bot says Flattrade did not send the candles.";
+    private const string Midnight = "OpenAlgo stamps today's candle 5 hours 30 minutes after midnight India time (it adds the offset to a time already in India time), so the bar lands on the wrong day boundary. EP Trade bot stamps it at midnight India time, as the chart's own daily bars are.";
+    private const long TodayBar = 1794508200;
+
+    private static Deviation Fails(string reason, string message, int status = 500) => new(reason, f => Expect(f, status, Error(message)));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_intraday_answers_with_an_error"] = Fails(Chart, "Flattrade did not send the candles: Error Occurred : 5 \"no data\""),
+        ["history_intraday_answers_with_a_bare_ok"] = Fails(Chart, "Flattrade did not send the candles: no reason was given."),
+        ["history_daily_chart_answers_with_an_error"] = Fails(Chart, "Flattrade did not send the candles: Error Occurred : 5 \"no data\""),
+        ["history_daily_chart_answers_with_an_error_today_in_range"] = Fails(Chart, "Flattrade did not send the candles: Error Occurred : 5 \"no data\""),
+        ["history_daily_chart_fails_and_today_is_out_of_range"] = Fails(Chart, "Flattrade did not send the candles. Try again in a moment."),
+        ["history_session_expired"] = Fails("OpenAlgo reports the expired session as an internal error. EP Trade bot tells the trader to log in to Flattrade again.", "Flattrade says the session has expired. Log in to Flattrade again.", 403),
+        ["history_interval_flattrade_lacks"] = Fails(
+            "OpenAlgo answers 500 with \"Unsupported interval '4h'\". EP Trade bot answers 400 and names what Flattrade offers.",
+            "Flattrade does not offer 4h candles. Choose one of: 1m, 3m, 5m, 10m, 15m, 30m, 1h, 2h, D.", 400),
+        ["history_daily_with_todays_candle_from_a_quote"] = new(Midnight, f => f["expected"]!["body"]!["data"]![2]!["timestamp"] = TodayBar),
+        ["history_daily_chart_fails_so_the_quote_is_all_there_is"] = new(
+            "OpenAlgo fails with an internal error when the daily chart cannot be reached, even though a quote is there to build today's bar from. EP Trade bot still builds it. " + Midnight,
+            f => Expect(f, 200, new JsonObject
+            {
+                ["status"] = "success",
+                ["data"] = new JsonArray(new JsonObject { ["timestamp"] = TodayBar, ["open"] = 802.45, ["high"] = 809.45, ["low"] = 800.45, ["close"] = 805.45, ["volume"] = 1234567.0, ["oi"] = 0.0 }),
+            })),
+        ["history_a_row_that_is_not_json_text"] = new(
+            "OpenAlgo fails the whole request when one row is text that is not a bar. EP Trade bot leaves that row out and sends the rest.",
+            f => Expect(f, 200, new JsonObject { ["status"] = "success", ["data"] = new JsonArray(new JsonObject { ["timestamp"] = 1793591100, ["open"] = 800.0, ["high"] = 802.5, ["low"] = 799.0, ["close"] = 801.25, ["volume"] = 120000.0, ["oi"] = 0.0 }) })),
+        ["history_duplicate_timestamps_are_kept"] = new(
+            "OpenAlgo passes two bars with one timestamp on, and a chart client rejects a series that repeats one. EP Trade bot keeps one bar per timestamp (the later).",
+            f => f["expected"]!["body"]!["data"]!.AsArray().RemoveAt(0)),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_flattrade.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}

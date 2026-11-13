@@ -884,15 +884,15 @@ public sealed class ZebuPlugin(IHttpClientFactory http, BrokerSessionFactory ses
 /// Its books carry more than the others: filled and pending quantity and the average price on an order, the realised and unrealised profit on a position.
 /// </summary>
 [BrokerPlugin]
-public sealed class FlattradePlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, ILogger<FlattradePlugin> logger)
-    : NorenPluginBase(http, sessions, symbols, logger), IBrokerMargin
+public sealed class FlattradePlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<FlattradePlugin> logger)
+    : NorenPluginBase(http, sessions, symbols, logger), IBrokerMargin, IBrokerHistory
 {
     public override string Name => "flattrade";
     public override string DisplayName => "Flattrade";
     protected override string Host => "https://piconnect.flattrade.in";
     protected override string Api => "/PiConnectAPI";
 
-    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.Margin;
+    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.Margin | BrokerCapability.History;
 
     // ---- margin ----------------------------------------------------------------------------------------------
 
@@ -966,6 +966,132 @@ public sealed class FlattradePlugin(IHttpClientFactory http, BrokerSessionFactor
 
         if (fallback != 0) return (converted, PyFloat(fallback));
         throw new BrokerException($"Could not get a live price for {l.Instrument.Symbol}. Enter a price for this leg, or try again in a moment.", 400);
+    }
+
+    // ---- history ---------------------------------------------------------------------------------------------
+
+    private static readonly Dictionary<string, string> Resolutions = new()
+    {
+        ["1m"] = "1", ["3m"] = "3", ["5m"] = "5", ["10m"] = "10", ["15m"] = "15", ["30m"] = "30", ["1h"] = "60", ["2h"] = "120", ["D"] = "D",
+    };
+
+    private static readonly TimeSpan IstOffset = TimeSpan.FromHours(5.5);
+
+    public IReadOnlyList<string> HistoryTimeframes { get; } = [.. Resolutions.Keys];
+
+    private static long IstEpoch(DateOnly day, TimeOnly time) => new DateTimeOffset(day.ToDateTime(time), IstOffset).ToUnixTimeSeconds();
+
+    private static bool Number(JsonNode? node, out double value)
+    {
+        value = 0;
+        if (node is null) return false;
+        if (BookFormatting.Number(node) is { } n) { value = n; return !double.IsNaN(n) && !double.IsInfinity(n); }
+        return double.TryParse(JsonRead.Str(node), NumberStyles.Float, CultureInfo.InvariantCulture, out value) && !double.IsNaN(value) && !double.IsInfinity(value);
+    }
+
+    /// <summary>
+    /// One call for the whole range. Intraday bars carry their time as text (IST) and daily bars an epoch second. A cash or F&amp;O bar before 09:15 (the pre-open price)
+    /// is left out, a bar missing a price is skipped rather than charted as zero, a negative intraday volume is zeroed and a daily bar whose range leaves out its open
+    /// or close is widened. Unlike OpenAlgo's plugin there is one bar per timestamp, because a chart client rejects a series that repeats one. A daily range that
+    /// includes today gets today's candle from a quote when the chart has none.
+    /// </summary>
+    public async Task<JsonArray> GetHistoryAsync(BrokerSession session, SymbolRecord instrument, string interval, DateOnly start, DateOnly end, CancellationToken cancellationToken)
+    {
+        if (!Resolutions.TryGetValue(interval, out var resolution))
+            throw new BrokerException($"{DisplayName} does not offer {interval} candles. Choose one of: {string.Join(", ", Resolutions.Keys)}.", 400);
+
+        var exchange = DataExchangeOf(instrument.Exchange);
+        var startTs = IstEpoch(start, new TimeOnly(0, 0, 0));
+        var endTs = IstEpoch(end, new TimeOnly(23, 59, 59));
+        var daily = interval == "D";
+        JsonNode? answer = null;
+        string? failure = null;
+        try
+        {
+            answer = await PostJsonAsync(session, daily ? "/EODChartData" : "/TPSeries", daily
+                ? new JsonObject { ["sym"] = $"{exchange}:{instrument.BrokerSymbol}", ["from"] = startTs.ToString(CultureInfo.InvariantCulture), ["to"] = endTs.ToString(CultureInfo.InvariantCulture), ["uid"] = UserIdOf(session), ["actid"] = UserIdOf(session) }
+                : new JsonObject { ["uid"] = UserIdOf(session), ["exch"] = exchange, ["token"] = instrument.Token, ["st"] = startTs.ToString(CultureInfo.InvariantCulture), ["et"] = endTs.ToString(CultureInfo.InvariantCulture), ["intrv"] = resolution, ["actid"] = UserIdOf(session) },
+                cancellationToken);
+        }
+        catch (BrokerException ex) when (ex.HttpStatus == 502)
+        {
+            failure = ex.Message;
+        }
+
+        if (answer is JsonObject error && SessionLapsed(JsonRead.Str(error["emsg"]))) throw new BrokerException($"{DisplayName} says the session has expired. Log in to {DisplayName} again.", 403);
+        if (answer is JsonObject error2)
+            throw new BrokerException($"{DisplayName} did not send the candles: {(JsonRead.Str(error2["emsg"]) is { Length: > 0 } e ? e : "no reason was given.")}");
+        if (answer is not JsonArray && failure is null) failure = $"{DisplayName} did not send the candles. Try again in a moment.";
+        // A daily chart that fails to arrive still lets today's candle be built from a quote; an intraday one has nothing to fall back on.
+        if (failure is not null && !daily) throw new BrokerException(failure);
+
+        var cash = exchange is "NSE" or "BSE" or "NFO" or "BFO";
+        var candles = new SortedDictionary<long, double[]>();
+        foreach (var node in answer as JsonArray ?? [])
+        {
+            var candle = node is JsonValue v && v.TryGetValue<string>(out var text) ? ParseCandle(text) : node as JsonObject;
+            if (candle is null) continue;
+            if (!Number(candle["into"], out var open) || !Number(candle["inth"], out var high) || !Number(candle["intl"], out var low) || !Number(candle["intc"], out var close)) continue;
+            var volume = Number(candle["intv"], out var vol) ? Math.Truncate(vol) : 0;
+            var oi = Number(candle["oi"], out var openInterest) ? Math.Truncate(openInterest) : 0;
+            long stamp;
+            if (daily)
+            {
+                if (!Number(candle["ssboe"], out var epoch)) continue;
+                stamp = (long)epoch;
+                if (high < Math.Max(open, close) || low > Math.Min(open, close))
+                {
+                    high = Math.Max(high, Math.Max(open, close));
+                    low = Math.Min(low, Math.Min(open, close));
+                }
+            }
+            else
+            {
+                if (!DateTime.TryParseExact(JsonRead.Str(candle["time"]), "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var local)) continue;
+                if (cash && local.TimeOfDay < new TimeSpan(9, 15, 0)) continue;
+                if (open == 0 && high == 0 && low == 0 && close == 0) continue;
+                stamp = new DateTimeOffset(local, IstOffset).ToUnixTimeSeconds();
+                volume = Math.Max(volume, 0);
+            }
+
+            candles[stamp] = [open, high, low, close, volume, oi];
+        }
+
+        if (daily)
+        {
+            var today = DateOnly.FromDateTime(clock.GetUtcNow().ToOffset(IstOffset).DateTime);
+            var todayTs = IstEpoch(today, new TimeOnly(0, 0, 0));
+            if (todayTs >= startTs && todayTs <= endTs && (candles.Count == 0 || candles.Keys.Max() < todayTs))
+            {
+                try
+                {
+                    if (await PostAsync(session, "/GetQuotes", QuoteBody(session, exchange, instrument.Token), cancellationToken) is JsonObject quote && JsonRead.Str(quote["stat"]) == "Ok")
+                        candles[todayTs] = [JsonRead.Float(quote["o"]), JsonRead.Float(quote["h"]), JsonRead.Float(quote["l"]), JsonRead.Float(quote["lp"]), Math.Truncate(JsonRead.Float(quote["v"])), 0];
+                }
+                catch (BrokerException)
+                {
+                }
+            }
+
+            if (candles.Count == 0 && failure is not null) throw new BrokerException(failure);
+        }
+
+        var result = new JsonArray();
+        foreach (var (stamp, c) in candles)
+            result.Add(new JsonObject { ["timestamp"] = stamp, ["open"] = c[0], ["high"] = c[1], ["low"] = c[2], ["close"] = c[3], ["volume"] = c[4], ["oi"] = c[5] });
+        return result;
+    }
+
+    private static JsonObject? ParseCandle(string text)
+    {
+        try
+        {
+            return JsonNode.Parse(text) as JsonObject;
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return null;
+        }
     }
 
     // ---- sign-in -----------------------------------------------------------------------------------------------

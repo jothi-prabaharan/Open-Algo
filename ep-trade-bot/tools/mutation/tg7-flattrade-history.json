@@ -1,0 +1,234 @@
+[
+ {
+  "name": "K1 3m missing",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"1m\"] = \"1\", [\"3m\"] = \"3\", [\"5m\"] = \"5\", [\"10m\"] = \"10\", [\"15m\"] = \"15\", [\"30m\"] = \"30\", [\"1h\"] = \"60\", [\"2h\"] = \"120\", [\"D\"] = \"D\",\n    };\n\n    private static readonly TimeSpan IstOffset = TimeSpan.FromHours(5.5);\n\n    public IReadOnlyList<string> HistoryTimeframes { get; } = [.. Resolutions.Keys];\n\n    private static long IstEpoch(DateOnly day, TimeOnly time) => new DateTimeOffset(day.ToDateTime(time), IstOffset).ToUnixTimeSeconds();\n\n    private static bool Number",
+  "new": "[\"1m\"] = \"1\", [\"5m\"] = \"5\", [\"10m\"] = \"10\", [\"15m\"] = \"15\", [\"30m\"] = \"30\", [\"1h\"] = \"60\", [\"2h\"] = \"120\", [\"D\"] = \"D\",\n    };\n\n    private static readonly TimeSpan IstOffset = TimeSpan.FromHours(5.5);\n\n    public IReadOnlyList<string> HistoryTimeframes { get; } = [.. Resolutions.Keys];\n\n    private static long IstEpoch(DateOnly day, TimeOnly time) => new DateTimeOffset(day.ToDateTime(time), IstOffset).ToUnixTimeSeconds();\n\n    private static bool Number",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K2 end of day early",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var endTs = IstEpoch(end, new TimeOnly(23, 59, 59));\n        var daily = interval == \"D\";\n        JsonNode? answer = null;\n        string? failure = null;\n        try\n        {\n            answer = await PostJsonAsync(session, daily ? \"/EODChartData\" : \"/TPSeries\", daily\n                ? new JsonObject { [\"sym\"] = $\"{exchange}:{instrument.BrokerSymbol}\", [\"from\"] = startTs.ToString(CultureInfo.InvariantCulture), [\"to\"] = endTs.ToString(CultureInfo.InvariantCulture), [\"uid\"] = UserIdOf(session), [\"actid\"]",
+  "new": "var endTs = IstEpoch(end, new TimeOnly(23, 59, 58));\n        var daily = interval == \"D\";\n        JsonNode? answer = null;\n        string? failure = null;\n        try\n        {\n            answer = await PostJsonAsync(session, daily ? \"/EODChartData\" : \"/TPSeries\", daily\n                ? new JsonObject { [\"sym\"] = $\"{exchange}:{instrument.BrokerSymbol}\", [\"from\"] = startTs.ToString(CultureInfo.InvariantCulture), [\"to\"] = endTs.ToString(CultureInfo.InvariantCulture), [\"uid\"] = UserIdOf(session), [\"actid\"]",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K3 pre-open kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (cash && local.TimeOfDay < new TimeSpan(9, 15, 0)) continue;",
+  "new": "if (false && cash && local.TimeOfDay < new TimeSpan(9, 15, 0)) continue;",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K4 pre-open cutoff 0914",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "local.TimeOfDay < new TimeSpan(9, 15, 0)) continue;",
+  "new": "local.TimeOfDay < new TimeSpan(9, 14, 0)) continue;",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K5 pre-open dropped on commodity",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var cash = exchange is \"NSE\" or \"BSE\" or \"NFO\" or \"BFO\";",
+  "new": "var cash = true;",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K6 BFO not cash",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var cash = exchange is \"NSE\" or \"BSE\" or \"NFO\" or \"BFO\";",
+  "new": "var cash = exchange is \"NSE\" or \"BSE\" or \"NFO\";",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K7 all zero bar kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (open == 0 && high == 0 && low == 0 && close == 0) continue;\n                stamp = new DateTimeOffset(local, IstOffset)",
+  "new": "if (false && open == 0 && high == 0 && low == 0 && close == 0) continue;\n                stamp = new DateTimeOffset(local, IstOffset)",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K8 negative volume kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "volume = Math.Max(volume, 0);\n            }\n\n            candles[stamp] = [open, high, low, close, volume, oi];\n        }\n\n        if (daily)\n        {\n            var today = DateOnly.FromDateTime(clock.GetUtcNow().ToOffset(IstOffset).DateTime);\n            var todayTs = IstEpoch(today, new TimeOnly(0, 0, 0));\n            if (todayTs >= startTs && todayTs <= endTs && (candles.Count == 0 || candles.Keys.Max() < todayTs))\n            {\n                try\n                {\n                    if (await PostAsync(session, \"/GetQuotes\", QuoteBody(session, exchange, instrument.Token)",
+  "new": "volume = volume;\n            }\n\n            candles[stamp] = [open, high, low, close, volume, oi];\n        }\n\n        if (daily)\n        {\n            var today = DateOnly.FromDateTime(clock.GetUtcNow().ToOffset(IstOffset).DateTime);\n            var todayTs = IstEpoch(today, new TimeOnly(0, 0, 0));\n            if (todayTs >= startTs && todayTs <= endTs && (candles.Count == 0 || candles.Keys.Max() < todayTs))\n            {\n                try\n                {\n                    if (await PostAsync(session, \"/GetQuotes\", QuoteBody(session, exchange, instrument.Token)",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K9 daily no widening high",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "high = Math.Max(high, Math.Max(open, close));\n                    low = Math.Min(low, Math.Min(open, close));",
+  "new": "low = Math.Min(low, Math.Min(open, close));",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K10 daily no widening low",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "high = Math.Max(high, Math.Max(open, close));\n                    low = Math.Min(low, Math.Min(open, close));",
+  "new": "high = Math.Max(high, Math.Max(open, close));",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K11 widen only high below open",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (high < Math.Max(open, close) || low > Math.Min(open, close))",
+  "new": "if (high < Math.Max(open, close))",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K12 widen only low above",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (high < Math.Max(open, close) || low > Math.Min(open, close))",
+  "new": "if (low > Math.Min(open, close))",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K13 daily without epoch kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (!Number(candle[\"ssboe\"], out var epoch)) continue;\n                stamp = (long)epoch;",
+  "new": "Number(candle[\"ssboe\"], out var epoch);\n                stamp = (long)epoch;",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K14 missing price kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (!Number(candle[\"into\"], out var open) || !Number(candle[\"inth\"], out var high) || !Number(candle[\"intl\"], out var low) || !Number(candle[\"intc\"], out var close)) continue;\n            var volume = Number(candle[\"intv\"], out var vol) ? Math.Truncate(vol) : 0;\n            var oi = Number(candle[\"oi\"]",
+  "new": "Number(candle[\"into\"], out var open); Number(candle[\"inth\"], out var high); Number(candle[\"intl\"], out var low); Number(candle[\"intc\"], out var close);\n            var volume = Number(candle[\"intv\"], out var vol) ? Math.Truncate(vol) : 0;\n            var oi = Number(candle[\"oi\"]",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K15 volume not truncated",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var volume = Number(candle[\"intv\"], out var vol) ? Math.Truncate(vol) : 0;\n            var oi = Number(candle[\"oi\"], out var openInterest) ? Math.Truncate(openInterest) : 0;\n            long stamp;\n            if (daily)\n            {\n                if (!Number(candle[\"ssboe\"]",
+  "new": "var volume = Number(candle[\"intv\"], out var vol) ? vol : 0;\n            var oi = Number(candle[\"oi\"], out var openInterest) ? Math.Truncate(openInterest) : 0;\n            long stamp;\n            if (daily)\n            {\n                if (!Number(candle[\"ssboe\"]",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K16 oi not read",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var oi = Number(candle[\"oi\"], out var openInterest) ? Math.Truncate(openInterest) : 0;\n            long stamp;\n            if (daily)\n            {\n                if (!Number(candle[\"ssboe\"]",
+  "new": "var oi = 0.0;\n            long stamp;\n            if (daily)\n            {\n                if (!Number(candle[\"ssboe\"]",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K17 error text not shown",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "did not send the candles: {(JsonRead.Str(error2[\"emsg\"]) is { Length: > 0 } e ? e : \"no reason was given.\")}",
+  "new": "did not send the candles: {(JsonRead.Str(error2[\"emsg\"]) is { Length: > 0 } e ? e : \"no reason was given.\")}x",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K18 session expiry not noticed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (answer is JsonObject error && SessionLapsed(JsonRead.Str(error[\"emsg\"])))",
+  "new": "if (answer is JsonObject error && Environment.TickCount64 < 0 && SessionLapsed(JsonRead.Str(error[\"emsg\"])))",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K19 today not added",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (todayTs >= startTs && todayTs <= endTs && (candles.Count == 0 || candles.Keys.Max() < todayTs))\n            {\n                try\n                {\n                    if (await PostAsync(session",
+  "new": "if (false && todayTs >= startTs && todayTs <= endTs && (candles.Count == 0 || candles.Keys.Max() < todayTs))\n            {\n                try\n                {\n                    if (await PostAsync(session",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K20 today added even when present",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "(candles.Count == 0 || candles.Keys.Max() < todayTs))\n            {\n                try\n                {\n                    if (await PostAsync(session, \"/GetQuotes\", QuoteBody(session, exchange, instrument.Token)",
+  "new": "(true))\n            {\n                try\n                {\n                    if (await PostAsync(session, \"/GetQuotes\", QuoteBody(session, exchange, instrument.Token)",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K21 today bound not checked",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (todayTs >= startTs && todayTs <= endTs && (candles.Count == 0 || candles.Keys.Max() < todayTs))\n            {\n                try\n                {\n                    if (await PostAsync(session",
+  "new": "if (todayTs >= startTs && (candles.Count == 0 || candles.Keys.Max() < todayTs))\n            {\n                try\n                {\n                    if (await PostAsync(session",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K22 today start bound not checked",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (todayTs >= startTs && todayTs <= endTs && (candles.Count == 0 || candles.Keys.Max() < todayTs))\n            {\n                try\n                {\n                    if (await PostAsync(session",
+  "new": "if (todayTs <= endTs && (candles.Count == 0 || candles.Keys.Max() < todayTs))\n            {\n                try\n                {\n                    if (await PostAsync(session",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K24 today uses last price as open",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "candles[todayTs] = [JsonRead.Float(quote[\"o\"]), JsonRead.Float(quote[\"h\"]), JsonRead.Float(quote[\"l\"]), JsonRead.Float(quote[\"lp\"]), Math.Truncate",
+  "new": "candles[todayTs] = [JsonRead.Float(quote[\"lp\"]), JsonRead.Float(quote[\"h\"]), JsonRead.Float(quote[\"l\"]), JsonRead.Float(quote[\"lp\"]), Math.Truncate",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K25 quote failure not tolerated",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (await PostAsync(session, \"/GetQuotes\", QuoteBody(session, exchange, instrument.Token), cancellationToken) is JsonObject quote && JsonRead.Str(quote[\"stat\"]) == \"Ok\")",
+  "new": "if (await PostAsync(session, \"/GetQuotes\", QuoteBody(session, exchange, instrument.Token), cancellationToken) is JsonObject quote)",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K26 daily failure not fallen back",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "\"no reason was given.\")}\");\n        if (answer is not JsonArray && failure is null) failure = $\"{DisplayName} did not send the candles. Try again in a moment.\";\n        // A daily chart that fails to arrive still lets today's candle be built from a quote; an intraday one has nothing to fall back on.\n        if (failure is not null && !daily) throw new BrokerException(failure);",
+  "new": "\"no reason was given.\")}\");\n        if (answer is not JsonArray && failure is null) failure = $\"{DisplayName} did not send the candles. Try again in a moment.\";\n        // A daily chart that fails to arrive still lets today's candle be built from a quote; an intraday one has nothing to fall back on.\n        if (failure is not null) throw new BrokerException(failure);",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K27 empty failure not reported",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "if (candles.Count == 0 && failure is not null) throw new BrokerException(failure);\n        }\n\n        var result = new JsonArray();\n        foreach (var (stamp, c) in candles)\n            ",
+  "new": "if (candles.Count == 0 && failure is not null && Environment.TickCount64 < 0) throw new BrokerException(failure);\n        }\n\n        var result = new JsonArray();\n        foreach (var (stamp, c) in candles)\n            ",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K28 duplicates summed first wins",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "volume = Math.Max(volume, 0);\n            }\n\n            candles[stamp] = [open, high, low, close, volume, oi];",
+  "new": "volume = Math.Max(volume, 0);\n            }\n\n            candles.TryAdd(stamp, [open, high, low, close, volume, oi]);",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K29 string rows ignored",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "var candle = node is JsonValue v && v.TryGetValue<string>(out var text) ? ParseCandle(text) : node as JsonObject;\n            if (candle is null) continue;\n            if (!Number(candle[\"into\"]",
+  "new": "var candle = node as JsonObject;\n            if (candle is null) continue;\n            if (!Number(candle[\"into\"]",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "K30 sym without exchange prefix",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Shoonya/ShoonyaPlugin.cs",
+  "old": "[\"sym\"] = $\"{exchange}:{instrument.BrokerSymbol}\", [\"from\"] = startTs.ToString(CultureInfo.InvariantCulture), [\"to\"] = endTs.ToString(CultureInfo.InvariantCulture), [\"uid\"] = UserIdOf(session), [\"actid\"]",
+  "new": "[\"sym\"] = $\"{instrument.BrokerSymbol}\", [\"from\"] = startTs.ToString(CultureInfo.InvariantCulture), [\"to\"] = endTs.ToString(CultureInfo.InvariantCulture), [\"uid\"] = UserIdOf(session), [\"actid\"]",
+  "filter": "FullyQualifiedName~FlattradeHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]
