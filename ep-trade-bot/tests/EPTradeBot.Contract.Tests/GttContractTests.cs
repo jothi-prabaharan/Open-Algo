@@ -166,3 +166,25 @@ public sealed class FyersGttContractTests(FyersGttHost host, ITestOutputHelper o
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+/// <summary>Rupeezy GTT (tools/contract-fixtures/rupeezy_gtt.fixtures.json). Vortex names the legs of an OCO by role; an MCX quantity counts lots.</summary>
+public sealed class RupeezyGttHost : BrokerContractHost
+{
+    public override string BrokerName => "rupeezy";
+    public override string FixtureFile => "rupeezy_gtt.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "rupeezy-app-id", ["ApiSecret"] = "rupeezy-api-key" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class RupeezyGttContractTests(RupeezyGttHost host, ITestOutputHelper output) : IClassFixture<RupeezyGttHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new();
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("rupeezy_gtt.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

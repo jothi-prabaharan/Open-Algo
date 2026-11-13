@@ -1,0 +1,2480 @@
+{
+  "broker": "rupeezy",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "rupeezy-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE_EQ",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE_EQ",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY25NOV26FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE_FO",
+      "token": "35001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUTIDX",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "GOLDM25NOV26FUT",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "MCX_FO",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 10,
+      "instrumenttype": "FUTCOM",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "NIFTY",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE_EQ",
+      "token": "26000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "place_single",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "GTT1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT1"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "DELIVERY",
+            "gtt_trigger_type": "single",
+            "quantity": 10,
+            "price": 790.0,
+            "trigger_price": 795.0,
+            "variety": "RL"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_market",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "GTT1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT1"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "DELIVERY",
+            "gtt_trigger_type": "single",
+            "quantity": 10,
+            "price": 0.0,
+            "trigger_price": 795.0,
+            "variety": "RL-MKT"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_target_side_trigger",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "0",
+        "triggerprice_tg": "820",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "GTT1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT1"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "SELL",
+            "product": "DELIVERY",
+            "gtt_trigger_type": "single",
+            "quantity": 10,
+            "price": 790.0,
+            "trigger_price": 820.0,
+            "variety": "RL"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_single_mis",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "MIS",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "GTT1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'product': ['GTT supports only CNC (delivery) or NRML (overnight F&O); MIS is intraday-only.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_sell",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "GTT1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT1"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "SELL",
+            "product": "DELIVERY",
+            "gtt_trigger_type": "oco",
+            "stoploss": {
+              "quantity": 10,
+              "price": 779.0,
+              "trigger_price": 780.0,
+              "variety": "RL"
+            },
+            "profit": {
+              "quantity": 10,
+              "price": 829.0,
+              "trigger_price": 830.0,
+              "variety": "RL"
+            }
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_buy",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "GTT1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT1"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "DELIVERY",
+            "gtt_trigger_type": "oco",
+            "stoploss": {
+              "quantity": 10,
+              "price": 829.0,
+              "trigger_price": 830.0,
+              "variety": "RL"
+            },
+            "profit": {
+              "quantity": 10,
+              "price": 779.0,
+              "trigger_price": 780.0,
+              "variety": "RL"
+            }
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_oco_market",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "GTT1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT1"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "SELL",
+            "product": "DELIVERY",
+            "gtt_trigger_type": "oco",
+            "stoploss": {
+              "quantity": 10,
+              "price": 0.0,
+              "trigger_price": 780.0,
+              "variety": "RL-MKT"
+            },
+            "profit": {
+              "quantity": 10,
+              "price": 0.0,
+              "trigger_price": 830.0,
+              "variety": "RL-MKT"
+            }
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_mcx_lots",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "MCX",
+        "symbol": "GOLDM25NOV26FUT",
+        "action": "BUY",
+        "product": "NRML",
+        "quantity": "20",
+        "pricetype": "LIMIT",
+        "price": "75000",
+        "triggerprice_sl": "75100",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "GTT1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT1"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "MCX:GOLDM25NOV26FUT",
+            "transaction_type": "BUY",
+            "product": "DELIVERY",
+            "gtt_trigger_type": "single",
+            "quantity": 2,
+            "price": 75000.0,
+            "trigger_price": 75100.0,
+            "variety": "RL"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_mcx_not_whole_lots",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "MCX",
+        "symbol": "GOLDM25NOV26FUT",
+        "action": "BUY",
+        "product": "NRML",
+        "quantity": "15",
+        "pricetype": "LIMIT",
+        "price": "75000",
+        "triggerprice_sl": "75100",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": {
+              "order_id": "GTT1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Quantity 15 is not a multiple of the lot size 10.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "place_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/gtt": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "code": "invalid",
+            "message": "Trigger price is not valid"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Trigger price is not valid",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "DELIVERY",
+            "gtt_trigger_type": "single",
+            "quantity": 10,
+            "price": 790.0,
+            "trigger_price": 795.0,
+            "variety": "RL"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_broker_refuses_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/gtt": {
+          "status": 500,
+          "body": {
+            "x": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place GTT",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "DELIVERY",
+            "gtt_trigger_type": "single",
+            "quantity": 10,
+            "price": 790.0,
+            "trigger_price": 795.0,
+            "variety": "RL"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "place_ok_without_an_id",
+      "method": "POST",
+      "path": "/api/v1/placegttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to place GTT",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "ticker": "NSE:SBIN",
+            "transaction_type": "BUY",
+            "product": "DELIVERY",
+            "gtt_trigger_type": "single",
+            "quantity": 10,
+            "price": 790.0,
+            "trigger_price": 795.0,
+            "variety": "RL"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT1",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "id": "GTT1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L1",
+                    "trigger_price": 795.0,
+                    "price": 790.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "BUY",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "PUT /v2/trading/orders/gtt/GTT1": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT1"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt/GTT1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "id": "L1",
+              "quantity": 10,
+              "price": 790.0,
+              "trigger_price": 795.0,
+              "variety": "RL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_market",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT1",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "price": "0",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "id": "GTT1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L1",
+                    "trigger_price": 795.0,
+                    "price": 790.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "BUY",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "PUT /v2/trading/orders/gtt/GTT1": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT1"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt/GTT1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "id": "L1",
+              "quantity": 10,
+              "price": 0.0,
+              "trigger_price": 795.0,
+              "variety": "RL-MKT"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_oco_keeps_the_trailing_stop",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT1",
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "id": "GTT1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "oco",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L2",
+                    "trigger_price": 830.0,
+                    "price": 829.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  },
+                  {
+                    "id": "L1",
+                    "trigger_price": 780.0,
+                    "price": 779.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00",
+                    "trail": {
+                      "id": "T1",
+                      "trail_jump_point": 2,
+                      "trail_jump_type": "points"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "PUT /v2/trading/orders/gtt/GTT1": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT1"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt/GTT1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "id": "L1",
+              "quantity": 10,
+              "price": 779.0,
+              "trigger_price": 780.0,
+              "variety": "RL",
+              "trail": {
+                "id": "T1",
+                "trail_jump_point": 2,
+                "trail_jump_type": "points"
+              }
+            },
+            {
+              "id": "L2",
+              "quantity": 10,
+              "price": 829.0,
+              "trigger_price": 830.0,
+              "variety": "RL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_single_to_oco_is_refused",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT1",
+        "strategy": "t",
+        "trigger_type": "OCO",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "SELL",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "0",
+        "triggerprice_sl": "780",
+        "stoploss": "779",
+        "triggerprice_tg": "830",
+        "target": "829",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "id": "GTT1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L1",
+                    "trigger_price": 795.0,
+                    "price": 790.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "BUY",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "PUT /v2/trading/orders/gtt/GTT1": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "A GTT cannot be changed between SINGLE and OCO. Cancel it and place a new one instead.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_oco_to_single_is_refused",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT1",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "id": "GTT1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "oco",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L2",
+                    "trigger_price": 830.0,
+                    "price": 829.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  },
+                  {
+                    "id": "L1",
+                    "trigger_price": 780.0,
+                    "price": 779.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00",
+                    "trail": {
+                      "id": "T1",
+                      "trail_jump_point": 2,
+                      "trail_jump_type": "points"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "PUT /v2/trading/orders/gtt/GTT1": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "A GTT cannot be changed between SINGLE and OCO. Cancel it and place a new one instead.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_not_in_the_book",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT1",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": []
+          }
+        },
+        "PUT /v2/trading/orders/gtt/GTT1": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "message": "GTT GTT1 was not found.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_book_unreadable",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT1",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/gtt": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "Session expired"
+          }
+        },
+        "PUT /v2/trading/orders/gtt/GTT1": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 502,
+        "body": {
+          "message": "Session expired",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT1",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "id": "GTT1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L1",
+                    "trigger_price": 795.0,
+                    "price": 790.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "BUY",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "PUT /v2/trading/orders/gtt/GTT1": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "code": "invalid",
+            "message": "Trigger price is not valid"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Trigger price is not valid",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt/GTT1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "id": "L1",
+              "quantity": 10,
+              "price": 790.0,
+              "trigger_price": 795.0,
+              "variety": "RL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_mcx_not_whole_lots",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "trigger_id": "GTT1",
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "MCX",
+        "symbol": "GOLDM25NOV26FUT",
+        "action": "BUY",
+        "product": "NRML",
+        "quantity": "15",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "id": "GTT1",
+                "ticker": "MCX:GOLDM25NOV26FUT",
+                "exchange": "MCX_FO",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 10,
+                "orders": [
+                  {
+                    "id": "L1",
+                    "trigger_price": 75100.0,
+                    "price": 75000.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "PUT /v2/trading/orders/gtt/GTT1": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Quantity 15 is not a multiple of the lot size 10.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modify_missing_trigger_id",
+      "method": "POST",
+      "path": "/api/v1/modifygttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_type": "SINGLE",
+        "exchange": "NSE",
+        "symbol": "SBIN",
+        "action": "BUY",
+        "product": "CNC",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "price": "790",
+        "triggerprice_sl": "795",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "id": "GTT1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L1",
+                    "trigger_price": 795.0,
+                    "price": 790.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "BUY",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "{'trigger_id': ['Missing data for required field.']}",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "cancel",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "GTT1",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/trading/orders/gtt/GTT1": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success",
+          "trigger_id": "GTT1"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt/GTT1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancel_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/cancelgttorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "trigger_id": "GTT1",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/trading/orders/gtt/GTT1": {
+          "status": 404,
+          "body": {
+            "status": "error",
+            "message": "GTT not found"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "GTT not found",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt/GTT1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_active_only",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "id": "GTT1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L1",
+                    "trigger_price": 795.0,
+                    "price": 790.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "BUY",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              },
+              {
+                "id": "GTT1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "oco",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L2",
+                    "trigger_price": 830.0,
+                    "price": 829.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  },
+                  {
+                    "id": "L1",
+                    "trigger_price": 780.0,
+                    "price": 779.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00",
+                    "trail": {
+                      "id": "T1",
+                      "trail_jump_point": 2,
+                      "trail_jump_type": "points"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "GTT2",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "oco",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L3",
+                    "trigger_price": 800.0,
+                    "price": 0.0,
+                    "variety": "RL",
+                    "status": "triggered",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  },
+                  {
+                    "id": "L4",
+                    "trigger_price": 780.0,
+                    "price": 0.0,
+                    "variety": "RL",
+                    "status": "cancelled",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              },
+              {
+                "id": "GTT3",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L5",
+                    "trigger_price": 800.0,
+                    "price": 0.0,
+                    "variety": "RL",
+                    "status": "cancelled",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              },
+              {
+                "id": "GTT4",
+                "ticker": "MCX:GOLDM25NOV26FUT",
+                "exchange": "MCX_FO",
+                "product": "INTRADAY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 10,
+                "orders": [
+                  {
+                    "id": "L6",
+                    "trigger_price": 75100.0,
+                    "price": 0.0,
+                    "variety": "RL-MKT",
+                    "status": "active",
+                    "transaction_type": "SELL",
+                    "quantity": 2,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              },
+              {
+                "id": "GTT5",
+                "ticker": "NSE:UNLISTED",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L7",
+                    "trigger_price": 10.0,
+                    "price": 0.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              },
+              {
+                "id": "GTT6",
+                "ticker": "",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 1,
+                "orders": [],
+                "symbol": "SBIN"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "created_at": "2026-11-03 10:00:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 10:00:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "GTT1",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 10:05:00"
+            },
+            {
+              "created_at": "2026-11-03 10:00:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 10:00:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "price": 779.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                },
+                {
+                  "action": "SELL",
+                  "price": 829.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "GTT1",
+              "trigger_prices": [
+                780.0,
+                830.0
+              ],
+              "trigger_type": "two-leg",
+              "updated_at": "2026-11-03 10:05:00"
+            },
+            {
+              "created_at": "2026-11-03 10:00:00",
+              "exchange": "MCX",
+              "expires_at": "2027-11-03 10:00:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "price": 0.0,
+                  "pricetype": "MARKET",
+                  "product": "MIS",
+                  "quantity": 20
+                }
+              ],
+              "status": "active",
+              "symbol": "GOLDM25NOV26FUT",
+              "trigger_id": "GTT4",
+              "trigger_prices": [
+                75100.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 10:05:00"
+            },
+            {
+              "created_at": "2026-11-03 10:00:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 10:00:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "price": 0.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "UNLISTED",
+              "trigger_id": "GTT5",
+              "trigger_prices": [
+                10.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 10:05:00"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_all",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "status": "all",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "id": "GTT1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L1",
+                    "trigger_price": 795.0,
+                    "price": 790.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "BUY",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              },
+              {
+                "id": "GTT1",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "oco",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L2",
+                    "trigger_price": 830.0,
+                    "price": 829.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  },
+                  {
+                    "id": "L1",
+                    "trigger_price": 780.0,
+                    "price": 779.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00",
+                    "trail": {
+                      "id": "T1",
+                      "trail_jump_point": 2,
+                      "trail_jump_type": "points"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "GTT2",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "oco",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L3",
+                    "trigger_price": 800.0,
+                    "price": 0.0,
+                    "variety": "RL",
+                    "status": "triggered",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  },
+                  {
+                    "id": "L4",
+                    "trigger_price": 780.0,
+                    "price": 0.0,
+                    "variety": "RL",
+                    "status": "cancelled",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              },
+              {
+                "id": "GTT3",
+                "ticker": "NSE:SBIN",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L5",
+                    "trigger_price": 800.0,
+                    "price": 0.0,
+                    "variety": "RL",
+                    "status": "cancelled",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              },
+              {
+                "id": "GTT4",
+                "ticker": "MCX:GOLDM25NOV26FUT",
+                "exchange": "MCX_FO",
+                "product": "INTRADAY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 10,
+                "orders": [
+                  {
+                    "id": "L6",
+                    "trigger_price": 75100.0,
+                    "price": 0.0,
+                    "variety": "RL-MKT",
+                    "status": "active",
+                    "transaction_type": "SELL",
+                    "quantity": 2,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              },
+              {
+                "id": "GTT5",
+                "ticker": "NSE:UNLISTED",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 1,
+                "orders": [
+                  {
+                    "id": "L7",
+                    "trigger_price": 10.0,
+                    "price": 0.0,
+                    "variety": "RL",
+                    "status": "active",
+                    "transaction_type": "SELL",
+                    "quantity": 10,
+                    "created_at": "2026-11-03 10:00:00",
+                    "updated_at": "2026-11-03 10:05:00",
+                    "expires_at": "2027-11-03 10:00:00"
+                  }
+                ]
+              },
+              {
+                "id": "GTT6",
+                "ticker": "",
+                "exchange": "NSE_EQ",
+                "product": "DELIVERY",
+                "transaction_type": "SELL",
+                "trigger_type": "single",
+                "lot_size": 1,
+                "orders": [],
+                "symbol": "SBIN"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "created_at": "2026-11-03 10:00:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 10:00:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "BUY",
+                  "price": 790.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "GTT1",
+              "trigger_prices": [
+                795.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 10:05:00"
+            },
+            {
+              "created_at": "2026-11-03 10:00:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 10:00:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "price": 779.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                },
+                {
+                  "action": "SELL",
+                  "price": 829.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "SBIN",
+              "trigger_id": "GTT1",
+              "trigger_prices": [
+                780.0,
+                830.0
+              ],
+              "trigger_type": "two-leg",
+              "updated_at": "2026-11-03 10:05:00"
+            },
+            {
+              "created_at": "2026-11-03 10:00:00",
+              "exchange": "MCX",
+              "expires_at": "2027-11-03 10:00:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "price": 0.0,
+                  "pricetype": "MARKET",
+                  "product": "MIS",
+                  "quantity": 20
+                }
+              ],
+              "status": "active",
+              "symbol": "GOLDM25NOV26FUT",
+              "trigger_id": "GTT4",
+              "trigger_prices": [
+                75100.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 10:05:00"
+            },
+            {
+              "created_at": "2026-11-03 10:00:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 10:00:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "price": 0.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "active",
+              "symbol": "UNLISTED",
+              "trigger_id": "GTT5",
+              "trigger_prices": [
+                10.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 10:05:00"
+            },
+            {
+              "created_at": "2026-11-03 10:00:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 10:00:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "price": 0.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                },
+                {
+                  "action": "SELL",
+                  "price": 0.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "triggered",
+              "symbol": "SBIN",
+              "trigger_id": "GTT2",
+              "trigger_prices": [
+                780.0,
+                800.0
+              ],
+              "trigger_type": "two-leg",
+              "updated_at": "2026-11-03 10:05:00"
+            },
+            {
+              "created_at": "2026-11-03 10:00:00",
+              "exchange": "NSE",
+              "expires_at": "2027-11-03 10:00:00",
+              "last_price": 0,
+              "legs": [
+                {
+                  "action": "SELL",
+                  "price": 0.0,
+                  "pricetype": "LIMIT",
+                  "product": "CNC",
+                  "quantity": 10
+                }
+              ],
+              "status": "cancelled",
+              "symbol": "SBIN",
+              "trigger_id": "GTT3",
+              "trigger_prices": [
+                800.0
+              ],
+              "trigger_type": "single",
+              "updated_at": "2026-11-03 10:05:00"
+            },
+            {
+              "created_at": "",
+              "exchange": "NSE",
+              "expires_at": "",
+              "last_price": 0,
+              "legs": [],
+              "status": "",
+              "symbol": "SBIN",
+              "trigger_id": "GTT6",
+              "trigger_prices": [],
+              "trigger_type": "single",
+              "updated_at": ""
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_empty",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/gtt": {
+          "body": {
+            "status": "success",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "book_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/gttorderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/trading/orders/gtt": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Session expired",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "vortex-api.rupeezy.in",
+          "path": "/v2/trading/orders/gtt",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer rupeezy-access-token"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

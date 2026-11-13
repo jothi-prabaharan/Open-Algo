@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json.Nodes;
 using EPTradeBot.Core.Brokers;
+using EPTradeBot.Core.Brokers.Gtt;
 using static EPTradeBot.Infrastructure.Brokers.JsonRead;
 
 namespace EPTradeBot.Infrastructure.Brokers.Rupeezy;
@@ -9,10 +10,10 @@ namespace EPTradeBot.Infrastructure.Brokers.Rupeezy;
 /// <summary>
 /// Rupeezy (Vortex API, vortex-api.rupeezy.in/v2). Port of broker/rupeezy: api/order_api.py, api/funds.py, mapping/exchange.py, mapping/order_data.py and
 /// mapping/transform_data.py. A ticker is "NSE:SBIN" (the first three letters of the exchange, a colon, the broker symbol); MCX orders and books count lots, not
-/// units. Not ported yet: margin, GTT and the feed.
+/// units. Not ported yet: the feed (Rupeezy has no margin calculator in OpenAlgo).
 /// </summary>
 [BrokerPlugin]
-public sealed partial class RupeezyPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerLogin
+public sealed partial class RupeezyPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerLogin, IBrokerGtt
 {
     private const string DefaultBaseUrl = "https://vortex-api.rupeezy.in/v2";
     private const int OrderPage = 500;
@@ -79,7 +80,7 @@ public sealed partial class RupeezyPlugin(IHttpClientFactory http, BrokerSession
 
     private HttpClient Client() => http.CreateClient(Name);
 
-    private HttpRequestMessage Request(BrokerSession session, HttpMethod method, string pathAndQuery, JsonObject? body = null)
+    private HttpRequestMessage Request(BrokerSession session, HttpMethod method, string pathAndQuery, JsonNode? body = null)
     {
         var request = new HttpRequestMessage(method, sessions.BaseUrl(Name, DefaultBaseUrl) + pathAndQuery);
         request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {session.AuthToken}");
@@ -89,7 +90,7 @@ public sealed partial class RupeezyPlugin(IHttpClientFactory http, BrokerSession
     }
 
     /// <summary>The JSON a call answered with. A reply that is not JSON, or no reply, is an error the trader can act on; an error status keeps its body, which says why.</summary>
-    private async Task<(JsonObject Body, int Status)> SendAsync(BrokerSession session, HttpMethod method, string pathAndQuery, JsonObject? body, CancellationToken cancellationToken)
+    private async Task<(JsonObject Body, int Status)> SendAsync(BrokerSession session, HttpMethod method, string pathAndQuery, JsonNode? body, CancellationToken cancellationToken)
     {
         using var request = Request(session, method, pathAndQuery, body);
         try
