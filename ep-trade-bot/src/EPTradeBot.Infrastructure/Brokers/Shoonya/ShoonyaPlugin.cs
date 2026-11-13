@@ -732,9 +732,21 @@ public sealed class ShoonyaPlugin(IHttpClientFactory http, BrokerSessionFactory 
 /// </summary>
 [BrokerPlugin]
 public sealed class ZebuPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<ZebuPlugin> logger)
-    : NorenPluginBase(http, sessions, symbols, logger), IBrokerHistory
+    : NorenPluginBase(http, sessions, symbols, logger), IBrokerHistory, IBrokerFeed
 {
-    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.History;
+    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.History | BrokerCapability.Streaming;
+
+    // ---- feed ------------------------------------------------------------------------------------------------
+
+    public IFeedCodec CreateFeedCodec() => new NorenFeedCodec("zebu");
+
+    public FeedEndpoint? FeedEndpoint(BrokerSession session, string? overrideUrl) =>
+        session.Key("ApiKey") is { Length: > 0 } ? new FeedEndpoint(new Uri(overrideUrl ?? "wss://go.mynt.in/NorenWSAPI/"), new Dictionary<string, string>()) : null;
+
+    public string? FeedKeepAliveText => """{"t":"h"}""";
+
+    public TimeSpan FeedKeepAliveEvery => TimeSpan.FromSeconds(30);
+
 
     private static readonly Dictionary<string, string> Resolutions = new()
     {
@@ -898,14 +910,26 @@ public sealed class ZebuPlugin(IHttpClientFactory http, BrokerSessionFactory ses
 /// </summary>
 [BrokerPlugin]
 public sealed class FlattradePlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<FlattradePlugin> logger)
-    : NorenPluginBase(http, sessions, symbols, logger), IBrokerMargin, IBrokerHistory
+    : NorenPluginBase(http, sessions, symbols, logger), IBrokerMargin, IBrokerHistory, IBrokerFeed
 {
     public override string Name => "flattrade";
     public override string DisplayName => "Flattrade";
     protected override string Host => "https://piconnect.flattrade.in";
     protected override string Api => "/PiConnectAPI";
 
-    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.Margin | BrokerCapability.History;
+    public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.Margin | BrokerCapability.History | BrokerCapability.Streaming;
+
+    // ---- feed ------------------------------------------------------------------------------------------------
+
+    public IFeedCodec CreateFeedCodec() => new NorenFeedCodec("flattrade");
+
+    public FeedEndpoint? FeedEndpoint(BrokerSession session, string? overrideUrl) =>
+        session.Key("ApiKey") is { Length: > 0 } ? new FeedEndpoint(new Uri(overrideUrl ?? "wss://piconnect.flattrade.in/PiConnectWSAPI/"), new Dictionary<string, string>()) : null;
+
+    public string? FeedKeepAliveText => """{"t":"h"}""";
+
+    public TimeSpan FeedKeepAliveEvery => TimeSpan.FromSeconds(30);
+
 
     // ---- margin ----------------------------------------------------------------------------------------------
 

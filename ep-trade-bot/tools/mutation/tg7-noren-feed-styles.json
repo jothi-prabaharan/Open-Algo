@@ -1,0 +1,114 @@
+[
+ {
+  "name": "P1 ltp time always",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (style.LtpCarriesTradeTime) tick[\"last_trade_time\"]",
+  "new": "if (true) tick[\"last_trade_time\"]",
+  "filter": "FullyQualifiedName~FeedContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P2 ltp time never",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (style.LtpCarriesTradeTime) tick[\"last_trade_time\"]",
+  "new": "if (false) tick[\"last_trade_time\"]",
+  "filter": "FullyQualifiedName~FeedContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P3 timestamp key fixed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "tick[style.TimestampKey] = Int(d[\"ft\"]);",
+  "new": "tick[\"shoonya_timestamp\"] = Int(d[\"ft\"]);",
+  "filter": "FullyQualifiedName~FeedContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P4 quote timestamp key fixed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"last_trade_time\"] = d[\"ltt\"]?.DeepClone(), [style.TimestampKey] = Int(d[\"ft\"]),\n    };",
+  "new": "[\"last_trade_time\"] = d[\"ltt\"]?.DeepClone(), [\"shoonya_timestamp\"] = Int(d[\"ft\"]),\n    };",
+  "filter": "FullyQualifiedName~FeedContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P5 depth timestamp key fixed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[\"total_sell_quantity\"] = Int(d[\"tsq\"]), [style.TimestampKey] = Int(d[\"ft\"]),",
+  "new": "[\"total_sell_quantity\"] = Int(d[\"tsq\"]), [\"shoonya_timestamp\"] = Int(d[\"ft\"]),",
+  "filter": "FullyQualifiedName~FeedContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P6 open interest key fixed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[style.OpenInterestKey] = Int(d[\"toi\"]),",
+  "new": "[\"open_interest\"] = Int(d[\"toi\"]),",
+  "filter": "FullyQualifiedName~FeedContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P7 resubscribe waits for ack always",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "authenticated = !style.SubscribesAfterSignIn;\n            if (style.SubscribesAfterSignIn) return [SignIn()];",
+  "new": "authenticated = false;\n            return [SignIn()];",
+  "filter": "FullyQualifiedName~FeedContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P8 resubscribe sends at once always",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "authenticated = !style.SubscribesAfterSignIn;\n            if (style.SubscribesAfterSignIn) return [SignIn()];",
+  "new": "authenticated = true;\n            return [SignIn(), .. Restore()];",
+  "filter": "FullyQualifiedName~FeedContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P9 ack always restores",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (!style.SubscribesAfterSignIn) return [];\n                    if (Text(data[\"s\"])",
+  "new": "if (Text(data[\"s\"])",
+  "filter": "FullyQualifiedName~FeedContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P10 cache always cleared",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (style.ClearsCacheOnSignIn) cache.Clear();",
+  "new": "cache.Clear();",
+  "filter": "FullyQualifiedName~FeedContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P11 cache never cleared",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "if (style.ClearsCacheOnSignIn) cache.Clear();",
+  "new": "",
+  "filter": "FullyQualifiedName~FeedContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P12 chunk always 100",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "return style.BatchSize > 0 ? [.. Batches(\"t\", touchline, style.BatchSize), .. Batches(\"d\", depth, style.BatchSize)] : each;",
+  "new": "return [.. Batches(\"t\", touchline, 100), .. Batches(\"d\", depth, 100)];",
+  "filter": "FullyQualifiedName~FeedContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P13 individual messages never",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "return style.BatchSize > 0 ? [.. Batches(\"t\", touchline, style.BatchSize), .. Batches(\"d\", depth, style.BatchSize)] : each;",
+  "new": "return [.. Batches(\"t\", touchline, 100), .. Batches(\"d\", depth, style.BatchSize > 0 ? style.BatchSize : int.MaxValue)];",
+  "filter": "FullyQualifiedName~FeedContractTests",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P14 resubscribe chunk 100",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/NorenFeedCodec.cs",
+  "old": "[.. Batches(\"t\", touchline, style.BatchSize > 0 ? style.BatchSize : int.MaxValue), .. Batches(\"d\", depth, style.BatchSize > 0 ? style.BatchSize : int.MaxValue)];",
+  "new": "[.. Batches(\"t\", touchline, 100), .. Batches(\"d\", depth, 100)];",
+  "filter": "FullyQualifiedName~NorenResubscribe",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

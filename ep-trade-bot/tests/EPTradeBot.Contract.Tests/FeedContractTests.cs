@@ -287,3 +287,90 @@ public sealed class ShoonyaFeedContractTests
         return codec;
     }
 }
+
+public sealed class ZebuFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_zebu.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_zebu.fixtures.json", name, SignedIn, Adjustments.GetValueOrDefault(name), anyOrderAcrossInstruments: true);
+
+    private static Action<JsonObject> Sends(int step, params string[] messages) =>
+        scenario => scenario["steps"]![step]!["result"]!["sent"] = new JsonArray(messages.Select(m => (JsonNode?)JsonNode.Parse(m)).ToArray());
+
+    /// <summary>
+    /// OpenAlgo counts every subscribe call of one instrument and releases it from the broker only when the count falls to zero, which a second identical call
+    /// prevents for good (the instrument stays subscribed until the socket drops). EP Trade bot's host holds one subscription per instrument and counts its
+    /// clients itself, so the codec releases the instrument when its one hold goes. And OpenAlgo knows when the socket is signed out and sends nothing then;
+    /// EP Trade bot's connection discards what the codec says while it is down, and the next sign-in sends everything held.
+    /// </summary>
+    public static readonly Dictionary<string, Action<JsonObject>> Adjustments = new()
+    {
+        ["unsubscribe_one_of_two_owners_sends_nothing"] = Sends(2, """{"t":"u","k":"NSE|3045"}"""),
+        ["subscribe_while_signed_out_sends_nothing_until_sign_in"] = Sends(1, """{"t":"t","k":"NSE|3045"}""", """{"t":"d","k":"NSE|1594"}"""),
+        ["unsubscribe_while_signed_out"] = Sends(2, """{"t":"u","k":"NSE|3045"}"""),
+    };
+
+    private static IFeedCodec SignedIn()
+    {
+        var codec = new NorenFeedCodec("zebu");
+        codec.Begin(new BrokerSession(Guid.Empty, "zebu", "zebu-session-token", null, null, new Dictionary<string, string> { ["ApiKey"] = "FA12345:::zebu-client-id" }));
+        codec.Resubscribe(0);
+        return codec;
+    }
+}
+
+public sealed class FlattradeFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_flattrade.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_flattrade.fixtures.json", name, SignedIn, ZebuFeedContractTests.Adjustments.GetValueOrDefault(name), anyOrderAcrossInstruments: true);
+
+    private static IFeedCodec SignedIn()
+    {
+        var codec = new NorenFeedCodec("flattrade");
+        codec.Begin(new BrokerSession(Guid.Empty, "flattrade", "flattrade-session-token", null, null, new Dictionary<string, string> { ["ApiKey"] = "FA12345:::flattrade-api-key" }));
+        codec.Resubscribe(0);
+        return codec;
+    }
+}
+
+/// <summary>What the recordings cannot hold: OpenAlgo repeats its subscriptions from a Python set, whose order changes with every run.</summary>
+public sealed class NorenResubscribeTests
+{
+    private static NorenFeedCodec Codec(string broker, int count)
+    {
+        var codec = new NorenFeedCodec(broker);
+        codec.Begin(new BrokerSession(Guid.Empty, broker, "token", null, null, new Dictionary<string, string> { ["ApiKey"] = "FA12345:::key" }));
+        codec.Resubscribe(0);
+        codec.DecodeText("""{"t":"ak","s":"OK"}""", 0);
+        codec.TakeOutgoing();
+        codec.Subscribe(Enumerable.Range(0, count).Select(i => new FeedRequest("NSE", $"S{i}", $"{5000 + i}", "NSE", StreamMode.Quote)).ToList(), 0);
+        return codec;
+    }
+
+    private static int Scrips(string message) => System.Text.Json.Nodes.JsonNode.Parse(message)!["k"]!.GetValue<string>().Split('#').Length;
+
+    [Fact]
+    public void Shoonya_repeats_a_hundred_and_one_subscriptions_in_two_messages()
+    {
+        var codec = Codec("shoonya", 101);
+        codec.Resubscribe(0);
+        codec.DecodeText("""{"t":"ak","s":"OK"}""", 0);
+        Assert.Equal([100, 1], codec.TakeOutgoing().Select(Scrips));
+    }
+
+    [Theory]
+    [InlineData("zebu")]
+    [InlineData("flattrade")]
+    public void Zebu_and_Flattrade_repeat_every_subscription_in_one_message(string broker)
+    {
+        var codec = Codec(broker, 101);
+        var messages = codec.Resubscribe(0);
+        Assert.Equal(2, messages.Count);
+        Assert.Equal(101, Scrips(messages[1]));
+    }
+}

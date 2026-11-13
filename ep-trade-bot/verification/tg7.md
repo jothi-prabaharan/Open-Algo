@@ -17,8 +17,8 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | CompositEdge (XTS) | yes | yes | yes | yes | no | no | yes | no |
 | RMoney (XTS) | yes | yes | yes | yes | yes | no | yes | no |
 | Shoonya | yes | yes | yes | yes | yes | no | yes | yes |
-| Zebu | yes | yes | yes | yes | n/a (no calculator) | no | yes | no |
-| Flattrade | yes | yes | yes | yes | yes | no | yes | no |
+| Zebu | yes | yes | yes | yes | n/a (no calculator) | no | yes | yes |
+| Flattrade | yes | yes | yes | yes | yes | no | yes | yes |
 
 The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -213,6 +213,12 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Recorded difference: OpenAlgo refuses an unsubscribe while the socket is signed out and keeps the instrument, so the next sign-in subscribes it again. EP Trade bot lets go of it at once.
 - Mutation set `tools/mutation/tg7-noren-feed.json`: 71 mutants, all caught (five more were dropped as equivalent: a de-duplication the counts already make, a zero that replaces a zero, and three unreachable routing branches).
 
+## Zebu and Flattrade feeds
+
+- The same `NorenFeedCodec`, with a style for each broker, held to `broker/zebu/streaming` and `broker/flattrade/streaming` by the same 75 scenarios recorded from their own adapters (`feed_zebu.fixtures.json`, `feed_flattrade.fixtures.json`). What differs, as recorded: the ticks carry `zebu_timestamp` or `flattrade_timestamp` and `total_traded_value` where Shoonya's carry `shoonya_timestamp` and `open_interest`, and an LTP tick has no last trade time; both send their subscriptions straight after the sign-in message instead of waiting for the broker's acceptance, and keep the cache over a reconnect; Zebu sends one message per scrip, Flattrade one message per kind with every scrip in it (no limit of 100), and both repeat everything held in one message per kind.
+- Recorded differences from OpenAlgo: a second identical subscribe call there stops the instrument ever being released from the broker (the call count never returns to zero); EP Trade bot's connection counts its clients itself, so the codec releases the instrument when its one hold goes. OpenAlgo also knows when the socket is signed out and sends nothing then, where EP Trade bot's connection discards what the codec says while it is down and the next sign-in sends everything held.
+- Mutation set `tools/mutation/tg7-noren-feed-styles.json`: 14 mutants on what differs between the styles, all caught (the repeat of more than a hundred scrips is held by unit tests, because OpenAlgo repeats them from a set whose order changes on every run).
+
 ## Shoonya sign-in
 
 - Ported from `broker/shoonya/api/auth_api.py` and the address `blueprints/brlogin.py` builds: the trader signs in on Shoonya's OAuth page (`.../OAuthlogin/authorize/oauth?client_id=...`, the client id being the part of the saved key after ":::"), which sends back a code; the code is exchanged at GenAcsTok with the SHA-256 (lower-case hex) of the client id, the secret and the code. There is no feed token.
@@ -254,4 +260,3 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Margin (27 recorded cases, `margin_flattrade.fixtures.json`): a basket to GetBasketMargin; a market leg is priced off the last price and a stop-market leg off its trigger (last price only when it has none), moved by the protection slab and rounded to the quote's tick, else the master contract's; with no tick the reference goes unprotected; a leg that cannot be priced refuses the whole basket with the trader-worded message. The total is the margin after the trade, else the total margin. A refusal is a success status in OpenAlgo and an error status here (recorded deviation).
 - Mutation sets: 26 mutants on orders, books and funds and 22 on margin, all caught (one margin mutant, protection returning a non-positive price, is dropped as unreachable: the slab never yields zero).
 - History (31 recorded cases, `history_flattrade.fixtures.json`): one TPSeries call for intraday bars and one EODChartData call for daily ones; the 09:14 pre-open bar on cash and F&O is left out (commodities keep theirs), bars missing a price are skipped, negative intraday volume is zeroed, a daily bar whose range leaves out its open or close is widened, and today's bar is built from a quote when the daily range includes today and the chart has none. Differences, recorded: OpenAlgo stamps today's bar 5 hours 30 minutes late and fails the whole request over one unreadable row or a chart it cannot reach; EP Trade bot stamps midnight India time, skips the row, builds today's bar from the quote, keeps one bar per timestamp and words errors for the trader (a lapsed session says to log in again). Mutation set: 29 mutants, all caught.
-- Not yet ported for Flattrade: the feed.
