@@ -910,3 +910,109 @@ public sealed class IiflCapitalFeedContractTests
     [MemberData(nameof(Names))]
     public void Matches_the_python_adapter(string name) => MqttFeedRunner.Run("feed_iiflcapital.fixtures.json", name, () => new IiflCapitalFeedCodec());
 }
+
+/// <summary>Answers the listing-id calls the real feed host would make for an index, so a recorded step that subscribes an index runs as the host runs it.</summary>
+internal sealed class SamcoHostedCodec(SamcoFeedCodec inner) : IFeedCodec
+{
+    private static readonly Dictionary<string, string> Listings = new() { ["NIFTY"] = "-23", ["SENSEX"] = "-5" };
+
+    public string Broker => inner.Broker;
+
+    public IReadOnlyList<string> Subscribe(IReadOnlyList<FeedRequest> requests, long nowMs)
+    {
+        var frames = inner.Subscribe(requests, nowMs).ToList();
+        foreach (var call in inner.TakeHttp())
+        {
+            var symbol = call.Body["symbol"]!.GetValue<string>();
+            inner.DecodeText(new JsonObject { ["samco_index"] = true, ["symbol"] = symbol, ["exchange"] = call.Body["exchange"]!.GetValue<string>(), ["listing_id"] = Listings[symbol] }.ToJsonString(), nowMs);
+        }
+
+        frames.AddRange(inner.TakeOutgoing());
+        return frames;
+    }
+
+    public IReadOnlyList<string> Unsubscribe(FeedTarget target, StreamMode? mode, long nowMs) => inner.Unsubscribe(target, mode, nowMs);
+
+    public IReadOnlyList<string> Resubscribe(long nowMs) => inner.Resubscribe(nowMs);
+
+    public IReadOnlyList<FeedPublish> DecodeBinary(ReadOnlySpan<byte> frame, long nowMs) => inner.DecodeBinary(frame, nowMs);
+
+    public IReadOnlyList<FeedPublish> DecodeText(string frame, long nowMs) => inner.DecodeText(frame, nowMs);
+
+    public void Reset() => inner.Reset();
+
+    public IReadOnlyList<string> TakeOutgoing() => inner.TakeOutgoing();
+}
+
+public sealed class SamcoFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_samco.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_samco.fixtures.json", name, () => new SamcoHostedCodec(new SamcoFeedCodec()),
+        name == "reconnect_after_a_depth_unsubscribe"
+            // OpenAlgo removes a depth subscription under a name that never matches the one it was stored under, so a depth symbol the trader unsubscribed comes back after a reconnect.
+            // EP Trade bot forgets it, so the reconnect repeats only what is still held.
+            ? scenario =>
+            {
+                var steps = scenario["steps"]!.AsArray();
+                var sent = steps[2]!["result"]!["sent"]!.AsArray();
+                sent.Clear();
+                sent.Add(JsonNode.Parse("""{"request":{"streaming_type":"quote","data":{"symbols":[{"symbol":"1594_NSE"}]},"request_type":"subscribe","response_format":"json"}}"""));
+            }
+            : null);
+}
+
+public sealed class SamcoFeedEndpointTests
+{
+    private static BrokerSession Session(string token = "tok%20en") => new(Guid.NewGuid(), "samco", token, null, null, new Dictionary<string, string>());
+
+    private static EPTradeBot.Infrastructure.Brokers.Samco.SamcoPlugin Plugin() => new(null!, null!, null!, TimeProvider.System);
+
+    [Fact]
+    public void The_session_token_rides_decoded_in_a_header()
+    {
+        var plugin = Plugin();
+        var endpoint = plugin.FeedEndpoint(Session(), null)!;
+        Assert.Equal("wss://stream.samco.in/", endpoint.Url.AbsoluteUri);
+        Assert.Equal("tok en", endpoint.Headers["x-session-token"]);
+        Assert.Null(plugin.FeedKeepAliveText);
+        Assert.Equal(TimeSpan.FromSeconds(30), plugin.FeedKeepAliveEvery);
+    }
+
+    [Fact]
+    public void Without_a_token_there_is_no_endpoint() => Assert.Null(Plugin().FeedEndpoint(Session(""), null));
+
+    [Fact]
+    public void An_index_listing_id_is_asked_for_once_and_streamed_under_itself()
+    {
+        var codec = new SamcoFeedCodec();
+        var index = new FeedRequest("NSE_INDEX", "NIFTY", "NIFTY_50", "NSE", StreamMode.Quote, "NIFTY 50");
+        Assert.Empty(codec.Subscribe([index], 1));
+        var call = Assert.Single(codec.TakeHttp());
+        Assert.Equal("/quote/indexQuote?indexName=NIFTY%2050", call.Path);
+
+        // Asked again before the answer arrives, it is not asked a second time and nothing is sent yet.
+        Assert.Empty(codec.Subscribe([index with { Mode = StreamMode.Ltp }], 2));
+        Assert.Empty(codec.TakeHttp());
+
+        codec.DecodeText("""{"samco_index":true,"symbol":"NIFTY","exchange":"NSE_INDEX","listing_id":"-23"}""", 3);
+        var sent = codec.TakeOutgoing();
+        Assert.Single(sent);
+        Assert.Contains("\"symbol\":\"-23\"", sent[0], StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void An_index_samco_gives_no_listing_id_for_is_left_out_and_the_rest_still_goes()
+    {
+        var codec = new SamcoFeedCodec();
+        Assert.Empty(codec.Subscribe([new FeedRequest("NSE_INDEX", "NIFTY", "NIFTY_50", "NSE", StreamMode.Quote, "NIFTY 50"), new FeedRequest("NSE", "SBIN", "3045_NSE", "NSE", StreamMode.Quote)], 1));
+        codec.TakeHttp();
+        codec.DecodeText("""{"samco_index":true,"symbol":"NIFTY","exchange":"NSE_INDEX","listing_id":null}""", 2);
+        var sent = codec.TakeOutgoing();
+        Assert.Single(sent);
+        Assert.Contains("3045_NSE", sent[0], StringComparison.Ordinal);
+        Assert.DoesNotContain("-23", sent[0], StringComparison.Ordinal);
+    }
+}

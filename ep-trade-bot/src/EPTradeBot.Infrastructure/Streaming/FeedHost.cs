@@ -262,6 +262,11 @@ public sealed class FeedHost(
                                 IReadOnlyList<FeedPublish> ticks;
                                 lock (sync) ticks = codec.DecodeText(quote, Now);
                                 foreach (var tick in ticks) host.publisher.Publish(tick.Topic, tick.Data);
+                                // What reading the answer obliges the codec to send (the frames held back until an index's listing id arrived) goes out behind it.
+                                lock (sync)
+                                {
+                                    if (connected) foreach (var m in codec.TakeOutgoing()) outbox.Writer.TryWrite(m);
+                                }
                             }
                         }
                         catch (Exception ex) when (ex is not OutOfMemoryException)
