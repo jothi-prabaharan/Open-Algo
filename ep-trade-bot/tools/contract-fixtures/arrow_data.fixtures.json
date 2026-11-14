@@ -215,6 +215,45 @@
       "tick_size": 0.05
     },
     {
+      "symbol": "MCXCOMDEX",
+      "brsymbol": "MCX COMDEX",
+      "name": "MCXCOMDEX",
+      "exchange": "MCX_INDEX",
+      "brexchange": "MCX_INDEX",
+      "token": "26111",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTYREALTY",
+      "brsymbol": "Nifty Realty",
+      "name": "NIFTYREALTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE_INDEX",
+      "token": "26112",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "CRUDEOIL25NOV26FUT",
+      "brsymbol": "CRUDEOIL25NOV26FUT",
+      "name": "CRUDEOIL",
+      "exchange": "NCO",
+      "brexchange": "NCO",
+      "token": "95001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 100,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    },
+    {
       "symbol": "USDINR25NOV26FUT",
       "brsymbol": "USDINR25NOV26FUT",
       "name": "USDINR",
@@ -3866,6 +3905,217 @@
       "ignore": []
     },
     {
+      "name": "quotes_mcx_index_goes_under_the_index_exchange",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "MCXCOMDEX",
+        "exchange": "MCX_INDEX",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /info/quote/full": {
+          "body": {
+            "status": "success",
+            "data": {
+              "ltp": 1234500,
+              "open": 80245,
+              "high": 80945,
+              "low": 80045,
+              "close": 80395,
+              "volume": 1234567,
+              "oi": 1500,
+              "ltq": 25,
+              "totalBuyQty": 5000,
+              "totalSellQty": 4000,
+              "bids": [
+                {
+                  "price": 80540,
+                  "quantity": 100,
+                  "orders": 1
+                },
+                {
+                  "price": 80535,
+                  "quantity": 200,
+                  "orders": 1
+                },
+                {
+                  "price": 80530,
+                  "quantity": 300,
+                  "orders": 1
+                },
+                {
+                  "price": 80525,
+                  "quantity": 400,
+                  "orders": 1
+                },
+                {
+                  "price": 80520,
+                  "quantity": 500,
+                  "orders": 1
+                }
+              ],
+              "asks": [
+                {
+                  "price": 80550,
+                  "quantity": 110,
+                  "orders": 1
+                },
+                {
+                  "price": 80555,
+                  "quantity": 220,
+                  "orders": 1
+                },
+                {
+                  "price": 80560,
+                  "quantity": 330,
+                  "orders": 1
+                },
+                {
+                  "price": 80565,
+                  "quantity": 440,
+                  "orders": 1
+                },
+                {
+                  "price": 80570,
+                  "quantity": 550,
+                  "orders": 1
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 805.5,
+            "bid": 805.4,
+            "high": 809.45,
+            "low": 800.45,
+            "ltp": 12345.0,
+            "oi": 1500,
+            "open": 802.45,
+            "prev_close": 803.95,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/info/quote/full",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "INDEX",
+            "symbol": "MCXCOMDEX"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_nse_commodities_arrow_does_not_serve",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "CRUDEOIL25NOV26FUT",
+        "exchange": "NCO",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /info/quote/full": {
+          "body": {
+            "status": "success",
+            "data": {
+              "ltp": 80545,
+              "open": 80245,
+              "high": 80945,
+              "low": 80045,
+              "close": 80395,
+              "volume": 1234567,
+              "oi": 1500,
+              "ltq": 25,
+              "totalBuyQty": 5000,
+              "totalSellQty": 4000,
+              "bids": [
+                {
+                  "price": 80540,
+                  "quantity": 100,
+                  "orders": 1
+                },
+                {
+                  "price": 80535,
+                  "quantity": 200,
+                  "orders": 1
+                },
+                {
+                  "price": 80530,
+                  "quantity": 300,
+                  "orders": 1
+                },
+                {
+                  "price": 80525,
+                  "quantity": 400,
+                  "orders": 1
+                },
+                {
+                  "price": 80520,
+                  "quantity": 500,
+                  "orders": 1
+                }
+              ],
+              "asks": [
+                {
+                  "price": 80550,
+                  "quantity": 110,
+                  "orders": 1
+                },
+                {
+                  "price": 80555,
+                  "quantity": 220,
+                  "orders": 1
+                },
+                {
+                  "price": 80560,
+                  "quantity": 330,
+                  "orders": 1
+                },
+                {
+                  "price": 80565,
+                  "quantity": 440,
+                  "orders": 1
+                },
+                {
+                  "price": 80570,
+                  "quantity": 550,
+                  "orders": 1
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Error fetching quotes: Arrow's quote API does not serve the NCO exchange (verified live; the official SDK has no code for it either). Use websocket streaming for live prices on this exchange.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
       "name": "quotes_unknown_symbol",
       "method": "POST",
       "path": "/api/v1/quotes",
@@ -6338,6 +6588,222 @@
           "json": {
             "exchange": "INDEX",
             "symbol": "NIFTY MID SELECT"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/info/quotes/full",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": [
+            {
+              "exchange": "NSE",
+              "symbol": "SBIN-EQ"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes_an_index_arrow_does_not_serve_asked_twice_probes_once",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "NIFTYREALTY",
+            "exchange": "NSE_INDEX"
+          },
+          {
+            "symbol": "NIFTYREALTY",
+            "exchange": "NSE_INDEX"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /info/quote/ltp": [
+          {
+            "status": 400,
+            "body": {
+              "status": "error",
+              "message": "bad symbol"
+            }
+          },
+          {
+            "status": 400,
+            "body": {
+              "status": "error",
+              "message": "bad symbol"
+            }
+          },
+          {
+            "status": 400,
+            "body": {
+              "status": "error",
+              "message": "bad symbol"
+            }
+          }
+        ],
+        "POST /info/quotes/full": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "token": 1001,
+                "ltp": 80545,
+                "open": 80245,
+                "high": 80945,
+                "low": 80045,
+                "close": 80395,
+                "volume": 1234567,
+                "oi": 1500,
+                "ltq": 25,
+                "totalBuyQty": 5000,
+                "totalSellQty": 4000,
+                "bids": [
+                  {
+                    "price": 80540,
+                    "quantity": 100,
+                    "orders": 1
+                  },
+                  {
+                    "price": 80535,
+                    "quantity": 200,
+                    "orders": 1
+                  },
+                  {
+                    "price": 80530,
+                    "quantity": 300,
+                    "orders": 1
+                  },
+                  {
+                    "price": 80525,
+                    "quantity": 400,
+                    "orders": 1
+                  },
+                  {
+                    "price": 80520,
+                    "quantity": 500,
+                    "orders": 1
+                  }
+                ],
+                "asks": [
+                  {
+                    "price": 80550,
+                    "quantity": 110,
+                    "orders": 1
+                  },
+                  {
+                    "price": 80555,
+                    "quantity": 220,
+                    "orders": 1
+                  },
+                  {
+                    "price": 80560,
+                    "quantity": 330,
+                    "orders": 1
+                  },
+                  {
+                    "price": 80565,
+                    "quantity": 440,
+                    "orders": 1
+                  },
+                  {
+                    "price": 80570,
+                    "quantity": 550,
+                    "orders": 1
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [
+            {
+              "error": "Index not served by Arrow quote API",
+              "exchange": "NSE_INDEX",
+              "symbol": "NIFTYREALTY"
+            },
+            {
+              "error": "Index not served by Arrow quote API",
+              "exchange": "NSE_INDEX",
+              "symbol": "NIFTYREALTY"
+            },
+            {
+              "data": {
+                "ask": 805.5,
+                "bid": 805.4,
+                "high": 809.45,
+                "low": 800.45,
+                "ltp": 805.45,
+                "oi": 1500,
+                "open": 802.45,
+                "prev_close": 803.95,
+                "volume": 1234567
+              },
+              "exchange": "NSE",
+              "symbol": "SBIN"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/info/quote/ltp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "INDEX",
+            "symbol": "NIFTYREALTY"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/info/quote/ltp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "INDEX",
+            "symbol": "NIFTY REALTY"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/info/quote/ltp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "INDEX",
+            "symbol": "Nifty Realty"
           }
         },
         {
@@ -20564,6 +21030,130 @@
             [
               "to",
               "2026-11-15T23:59:59"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_weekly_goes_in_chunks_of_two_thousand_days",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "W",
+        "start_date": "2019-01-01",
+        "end_date": "2026-10-30",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /candle/nse/1001/week": [
+          {
+            "body": [
+              [
+                "2026-10-29T00:00:00+0530",
+                80000,
+                80200,
+                79900,
+                80100,
+                1000
+              ],
+              [
+                "2026-10-30T00:00:00+0530",
+                79900,
+                80500,
+                79500,
+                80395,
+                9000
+              ]
+            ]
+          },
+          {
+            "body": [
+              [
+                "2026-10-31T00:00:00+0530",
+                80000,
+                80200,
+                79900,
+                80100,
+                1000
+              ]
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793232000,
+              "volume": 1000
+            },
+            {
+              "close": 803.95,
+              "high": 805.0,
+              "low": 795.0,
+              "oi": 0,
+              "open": 799.0,
+              "timestamp": 1793318400,
+              "volume": 9000
+            },
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793404800,
+              "volume": 1000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "historical-api.arrow.trade",
+          "path": "/candle/nse/1001/week",
+          "query": [
+            [
+              "from",
+              "2019-01-01T00:00:00"
+            ],
+            [
+              "to",
+              "2024-06-22T23:59:59"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "historical-api.arrow.trade",
+          "path": "/candle/nse/1001/week",
+          "query": [
+            [
+              "from",
+              "2024-06-23T00:00:00"
+            ],
+            [
+              "to",
+              "2026-10-30T23:59:59"
             ]
           ],
           "headers": {

@@ -44,6 +44,7 @@ public sealed class ArrowContractTests(ArrowHost host, ITestOutputHelper output)
             f => Expect(f, 400, Error("Rejected"))),
         ["placeorder_success_without_an_order_number"] = new("OpenAlgo answers success with no order id when Arrow says success without an order number. EP Trade bot refuses, so a trader is never told an order was placed that cannot be found.",
             f => Expect(f, 400, Error("Failed to place order"))),
+        ["placeorder_error_status_with_an_order_number_is_not_an_order"] = new("OpenAlgo answers success with no order id when Arrow answers an error with an OK status. EP Trade bot refuses.", f => Expect(f, 400, Error("Rejected"))),
         ["funds_refused"] = new("OpenAlgo shows an empty balance when Arrow refuses the funds call. EP Trade bot reports the refusal, so an empty balance is never mistaken for a real one.", Status: 500),
         ["funds_error_status_in_an_ok_answer"] = new("OpenAlgo shows an empty balance when Arrow answers the funds call with an error status in the body. EP Trade bot reports the refusal.", Status: 500),
     };
@@ -83,6 +84,7 @@ public sealed class ArrowDataContractTests(ArrowDataHost host, ITestOutputHelper
         ["history_a_later_chunk_fails"] = Words(Refusal, "Arrow could not send the candles: down"),
         ["quotes_index_every_name_refused"] = Words(Plain, "Error fetching quotes: Arrow's quote API did not accept any name for the index NIFTYMEDIA, so its quote cannot be read. The live feed still works."),
         ["quotes_exchange_arrow_does_not_serve"] = Words(Plain, "Error fetching quotes: Arrow's quote API does not serve the CDS exchange. Use the live feed for prices on this exchange."),
+        ["quotes_nse_commodities_arrow_does_not_serve"] = Words(Plain, "Error fetching quotes: Arrow's quote API does not serve the NCO exchange. Use the live feed for prices on this exchange."),
         ["depth_unsupported_exchange"] = Words(Plain, "Error fetching market depth: Arrow's quote API does not serve the CDS exchange. Use the live feed for prices on this exchange."),
         ["history_interval_arrow_lacks"] = Words("OpenAlgo answers 500 with \"Unsupported timeframe: 20m\". EP Trade bot answers 400 and names what Arrow offers.", "Arrow does not offer 20m candles. Choose one of: 1m, 3m, 5m, 10m, 15m, 30m, 1h, 2h, 3h, 4h, D, W, M.", 400),
     };

@@ -55,6 +55,7 @@ TRADES = {"body": {"status": "success", "data": [
     trade("A3", "NIFTY25NOV26FUT", "NFO", "B", "75", "24005.5", "M"),
     {"id": "A9", "exchange": "NSE", "symbol": "SBIN-EQ", "transactionType": "B", "quantity": "2", "averagePrice": "801", "product": "I", "orderTime": "2026-11-03 10:30:00"},
     trade("A5", "SBIN-EQ", "NSE", "B", None, None),
+    trade("A6", "SBIN-EQ", "NSE", "B", 0, ""),
 ]}}
 
 
@@ -67,6 +68,7 @@ POSITIONS = {"body": {"status": "success", "data": [
     pos("NIFTY25NOV26FUT", "NFO", "M", "-75", "24005.5", "24000", "1200.555", "412.5"),
     pos("INFY-EQ", "NSE", "C", "0", "0", "0", "-5", "0"),
     pos("UNKNOWN", "NSE", "Q", "3", None, None, None, None),
+    {"symbol": "SBIN-EQ", "exchange": "NSE", "product": "C", "avgPrice": "1", "ltp": "2", "realisedPnL": "0", "unrealisedMarkToMarket": "0"},
 ]}}
 NO_POSITIONS = {"body": {"status": "success", "data": []}}
 
@@ -79,6 +81,7 @@ HOLDINGS = {"body": {"status": "success", "data": [
     holding("INFY-EQ", "NSE", "40", "1400", "1499", "3960"),
     holding("OLD-EQ", "NSE", "10", "0", "12.5", "0"),
     {"qty": "7", "avgPrice": "50", "ltp": "55", "pnl": "35", "symbols": []},
+    {"qty": "2", "avgPrice": "10", "ltp": "11", "pnl": "2", "symbols": [{"tradingSymbol": "INFY-EQ", "exchange": "NSE"}, {"tradingSymbol": "SBIN-EQ", "exchange": "NSE"}]},
     {"qty": 3, "avgPrice": None, "ltp": None, "pnl": None, "symbols": [{"symbol": "SBIN-EQ", "exchange": "NSE"}]},
 ]}}
 NO_HOLDINGS = {"body": {"status": "success", "data": []}}
@@ -111,12 +114,18 @@ SCENARIOS = [
     req("placeorder_refused_with_an_ok_status", "/api/v1/placeorder", PLACE, {PLACE_EP: {"body": {"status": "error", "message": "Rejected"}}}),
     req("placeorder_success_without_an_order_number", "/api/v1/placeorder", PLACE, {PLACE_EP: {"body": {"status": "success", "data": {}}}}),
     req("placeorder_unknown_symbol", "/api/v1/placeorder", {**PLACE, "symbol": "NOPE"}, {PLACE_EP: ORDER_OK}),
+    req("placeorder_error_status_with_an_order_number_is_not_an_order", "/api/v1/placeorder", PLACE, {PLACE_EP: {"body": {"status": "error", "message": "Rejected", "data": {"orderNo": "A7"}}}}),
+    req("placeorder_refused_with_a_server_error_status", "/api/v1/placeorder", PLACE, {PLACE_EP: {"status": 500, "body": {"status": "error", "message": "down"}}}),
     req("modifyorder_limit", "/api/v1/modifyorder", CHANGE, {"PATCH /order/regular/A1": ORDER_OK}),
     req("modifyorder_stop_limit", "/api/v1/modifyorder", {**CHANGE, "pricetype": "SL", "price": "800", "trigger_price": "801.5", "disclosed_quantity": "5"}, {"PATCH /order/regular/A1": ORDER_OK}),
     req("modifyorder_to_market", "/api/v1/modifyorder", {**CHANGE, "pricetype": "MARKET"}, {"PATCH /order/regular/A1": ORDER_OK}),
     req("modifyorder_answer_without_an_order_number_keeps_the_given_one", "/api/v1/modifyorder", CHANGE, {"PATCH /order/regular/A1": {"body": {"status": "success", "data": {}}}}),
     req("modifyorder_refused", "/api/v1/modifyorder", CHANGE, {"PATCH /order/regular/A1": {"status": 400, "body": {"status": "error", "message": "Order is not open"}}}),
     req("modifyorder_refused_without_a_message", "/api/v1/modifyorder", CHANGE, {"PATCH /order/regular/A1": {"status": 400, "body": {"status": "error"}}}),
+    req("modifyorder_stop_market_keeps_the_trigger", "/api/v1/modifyorder", {**CHANGE, "pricetype": "SL-M", "price": "0", "trigger_price": "801.5"}, {"PATCH /order/regular/A1": ORDER_OK}),
+    req("modifyorder_answer_with_another_order_number", "/api/v1/modifyorder", CHANGE, {"PATCH /order/regular/A1": {"body": {"status": "success", "data": {"orderNo": "A5"}}}}),
+    req("modifyorder_refused_with_a_server_error_status", "/api/v1/modifyorder", CHANGE, {"PATCH /order/regular/A1": {"status": 500, "body": {"status": "error", "message": "down"}}}),
+    req("cancelorder_accepted_with_a_202", "/api/v1/cancelorder", {"strategy": "t", "orderid": "A1"}, {"DELETE /order/regular/A1": {"status": 202, "body": {}}}),
     req("cancelorder", "/api/v1/cancelorder", {"strategy": "t", "orderid": "A1"}, {"DELETE /order/regular/A1": {"body": {"status": "success"}}}),
     req("cancelorder_refused_with_a_message", "/api/v1/cancelorder", {"strategy": "t", "orderid": "A2"}, {"DELETE /order/regular/A2": {"status": 400, "body": {"status": "error", "message": "Order already completed"}}}),
     req("cancelorder_refused_without_a_message", "/api/v1/cancelorder", {"strategy": "t", "orderid": "A2"}, {"DELETE /order/regular/A2": {"status": 500, "body": {"x": 1}}}),

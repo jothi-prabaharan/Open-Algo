@@ -1,0 +1,218 @@
+[
+ {
+  "name": "AO5 product default",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.cs",
+  "old": "\"CNC\" => \"C\", \"NRML\" => \"M\", \"MIS\" => \"I\", _ => \"I\" };",
+  "new": "\"CNC\" => \"C\", \"NRML\" => \"M\", \"MIS\" => \"I\", _ => \"M\" };",
+  "filter": "FullyQualifiedName~ArrowContract|FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AO10 py float",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.cs",
+  "old": "return text.Contains('.', StringComparison.Ordinal) || text.Contains('E', StringComparison.Ordinal) ? text : text + \".0\";",
+  "new": "return text;",
+  "filter": "FullyQualifiedName~ArrowContract|FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AO11 mpp",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.cs",
+  "old": "if (type == \"MKT\") payload[\"mpp\"] = true;",
+  "new": "if (type == \"MKT\" && order.Strategy.Length > 1000) payload[\"mpp\"] = true;",
+  "filter": "FullyQualifiedName~ArrowContract|FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AO16 place success",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.cs",
+  "old": "Str((reply.Body as JsonObject)?[\"status\"]) == \"success\" && Str(((reply.Body as JsonObject)?[\"data\"] as JsonObject)?[\"orderNo\"]) is { Length: > 0 } id",
+  "new": "Str(((reply.Body as JsonObject)?[\"data\"] as JsonObject)?[\"orderNo\"]) is { Length: > 0 } id",
+  "filter": "FullyQualifiedName~ArrowContract|FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AO17 refused status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.cs",
+  "old": "BrokerCallResult.Refused(reply.Status >= 400 ? reply.Status : 400, Message(reply.Body, \"Failed to place order\"))",
+  "new": "BrokerCallResult.Refused(400, Message(reply.Body, \"Failed to place order\"))",
+  "filter": "FullyQualifiedName~ArrowContract|FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AO18 modify trigger",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.cs",
+  "old": "if (type is \"SL-LMT\" or \"SL-MKT\") payload[\"triggerPrice\"] = PyFloat(change.TriggerPrice);",
+  "new": "if (type is \"SL-LMT\") payload[\"triggerPrice\"] = PyFloat(change.TriggerPrice);",
+  "filter": "FullyQualifiedName~ArrowContract|FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AO19 modify id",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.cs",
+  "old": "Str(((body as JsonObject)?[\"data\"] as JsonObject)?[\"orderNo\"]) is { Length: > 0 } id ? id : change.OrderId",
+  "new": "change.OrderId",
+  "filter": "FullyQualifiedName~ArrowContract|FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AO20 modify refused",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.cs",
+  "old": "BrokerCallResult.Refused(status >= 400 ? status : 400, Message(body, \"Failed to modify order\"))",
+  "new": "BrokerCallResult.Refused(400, Message(body, \"Failed to modify order\"))",
+  "filter": "FullyQualifiedName~ArrowContract|FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AO21 cancel ok",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.cs",
+  "old": "if (status < 400) return BrokerCallResult.Success(orderId);",
+  "new": "if (status < 300) return BrokerCallResult.Success(orderId);",
+  "filter": "FullyQualifiedName~ArrowContract|FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AO33 trade zero",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.cs",
+  "old": "var q = Truthy(quantity) ? Same(quantity) : JsonValue.Create(0);",
+  "new": "var q = quantity is null ? JsonValue.Create(0) : Same(quantity);",
+  "filter": "FullyQualifiedName~ArrowContract|FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AO35 position qty default",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.cs",
+  "old": "p.ContainsKey(\"qty\") ? Same(p[\"qty\"]) : \"0\"",
+  "new": "p.ContainsKey(\"qty\") ? Same(p[\"qty\"]) : \"1\"",
+  "filter": "FullyQualifiedName~ArrowContract|FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AO36 holdings first listing",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.cs",
+  "old": "(h[\"symbols\"] as JsonArray)?.FirstOrDefault() as JsonObject ?? []",
+  "new": "(h[\"symbols\"] as JsonArray)?.LastOrDefault() as JsonObject ?? []",
+  "filter": "FullyQualifiedName~ArrowContract|FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AD2 index exchange",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.Data.cs",
+  "old": "\"NSE_INDEX\" or \"BSE_INDEX\" or \"MCX_INDEX\" => \"INDEX\", _ => exchange };",
+  "new": "\"NSE_INDEX\" or \"BSE_INDEX\" => \"INDEX\", _ => exchange };",
+  "filter": "FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AD8 unsupported",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.Data.cs",
+  "old": "[\"CDS\", \"BCD\", \"NCO\"]",
+  "new": "[\"CDS\", \"BCD\"]",
+  "filter": "FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AD13 unsupported cache",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.Data.cs",
+  "old": "indexUnsupported.Add(token);\n        throw",
+  "new": "throw",
+  "filter": "FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AD25 chunk daily",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.Data.cs",
+  "old": "var chunkDays = arrowInterval is \"day\" or \"week\" or \"month\" ? 2000 : 60;",
+  "new": "var chunkDays = arrowInterval is \"day\" or \"month\" ? 2000 : 60;",
+  "filter": "FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AD28 first kept",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.Data.cs",
+  "old": "bars.TryAdd(timestamp, new JsonObject",
+  "new": "if (bars.ContainsKey(timestamp)) bars[timestamp] = new JsonObject { [\"timestamp\"] = -1 }; else bars.TryAdd(timestamp, new JsonObject",
+  "filter": "FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AD29 envelope",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.Data.cs",
+  "old": "if (body is JsonObject envelope) throw",
+  "new": "if (body is JsonObject envelope && envelope.Count > 1000) throw",
+  "filter": "FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AD30 has oi",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.Data.cs",
+  "old": "var hasOi = wantOi && candles.Count > 0 && candles[0].Count > 6;",
+  "new": "var hasOi = candles.Count > 0 && candles[0].Count > 6;",
+  "filter": "FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AD31 naive utc",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.Data.cs",
+  "old": "DateTimeStyles.AssumeUniversal",
+  "new": "DateTimeStyles.AssumeLocal",
+  "filter": "FullyQualifiedName~ArrowData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AM1 product default",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.Margin.cs",
+  "old": "\"NRML\" => \"M\", _ => \"M\" };",
+  "new": "\"NRML\" => \"M\", _ => \"I\" };",
+  "filter": "FullyQualifiedName~MarginArrow",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AL3 status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.Login.cs",
+  "old": "if (Str(body[\"status\"]) != \"success\") return",
+  "new": "if (Str(body[\"status\"]) == \"never-sent\") return",
+  "filter": "FullyQualifiedName~LoginArrow",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AL4 http",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Arrow/ArrowPlugin.Login.cs",
+  "old": "if (!response.IsSuccessStatusCode)\n                return",
+  "new": "if (!response.IsSuccessStatusCode && response.StatusCode == 0)\n                return",
+  "filter": "FullyQualifiedName~LoginArrow",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AF6 info before limit",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/ArrowFeedCodec.cs",
+  "old": "info[token] = (r.Symbol, r.Exchange);\n                if (sent + 1 > MaxInstruments) continue;",
+  "new": "if (sent + 1 > MaxInstruments) continue;\n                info[token] = (r.Symbol, r.Exchange);",
+  "filter": "FullyQualifiedName~ArrowFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AF14 short",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/ArrowFeedCodec.cs",
+  "old": "if (n < 13) return [];",
+  "new": "if (n < 12) return [];",
+  "filter": "FullyQualifiedName~ArrowFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AF15 ltpc size",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/ArrowFeedCodec.cs",
+  "old": "17 => \"ltpc\", 93 => \"quote\"",
+  "new": "17 => \"ltp\", 93 => \"quote\"",
+  "filter": "FullyQualifiedName~ArrowFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "AF25 change",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/ArrowFeedCodec.cs",
+  "old": "data[\"change\"] = VortexFeedCodec.Round2(change);",
+  "new": "data[\"change\"] = change;",
+  "filter": "FullyQualifiedName~ArrowFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

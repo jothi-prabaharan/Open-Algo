@@ -132,6 +132,11 @@ SCENARIOS = [
     {"name": "the_thousand_and_first_instrument_is_refused", "steps": [
         {"subscribe": [sub(f"TKN{i}", "NSE", 1) for i in range(1000)]}, {"subscribe": [sub("TKN1000", "NSE", 1)]}, {"subscribe": [sub("SBIN", "NSE", 1)]},
     ]},
+    {"name": "a_refused_token_still_has_its_name_for_ticks", "steps": [
+        {"subscribe": [sub(f"TKN{i}", "NSE", 1) for i in range(1000)]}, {"subscribe": [sub("TKN1000", "NSE", 1)]}, frame(ltp(900000 + 1000, 10.0)),
+    ]},
+    {"name": "a_packet_of_twelve_bytes_is_dropped", "steps": [{"subscribe": [sub("SBIN", "NSE", 1)]}, {"frame": "000003e9000000" + "00" * 5}]},
+    {"name": "change_is_rounded", "steps": [{"subscribe": [sub("SBIN", "NSE", 1)]}, frame(ltpc(T["SBIN"], 805.45, 799.97)), frame(ltpc(T["SBIN"], 100.01, 99.99))]},
     {"name": "a_symbol_without_a_numeric_token_is_refused", "steps": [{"subscribe": [sub("BADTOKEN", "NSE", 1)]}]},
     {"name": "an_unknown_mode_is_asked_as_quote", "steps": [{"subscribe": [sub("SBIN", "NSE", 9)]}]},
     {"name": "ltp_packet", "steps": [{"subscribe": [sub("SBIN", "NSE", 1)]}, frame(ltp(T["SBIN"], 805.45))]},
