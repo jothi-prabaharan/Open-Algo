@@ -10,7 +10,7 @@ namespace EPTradeBot.Infrastructure.Brokers.HdfcSecurities;
 /// HDFC Securities (InvestRight, developer.hdfcsec.com). Port of broker/hdfcsecurities: api/order_api.py, api/funds.py, mapping/transform_data.py and mapping/order_data.py. The access token goes
 /// in Authorization with no prefix, the api_key in the query, and a user agent is mandatory. An instrument is addressed by the parent exchange (NFO is NSE), an instrument segment and the
 /// broker code; a derivative also spells out its expiry, strike, option type and the underlying's own broker code. Positions and holdings carry no price, so one batched /fetch-ltp call prices them.
-/// Not ported yet: quotes, depth, several quotes, sign-in and the feed (history and margin are not offered).
+/// Not ported yet: quotes, depth, several quotes and the feed (history and margin are not offered).
 /// </summary>
 [BrokerPlugin]
 public sealed partial class HdfcSecuritiesPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds

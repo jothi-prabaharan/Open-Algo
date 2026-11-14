@@ -1,0 +1,430 @@
+{
+  "broker": "hdfcsecurities",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_request_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oapi/v1/access-token": {
+          "body": {
+            "accessToken": "hdfc-jwt-777"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "hdfc-jwt-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.hdfcsec.com",
+          "path": "/oapi/v1/access-token",
+          "query": [
+            [
+              "api_key",
+              "hdfc-api-key"
+            ],
+            [
+              "request_token",
+              "req-token-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "apiSecret": "hdfc-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_snake_case_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oapi/v1/access-token": {
+          "body": {
+            "access_token": "hdfc-jwt-778"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "hdfc-jwt-778",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.hdfcsec.com",
+          "path": "/oapi/v1/access-token",
+          "query": [
+            [
+              "api_key",
+              "hdfc-api-key"
+            ],
+            [
+              "request_token",
+              "req-token-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "apiSecret": "hdfc-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_token_in_a_data_envelope",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oapi/v1/access-token": {
+          "body": {
+            "status": "success",
+            "data": {
+              "accessToken": "hdfc-jwt-779"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "hdfc-jwt-779",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.hdfcsec.com",
+          "path": "/oapi/v1/access-token",
+          "query": [
+            [
+              "api_key",
+              "hdfc-api-key"
+            ],
+            [
+              "request_token",
+              "req-token-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "apiSecret": "hdfc-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_snake_case_token_in_a_data_envelope",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oapi/v1/access-token": {
+          "body": {
+            "status": "success",
+            "data": {
+              "access_token": "hdfc-jwt-780"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "hdfc-jwt-780",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.hdfcsec.com",
+          "path": "/oapi/v1/access-token",
+          "query": [
+            [
+              "api_key",
+              "hdfc-api-key"
+            ],
+            [
+              "request_token",
+              "req-token-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "apiSecret": "hdfc-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oapi/v1/access-token": {
+          "status": 401,
+          "body": {
+            "message": "Invalid request token"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "HDFC Securities authentication failed: Invalid request token"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.hdfcsec.com",
+          "path": "/oapi/v1/access-token",
+          "query": [
+            [
+              "api_key",
+              "hdfc-api-key"
+            ],
+            [
+              "request_token",
+              "req-token-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "apiSecret": "hdfc-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_an_error_text",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oapi/v1/access-token": {
+          "status": 400,
+          "body": {
+            "error": "request_token expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "HDFC Securities authentication failed: request_token expired"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.hdfcsec.com",
+          "path": "/oapi/v1/access-token",
+          "query": [
+            [
+              "api_key",
+              "hdfc-api-key"
+            ],
+            [
+              "request_token",
+              "req-token-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "apiSecret": "hdfc-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_nothing_useful",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oapi/v1/access-token": {
+          "status": 500,
+          "body": {
+            "x": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "HDFC Securities authentication failed: {'x': 1}"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.hdfcsec.com",
+          "path": "/oapi/v1/access-token",
+          "query": [
+            [
+              "api_key",
+              "hdfc-api-key"
+            ],
+            [
+              "request_token",
+              "req-token-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "apiSecret": "hdfc-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_ok_without_a_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "request_token": "req-token-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oapi/v1/access-token": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "HDFC Securities authentication failed: {'status': 'success', 'data': {}}"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "developer.hdfcsec.com",
+          "path": "/oapi/v1/access-token",
+          "query": [
+            [
+              "api_key",
+              "hdfc-api-key"
+            ],
+            [
+              "request_token",
+              "req-token-abc"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "apiSecret": "hdfc-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

@@ -628,3 +628,31 @@ public sealed class LoginArrowContractTests(LoginArrowHost host, ITestOutputHelp
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginHdfcSecuritiesHost : BrokerContractHost
+{
+    public override string BrokerName => "hdfcsecurities";
+    public override string FixtureFile => "login_hdfcsecurities.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "hdfc-api-key", ["ApiSecret"] = "hdfc-api-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginHdfcSecuritiesContractTests(LoginHdfcSecuritiesHost host, ITestOutputHelper output) : IClassFixture<LoginHdfcSecuritiesHost>
+{
+    private const string Again = "HDFC Securities did not accept the sign-in. Start it again from the beginning.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_with_a_message"] = LoginDeviations.Refused("HDFC Securities did not accept the sign-in: Invalid request token"),
+        ["login_refused_with_an_error_text"] = LoginDeviations.Refused("HDFC Securities did not accept the sign-in: request_token expired"),
+        ["login_refused_with_nothing_useful"] = LoginDeviations.Refused(Again),
+        ["login_ok_without_a_token"] = LoginDeviations.Refused(Again),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_hdfcsecurities.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
