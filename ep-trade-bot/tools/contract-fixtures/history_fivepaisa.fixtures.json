@@ -1128,6 +1128,87 @@
       "ignore": []
     },
     {
+      "name": "history_zero_prices_with_a_volume_are_dropped",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /V2/historical/N/C/3045/5m": {
+          "body": {
+            "status": "success",
+            "data": {
+              "candles": [
+                [
+                  "2026-11-02T09:15:00",
+                  0,
+                  0,
+                  0,
+                  0,
+                  500
+                ],
+                [
+                  "2026-11-02T09:20:00",
+                  800.0,
+                  802.0,
+                  799.0,
+                  801.0,
+                  1000
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793591400,
+              "volume": 1000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "openapi.5paisa.com",
+          "path": "/V2/historical/N/C/3045/5m",
+          "query": [
+            [
+              "from",
+              "2026-11-02"
+            ],
+            [
+              "end",
+              "2026-11-02"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "bearer fivepaisa-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "history_candles_outside_the_range_are_dropped",
       "method": "POST",
       "path": "/api/v1/history",

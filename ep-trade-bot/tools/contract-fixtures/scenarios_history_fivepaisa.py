@@ -37,6 +37,7 @@ SCENARIOS = [
     hist("history_daily", {"interval": "D", "start_date": "2026-10-29", "end_date": "2026-11-02"}, {path(interval="1d"): DAILY}),
     hist("history_daily_drops_a_flat_or_empty_day", {"interval": "D", "start_date": "2026-10-29", "end_date": "2026-11-02"}, {path(interval="1d"): ok(candle("2026-10-29T00:00:00", 800, 800, 800, 800, 5000), candle("2026-10-30T00:00:00", 801, 803, 800, 802, 0), candle("2026-10-31T00:00:00", 0, 0, 0, 0, 0), candle("2026-11-02T00:00:00"))}),
     hist("history_intraday_keeps_a_quiet_minute", {"interval": "1m"}, {path(interval="1m"): ok(candle("2026-11-02T09:15:00", 800, 800, 800, 800, 0), candle("2026-11-02T09:16:00", 0, 0, 0, 0, 0), candle("2026-11-02T09:17:00"))}),
+    hist("history_zero_prices_with_a_volume_are_dropped", {}, {path(): ok(candle("2026-11-02T09:15:00", 0, 0, 0, 0, 500), candle("2026-11-02T09:20:00"))}),
     hist("history_candles_outside_the_range_are_dropped", {}, {path(): ok(candle("2026-11-01T15:25:00"), candle("2026-11-02T09:15:00"), candle("2026-11-03T09:15:00"))}),
     hist("history_a_short_candle_is_skipped", {}, {path(): ok([ "2026-11-02T09:15:00", 1, 2], candle("2026-11-02T09:20:00"))}),
     hist("history_a_candle_with_a_bad_time_is_skipped", {}, {path(): ok(candle("not a time"), candle("2026-11-02T09:20:00"))}),
