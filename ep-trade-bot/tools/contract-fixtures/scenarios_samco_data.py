@@ -114,6 +114,7 @@ SCENARIOS = [
     req("multiquotes_joined_by_name_when_the_token_differs", "/api/v1/multiquotes", legs(("SBIN", "NSE"), ("NIFTY25NOV26FUT", "NFO")),
         {MQ: multi(mq("OTHER_NSE", "SBIN_EQ"), mq("OTHER_NFO", "NIFTY25NOV26FUT", "NFO", 24005.5))}),
     req("multiquotes_joined_by_the_symbol_name", "/api/v1/multiquotes", legs(("SBIN", "NSE"),), {MQ: multi(mq("OTHER_NSE", "SBIN-EQ", symbolName="SBIN_EQ"))}),
+    req("multiquotes_two_rows_name_the_same_symbol", "/api/v1/multiquotes", legs(("SBIN", "NSE"),), {MQ: multi(mq("OTHER_1", "SBIN_EQ", ltp=111.0), mq("OTHER_2", "ZZZ", ltp=222.0, symbolName="SBIN_EQ"))}),
     req("multiquotes_one_missing", "/api/v1/multiquotes", legs(("SBIN", "NSE"), ("INFY", "NSE")), {MQ: multi(mq("3045_NSE", "SBIN_EQ"))}),
     req("multiquotes_indices_are_asked_one_by_one", "/api/v1/multiquotes", legs(("SBIN", "NSE"), ("NIFTY", "NSE_INDEX"), ("SENSEX", "BSE_INDEX")), {MQ: multi(mq("3045_NSE", "SBIN_EQ")), IQ: [index_quote(), index_quote(79050.5)]}),
     req("multiquotes_an_index_that_fails", "/api/v1/multiquotes", legs(("NIFTY", "NSE_INDEX"), ("BANKNIFTY", "NSE_INDEX")), {IQ: [index_quote(), {"body": {"status": "Failure", "statusMessage": "Index not found"}}]}),

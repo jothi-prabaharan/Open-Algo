@@ -2905,6 +2905,262 @@
       ]
     },
     {
+      "name": "a_quote_subscriber_takes_its_best_prices_from_the_ladder_when_there_is_one",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "request": {
+                  "streaming_type": "quote2",
+                  "data": {
+                    "symbols": [
+                      {
+                        "symbol": "3045_NSE"
+                      }
+                    ]
+                  },
+                  "request_type": "subscribe",
+                  "response_format": "json"
+                }
+              },
+              {
+                "request": {
+                  "streaming_type": "quote",
+                  "data": {
+                    "symbols": [
+                      {
+                        "symbol": "3045_NSE"
+                      }
+                    ]
+                  },
+                  "request_type": "subscribe",
+                  "response_format": "json"
+                }
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "response": {
+                "data": {
+                  "symbol": "3045_NSE",
+                  "bidValues": [
+                    {
+                      "price": "805.40",
+                      "qty": "100",
+                      "no": "1"
+                    },
+                    {
+                      "price": "805.35",
+                      "qty": "200",
+                      "no": "2"
+                    },
+                    {
+                      "price": "805.30",
+                      "qty": "300",
+                      "no": "3"
+                    },
+                    {
+                      "price": "805.25",
+                      "qty": "400",
+                      "no": "4"
+                    },
+                    {
+                      "price": "805.20",
+                      "qty": "500",
+                      "no": "5"
+                    }
+                  ],
+                  "askValues": [
+                    {
+                      "price": "805.50",
+                      "qty": "110",
+                      "no": "2"
+                    },
+                    {
+                      "price": "805.55",
+                      "qty": "220",
+                      "no": "4"
+                    },
+                    {
+                      "price": "805.60",
+                      "qty": "330",
+                      "no": "6"
+                    },
+                    {
+                      "price": "805.65",
+                      "qty": "440",
+                      "no": "8"
+                    },
+                    {
+                      "price": "805.70",
+                      "qty": "550",
+                      "no": "10"
+                    }
+                  ],
+                  "tbq": "5000",
+                  "taq": "6100"
+                },
+                "streaming_type": "quote2"
+              }
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_DEPTH",
+                "data": {
+                  "ltp": 0.0,
+                  "ltt": 1793700000123,
+                  "volume": 0,
+                  "open": 0.0,
+                  "high": 0.0,
+                  "low": 0.0,
+                  "close": 0.0,
+                  "last_quantity": 0,
+                  "change": 0.0,
+                  "change_percentage": 0.0,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 100,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 200,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.3,
+                        "quantity": 300,
+                        "orders": 3
+                      },
+                      {
+                        "price": 805.25,
+                        "quantity": 400,
+                        "orders": 4
+                      },
+                      {
+                        "price": 805.2,
+                        "quantity": 500,
+                        "orders": 5
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 110,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 220,
+                        "orders": 4
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 330,
+                        "orders": 6
+                      },
+                      {
+                        "price": 805.65,
+                        "quantity": 440,
+                        "orders": 8
+                      },
+                      {
+                        "price": 805.7,
+                        "quantity": 550,
+                        "orders": 10
+                      }
+                    ]
+                  },
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "sym": "3045_NSE",
+              "ltp": "805.45",
+              "ltq": "25",
+              "o": "801.00",
+              "h": "809.50",
+              "l": "799.00",
+              "c": "800.00",
+              "vol": "1,234,567",
+              "avgPr": "804.10",
+              "ch": "5.45",
+              "chPer": "0.68",
+              "bPr": "900",
+              "bSz": "9",
+              "aPr": "901",
+              "aSz": "8",
+              "tBQ": "50000",
+              "tSQ": "61000",
+              "oI": "0",
+              "lTrdT": "03-Nov-2026 10:20:01",
+              "streaming_type": "quote"
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": 1793700000123,
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_trade_quantity": 25,
+                  "change": 5.45,
+                  "change_percentage": 0.68,
+                  "best_bid_price": 805.4,
+                  "best_bid_quantity": 100,
+                  "best_ask_price": 805.5,
+                  "best_ask_quantity": 110,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
       "name": "market_depth_type_is_depth",
       "steps": [
         {

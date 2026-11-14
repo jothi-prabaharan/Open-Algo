@@ -4520,6 +4520,107 @@
       "ignore": []
     },
     {
+      "name": "multiquotes_two_rows_name_the_same_symbol",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quote/multiQuote": {
+          "body": {
+            "status": "Success",
+            "multiQuotes": [
+              {
+                "symbol": "OTHER_1",
+                "exchange": "NSE",
+                "tradingSymbol": "SBIN_EQ",
+                "symbolName": "SBIN_EQ",
+                "bidPrice": "805.40",
+                "askPrice": "805.50",
+                "bidSize": "100",
+                "askSize": "110",
+                "open": "801.00",
+                "high": "809.50",
+                "low": "799.00",
+                "lastTradePrice": "111.0",
+                "previousClose": "800.00",
+                "totalTradeVolume": "1,234,567",
+                "openInterest": "0"
+              },
+              {
+                "symbol": "OTHER_2",
+                "exchange": "NSE",
+                "tradingSymbol": "ZZZ",
+                "symbolName": "SBIN_EQ",
+                "bidPrice": "805.40",
+                "askPrice": "805.50",
+                "bidSize": "100",
+                "askSize": "110",
+                "open": "801.00",
+                "high": "809.50",
+                "low": "799.00",
+                "lastTradePrice": "222.0",
+                "previousClose": "800.00",
+                "totalTradeVolume": "1,234,567",
+                "openInterest": "0"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [
+            {
+              "data": {
+                "ask": 805.5,
+                "ask_qty": 110,
+                "bid": 805.4,
+                "bid_qty": 100,
+                "high": 809.5,
+                "low": 799.0,
+                "ltp": 111.0,
+                "oi": 0,
+                "open": 801.0,
+                "prev_close": 800.0,
+                "volume": 1234567
+              },
+              "exchange": "NSE",
+              "symbol": "SBIN"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/multiQuote",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "NSE": [
+              "SBIN_EQ"
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "multiquotes_one_missing",
       "method": "POST",
       "path": "/api/v1/multiquotes",

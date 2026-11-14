@@ -138,6 +138,7 @@ SCENARIOS = [
     scenario("depth_frame_is_not_for_a_quote_subscriber", {"subscribe": [S]}, {"text": depth()}),
     scenario("depth_frame_keeps_the_prices_the_quote_frame_brought", {"subscribe": [sub("SBIN", "NSE", 3)]}, {"text": quote()}, {"text": depth()}),
     scenario("quote_frame_keeps_the_depth_totals_the_depth_frame_brought", {"subscribe": [sub("SBIN", "NSE", 3), sub("SBIN", "NSE", 2)]}, {"text": depth()}, {"text": quote()}),
+    scenario("a_quote_subscriber_takes_its_best_prices_from_the_ladder_when_there_is_one", {"subscribe": [S, sub("SBIN", "NSE", 3)]}, {"text": depth()}, {"text": quote(bPr="900", bSz="9", aPr="901", aSz="8")}),
     scenario("market_depth_type_is_depth", {"subscribe": [sub("SBIN", "NSE", 3)]}, {"text": {"response": {"data": {"symbol": "3045_NSE", "bidValues": [{"price": "805.4", "qty": "100", "no": "1"}], "askValues": []}, "streaming_type": "marketDepth"}}}),
     scenario("fewer_than_five_levels", {"subscribe": [sub("SBIN", "NSE", 3)]}, {"text": depth(buy=2, sell=1)}),
     scenario("more_than_five_levels", {"subscribe": [sub("SBIN", "NSE", 3)]}, {"text": depth(buy=7, sell=7)}),

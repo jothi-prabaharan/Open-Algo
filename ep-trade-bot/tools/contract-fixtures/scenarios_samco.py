@@ -27,6 +27,7 @@ PLACE = {"strategy": "t", "symbol": "SBIN", "exchange": "NSE", "action": "BUY", 
 PLACE_EP, OB, TB, HB, LB = "POST /order/placeOrder", "GET /order/orderBook", "GET /trade/tradeBook", "GET /holding/getHoldings", "GET /limit/getLimits"
 PB, QB = "GET /position/getPositions", "GET /quote/getQuote"
 ORDER_OK = {"body": {"status": "Success", "statusMessage": "Order placed", "orderNumber": "S0001"}}
+SERVER_REFUSED = {"status": 500, "body": {"status": "Failure", "statusMessage": "Internal error"}}
 ORDER_REFUSED = {"status": 400, "body": {"status": "Failure", "statusMessage": "Insufficient funds"}}
 ORDER_NO_NUMBER = {"body": {"status": "Success", "statusMessage": "ok"}}
 
@@ -131,6 +132,7 @@ SCENARIOS = [
     place("placeorder_mcx_future", {**PLACE, "symbol": "GOLDM25NOV26FUT", "exchange": "MCX", "quantity": "10", "product": "NRML", "price": "75000"}),
     place("placeorder_currency_future", {**PLACE, "symbol": "USDINR25NOV26FUT", "exchange": "CDS", "quantity": "1000", "product": "NRML", "price": "83.5"}),
     place("placeorder_broker_refuses", PLACE, ORDER_REFUSED),
+    place("placeorder_refused_with_a_server_error", PLACE, SERVER_REFUSED),
     place("placeorder_success_without_an_order_number", PLACE, ORDER_NO_NUMBER),
     place("placeorder_unknown_symbol", {**PLACE, "symbol": "NOPE"}),
     req("modifyorder_limit", "/api/v1/modifyorder", CHANGE, {"PUT /order/modifyOrder/S1": MOD_OK}),
@@ -149,6 +151,10 @@ SCENARIOS = [
     req("cancelallorder_book_empty", "/api/v1/cancelallorder", {"strategy": "t"}, {OB: NO_ORDERS}),
     req("cancelallorder_book_error", "/api/v1/cancelallorder", {"strategy": "t"}, {OB: ORDER_ERROR}),
     req("orderbook", "/api/v1/orderbook", {}, {OB: ORDERS}),
+    req("orderbook_status_spellings", "/api/v1/orderbook", {}, {OB: {"body": {"status": "Success", "orderBookDetails": [
+        order("T1", "SBIN_EQ", "NSE", "BUY", "1", "800", "0", "L", "MIS", "Canceled"), order("T2", "SBIN_EQ", "NSE", "BUY", "1", "800", "0", "L", "MIS", "Completed"), order("T3", "SBIN_EQ", "NSE", "BUY", "1", "800", "0", "L", "MIS", "Filled"),
+        order("T4", "SBIN_EQ", "NSE", "BUY", "1", "800", "0", "L", "MIS", "Ordered"), order("T5", "SBIN_EQ", "NSE", "SELL", "1", "800", "0", "L", "MIS", "Pending"), order("T6", "SBIN_EQ", "NSE", "SELL", "1", "800", "0", "L", "MIS", "EXECUTED"),
+        order("T7", "SBIN_EQ", "NSE", "SELL", "1", "800", "0", "L", "MIS", "Trigger Pending")]}}}),
     req("orderbook_empty", "/api/v1/orderbook", {}, {OB: NO_ORDERS}),
     req("orderbook_details_null", "/api/v1/orderbook", {}, {OB: NULL_ORDERS}),
     req("orderbook_refused", "/api/v1/orderbook", {}, {OB: ORDER_ERROR}),
@@ -159,6 +165,7 @@ SCENARIOS = [
     req("positionbook_failed", "/api/v1/positionbook", {}, {PB: FAILED_POSITIONS}),
     req("holdings", "/api/v1/holdings", {}, {HB: HOLDINGS}),
     req("holdings_without_a_summary", "/api/v1/holdings", {}, {HB: HOLDINGS_NO_SUMMARY}),
+    req("holdings_with_no_value", "/api/v1/holdings", {}, {HB: {"body": {"status": "Success", "holdingDetails": [{"tradingSymbol": "INFY_EQ", "exchange": "NSE", "holdingsQuantity": "5", "totalGainAndLoss": "-10", "holdingsValue": "0"}, {"tradingSymbol": "INFY_EQ", "exchange": "NSE", "holdingsQuantity": "5", "totalGainAndLoss": "100", "holdingsValue": "100"}]}}}),
     req("holdings_empty", "/api/v1/holdings", {}, {HB: NO_HOLDINGS}),
     req("holdings_failed", "/api/v1/holdings", {}, {HB: {"body": {"status": "Failure", "statusMessage": "no"}}}),
     req("funds", "/api/v1/funds", {}, {LB: LIMITS}),

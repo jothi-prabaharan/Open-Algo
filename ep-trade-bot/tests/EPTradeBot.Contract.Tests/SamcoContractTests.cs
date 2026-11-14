@@ -42,6 +42,7 @@ public sealed class SamcoContractTests(SamcoHost host, ITestOutputHelper output)
         ["modifyorder_market_with_a_failed_quote"] = new(Plain, f => Expect(f, 400, Error(Unpriced + "Samco could not give the quote: no quote"))),
         ["placeorder_stop_market_without_a_trigger_is_refused"] = new(Plain, f => Expect(f, 400, Error("A stop-market order for SBIN needs a trigger price, so it was not sent."))),
         ["placeorder_broker_refuses"] = new("OpenAlgo answers a refused order with a generic sentence and drops Samco's reason. EP Trade bot passes Samco's own words on.", f => Expect(f, 400, Error("Insufficient funds"))),
+        ["placeorder_refused_with_a_server_error"] = new("OpenAlgo answers a refused order with a generic sentence and drops Samco's reason. EP Trade bot passes Samco's own words on.", f => Expect(f, 500, Error("Internal error"))),
         ["placeorder_success_without_an_order_number"] = new("OpenAlgo reports success with no order id. EP Trade bot refuses and tells the trader to check the order book, because an order with no number cannot be followed or cancelled.",
             f => Expect(f, 502, Error("Samco accepted the order but sent no order number, so it cannot be followed. Check the order book on Samco before trying again."))),
         ["placeorder_unknown_symbol"] = new("OpenAlgo sends the order with no symbol and lets Samco refuse it. The platform names the symbol and says what to do, and sends nothing.",

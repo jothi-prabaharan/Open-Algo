@@ -1,0 +1,474 @@
+[
+ {
+  "name": "S1 nrml product",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "\"NRML\" => \"NRML\", \"MIS\" => \"MIS\"",
+  "new": "\"NRML\" => \"MIS\", \"MIS\" => \"MIS\"",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S2 pending is open",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "\"open\" or \"pending\" or \"ordered\" or \"trigger pending\"",
+  "new": "\"open\" or \"ordered\" or \"trigger pending\"",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S3 canceled spelling",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "\"cancelled\" or \"canceled\" => \"cancelled\"",
+  "new": "\"cancelled\" => \"cancelled\"",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S4 slab format",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "value.ToString(\"0.######\"",
+  "new": "value.ToString(\"0\"",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S5 zero ltp refused",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "if (ltp <= 0) throw",
+  "new": "if (ltp < 0) throw",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S6 zero trigger refused",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "if (level <= 0) throw",
+  "new": "if (level < 0) throw",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S7 trigger on stop orders",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "order.PriceType is \"SL\" or \"SL-M\")",
+  "new": "order.PriceType is \"SL\")",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S8 trigger on modify",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "change.PriceType is \"SL\" or \"SL-M\")",
+  "new": "change.PriceType is \"SL\")",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S9 lowercase order number",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "Truthy(reply.Body[\"ordernumber\"])",
+  "new": "false",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S10 cancel query name",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "cancelOrder?orderNumber=",
+  "new": "cancelOrder?ordernumber=",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S11 short sign",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "if (side == \"SELL\" && quantity > 0)",
+  "new": "if (side == \"BUY\" && quantity > 0)",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S12 sell average",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "side == \"SELL\" ? r[\"averageSellPrice\"] : r[\"averageBuyPrice\"]",
+  "new": "side == \"SELL\" ? r[\"averageBuyPrice\"] : r[\"averageSellPrice\"]",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S13 net book",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "new[] { \"DAY\", \"NET\" }",
+  "new": "new[] { \"DAY\" }",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S14 duplicate positions",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "merged.TryAdd((Str(r[\"tradingSymbol\"]), Str(r[\"exchange\"]), Str(r[\"productCode\"])), r);",
+  "new": "merged[(Str(r[\"tradingSymbol\"]), Str(r[\"exchange\"]), Str(r[\"productCode\"]))] = r;",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S15 executed counts as complete",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "if (rawStatus is \"complete\" or \"executed\") completed++;",
+  "new": "if (rawStatus is \"complete\") completed++;",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S16 protected limit is a market order",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "\"L\" => Truthy(r[\"marketProtection\"]) ? \"MARKET\" : \"LIMIT\"",
+  "new": "\"L\" => \"LIMIT\"",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S17 pending quantity name",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "r[\"unfilledQuantity\"] is not null ? r[\"unfilledQuantity\"] : r[\"pendingQuantity\"]",
+  "new": "r[\"pendingQuantity\"]",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S18 fill price fallback",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "if (average == 0.0) average = SafeFloat(r[\"fillPrice\"]);",
+  "new": "",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S19 holding percent base",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "pnl / (value - pnl) * 100",
+  "new": "pnl / value * 100",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S20 holding value zero",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "var percent = value > 0 ?",
+  "new": "var percent = value >= 0 ?",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S21 invested",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "var invested = portfolio - total;",
+  "new": "var invested = portfolio + total;",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S22 collateral key",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "equity[\"collateralMarginAgainstShares\"]",
+  "new": "equity[\"marginUsed\"]",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S23 dash placeholder",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "\"N/A\", \"--\", \"-\",",
+  "new": "\"N/A\", \"-\",",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S24 order number key",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "Str(reply.Body[\"orderNumber\"]) is { Length: > 0 } id) return BrokerCallResult.Success(id);",
+  "new": "Str(reply.Body[\"ordernumber\"]) is { Length: > 0 } id) return BrokerCallResult.Success(id);",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S25 status code on refusal",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "return BrokerCallResult.Refused(reply.Status is >= 400 ? reply.Status : 400, Reason(reply.Body, \"Failed to place order\"));",
+  "new": "return BrokerCallResult.Refused(400, Reason(reply.Body, \"Failed to place order\"));",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S26 disclosed quantity on modify",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "if (change.DisclosedQuantity > 0)",
+  "new": "if (change.DisclosedQuantity >= 0)",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D1 nse exchange omitted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.Data.cs",
+  "old": "exchange is not (\"\" or \"NSE\")",
+  "new": "exchange is not \"\"",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D2 retries",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.Data.cs",
+  "old": "(status == 429 || status >= 500) && attempt < 3",
+  "new": "(status == 429 || status >= 500) && attempt < 2",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D3 batch size",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.Data.cs",
+  "old": "private const int BatchSize = 25;",
+  "new": "private const int BatchSize = 26;",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D4 name join first wins",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.Data.cs",
+  "old": "byName.TryAdd($\"{exchange}:{Str(quote[\"symbolName\"])}\", quote)",
+  "new": "byName[$\"{exchange}:{Str(quote[\"symbolName\"])}\"] = quote",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D5 five levels",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.Data.cs",
+  "old": "for (var i = 0; i < 5; i++)",
+  "new": "for (var i = 0; i < 4; i++)",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D6 index volume",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.Data.cs",
+  "old": "SafeInt(quote[\"totalTradedVolume\"]), 0);",
+  "new": "0, 0);",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D7 depth quote failure tolerated",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.Data.cs",
+  "old": "catch (BrokerException)\n        {\n            quote = new Quote(0, 0, 0, 0, 0, 0, 0, 0, 0);",
+  "new": "catch (BrokerException)\n        {\n            throw;",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H1 daily stops at yesterday",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.History.cs",
+  "old": "end == today && start < today ? today.AddDays(-1) : end",
+  "new": "end",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H2 one minute has no interval",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.History.cs",
+  "old": "interval != \"1m\" ?",
+  "new": "interval != \"5m\" ?",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H3 end of day",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.History.cs",
+  "old": "new TimeOnly(23, 59, 59)",
+  "new": "new TimeOnly(23, 59, 0)",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H4 daily epoch",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.History.cs",
+  "old": "new DateTimeOffset(stamp.Value.Date, TimeSpan.Zero)",
+  "new": "new DateTimeOffset(stamp.Value.Date, Ist)",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H5 intraday epoch",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.History.cs",
+  "old": "new DateTimeOffset(stamp.Value, Ist)",
+  "new": "new DateTimeOffset(stamp.Value, TimeSpan.Zero)",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H6 duplicate candle",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.History.cs",
+  "old": "bars.TryAdd(epoch,",
+  "new": "bars.Remove(epoch); bars.TryAdd(epoch,",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H7 index intraday key",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.History.cs",
+  "old": "keys = [\"indexIntraDayCandleData\", \"intradayCandleData\"];",
+  "new": "keys = [\"indexIntraDayCandleData\"];",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M1 zero price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.Margin.cs",
+  "old": "leg.Price > 0 ? PyFloat((double)leg.Price) : \"0\"",
+  "new": "PyFloat((double)leg.Price)",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M2 spread benefit",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.Margin.cs",
+  "old": "[\"exposure_margin\"] = SafeFloat(body[\"exposureMargin\"]), [\"spread_benefit\"] = 0,",
+  "new": "[\"exposure_margin\"] = SafeFloat(body[\"exposureMargin\"]), [\"spread_benefit\"] = 1,",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M3 total fallback",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.Margin.cs",
+  "old": "FirstNonZero(body[\"totalMargin\"], body[\"marginRequired\"])",
+  "new": "SafeFloat(body[\"totalMargin\"])",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L1 static ip remedy",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.Login.cs",
+  "old": "\"EOAUTH009\" =>",
+  "new": "\"EOAUTH999\" =>",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L2 success check",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.Login.cs",
+  "old": "if (Succeeded(body))",
+  "new": "if (Succeeded(body) || Truthy(body[\"sessionToken\"]))",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F1 close price",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "data[\"close\"] = Float(held[\"c\"]);",
+  "new": "data[\"close\"] = Float(held[\"o\"]);",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F2 change percentage",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "data[\"change_percentage\"] = Float(held[\"chPer\"]);",
+  "new": "data[\"change_percentage\"] = Float(held[\"ch\"]);",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F3 depth stream targets",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "new[] { StreamMode.Depth } : [StreamMode.Ltp, StreamMode.Quote]",
+  "new": "new[] { StreamMode.Depth, StreamMode.Quote } : [StreamMode.Ltp, StreamMode.Quote]",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F4 empty fields do not overwrite",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "if (value is null || (value is JsonValue v && v.TryGetValue<string>(out var s) && s.Length == 0)) continue;",
+  "new": "if (value is null) continue;",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F5 depth unsubscribe both streams",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "if (effective == StreamMode.Depth) frames.Add",
+  "new": "if (effective == StreamMode.Depth && target.Symbol == \"\") frames.Add",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F6 market depth type",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "\"quote\" or \"quote2\" or \"marketDepth\")",
+  "new": "\"quote\" or \"quote2\")",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F7 commas",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "text.Replace(\",\", \"\", StringComparison.Ordinal)",
+  "new": "text",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F8 hold until listing ids arrive",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "if (asked.Count > 0)\n            {\n                queue.AddRange(requests);",
+  "new": "if (asked.Count > 1)\n            {\n                queue.AddRange(requests);",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F9 merged state cleared",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "merged.Remove(key);",
+  "new": "",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F10 mode order on reconnect",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "foreach (var mode in subs.Keys.Select(k => k.Mode).Distinct().ToList())",
+  "new": "foreach (var mode in subs.Keys.Select(k => k.Mode).Distinct().Reverse().ToList())",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F11 best bid from depth",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "var bestBidPrice = bids.Count > 0 ?",
+  "new": "var bestBidPrice = bids.Count > 99 ?",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F12 ladder omitted when empty",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "if (bids.Count > 0 || asks.Count > 0)",
+  "new": "if (true)",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F13 depth sub removed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "subs.Remove((target.Symbol, target.Exchange, effective));",
+  "new": "subs.Remove((target.Symbol, target.Exchange, StreamMode.Quote));",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F14 ltp mode lacks quote fields",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "if (mode != StreamMode.Ltp)\n            {\n                data[\"volume\"]",
+  "new": "if (true)\n            {\n                data[\"volume\"]",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

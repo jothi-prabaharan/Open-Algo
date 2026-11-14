@@ -1,0 +1,74 @@
+[
+ {
+  "name": "S3 canceled spelling",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "\"cancelled\" or \"canceled\" => \"cancelled\"",
+  "new": "\"cancelled\" => \"cancelled\"",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S20 holding value zero",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "var percent = value > 0 ?",
+  "new": "var percent = value >= 0 ?",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "S25 status code on refusal",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.cs",
+  "old": "return BrokerCallResult.Refused(reply.Status is >= 400 ? reply.Status : 400, Reason(reply.Body, \"Failed to place order\"));",
+  "new": "return BrokerCallResult.Refused(400, Reason(reply.Body, \"Failed to place order\"));",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D4 name join first wins",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.Data.cs",
+  "old": "byName.TryAdd($\"{exchange}:{Str(quote[\"symbolName\"])}\", quote)",
+  "new": "byName[$\"{exchange}:{Str(quote[\"symbolName\"])}\"] = quote",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F11 best bid from depth",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "var bestBidPrice = bids.Count > 0 ?",
+  "new": "var bestBidPrice = bids.Count > 99 ?",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H6 duplicate candle",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.History.cs",
+  "old": "bars.TryAdd(epoch,",
+  "new": "bars.Remove(epoch); bars.TryAdd(epoch,",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L2 success check",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Samco/SamcoPlugin.Login.cs",
+  "old": "if (Succeeded(body))",
+  "new": "if (Succeeded(body) || Truthy(body[\"sessionToken\"]))",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F3 depth stream targets",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "new[] { StreamMode.Depth } : [StreamMode.Ltp, StreamMode.Quote]",
+  "new": "new[] { StreamMode.Depth, StreamMode.Quote } : [StreamMode.Ltp, StreamMode.Quote]",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F5 depth unsubscribe both streams",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SamcoFeedCodec.cs",
+  "old": "if (effective == StreamMode.Depth) frames.Add",
+  "new": "if (effective == StreamMode.Depth && target.Symbol == \"\") frames.Add",
+  "filter": "FullyQualifiedName~Samco",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]
