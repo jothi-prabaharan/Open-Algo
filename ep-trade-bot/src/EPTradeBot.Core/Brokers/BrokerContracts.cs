@@ -184,6 +184,9 @@ public interface ISymbolMaster
 
     /// <summary>By the broker's instrument token (Dhan's security id) and OpenAlgo exchange.</summary>
     Task<SymbolRecord?> FindByTokenAsync(string broker, string token, string exchange, CancellationToken cancellationToken);
+
+    /// <summary>Whether any master-contract row of the broker on this exchange carries this display name (the underlying of a derivative, for one).</summary>
+    Task<bool> HasNameAsync(string broker, string name, string exchange, CancellationToken cancellationToken) => Task.FromResult(false);
 }
 
 /// <summary>One master-contract row.</summary>
