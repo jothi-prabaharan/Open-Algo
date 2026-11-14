@@ -120,3 +120,29 @@ public sealed class IiflCapitalDataContractTests(IiflCapitalDataHost host, ITest
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class IiflCapitalHistoryHost : BrokerContractHost
+{
+    public override string BrokerName => "iiflcapital";
+    public override string FixtureFile => "history_iiflcapital.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "iifl-app-key", ["ApiSecret"] = "iifl-app-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["Brokers:RetryBackoffMs:iiflcapital"] = "0", ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>IIFL Capital history (tools/contract-fixtures/history_iiflcapital.fixtures.json).</summary>
+public sealed class IiflCapitalHistoryContractTests(IiflCapitalHistoryHost host, ITestOutputHelper output) : IClassFixture<IiflCapitalHistoryHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_interval_iifl_lacks"] = new("OpenAlgo answers 500 with the same sentence. EP Trade bot answers 400, because the trader asked for something IIFL Capital does not offer.", f => { Expect(f, 400, Error("Interval 3m is not supported by IIFL Capital. Use one of: 1m, 5m, 10m, 15m, 30m, 60m, 1h, D, W, M.")); f["sent"]!.AsArray().Clear(); }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_iiflcapital.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
