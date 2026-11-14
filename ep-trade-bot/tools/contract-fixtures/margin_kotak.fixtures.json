@@ -1,0 +1,1610 @@
+{
+  "broker": "kotak",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "trade-token:::trade-sid:::https://kotak.test:::access-token:::E43",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [
+    "/quick/user/check-margin"
+  ],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN-EQ",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "nse_cm",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY-EQ",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "nse_cm",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "TATAMOTORS",
+      "brsymbol": "TATAMOTORS-EQ",
+      "name": "TATA MOTORS",
+      "exchange": "BSE",
+      "brexchange": "bse_cm",
+      "token": "500570",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY25NOV26FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "nse_fo",
+      "token": "49500",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY25NOV2624000CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "nse_fo",
+      "token": "49599",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "CE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "SENSEX26NOVFUT",
+      "brsymbol": "SENSEX26NOVFUT",
+      "name": "SENSEX",
+      "exchange": "BFO",
+      "brexchange": "bse_fo",
+      "token": "60001",
+      "expiry": "26-NOV-26",
+      "strike": -1.0,
+      "lotsize": 20,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "GOLDM25NOV26FUT",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "mcx_fo",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 10,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "USDINR25NOV26FUT",
+      "brsymbol": "USDINR25NOV26FUT",
+      "name": "USDINR",
+      "exchange": "CDS",
+      "brexchange": "cde_fo",
+      "token": "90001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 1000,
+      "instrumenttype": "FUT",
+      "tick_size": 0.0025
+    },
+    {
+      "symbol": "NOTICK",
+      "brsymbol": "NOTICK-EQ",
+      "name": "NO TICK",
+      "exchange": "NSE",
+      "brexchange": "nse_cm",
+      "token": "4242",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.0
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "margin_one_future",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "reqdMrgn": "126783.5",
+            "avlMrgn": "500000.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 126783.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "0",
+            "prcTp": "MKT",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49500",
+            "trnsTp": "S"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_limit_leg_carries_its_price",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "24005.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "reqdMrgn": "126783.5",
+            "avlMrgn": "500000.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 126783.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "24005.5",
+            "prcTp": "L",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49500",
+            "trnsTp": "S"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_stop_limit_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "SL",
+            "price": "24000",
+            "trigger_price": "24010"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "reqdMrgn": "126783.5",
+            "avlMrgn": "500000.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 126783.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "24000",
+            "prcTp": "SL",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49500",
+            "trnsTp": "S"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_stop_market_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "SL-M",
+            "trigger_price": "24010"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "reqdMrgn": "126783.5",
+            "avlMrgn": "500000.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 126783.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "0",
+            "prcTp": "SL-M",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49500",
+            "trnsTp": "S"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_buy",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "BUY",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "100"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "reqdMrgn": "126783.5",
+            "avlMrgn": "500000.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 126783.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "100",
+            "prcTp": "L",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49500",
+            "trnsTp": "B"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_products_are_mapped",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "SELL",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "reqdMrgn": "1000",
+            "avlMrgn": "500000.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 1000.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_cm",
+            "prc": "0",
+            "prcTp": "MKT",
+            "prod": "MIS",
+            "qty": "10",
+            "tok": "3045",
+            "trnsTp": "S"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_cash_delivery",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "CNC",
+            "pricetype": "LIMIT",
+            "price": "805"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "reqdMrgn": "8050",
+            "avlMrgn": "500000.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 8050.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_cm",
+            "prc": "805",
+            "prcTp": "L",
+            "prod": "CNC",
+            "qty": "10",
+            "tok": "3045",
+            "trnsTp": "B"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_every_exchange",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "1",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "TATAMOTORS",
+            "exchange": "BSE",
+            "action": "BUY",
+            "quantity": "1",
+            "product": "CNC",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SENSEX26NOVFUT",
+            "exchange": "BFO",
+            "action": "SELL",
+            "quantity": "20",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "GOLDM25NOV26FUT",
+            "exchange": "MCX",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "USDINR25NOV26FUT",
+            "exchange": "CDS",
+            "action": "SELL",
+            "quantity": "1000",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "reqdMrgn": "100",
+            "avlMrgn": "500000.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 500.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_cm",
+            "prc": "0",
+            "prcTp": "MKT",
+            "prod": "MIS",
+            "qty": "1",
+            "tok": "3045",
+            "trnsTp": "B"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "bse_cm",
+            "prc": "0",
+            "prcTp": "MKT",
+            "prod": "CNC",
+            "qty": "1",
+            "tok": "500570",
+            "trnsTp": "B"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "bse_fo",
+            "prc": "0",
+            "prcTp": "MKT",
+            "prod": "NRML",
+            "qty": "20",
+            "tok": "60001",
+            "trnsTp": "S"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "mcx_fo",
+            "prc": "0",
+            "prcTp": "MKT",
+            "prod": "NRML",
+            "qty": "10",
+            "tok": "80001",
+            "trnsTp": "B"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "cde_fo",
+            "prc": "0",
+            "prcTp": "MKT",
+            "prod": "NRML",
+            "qty": "1000",
+            "tok": "90001",
+            "trnsTp": "S"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_several_legs_are_added",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "NIFTY25NOV2624000CE",
+            "exchange": "NFO",
+            "action": "BUY",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": [
+          {
+            "body": {
+              "stat": "Ok",
+              "stCode": 200,
+              "reqdMrgn": "100.5",
+              "avlMrgn": "500000.00"
+            }
+          },
+          {
+            "body": {
+              "stat": "Ok",
+              "stCode": 200,
+              "reqdMrgn": "200.25",
+              "avlMrgn": "500000.00"
+            }
+          },
+          {
+            "body": {
+              "stat": "Ok",
+              "stCode": 200,
+              "reqdMrgn": "300",
+              "avlMrgn": "500000.00"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 600.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "0",
+            "prcTp": "MKT",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49500",
+            "trnsTp": "S"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "0",
+            "prcTp": "MKT",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49599",
+            "trnsTp": "B"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_cm",
+            "prc": "0",
+            "prcTp": "MKT",
+            "prod": "MIS",
+            "qty": "10",
+            "tok": "3045",
+            "trnsTp": "B"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_text_amount_with_a_comma",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "1"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "reqdMrgn": "1,500",
+            "avlMrgn": "500000.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "Failed to parse margin response: could not convert string to float: '1,500'",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "1",
+            "prcTp": "L",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49500",
+            "trnsTp": "S"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_no_amount_in_the_answer",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "1"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 0.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "1",
+            "prcTp": "L",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49500",
+            "trnsTp": "S"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "1"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Not_Ok",
+            "errMsg": "Invalid order"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "Invalid order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "1",
+            "prcTp": "L",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49500",
+            "trnsTp": "S"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "1"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Not_Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "Failed to calculate margin",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "1",
+            "prcTp": "L",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49500",
+            "trnsTp": "S"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_an_answer_that_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "1"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "status": 500,
+          "body": "not json"
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Invalid response from broker",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "1",
+            "prcTp": "L",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49500",
+            "trnsTp": "S"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_failed_leg_is_left_out_of_the_total",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "1"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": [
+          {
+            "body": {
+              "stat": "Not_Ok",
+              "errMsg": "Invalid order"
+            }
+          },
+          {
+            "body": {
+              "stat": "Ok",
+              "stCode": 200,
+              "reqdMrgn": "300",
+              "avlMrgn": "500000.00"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 300.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "1",
+            "prcTp": "L",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49500",
+            "trnsTp": "S"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_cm",
+            "prc": "0",
+            "prcTp": "MKT",
+            "prod": "MIS",
+            "qty": "10",
+            "tok": "3045",
+            "trnsTp": "B"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_every_leg_failed",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "1"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Not_Ok",
+            "errMsg": "Invalid order"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "1",
+            "prcTp": "L",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49500",
+            "trnsTp": "S"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_cm",
+            "prc": "0",
+            "prcTp": "MKT",
+            "prod": "MIS",
+            "qty": "10",
+            "tok": "3045",
+            "trnsTp": "B"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_alone",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOSUCH",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "1"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "reqdMrgn": "126783.5",
+            "avlMrgn": "500000.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "No valid positions to calculate margin. Check if symbols are valid.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol_among_others",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "24000"
+          },
+          {
+            "symbol": "NOSUCH",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "1"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/check-margin": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "reqdMrgn": "126783.5",
+            "avlMrgn": "500000.00"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 126783.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/check-margin",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "brkName": "KOTAK",
+            "brnchId": "ONLINE",
+            "exSeg": "nse_fo",
+            "prc": "24000",
+            "prcTp": "L",
+            "prod": "NRML",
+            "qty": "75",
+            "tok": "49500",
+            "trnsTp": "S"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

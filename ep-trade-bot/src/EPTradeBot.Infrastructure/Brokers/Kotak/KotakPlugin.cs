@@ -13,11 +13,11 @@ namespace EPTradeBot.Infrastructure.Brokers.Kotak;
 /// is a protection band beyond the trigger (Kotak's own bands, snapped to the tick away from the trigger). Kotak's positions carry no price, so a positions read also asks for the price of each instrument held.
 /// </summary>
 [BrokerPlugin]
-public sealed partial class KotakPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
+public sealed partial class KotakPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerMargin
 {
     public string Name => "kotak";
     public string DisplayName => "Kotak Neo";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.Margin;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     private const string Display = "Kotak Neo";

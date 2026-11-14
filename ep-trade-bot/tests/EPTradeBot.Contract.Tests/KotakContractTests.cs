@@ -23,6 +23,77 @@ public sealed class KotakHost : BrokerContractHost
     public override IReadOnlyDictionary<string, string> VolatileFields { get; } = new Dictionary<string, string> { ["json.ig"] = "^openalgo-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" };
 }
 
+public abstract class KotakFileHost(string file) : BrokerContractHost
+{
+    public override string BrokerName => "kotak";
+    public override string FixtureFile => file;
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "UCC123", ["ApiSecret"] = "access-token" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["Brokers:RetryBackoffMs:kotak"] = "0", ["OpenAlgoApi:HistorySpacingMs"] = "0", ["Brokers:HistoryGapMs:kotak"] = "0" };
+}
+
+public sealed class KotakDataHost() : KotakFileHost("kotak_data.fixtures.json");
+
+/// <summary>Kotak Neo quotes, depth and several quotes (tools/contract-fixtures/kotak_data.fixtures.json).</summary>
+public sealed class KotakDataContractTests(KotakDataHost host, ITestOutputHelper output) : IClassFixture<KotakDataHost>
+{
+    private const string Words = "OpenAlgo shows a failed depth as an empty book, fails a quote with a developer's sentence and leaks Kotak's address into an error. EP Trade bot says what Kotak Neo did and what to do.";
+
+    private static Deviation Says(int status, string message) => new(Words, f => Expect(f, status, Error(message)));
+
+    private static readonly Deviation Quote = Says(500, "Kotak Neo could not give the quote. Try again in a moment.");
+    private static readonly Deviation Depth = Says(500, "Kotak Neo could not give the depth. Try again in a moment.");
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["quotes_neo_error"] = Quote,
+        ["quotes_empty_answer"] = Quote,
+        ["quotes_http_error"] = Quote,
+        ["quotes_rate_limited_every_time"] = Quote,
+        ["quotes_index_every_spelling_fails"] = Quote,
+        ["depth_neo_error"] = Depth,
+        ["depth_index_every_spelling_fails"] = Depth,
+        ["multiquotes_neo_error"] = Says(500, "Kotak Neo could not give the quotes. Try again in a moment."),
+        ["multiquotes_a_failed_batch_leaves_error_entries"] = new("OpenAlgo puts Kotak's address and its raw answer into the error of every instrument in the failed batch. EP Trade bot says what happened and what to do.",
+            f => { foreach (var row in f["expected"]!["body"]!["results"]!.AsArray().OfType<JsonObject>().Where(r => r["error"]?.GetValue<string>().StartsWith("API Error", StringComparison.Ordinal) == true)) row["error"] = "Kotak Neo could not give this quote. Try again in a moment."; }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("kotak_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class MarginKotakHost() : KotakFileHost("margin_kotak.fixtures.json");
+
+/// <summary>Kotak Neo margin (tools/contract-fixtures/margin_kotak.fixtures.json).</summary>
+public sealed class MarginKotakContractTests(MarginKotakHost host, ITestOutputHelper output) : IClassFixture<MarginKotakHost>
+{
+    private const string Refused = "OpenAlgo answers 200 carrying a refusal. EP Trade bot answers with a failure status and the same words, so a refusal is never read as a margin figure.";
+    private const string Unknown = "NOSUCH on NFO is not in the Kotak Neo master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["margin_text_amount_with_a_comma"] = new("OpenAlgo answers 200 carrying a parse failure. EP Trade bot answers with a failure status and says to try again.", f => Expect(f, 400, Error("Kotak Neo sent a margin figure EP Trade bot could not read. Try again in a moment."))),
+        ["margin_refused_with_a_message"] = new(Refused, f => Expect(f, 400, Error("Invalid order"))),
+        ["margin_refused_without_a_message"] = new(Refused, f => Expect(f, 400, Error("Failed to calculate margin"))),
+        ["margin_an_answer_that_is_not_json"] = new("Same status; EP Trade bot says to try again.", f => Expect(f, 500, Error("Kotak Neo sent a margin answer EP Trade bot could not read. Try again in a moment."))),
+        ["margin_a_failed_leg_is_left_out_of_the_total"] = new("OpenAlgo leaves a leg Kotak refuses out of the total, which understates the margin. EP Trade bot refuses with Kotak's words.", f => Expect(f, 400, Error("Invalid order"))),
+        ["margin_every_leg_failed"] = new("OpenAlgo answers a margin of zero when every leg is refused. EP Trade bot refuses with Kotak's words.", f => Expect(f, 400, Error("Invalid order"))),
+        ["margin_unknown_symbol_alone"] = new("Same status; EP Trade bot names the symbol, where OpenAlgo says no symbol was valid.", f => Expect(f, 400, Error(Unknown))),
+        ["margin_unknown_symbol_among_others"] = new("OpenAlgo leaves the position whose symbol it cannot find out of the calculation and works out the rest, which understates the margin. EP Trade bot refuses and names the symbol.", f => { Expect(f, 400, Error(Unknown)); f["sent"]!.AsArray().Clear(); }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin_kotak.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
 /// <summary>Kotak Neo against the Python implementation (tools/contract-fixtures/kotak.fixtures.json).</summary>
 public sealed class KotakContractTests(KotakHost host, ITestOutputHelper output) : IClassFixture<KotakHost>
 {
