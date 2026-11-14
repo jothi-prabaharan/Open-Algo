@@ -1,0 +1,450 @@
+[
+ {
+  "name": "HF1 instrument limit",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "private const int MaxInstruments = 1500;",
+  "new": "private const int MaxInstruments = 1501;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF2 frame size",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "private const int MaxPerFrame = 100;",
+  "new": "private const int MaxPerFrame = 101;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF3 type of mode",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "mode == 1 ? \"LTP\" : \"ALL\"",
+  "new": "mode <= 2 ? \"LTP\" : \"ALL\"",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF4 heartbeat flag",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "[\"heart_beat\"] = false,",
+  "new": "[\"heart_beat\"] = true,",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF5 limit edge",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (sent.Count + 1 > MaxInstruments) return;",
+  "new": "if (sent.Count + 1 >= MaxInstruments) return;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF6 drain filter",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "var live = chunk.Where(s => desired.TryGetValue(s, out var t) && t == type).ToList();",
+  "new": "var live = chunk.Where(s => desired.ContainsKey(s)).ToList();",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF7 empty frame",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (live.Count == 0) continue;",
+  "new": "if (live.Count < 0) continue;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF8 sent type",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "foreach (var s in live) sent[s] = type;",
+  "new": "foreach (var s in live) sent[s] = \"ALL\";",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF9 default unsubscribe type",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "?? desired.GetValueOrDefault(scrip) ?? \"ALL\";",
+  "new": "?? desired.GetValueOrDefault(scrip) ?? \"LTP\";",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF10 mode removed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "left.Remove((int)m);",
+  "new": "left.Remove(3);",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF11 modes left",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (left.Count > 0)",
+  "new": "if (left.Count > 1)",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF12 snapshot kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "            snapshots.Remove(key);\n\n            // Everything",
+  "new": "            _ = key;\n\n            // Everything",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF13 desired kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "desired.Remove(scrip);\n            sent.Remove(scrip);",
+  "new": "sent.Remove(scrip);",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF14 sent kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "            sent.Remove(scrip);\n            pending",
+  "new": "            pending",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF15 reconnect frame size",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "group.Select(d => d.Key).Chunk(MaxPerFrame)",
+  "new": "group.Select(d => d.Key).Chunk(50)",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF16 reconnect type",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "frames.Add(Message(\"subscribe\", chunk.Select(s => (s, group.Key))));",
+  "new": "frames.Add(Message(\"subscribe\", chunk.Select(s => (s, \"ALL\"))));",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF17 bse exchange",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "[4] = \"BSE\", [6] = \"BFO\", [15] = \"BFO\"",
+  "new": "[4] = \"NSE\", [6] = \"BFO\", [15] = \"BFO\"",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF18 cds circuit",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "[1] = \"CDS\", [11] = \"CDS\", [12] = \"CDS\"",
+  "new": "[1] = \"CDS\", [11] = \"NSE\", [12] = \"CDS\"",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF19 nfo oi",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "[3] = \"NFO\", [13] = \"NFO\", [14] = \"NFO\"",
+  "new": "[3] = \"NFO\", [13] = \"NFO\", [14] = \"NSE\"",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF20 index exchange",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "[7] = \"MCX\", [2] = \"NSE_INDEX\", [5] = \"BSE_INDEX\"",
+  "new": "[7] = \"MCX\", [2] = \"NSE_INDEX\", [5] = \"NSE_INDEX\"",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF22 heartbeat",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (p.PacketType == Heartbeat) return null;",
+  "new": "if (p.PacketType == -1) return null;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF23 token zero",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (p.InstrumentId == 0) return null;",
+  "new": "if (p.InstrumentId == -1) return null;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF24 time fallback",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": ": nowMs,",
+  "new": ": 0,",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF25 index time",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (ix.Timestamp != 0) tick[\"timestamp\"] = ix.Timestamp;",
+  "new": "if (ix.Timestamp < 0) tick[\"timestamp\"] = ix.Timestamp;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF26 index volume",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "tick[\"volume\"] = 0;\n                if",
+  "new": "tick[\"volume\"] = 1;\n                if",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF27 bse greek",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "case 17 or 18:",
+  "new": "case 17:",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF28 nfo circuit",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "case 10 or 11 or 13:",
+  "new": "case 10 or 11:",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF29 bfo oi",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "case 12 or 14 or 15:",
+  "new": "case 12 or 14:",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF30 fallback to a body",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "|| p.Mbp is not null)",
+  "new": "|| false)",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF31 mcx without body",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "p.PacketType is 0 or 1 or 3 or 4 or 6 or 7 ||",
+  "new": "p.PacketType is 0 or 1 or 3 or 4 or 6 ||",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF32 nse without body",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "p.PacketType is 0 or 1 or 3 or 4 or 6 or 7 ||",
+  "new": "p.PacketType is 1 or 3 or 4 or 6 or 7 ||",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF33 trade time",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (m.LastTradeTime != 0) tick[\"ltt\"]",
+  "new": "if (m.LastTradeTime == 0) tick[\"ltt\"]",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF34 sides",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "(l.Buy ? buy : sell).Add(entry);",
+  "new": "(l.Buy ? sell : buy).Add(entry);",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF35 buy levels",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "buy.Take(5)",
+  "new": "buy.Take(6)",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF36 sell levels",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "sell.Take(5)",
+  "new": "sell.Take(4)",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF37 depth when either",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (buy.Count > 0 || sell.Count > 0)",
+  "new": "if (buy.Count > 0 && sell.Count > 0)",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF38 shared token",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (matches.Count == 1) key = matches[0];",
+  "new": "if (matches.Count >= 1) key = matches[0];",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF39 mode order",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "held.Modes.Reverse()",
+  "new": "held.Modes",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF40 circuit fields",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "\"circuit\" => new[] { \"lower_limit\", \"upper_limit\" }",
+  "new": "\"circuit\" => new[] { \"lower_limit\" }",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF41 merged time",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "merged[\"timestamp\"] = tick[\"timestamp\"]!.DeepClone();",
+  "new": "_ = merged;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF42 merged kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "        snapshots[key] = merged;\n        return merged;",
+  "new": "        return merged;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF43 snapshot kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "            snapshots[key] = tick;\n            return tick;",
+  "new": "            return tick;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF44 zero close",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (c != 0)",
+  "new": "if (c >= 0)",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF45 open interest alias",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "data[\"open_interest\"] = oi.DeepClone();",
+  "new": "_ = oi;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF46 lower circuit",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "data[\"lower_circuit\"] = tick[\"lower_limit\"]!.DeepClone();",
+  "new": "data[\"lower_circuit\"] = tick[\"upper_limit\"]!.DeepClone();",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF47 varint length",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "for (var shift = 0; shift < 70; shift += 7)",
+  "new": "for (var shift = 0; shift < 77; shift += 7)",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF49 fixed64 skip",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (At + 8 > data.Length) return false;\n                    At += 8;",
+  "new": "if (At + 8 > data.Length) return false;\n                    At += 7;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF50 fixed32 skip",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (At + 4 > data.Length) return false;\n                    At += 4;",
+  "new": "if (At + 4 > data.Length) return false;\n                    At += 3;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF51 group",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "default: return false;\n            }\n        }\n\n        public bool Tag",
+  "new": "default: return true;\n            }\n        }\n\n        public bool Tag",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF52 zero tag",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "return field != 0;",
+  "new": "return true;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF53 length bound",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "len > (ulong)(data.Length - At)",
+  "new": "len > (ulong)(data.Length - At + 1)",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF54 list wire",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (field == 1 && wire == 2)\n            {\n                if (!r.Bytes(out var inner)) return null;",
+  "new": "if (field == 1)\n            {\n                if (!r.Bytes(out var inner)) return null;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF55 bare packet",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (packets is null || packets.Count == 0)",
+  "new": "if (packets is null)",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF56 cds prefix",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSecuritiesFeedCodec.cs",
+  "old": "exchange == \"CDS\" ? \"NCD\" : exchange",
+  "new": "exchange == \"CDS\" ? \"NCO\" : exchange",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF57 greek malformed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "if (!r.Bytes(out var gb) || !Scan(gb)) return null;",
+  "new": "if (!r.Bytes(out var gb)) return null;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HF58 buy flag",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/GenericDtoFeedCodec.cs",
+  "old": "level.Buy = v != 0;",
+  "new": "level.Buy = v == 1;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

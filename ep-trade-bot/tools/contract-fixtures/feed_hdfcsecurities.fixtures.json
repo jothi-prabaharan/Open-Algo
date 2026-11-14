@@ -161,6 +161,19 @@
       "tick_size": 0.05
     },
     {
+      "symbol": "ZERO",
+      "brsymbol": "ZERO",
+      "name": "ZERO",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "0",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
       "symbol": "TKN0",
       "brsymbol": "TKN0",
       "name": "TKN0",
@@ -55211,6 +55224,1104 @@
           "result": {
             "sent": [],
             "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_heartbeat_packet_with_a_quote_inside_is_still_a_heartbeat",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "LTP"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0a2008e9071212099a999999992b89403900000000000089404098dae7869a344810"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_for_token_zero_is_dropped",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "ZERO",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_0",
+                    "type": "LTP"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0a121209099a999999992b89404098dae7869a34"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "bse_greek_packets_are_not_published_either",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SENSEX26NOVFUT",
+                "exchange": "BFO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "BFO_60001",
+                    "type": "ALL"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0a1808e1d4034098dae7869a344812520909000000000000e03f"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_quote_packet_type_without_a_body_is_a_zero_quote",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              },
+              {
+                "symbol": "SBIN",
+                "exchange": "BSE",
+                "mode": 3
+              },
+              {
+                "symbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "mode": 3
+              },
+              {
+                "symbol": "SENSEX26NOVFUT",
+                "exchange": "BFO",
+                "mode": 3
+              },
+              {
+                "symbol": "USDINR25NOV26FUT",
+                "exchange": "CDS",
+                "mode": 3
+              },
+              {
+                "symbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "ALL"
+                  },
+                  {
+                    "scripId": "BSE_1001",
+                    "type": "ALL"
+                  },
+                  {
+                    "scripId": "NFO_50001",
+                    "type": "ALL"
+                  },
+                  {
+                    "scripId": "BFO_60001",
+                    "type": "ALL"
+                  },
+                  {
+                    "scripId": "NCD_1001",
+                    "type": "ALL"
+                  },
+                  {
+                    "scripId": "MCX_80001",
+                    "type": "ALL"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0a0a08e9074098dae7869a34"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_DEPTH",
+                "data": {
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "token": "1001",
+                  "ltp": 0.0,
+                  "last_price": 0.0,
+                  "ltt": 1793699999000,
+                  "timestamp": 1793699999000,
+                  "close": 0.0,
+                  "prev_close": 0.0,
+                  "volume": 0,
+                  "last_quantity": 0,
+                  "average_price": 0.0,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "open": 0.0,
+                  "high": 0.0,
+                  "low": 0.0,
+                  "oi": 0,
+                  "open_interest": 0,
+                  "upper_circuit": 0.0,
+                  "lower_circuit": 0.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "step": {
+            "frame": "0a0c08e9074098dae7869a344804"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "BSE_SBIN_DEPTH",
+                "data": {
+                  "symbol": "SBIN",
+                  "exchange": "BSE",
+                  "token": "1001",
+                  "ltp": 0.0,
+                  "last_price": 0.0,
+                  "ltt": 1793699999000,
+                  "timestamp": 1793699999000,
+                  "close": 0.0,
+                  "prev_close": 0.0,
+                  "volume": 0,
+                  "last_quantity": 0,
+                  "average_price": 0.0,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "open": 0.0,
+                  "high": 0.0,
+                  "low": 0.0,
+                  "oi": 0,
+                  "open_interest": 0,
+                  "upper_circuit": 0.0,
+                  "lower_circuit": 0.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "step": {
+            "frame": "0a0d08d186034098dae7869a344803"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NFO_NIFTY25NOV26FUT_DEPTH",
+                "data": {
+                  "symbol": "NIFTY25NOV26FUT",
+                  "exchange": "NFO",
+                  "token": "50001",
+                  "ltp": 0.0,
+                  "last_price": 0.0,
+                  "ltt": 1793699999000,
+                  "timestamp": 1793699999000,
+                  "close": 0.0,
+                  "prev_close": 0.0,
+                  "volume": 0,
+                  "last_quantity": 0,
+                  "average_price": 0.0,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "open": 0.0,
+                  "high": 0.0,
+                  "low": 0.0,
+                  "oi": 0,
+                  "open_interest": 0,
+                  "upper_circuit": 0.0,
+                  "lower_circuit": 0.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "step": {
+            "frame": "0a0d08e1d4034098dae7869a344806"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "BFO_SENSEX26NOVFUT_DEPTH",
+                "data": {
+                  "symbol": "SENSEX26NOVFUT",
+                  "exchange": "BFO",
+                  "token": "60001",
+                  "ltp": 0.0,
+                  "last_price": 0.0,
+                  "ltt": 1793699999000,
+                  "timestamp": 1793699999000,
+                  "close": 0.0,
+                  "prev_close": 0.0,
+                  "volume": 0,
+                  "last_quantity": 0,
+                  "average_price": 0.0,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "open": 0.0,
+                  "high": 0.0,
+                  "low": 0.0,
+                  "oi": 0,
+                  "open_interest": 0,
+                  "upper_circuit": 0.0,
+                  "lower_circuit": 0.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "step": {
+            "frame": "0a0c08e9074098dae7869a344801"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CDS_USDINR25NOV26FUT_DEPTH",
+                "data": {
+                  "symbol": "USDINR25NOV26FUT",
+                  "exchange": "CDS",
+                  "token": "1001",
+                  "ltp": 0.0,
+                  "last_price": 0.0,
+                  "ltt": 1793699999000,
+                  "timestamp": 1793699999000,
+                  "close": 0.0,
+                  "prev_close": 0.0,
+                  "volume": 0,
+                  "last_quantity": 0,
+                  "average_price": 0.0,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "open": 0.0,
+                  "high": 0.0,
+                  "low": 0.0,
+                  "oi": 0,
+                  "open_interest": 0,
+                  "upper_circuit": 0.0,
+                  "lower_circuit": 0.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "step": {
+            "frame": "0a0d0881f1044098dae7869a344807"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "MCX_GOLDM25NOV26FUT_DEPTH",
+                "data": {
+                  "symbol": "GOLDM25NOV26FUT",
+                  "exchange": "MCX",
+                  "token": "80001",
+                  "ltp": 0.0,
+                  "last_price": 0.0,
+                  "ltt": 1793699999000,
+                  "timestamp": 1793699999000,
+                  "close": 0.0,
+                  "prev_close": 0.0,
+                  "volume": 0,
+                  "last_quantity": 0,
+                  "average_price": 0.0,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "open": 0.0,
+                  "high": 0.0,
+                  "low": 0.0,
+                  "oi": 0,
+                  "open_interest": 0,
+                  "upper_circuit": 0.0,
+                  "lower_circuit": 0.0
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_varint_of_eleven_bytes_drops_the_frame",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "LTP"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0a1e08e9878080808080808080001209099a999999992b89404098dae7869a34"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_fixed64_field_is_skipped",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "LTP"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "4901010101010101010a1508e9071209099a999999992b89404098dae7869a34"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_LTP",
+                "data": {
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "token": "1001",
+                  "ltp": 805.45,
+                  "last_price": 805.45,
+                  "ltt": 1793699999000,
+                  "timestamp": 1793699999000,
+                  "close": 0.0,
+                  "prev_close": 0.0
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_fixed32_field_is_skipped",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "LTP"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "4d010101010a1508e9071209099a999999992b89404098dae7869a34"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_LTP",
+                "data": {
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "token": "1001",
+                  "ltp": 805.45,
+                  "last_price": 805.45,
+                  "ltt": 1793699999000,
+                  "timestamp": 1793699999000,
+                  "close": 0.0,
+                  "prev_close": 0.0
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_group_field_drops_the_frame",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "LTP"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0b0a1508e9071209099a999999992b89404098dae7869a34"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_zero_tag_drops_the_frame",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "LTP"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "00000a1508e9071209099a999999992b89404098dae7869a34"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_double_cut_short_inside_a_packet_drops_the_frame",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "LTP"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0a1408e907120809010101010101014098dae7869a34"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_length_running_past_the_end_drops_the_frame",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "LTP"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0a3208e9071209099a999999992b89404098dae7869a34"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_whose_parts_are_cut_short_drops_the_frame",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "LTP"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0a1008e907120462030a014098dae7869a34"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_ten_byte_varint_with_overflow_bits_is_read_as_protobuf_does",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "LTP"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0a1d08e98780808080808080021209099a999999992b89404098dae7869a34"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_LTP",
+                "data": {
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "token": "1001",
+                  "ltp": 805.45,
+                  "last_price": 805.45,
+                  "ltt": 1793699999000,
+                  "timestamp": 1793699999000,
+                  "close": 0.0,
+                  "prev_close": 0.0
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_ten_byte_varint_without_overflow_is_read",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "LTP"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0a1d08e98780808080808080001209099a999999992b89404098dae7869a34"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_LTP",
+                "data": {
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "token": "1001",
+                  "ltp": 805.45,
+                  "last_price": 805.45,
+                  "ltt": 1793699999000,
+                  "timestamp": 1793699999000,
+                  "close": 0.0,
+                  "prev_close": 0.0
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_varint_field_one_at_the_top_is_skipped_not_read_as_a_packet",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "LTP"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "08050a1508e9071209099a999999992b89404098dae7869a34"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_LTP",
+                "data": {
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "token": "1001",
+                  "ltp": 805.45,
+                  "last_price": 805.45,
+                  "ltt": 1793699999000,
+                  "timestamp": 1793699999000,
+                  "close": 0.0,
+                  "prev_close": 0.0
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_greek_packet_with_a_body_is_not_published",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "mode": 3
+              },
+              {
+                "symbol": "SENSEX26NOVFUT",
+                "exchange": "BFO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NFO_50001",
+                    "type": "ALL"
+                  },
+                  {
+                    "scripId": "BFO_60001",
+                    "type": "ALL"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0aa40208d18603128902099a999999992b894010b0d2e7869a342900000000000889403100000000004c8940390000000000008940410000000000f888404887ad4b501959cdcccccccc20894062a8010a0f08641133333333332b8940180120010a1008c80111cdcccccccc2a8940180220010a1008ac021166666666662a8940180320010a100890031100000000002a8940180420010a1008f403119999999999298940180520010a0d086e1100000000002c894018020a0e08dc011166666666662c894018040a0e08ca0211cdcccccccc2c894018060a0e08b8031133333333332d894018080a0e08a604119a999999992d8940180a68d0860370c8dc0379000000000080864081010000000000808b404098dae7869a344811520909000000000000e03f"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0aa40208e1d403128902099a999999992b894010b0d2e7869a342900000000000889403100000000004c8940390000000000008940410000000000f888404887ad4b501959cdcccccccc20894062a8010a0f08641133333333332b8940180120010a1008c80111cdcccccccc2a8940180220010a1008ac021166666666662a8940180320010a100890031100000000002a8940180420010a1008f403119999999999298940180520010a0d086e1100000000002c894018020a0e08dc011166666666662c894018040a0e08ca0211cdcccccccc2c894018060a0e08b8031133333333332d894018080a0e08a604119a999999992d8940180a68d0860370c8dc0379000000000080864081010000000000808b404098dae7869a344812520909000000000000e03f"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_malformed_greek_packet_drops_the_whole_frame",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              },
+              {
+                "symbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "LTP"
+                  }
+                ]
+              },
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NFO_50001",
+                    "type": "ALL"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0a1508e9071209099a999999992b89404098dae7869a340a1108d186034098dae7869a34481152020901"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_buy_flag_above_one_is_still_a_buy",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "heart_beat": false,
+                "subscribe": [
+                  {
+                    "scripId": "NSE_1001",
+                    "type": "ALL"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0a2808e907121c099a999999992b894062110a0f08051133333333332b8940180120024098dae7869a34"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_DEPTH",
+                "data": {
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "token": "1001",
+                  "ltp": 805.45,
+                  "last_price": 805.45,
+                  "ltt": 1793699999000,
+                  "timestamp": 1793699999000,
+                  "close": 0.0,
+                  "prev_close": 0.0,
+                  "volume": 0,
+                  "last_quantity": 0,
+                  "average_price": 0.0,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "open": 0.0,
+                  "high": 0.0,
+                  "low": 0.0,
+                  "oi": 0,
+                  "open_interest": 0,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 5,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": []
+                  },
+                  "upper_circuit": 0.0,
+                  "lower_circuit": 0.0
+                }
+              }
+            ]
           }
         }
       ]

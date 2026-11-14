@@ -18,7 +18,7 @@ SYMBOLS = [
     row("SBIN", "NSE", 1001), row("INFY", "NSE", 1002), row("SBIN", "BSE", 1001), row("RELIANCE", "BSE", 2003),
     row("NIFTY25NOV26FUT", "NFO", 50001, "FUT"), row("SENSEX26NOVFUT", "BFO", 60001, "FUT"), row("USDINR25NOV26FUT", "CDS", 1001, "FUT"),
     row("NIFTY", "NSE_INDEX", 26000, "INDEX"), row("SENSEX", "BSE_INDEX", 26001, "INDEX"), row("GOLDM25NOV26FUT", "MCX", 80001, "FUT"),
-    row("CRUDE25NOV26FUT", "NCO", 90001, "FUT"), row("BADTOKEN", "NSE", "abc"),
+    row("CRUDE25NOV26FUT", "NCO", 90001, "FUT"), row("BADTOKEN", "NSE", "abc"), row("ZERO", "NSE", 0),
 ]
 SYMBOLS += [row(f"TKN{i}", "NSE", 900000 + i) for i in range(1600)]
 
@@ -166,6 +166,15 @@ def bare(packet):
 
 
 S = sub("SBIN", "NSE", 1)
+
+
+def wide_envelope(width, last):
+    """An envelope whose packet writes its instrument id (1001) as a varint of `width` bytes, the last byte being `last`."""
+    wide = bytes([0xE9, 0x87] + [0x80] * (width - 3) + [last])
+    packet = b"\x08" + wide + dto(0, NSE_CM, mbp(ltp=805.45))
+    return (b"\x0a" + varint(len(packet)) + packet).hex()
+
+
 SCENARIOS = [
     {"name": "subscribe_one_symbol_in_each_mode", "steps": [{"subscribe": [sub("SBIN", "NSE", 1)]}, {"subscribe": [sub("INFY", "NSE", 2)]}, {"subscribe": [sub("NIFTY25NOV26FUT", "NFO", 3)]}]},
     {"name": "several_symbols_are_grouped_by_type_in_one_window", "steps": [
@@ -249,6 +258,27 @@ SCENARIOS = [
     {"name": "an_empty_frame_carries_nothing", "steps": [{"subscribe": [S]}, {"frame": ""}]},
     {"name": "a_frame_cut_off_in_the_middle_is_dropped", "steps": [{"subscribe": [S]}, {"frame": envelope(dto(1001, NSE_CM, mbp(ltp=805.45, close=800.0))).hex()[:-8]}]},
     {"name": "garbage_is_dropped", "steps": [{"subscribe": [S]}, {"frame": "ffffffffffffffffffffffff"}]},
+    {"name": "a_heartbeat_packet_with_a_quote_inside_is_still_a_heartbeat", "steps": [{"subscribe": [S]}, frame(dto(1001, HEARTBEAT, mbp(ltp=805.45, close=800.0)))]},
+    {"name": "a_packet_for_token_zero_is_dropped", "steps": [{"subscribe": [sub("ZERO", "NSE", 1)]}, frame(dto(0, NSE_CM, mbp(ltp=805.45)))]},
+    {"name": "bse_greek_packets_are_not_published_either", "steps": [{"subscribe": [sub("SENSEX26NOVFUT", "BFO", 3)]}, frame(dto(60001, BSE_FO_GREEK, greek=dfield(1, 0.5)))]},
+    {"name": "a_quote_packet_type_without_a_body_is_a_zero_quote", "steps": [
+        {"subscribe": [sub("SBIN", "NSE", 3), sub("SBIN", "BSE", 3), sub("NIFTY25NOV26FUT", "NFO", 3), sub("SENSEX26NOVFUT", "BFO", 3), sub("USDINR25NOV26FUT", "CDS", 3), sub("GOLDM25NOV26FUT", "MCX", 3)]},
+        frame(dto(1001, NSE_CM)), frame(dto(1001, BSE_CM)), frame(dto(50001, NSE_FO)), frame(dto(60001, BSE_FO)), frame(dto(1001, NSE_CD)), frame(dto(80001, MCX))]},
+    {"name": "a_varint_of_eleven_bytes_drops_the_frame", "steps": [{"subscribe": [S]}, {"frame": wide_envelope(11, 0)}]},
+    {"name": "a_fixed64_field_is_skipped", "steps": [{"subscribe": [S]}, {"frame": "49" + "01" * 8 + envelope(dto(1001, NSE_CM, mbp(ltp=805.45))).hex()}]},
+    {"name": "a_fixed32_field_is_skipped", "steps": [{"subscribe": [S]}, {"frame": "4d" + "01" * 4 + envelope(dto(1001, NSE_CM, mbp(ltp=805.45))).hex()}]},
+    {"name": "a_group_field_drops_the_frame", "steps": [{"subscribe": [S]}, {"frame": "0b" + envelope(dto(1001, NSE_CM, mbp(ltp=805.45))).hex()}]},
+    {"name": "a_zero_tag_drops_the_frame", "steps": [{"subscribe": [S]}, {"frame": "0000" + envelope(dto(1001, NSE_CM, mbp(ltp=805.45))).hex()}]},
+    {"name": "a_double_cut_short_inside_a_packet_drops_the_frame", "steps": [{"subscribe": [S]}, frame(dto(1001, NSE_CM, b"\x09" + b"\x01" * 7))]},
+    {"name": "a_length_running_past_the_end_drops_the_frame", "steps": [{"subscribe": [S]}, {"frame": "0a32" + dto(1001, NSE_CM, mbp(ltp=805.45)).hex()}]},
+    {"name": "a_packet_whose_parts_are_cut_short_drops_the_frame", "steps": [{"subscribe": [S]}, frame(dto(1001, NSE_CM, lfield(12, lfield(1, b"\x08"))[:-1]))]},
+    {"name": "a_ten_byte_varint_with_overflow_bits_is_read_as_protobuf_does", "steps": [{"subscribe": [S]}, {"frame": wide_envelope(10, 2)}]},
+    {"name": "a_ten_byte_varint_without_overflow_is_read", "steps": [{"subscribe": [S]}, {"frame": wide_envelope(10, 0)}]},
+    {"name": "a_varint_field_one_at_the_top_is_skipped_not_read_as_a_packet", "steps": [{"subscribe": [S]}, {"frame": "0805" + envelope(dto(1001, NSE_CM, mbp(ltp=805.45))).hex()}]},
+    {"name": "a_greek_packet_with_a_body_is_not_published", "steps": [{"subscribe": [sub("NIFTY25NOV26FUT", "NFO", 3), sub("SENSEX26NOVFUT", "BFO", 3)]},
+        frame(dto(50001, NSE_FO_GREEK, full(), greek=dfield(1, 0.5))), frame(dto(60001, BSE_FO_GREEK, full(), greek=dfield(1, 0.5)))]},
+    {"name": "a_malformed_greek_packet_drops_the_whole_frame", "steps": [{"subscribe": [S, sub("NIFTY25NOV26FUT", "NFO", 3)]}, frame(dto(1001, NSE_CM, mbp(ltp=805.45)), dto(50001, NSE_FO_GREEK, greek=b"\x09\x01"))]},
+    {"name": "a_buy_flag_above_one_is_still_a_buy", "steps": [{"subscribe": [sub("SBIN", "NSE", 3)]}, frame(dto(1001, NSE_CM, mbp(ltp=805.45) + lfield(12, lfield(1, vfield(1, 5) + dfield(2, 805.4) + vfield(3, 1) + vfield(4, 2)))))]},
     {"name": "a_text_acknowledgement_carries_no_ticks", "steps": [{"subscribe": [S]}, {"text": json.dumps({"status": "success", "message": "subscribed"})}]},
     {"name": "a_text_error_carries_no_ticks", "steps": [{"subscribe": [S]}, {"text": json.dumps({"status": "error", "message": "rate limited"})}]},
     {"name": "text_that_is_not_json_carries_nothing", "steps": [{"subscribe": [S]}, {"text": "hello"}]},

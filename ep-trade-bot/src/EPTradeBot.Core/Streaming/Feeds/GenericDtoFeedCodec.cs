@@ -413,7 +413,6 @@ internal sealed class GenericDto
             {
                 if (At >= data.Length) return false;
                 var b = data[At++];
-                if (shift == 63 && b > 1) return false;
                 value |= (ulong)(b & 0x7F) << shift;
                 if ((b & 0x80) == 0) return true;
             }
