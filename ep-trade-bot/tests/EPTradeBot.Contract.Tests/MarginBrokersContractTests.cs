@@ -422,3 +422,40 @@ public sealed class MarginZebuContractTests(MarginZebuHost host, ITestOutputHelp
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class MarginSahiHost : BrokerContractHost
+{
+    public override string BrokerName => "sahi";
+    public override string FixtureFile => "margin_sahi.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "sahi-api-key", ["ApiSecret"] = "sahi-api-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["Brokers:RetryBackoffMs:sahi"] = "0" };
+}
+
+public sealed class MarginSahiContractTests(MarginSahiHost host, ITestOutputHelper output) : IClassFixture<MarginSahiHost>
+{
+    private const string Brand = "Same status; the words name EP Trade bot where OpenAlgo's name its own product.";
+    private const string Parts = "OpenAlgo adds a note to the answer when a basket of more than ten positions was priced in several parts, because hedge benefits across parts are not counted. EP Trade bot's margin answer has no place for it, so the note is left out.";
+    private static string Unknown(string symbol) => $"{symbol} on NSE is not in the Sahi master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["margin_eleven_positions_go_in_two_baskets"] = new(Parts, f => f["expected"]!["body"]!.AsObject().Remove("message")),
+        ["margin_twenty_positions_go_in_two_full_baskets"] = new(Parts, f => f["expected"]!["body"]!.AsObject().Remove("message")),
+        ["margin_session_expired"] = new(Brand, f => ContractRunner.Expect(f, 401, ContractRunner.Error("Your Sahi session has expired. Log in to EP Trade bot again."))),
+        ["margin_key_without_permission"] = new(Brand, f => ContractRunner.Expect(f, 403, ContractRunner.Error("Your Sahi API key does not have permission for this. Create a key with Full access in the Sahi API Dashboard and use it in EP Trade bot."))),
+        ["margin_unknown_symbol_alone"] = new("Same status; the platform's own words for a symbol missing from the master contract.", f => ContractRunner.Expect(f, 400, ContractRunner.Error(Unknown("NOSUCH")))),
+        ["margin_unknown_symbol_among_others"] = new("Same status; the platform's own words for a symbol missing from the master contract.", f =>
+        {
+            ContractRunner.Expect(f, 400, ContractRunner.Error(Unknown("NOSUCH")));
+            f["sent"]!.AsArray().Clear();
+        }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin_sahi.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

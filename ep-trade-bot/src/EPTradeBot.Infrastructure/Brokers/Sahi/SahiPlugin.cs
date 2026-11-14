@@ -11,7 +11,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Sahi;
 /// Sahi (direct.sahi.com, /v1). Port of broker/sahi: api/order_api.py, api/funds.py, mapping/transform_data.py and mapping/order_data.py. Prices travel as integer paise
 /// and quantities as units. Sahi has no day-wide trade book, so it is gathered from the trades of every order that filled; positions and holdings carry no last price,
 /// so it is read from the last-price call, up to 100 instruments at a time. A request Sahi answers with 429 is repeated (3 times) because a 429 is decided before
-/// anything is placed. Not ported yet: margin, sign-in and the feed.
+/// anything is placed. Not ported yet: the feed.
 /// </summary>
 [BrokerPlugin]
 public sealed partial class SahiPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory
@@ -22,7 +22,7 @@ public sealed partial class SahiPlugin(IHttpClientFactory http, BrokerSessionFac
 
     public string Name => "sahi";
     public string DisplayName => "Sahi";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     private static readonly TimeSpan Ist = TimeSpan.FromHours(5.5);

@@ -21,7 +21,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Flattrade | yes | yes | yes | yes | yes | no | yes | yes |
 | TradeSmart (Noren v2) | yes | yes | yes | yes | yes | no | yes | yes |
 | Rupeezy (Vortex) | yes | yes | yes | yes | n/a | yes | yes | yes |
-| Sahi | yes | yes | yes | yes | no | no | no | no |
+| Sahi | yes | yes | yes | yes | yes | n/a | yes | no |
 
 The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -302,7 +302,10 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Mutation set `tools/mutation/tg7-sahi.json`: 69 mutants, 65 turned a test red; four survived and are equivalent, not missing cases: an empty price text read as zero either way (S18), the status of a refusal that carries an OK status, which the service layer maps to the same answer (S44), the order id in a modify answer, which the service layer replaces with the one requested (S47), and the profit of a flat position, which is zero whatever the price (S56). Three more mutants were dropped as unobservable: the retry delays (the tests do not wait) and the rounding of each position's profit inside the funds figure (a product of two-decimal prices and a whole quantity).
 - Quotes, depth and several quotes (`sahi_data.fixtures.json`, 33 cases) and history (`history_sahi.fixtures.json`, 30 cases), both with the clock stopped at 2026-11-13 11:00 India time. A quote carries no open, high, low or previous close, so they come from the daily candles (before the open the day's own figures are zero and the latest close is the previous close); depth shows five levels padded with zeros but totals every level Sahi sent; a batch of option contracts is read from the option chain of its underlying and expiry (the BSE index for BFO), falling back to quotes when the chain cannot give it; quotes go 100 instruments a call. History pages backwards from the newest candles while Sahi says there is more, stops at 200 pages, asks for the candle still forming only on the first page, asks for open interest on futures and options, stamps a daily candle at midnight UTC of its India date and keeps the last of two candles with one timestamp.
 - Recorded differences from OpenAlgo: refusals say EP Trade bot where OpenAlgo's say OpenAlgo; a refusal with no message says to try again in a moment where OpenAlgo puts the HTTP status code in the sentence; an interval Sahi lacks is a 400 here, a 500 there.
-- Not yet ported for Sahi: margin, sign-in, the feed; no mutation set for quotes and history; no live-broker run.
+- Margin (`margin_sahi.fixtures.json`, 27 cases): each position becomes the body of a place-order call; one goes to the single calculator, two or more to the basket calculator ten legs at a time with the requirements added; Sahi gives one figure, so SPAN and exposure are zero; the calculator is closed for maintenance until 07:00 India time. Differences: OpenAlgo's note that a basket was priced in several parts is not carried (the margin answer has no place for it, so hedge benefits across parts are silently not counted past ten positions); wording as above; an unknown symbol is named by the platform's own sentence.
+- Sign-in (`login_sahi.fixtures.json`, 10 cases): no redirect and no code; the key id (pk_...) and secret (sahi_sk_...) are exchanged at Sahi's auth host for a token that lasts until 06:00 India time; a key not approved for today in the Sahi API Dashboard, a locked account, a 429 (repeated three times) and a down service each have their own sentence. Differences: the sentences point to the server's settings, not OpenAlgo's variable names.
+- GTT: OpenAlgo has no GTT for Sahi (n/a).
+- Not yet ported for Sahi: the feed; no mutation set for quotes, history, margin and sign-in; no live-broker run.
 
 ## Remaining brokers: size of the work (for planning)
 

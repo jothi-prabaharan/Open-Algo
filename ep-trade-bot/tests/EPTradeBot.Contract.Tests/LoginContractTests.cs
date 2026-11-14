@@ -569,3 +569,31 @@ public sealed class LoginRupeezyContractTests(LoginRupeezyHost host, ITestOutput
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginSahiHost : BrokerContractHost
+{
+    public override string BrokerName => "sahi";
+    public override string FixtureFile => "login_sahi.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "pk_test_key", ["ApiSecret"] = "sahi_sk_test_secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginSahiContractTests(LoginSahiHost host, ITestOutputHelper output) : IClassFixture<LoginSahiHost>
+{
+    private const string Settings = "Check the API key and secret in the server's settings.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_key_refused"] = LoginDeviations.Refused("Sahi did not accept the API key and secret. Check the key id (it starts with pk_) and the secret (it starts with sahi_sk_) in the server's settings, and that the key has not been deleted in the Sahi API Dashboard."),
+        ["login_refused_with_a_reason"] = LoginDeviations.Refused("Sahi did not issue an access token: key_id is malformed. " + Settings),
+        ["login_refused_without_a_reason"] = LoginDeviations.Refused("Sahi did not issue an access token. " + Settings),
+        ["login_ok_without_a_token"] = LoginDeviations.Refused("Sahi did not issue an access token. " + Settings),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_sahi.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
