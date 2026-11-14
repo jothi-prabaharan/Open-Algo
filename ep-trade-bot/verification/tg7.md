@@ -21,6 +21,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Flattrade | yes | yes | yes | yes | yes | no | yes | yes |
 | TradeSmart (Noren v2) | yes | yes | yes | yes | yes | no | yes | yes |
 | Rupeezy (Vortex) | yes | yes | yes | yes | n/a | yes | yes | yes |
+| Sahi | yes | yes | no | no | no | no | no | no |
 
 The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -292,6 +293,13 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Mutation sets: 26 mutants on orders, books and funds and 22 on margin, all caught (one margin mutant, protection returning a non-positive price, is dropped as unreachable: the slab never yields zero).
 - History (31 recorded cases, `history_flattrade.fixtures.json`): one TPSeries call for intraday bars and one EODChartData call for daily ones; the 09:14 pre-open bar on cash and F&O is left out (commodities keep theirs), bars missing a price are skipped, negative intraday volume is zeroed, a daily bar whose range leaves out its open or close is widened, and today's bar is built from a quote when the daily range includes today and the chart has none. Differences, recorded: OpenAlgo stamps today's bar 5 hours 30 minutes late and fails the whole request over one unreadable row or a chart it cannot reach; EP Trade bot stamps midnight India time, skips the row, builds today's bar from the quote, keeps one bar per timestamp and words errors for the trader (a lapsed session says to log in again). Mutation set: 29 mutants, all caught.
 
+
+## Sahi: orders, books and funds
+
+- `SahiPlugin`, held to `broker/sahi` by 61 recorded cases (`sahi.fixtures.json`): prices travel as integer paise (a rupee price is rounded half up to the paise) and quantities as units; MARKET and SL-M go with price zero; CNC, MIS and NRML are C, I and M (Sahi's F is shown as MTF); orders go to NSE, BSE, NFO and BFO only. A 429 is repeated three times after Retry-After seconds or 1, 2, 4 (a 429 is decided before anything is placed). Sahi has no day-wide trade book, so it is gathered from the trades of every order that filled; positions and holdings carry no price, so it is read from one last-price call per 100 instruments; the profit of a position is its realised part plus the open part at the last price (left out with no price); a holding is the NSE listing, else the BSE one; a part-filled order that stopped working reads as cancelled; funds take the cash as the intraday figure less the pledged collateral.
+- Recorded differences from OpenAlgo: refusals say EP Trade bot where OpenAlgo's say OpenAlgo; an empty balance there when Sahi refuses the funds call or answers it without an available block, a refusal here; a margin-trading position that close-all cannot square off is reported with the shared order path's product error, not OpenAlgo's "close it in the Sahi app" (it still stays open and the run reports failure).
+- Limitation of the recording: the recorder answers every reply with a JSON body, so a real empty 204 on a cancel is not replayed (the code reads an empty body as no object, and a 204 is a success whatever it carries).
+- Not yet ported for Sahi: quotes and depth, history, margin, sign-in, the feed; no mutation set yet; no live-broker run.
 
 ## Remaining brokers: size of the work (for planning)
 
