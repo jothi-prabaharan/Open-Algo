@@ -1,0 +1,6659 @@
+{
+  "broker": "kotak",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "trade-token:::trade-sid:::https://kotak.test:::access-token:::E43",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [
+    "/quick/user/limits"
+  ],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN-EQ",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "nse_cm",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY-EQ",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "nse_cm",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "TATAMOTORS",
+      "brsymbol": "TATAMOTORS-EQ",
+      "name": "TATA MOTORS",
+      "exchange": "BSE",
+      "brexchange": "bse_cm",
+      "token": "500570",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY25NOV26FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "nse_fo",
+      "token": "49500",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY25NOV2624000CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "nse_fo",
+      "token": "49599",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "CE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "SENSEX26NOVFUT",
+      "brsymbol": "SENSEX26NOVFUT",
+      "name": "SENSEX",
+      "exchange": "BFO",
+      "brexchange": "bse_fo",
+      "token": "60001",
+      "expiry": "26-NOV-26",
+      "strike": -1.0,
+      "lotsize": 20,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "GOLDM25NOV26FUT",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "mcx_fo",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 10,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "USDINR25NOV26FUT",
+      "brsymbol": "USDINR25NOV26FUT",
+      "name": "USDINR",
+      "exchange": "CDS",
+      "brexchange": "cde_fo",
+      "token": "90001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 1000,
+      "instrumenttype": "FUT",
+      "tick_size": 0.0025
+    },
+    {
+      "symbol": "NOTICK",
+      "brsymbol": "NOTICK-EQ",
+      "name": "NO TICK",
+      "exchange": "NSE",
+      "brexchange": "nse_cm",
+      "token": "4242",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.0
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "800.5",
+            "pt": "L",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_cnc_delivery",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "CNC",
+            "pf": "N",
+            "pr": "800.5",
+            "pt": "L",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_nrml_product",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "24005",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_fo",
+            "mp": "0",
+            "pc": "NRML",
+            "pf": "N",
+            "pr": "24005.0",
+            "pt": "L",
+            "qt": "75",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "NIFTY25NOV26FUT",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "0",
+            "pt": "MKT",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_sell",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "800.5",
+            "pt": "L",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "tt": "S",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL",
+        "product": "MIS",
+        "price": "800",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "800.0",
+            "pt": "SL",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "801.5",
+            "ts": "SBIN-EQ",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market_becomes_a_protected_stop_limit_buy",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "805.55",
+            "pt": "SL",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "801.5",
+            "ts": "SBIN-EQ",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market_sell_is_protected_below",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "797.45",
+            "pt": "SL",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "801.5",
+            "ts": "SBIN-EQ",
+            "tt": "S",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market_option_uses_the_option_bands",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV2624000CE",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "SL-M",
+        "product": "NRML",
+        "price": "0",
+        "trigger_price": "7.35",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_fo",
+            "mp": "0",
+            "pc": "NRML",
+            "pf": "N",
+            "pr": "7.75",
+            "pt": "SL",
+            "qt": "75",
+            "rt": "DAY",
+            "tp": "7.35",
+            "ts": "NIFTY25NOV2624000CE",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market_option_under_one_rupee",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV2624000CE",
+        "exchange": "NFO",
+        "action": "SELL",
+        "quantity": "75",
+        "pricetype": "SL-M",
+        "product": "NRML",
+        "price": "0",
+        "trigger_price": "0.55",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_fo",
+            "mp": "0",
+            "pc": "NRML",
+            "pf": "N",
+            "pr": "0.45",
+            "pt": "SL",
+            "qt": "75",
+            "rt": "DAY",
+            "tp": "0.55",
+            "ts": "NIFTY25NOV2624000CE",
+            "tt": "S",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market_without_a_trigger",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "An unexpected error occurred in the API endpoint",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market_without_a_tick_size",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOTICK",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "100",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "An unexpected error occurred in the API endpoint",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market_sell_too_low",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0.05",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "An unexpected error occurred in the API endpoint",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_disclosed_quantity",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "5",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "800.5",
+            "pt": "L",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_order_tag",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "my-strategy-name-which-is-long",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "800.5",
+            "pt": "L",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_bse_equity",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "TATAMOTORS",
+        "exchange": "BSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "500",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "bse_cm",
+            "mp": "0",
+            "pc": "CNC",
+            "pf": "N",
+            "pr": "500.0",
+            "pt": "L",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "TATAMOTORS-EQ",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_bse_derivative",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SENSEX26NOVFUT",
+        "exchange": "BFO",
+        "action": "BUY",
+        "quantity": "20",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "80000",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "bse_fo",
+            "mp": "0",
+            "pc": "NRML",
+            "pf": "N",
+            "pr": "80000.0",
+            "pt": "L",
+            "qt": "20",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "SENSEX26NOVFUT",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_mcx_future",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "GOLDM25NOV26FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "75000",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "mcx_fo",
+            "mp": "0",
+            "pc": "NRML",
+            "pf": "N",
+            "pr": "75000.0",
+            "pt": "L",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "GOLDM25NOV26FUT",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_currency_future",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "USDINR25NOV26FUT",
+        "exchange": "CDS",
+        "action": "BUY",
+        "quantity": "1000",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "83.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "cde_fo",
+            "mp": "0",
+            "pc": "NRML",
+            "pf": "N",
+            "pr": "83.5",
+            "pt": "L",
+            "qt": "1000",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "USDINR25NOV26FUT",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "status": 400,
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "RMS: Margin Exceeds",
+            "stCode": 1019
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "800.5",
+            "pt": "L",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "status": 400,
+          "body": {
+            "stat": "Not_Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "800.5",
+            "pt": "L",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_success_without_an_order_number",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "An unexpected error occurred in the API endpoint",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "800.5",
+            "pt": "L",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_not_json",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "status": 502,
+          "body": "Bad gateway"
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "An unexpected error occurred in the API endpoint",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "800.5",
+            "pt": "L",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "800.5",
+            "pt": "L",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": null,
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "K1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/vr/modify": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "K1",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "K1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/vr/modify",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "tk": "3045",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "dd": "NA",
+            "vd": "DAY",
+            "pc": "MIS",
+            "pr": "801.0",
+            "pt": "L",
+            "qt": "12",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "no": "K1",
+            "tt": "B"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "K1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "SL",
+        "product": "MIS",
+        "price": "800",
+        "disclosed_quantity": "0",
+        "trigger_price": "801.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/vr/modify": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "K1",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "K1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/vr/modify",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "tk": "3045",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "dd": "NA",
+            "vd": "DAY",
+            "pc": "MIS",
+            "pr": "800.0",
+            "pt": "SL",
+            "qt": "12",
+            "tp": "801.5",
+            "ts": "SBIN-EQ",
+            "no": "K1",
+            "tt": "B"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_market_becomes_a_protected_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "K1",
+        "action": "SELL",
+        "quantity": "12",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "disclosed_quantity": "0",
+        "trigger_price": "801.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/vr/modify": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "K1",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "K1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/vr/modify",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "tk": "3045",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "dd": "NA",
+            "vd": "DAY",
+            "pc": "MIS",
+            "pr": "797.45",
+            "pt": "SL",
+            "qt": "12",
+            "tp": "801.5",
+            "ts": "SBIN-EQ",
+            "no": "K1",
+            "tt": "S"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_market_without_a_trigger",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "K1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/vr/modify": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "K1",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Trigger price is required and must be positive for SL-M orders",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_market",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "K1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/vr/modify": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "K1",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "K1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/vr/modify",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "tk": "3045",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "dd": "NA",
+            "vd": "DAY",
+            "pc": "MIS",
+            "pr": "0",
+            "pt": "MKT",
+            "qt": "12",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "no": "K1",
+            "tt": "B"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "K1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/vr/modify": {
+          "status": 400,
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Order is not open",
+            "stCode": 1020
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Order is not open",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/vr/modify",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "tk": "3045",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "dd": "NA",
+            "vd": "DAY",
+            "pc": "MIS",
+            "pr": "801.0",
+            "pt": "L",
+            "qt": "12",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "no": "K1",
+            "tt": "B"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "K1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/vr/modify": {
+          "status": 400,
+          "body": {
+            "stat": "Not_Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to modify order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/vr/modify",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "tk": "3045",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "dd": "NA",
+            "vd": "DAY",
+            "pc": "MIS",
+            "pr": "801.0",
+            "pt": "L",
+            "qt": "12",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "no": "K1",
+            "tt": "B"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "K1",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/cancel": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "K1",
+            "stCode": 200
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "K1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/cancel",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "on": "K1",
+            "am": "NO"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "K3",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/cancel": {
+          "status": 400,
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Order not found to cancel",
+            "stCode": 1021
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Order not found to cancel",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/cancel",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "on": "K3",
+            "am": "NO"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "K3",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/order/cancel": {
+          "status": 400,
+          "body": {
+            "stat": "Not_Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to cancel order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/cancel",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "on": "K3",
+            "am": "NO"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/orders": {
+          "body": {
+            "stat": "Ok",
+            "data": [
+              {
+                "nOrdNo": "K1",
+                "tok": "3045",
+                "exSeg": "nse_cm",
+                "trdSym": "SBIN-EQ",
+                "trnsTp": "B",
+                "qty": "10",
+                "prc": "800.50",
+                "trgPrc": "0.00",
+                "prcTp": "L",
+                "prod": "MIS",
+                "ordSt": "open",
+                "ordEntTm": "03-Nov-2026 10:20:01",
+                "avgPrc": "0.00",
+                "GuiOrdId": "openalgo-abc"
+              },
+              {
+                "nOrdNo": "K2",
+                "tok": "49500",
+                "exSeg": "nse_fo",
+                "trdSym": "NIFTY25NOV26FUT",
+                "trnsTp": "B",
+                "qty": "75",
+                "prc": "24010.00",
+                "trgPrc": "24000.00",
+                "prcTp": "SL",
+                "prod": "NRML",
+                "ordSt": "trigger pending",
+                "ordEntTm": "03-Nov-2026 10:20:01",
+                "avgPrc": "0.00",
+                "GuiOrdId": "openalgo-abc"
+              },
+              {
+                "nOrdNo": "K3",
+                "tok": "1594",
+                "exSeg": "nse_cm",
+                "trdSym": "INFY-EQ",
+                "trnsTp": "S",
+                "qty": "5",
+                "prc": "1495.00",
+                "trgPrc": "0.00",
+                "prcTp": "L",
+                "prod": "CNC",
+                "ordSt": "complete",
+                "ordEntTm": "03-Nov-2026 10:20:01",
+                "avgPrc": "0.00",
+                "GuiOrdId": "openalgo-abc"
+              }
+            ]
+          }
+        },
+        "POST /quick/order/cancel": [
+          {
+            "body": {
+              "stat": "Ok",
+              "nOrdNo": "K1"
+            }
+          },
+          {
+            "status": 400,
+            "body": {
+              "stat": "Not_Ok",
+              "emsg": "No"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "K1"
+          ],
+          "failed_cancellations": [
+            "K2"
+          ],
+          "message": "Canceled 1 orders. Failed to cancel 1 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/orders",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/cancel",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "on": "K1",
+            "am": "NO"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/cancel",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "on": "K2",
+            "am": "NO"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_book_empty",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/orders": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/orders",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_book_without_data",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/orders": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/orders",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/orders": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "data": [
+              {
+                "nOrdNo": "K1",
+                "tok": "3045",
+                "exSeg": "nse_cm",
+                "trdSym": "SBIN-EQ",
+                "trnsTp": "B",
+                "qty": "10",
+                "prc": "800.50",
+                "trgPrc": "0.00",
+                "prcTp": "L",
+                "prod": "MIS",
+                "ordSt": "open",
+                "ordEntTm": "03-Nov-2026 10:20:01",
+                "avgPrc": "0.00",
+                "GuiOrdId": "openalgo-abc"
+              },
+              {
+                "nOrdNo": "K2",
+                "tok": "49500",
+                "exSeg": "nse_fo",
+                "trdSym": "NIFTY25NOV26FUT",
+                "trnsTp": "B",
+                "qty": "75",
+                "prc": "24010.00",
+                "trgPrc": "24000.00",
+                "prcTp": "SL",
+                "prod": "NRML",
+                "ordSt": "trigger pending",
+                "ordEntTm": "03-Nov-2026 10:20:01",
+                "avgPrc": "0.00",
+                "GuiOrdId": "openalgo-abc"
+              },
+              {
+                "nOrdNo": "K3",
+                "tok": "1594",
+                "exSeg": "nse_cm",
+                "trdSym": "INFY-EQ",
+                "trnsTp": "S",
+                "qty": "5",
+                "prc": "1495.00",
+                "trgPrc": "0.00",
+                "prcTp": "L",
+                "prod": "CNC",
+                "ordSt": "complete",
+                "ordEntTm": "03-Nov-2026 10:20:01",
+                "avgPrc": "1499.95",
+                "GuiOrdId": "openalgo-abc"
+              },
+              {
+                "nOrdNo": "K4",
+                "tok": "3045",
+                "exSeg": "nse_cm",
+                "trdSym": "SBIN-EQ",
+                "trnsTp": "S",
+                "qty": "1",
+                "prc": "0.00",
+                "trgPrc": "790.50",
+                "prcTp": "SL-M",
+                "prod": "MIS",
+                "ordSt": "rejected",
+                "ordEntTm": "03-Nov-2026 10:20:01",
+                "avgPrc": "0.00",
+                "GuiOrdId": "openalgo-abc"
+              },
+              {
+                "nOrdNo": "K5",
+                "tok": "500570",
+                "exSeg": "bse_cm",
+                "trdSym": "TATAMOTORS-EQ",
+                "trnsTp": "B",
+                "qty": "2",
+                "prc": "0.00",
+                "trgPrc": "0.00",
+                "prcTp": "MKT",
+                "prod": "CNC",
+                "ordSt": "cancelled",
+                "ordEntTm": "03-Nov-2026 10:20:01",
+                "avgPrc": "0.00",
+                "GuiOrdId": "openalgo-abc"
+              },
+              {
+                "nOrdNo": "K6",
+                "tok": "90001",
+                "exSeg": "cde_fo",
+                "trdSym": "USDINR25NOV26FUT",
+                "trnsTp": "B",
+                "qty": "1000",
+                "prc": "83.50",
+                "trgPrc": "0.00",
+                "prcTp": "L",
+                "prod": "NRML",
+                "ordSt": "open",
+                "ordEntTm": "03-Nov-2026 10:20:01",
+                "avgPrc": "0.00",
+                "GuiOrdId": "openalgo-abc"
+              },
+              {
+                "nOrdNo": "K7",
+                "tok": "99999",
+                "exSeg": "nse_cm",
+                "trdSym": "NOSUCH-EQ",
+                "trnsTp": "B",
+                "qty": "3",
+                "prc": "5.00",
+                "trgPrc": "0.00",
+                "prcTp": "XX",
+                "prod": "MIS",
+                "ordSt": "open",
+                "ordEntTm": "03-Nov-2026 10:20:01",
+                "avgPrc": "0.00",
+                "GuiOrdId": "openalgo-abc"
+              },
+              {
+                "nOrdNo": "K8",
+                "tok": "",
+                "exSeg": "nse_cm",
+                "trdSym": "SBIN-EQ",
+                "trnsTp": "B",
+                "qty": "4",
+                "prc": "800",
+                "trgPrc": "0.00",
+                "prcTp": "L",
+                "prod": "MIS",
+                "ordSt": "complete",
+                "ordEntTm": "03-Nov-2026 10:20:01",
+                "avgPrc": "799.5",
+                "GuiOrdId": "openalgo-abc"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "order_tag": "openalgo-abc",
+                "orderid": "K1",
+                "price": "800.50",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "0.00"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NFO",
+                "order_status": "open",
+                "order_tag": "openalgo-abc",
+                "orderid": "K2",
+                "price": "24010.00",
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": "75",
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "24000.00"
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "order_tag": "openalgo-abc",
+                "orderid": "K3",
+                "price": "1499.95",
+                "pricetype": "LIMIT",
+                "product": "CNC",
+                "quantity": "5",
+                "symbol": "INFY",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "0.00"
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "rejected",
+                "order_tag": "openalgo-abc",
+                "orderid": "K4",
+                "price": "0.00",
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": "1",
+                "symbol": "SBIN",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "790.50"
+              },
+              {
+                "action": "BUY",
+                "exchange": "BSE",
+                "order_status": "cancelled",
+                "order_tag": "openalgo-abc",
+                "orderid": "K5",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": "2",
+                "symbol": "TATAMOTORS",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "0.00"
+              },
+              {
+                "action": "BUY",
+                "exchange": "CDS",
+                "order_status": "open",
+                "order_tag": "openalgo-abc",
+                "orderid": "K6",
+                "price": "83.50",
+                "pricetype": "LIMIT",
+                "product": "NRML",
+                "quantity": "1000",
+                "symbol": "USDINR25NOV26FUT",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "0.00"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "order_tag": "openalgo-abc",
+                "orderid": "K7",
+                "price": "0.00",
+                "pricetype": "XX",
+                "product": "MIS",
+                "quantity": "3",
+                "symbol": "NOSUCH-EQ",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "0.00"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "order_tag": "openalgo-abc",
+                "orderid": "K8",
+                "price": "799.5",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "4",
+                "symbol": "SBIN",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "0.00"
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 6,
+              "total_completed_orders": 2,
+              "total_open_orders": 4,
+              "total_rejected_orders": 1,
+              "total_sell_orders": 2
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/orders",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_empty",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/orders": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/orders",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_without_data",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/orders": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "",
+                "exchange": "",
+                "order_status": "",
+                "order_tag": "",
+                "orderid": "",
+                "price": 0.0,
+                "pricetype": "",
+                "product": "",
+                "quantity": 0,
+                "symbol": "",
+                "timestamp": "",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/orders",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_failed",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/orders": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Session expired",
+            "stCode": 1003
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "",
+                "exchange": "",
+                "order_status": "",
+                "order_tag": "",
+                "orderid": "",
+                "price": 0.0,
+                "pricetype": "",
+                "product": "",
+                "quantity": 0,
+                "symbol": "",
+                "timestamp": "",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/orders",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/trades": {
+          "body": {
+            "stat": "Ok",
+            "data": [
+              {
+                "nOrdNo": "K3",
+                "tok": "",
+                "exSeg": "nse_cm",
+                "trdSym": "INFY-EQ",
+                "trnsTp": "S",
+                "prod": "CNC",
+                "fldQty": "5",
+                "avgPrc": "1499.95",
+                "flId": "T1",
+                "exTm": "03-Nov-2026 10:21:12",
+                "GuiOrdId": "openalgo-abc"
+              },
+              {
+                "nOrdNo": "K2",
+                "tok": "49500",
+                "exSeg": "nse_fo",
+                "trdSym": "NIFTY25NOV26FUT",
+                "trnsTp": "B",
+                "prod": "NRML",
+                "fldQty": "75",
+                "avgPrc": "24005.50",
+                "flId": "T2",
+                "exTm": "03-Nov-2026 10:22:00",
+                "GuiOrdId": ""
+              },
+              {
+                "nOrdNo": "K9",
+                "tok": "99999",
+                "exSeg": "nse_cm",
+                "trdSym": "NOSUCH-EQ",
+                "trnsTp": "B",
+                "prod": "MIS",
+                "fldQty": "2",
+                "avgPrc": "2900",
+                "flId": "T3",
+                "exTm": "03-Nov-2026 10:23:00",
+                "GuiOrdId": ""
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "SELL",
+              "average_price": "1499.95",
+              "exchange": "NSE",
+              "order_tag": "openalgo-abc",
+              "orderid": "K3",
+              "product": "CNC",
+              "quantity": "5",
+              "symbol": "INFY",
+              "timestamp": "03-Nov-2026 10:21:12",
+              "trade_value": 7499.75,
+              "tradeid": "T1"
+            },
+            {
+              "action": "BUY",
+              "average_price": "24005.50",
+              "exchange": "NFO",
+              "order_tag": "",
+              "orderid": "K2",
+              "product": "NRML",
+              "quantity": "75",
+              "symbol": "NIFTY25NOV26FUT",
+              "timestamp": "03-Nov-2026 10:22:00",
+              "trade_value": 1800412.5,
+              "tradeid": "T2"
+            },
+            {
+              "action": "BUY",
+              "average_price": "2900",
+              "exchange": "NSE",
+              "order_tag": "",
+              "orderid": "K9",
+              "product": "MIS",
+              "quantity": "2",
+              "symbol": "NOSUCH-EQ",
+              "timestamp": "03-Nov-2026 10:23:00",
+              "trade_value": 5800.0,
+              "tradeid": "T3"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/trades",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_empty",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/trades": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/trades",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_failed",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/trades": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Session expired",
+            "stCode": 1003
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/trades",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/positions": {
+          "body": {
+            "stat": "Ok",
+            "data": [
+              {
+                "tok": "3045",
+                "exSeg": "nse_cm",
+                "trdSym": "SBIN-EQ",
+                "prod": "MIS",
+                "flBuyQty": "10",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "8000.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "49500",
+                "exSeg": "nse_fo",
+                "trdSym": "NIFTY25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "75",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "1800000.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "1594",
+                "exSeg": "nse_cm",
+                "trdSym": "INFY-EQ",
+                "prod": "CNC",
+                "flBuyQty": "5",
+                "flSellQty": "5",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "7400.00",
+                "sellAmt": "7500.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "80001",
+                "exSeg": "mcx_fo",
+                "trdSym": "GOLDM25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "10",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "750000.00",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "75000.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "90001",
+                "exSeg": "cde_fo",
+                "trdSym": "USDINR25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "1000",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "83500.00",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "99999",
+                "exSeg": "nse_cm",
+                "trdSym": "NOSUCH-EQ",
+                "prod": "MIS",
+                "flBuyQty": "4",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "20.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              }
+            ]
+          }
+        },
+        "GET /script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all": {
+          "body": [
+            {
+              "exchange": "nse_cm",
+              "exchange_token": "3045",
+              "display_symbol": "SBIN-EQ",
+              "ltp": "805.45",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "nse_fo",
+              "exchange_token": "49500",
+              "display_symbol": "NIFTY25NOV26FUT",
+              "ltp": "24005.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "mcx_fo",
+              "exchange_token": "80001",
+              "display_symbol": "GOLDM25NOV26FUT",
+              "ltp": "75100.0",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "cde_fo",
+              "exchange_token": "90001",
+              "display_symbol": "USDINR25NOV26FUT",
+              "ltp": "83.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": 800.0,
+              "exchange": "NSE",
+              "ltp": 805.45,
+              "pnl": 54.5,
+              "product": "MIS",
+              "quantity": 10,
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": 24000.0,
+              "exchange": "NFO",
+              "ltp": 24005.5,
+              "pnl": -412.5,
+              "product": "NRML",
+              "quantity": -75,
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": "0.00",
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": 100.0,
+              "product": "CNC",
+              "quantity": 0,
+              "symbol": "INFY"
+            },
+            {
+              "average_price": 75000.0,
+              "exchange": "MCX",
+              "ltp": 75100.0,
+              "pnl": 1000.0,
+              "product": "NRML",
+              "quantity": 10,
+              "symbol": "GOLDM25NOV26FUT"
+            },
+            {
+              "average_price": 83.5,
+              "average_price_basis": "carry_forward_valuation",
+              "exchange": "CDS",
+              "ltp": 83.5,
+              "pnl": 0.0,
+              "product": "NRML",
+              "quantity": -1000,
+              "symbol": "USDINR25NOV26FUT"
+            },
+            {
+              "average_price": 5.0,
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "MIS",
+              "quantity": 4,
+              "symbol": "NOSUCH-EQ"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_without_prices",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/positions": {
+          "body": {
+            "stat": "Ok",
+            "data": [
+              {
+                "tok": "3045",
+                "exSeg": "nse_cm",
+                "trdSym": "SBIN-EQ",
+                "prod": "MIS",
+                "flBuyQty": "10",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "8000.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "49500",
+                "exSeg": "nse_fo",
+                "trdSym": "NIFTY25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "75",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "1800000.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "1594",
+                "exSeg": "nse_cm",
+                "trdSym": "INFY-EQ",
+                "prod": "CNC",
+                "flBuyQty": "5",
+                "flSellQty": "5",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "7400.00",
+                "sellAmt": "7500.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "80001",
+                "exSeg": "mcx_fo",
+                "trdSym": "GOLDM25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "10",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "750000.00",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "75000.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "90001",
+                "exSeg": "cde_fo",
+                "trdSym": "USDINR25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "1000",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "83500.00",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "99999",
+                "exSeg": "nse_cm",
+                "trdSym": "NOSUCH-EQ",
+                "prod": "MIS",
+                "flBuyQty": "4",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "20.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              }
+            ]
+          }
+        },
+        "GET /script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all": {
+          "status": 500,
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "down"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": 800.0,
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "MIS",
+              "quantity": 10,
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": 24000.0,
+              "exchange": "NFO",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "NRML",
+              "quantity": -75,
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": "0.00",
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": 100.0,
+              "product": "CNC",
+              "quantity": 0,
+              "symbol": "INFY"
+            },
+            {
+              "average_price": 75000.0,
+              "exchange": "MCX",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "NRML",
+              "quantity": 10,
+              "symbol": "GOLDM25NOV26FUT"
+            },
+            {
+              "average_price": 83.5,
+              "average_price_basis": "carry_forward_valuation",
+              "exchange": "CDS",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "NRML",
+              "quantity": -1000,
+              "symbol": "USDINR25NOV26FUT"
+            },
+            {
+              "average_price": 5.0,
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "MIS",
+              "quantity": 4,
+              "symbol": "NOSUCH-EQ"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_flat",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/positions": {
+          "body": {
+            "stat": "Ok",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_failed",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/positions": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Session expired",
+            "stCode": 1003
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /portfolio/v1/holdings": {
+          "body": {
+            "stat": "Ok",
+            "data": [
+              {
+                "displaySymbol": "INFY",
+                "exchangeSegment": "nse_cm",
+                "instrumentToken": "1594",
+                "instrumentType": "Equity",
+                "quantity": 10,
+                "averagePrice": "1450.5",
+                "mktValue": 15000.0,
+                "holdingCost": 14505.0,
+                "symbol": "INFY"
+              },
+              {
+                "displaySymbol": "TATAMOTORS",
+                "exchangeSegment": "bse_cm",
+                "instrumentToken": "500570",
+                "instrumentType": "Equity",
+                "quantity": 4,
+                "averagePrice": "500",
+                "mktValue": 1900.0,
+                "holdingCost": 0.0
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "average_price": 1450.5,
+                "exchange": "NSE",
+                "pnl": 495.0,
+                "pnlpercent": 3.41,
+                "product": "CNC",
+                "quantity": 10,
+                "symbol": "INFY"
+              },
+              {
+                "average_price": 500.0,
+                "exchange": "BSE",
+                "pnl": 1900.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 4,
+                "symbol": "TATAMOTORS"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 16900.0,
+              "totalinvvalue": 14505.0,
+              "totalpnlpercentage": 16.51,
+              "totalprofitandloss": 2395.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/portfolio/v1/holdings",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_empty",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /portfolio/v1/holdings": {
+          "body": {
+            "stat": "Ok",
+            "stCode": 200,
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/portfolio/v1/holdings",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_failed",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /portfolio/v1/holdings": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Session expired",
+            "stCode": 1003
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/portfolio/v1/holdings",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/limits": {
+          "body": {
+            "stat": "Ok",
+            "CollateralValue": "179542.80",
+            "Collateral": "222565.50",
+            "UnrealizedMtomPrsnt": "100.5",
+            "RealizedMtomPrsnt": "-20.25",
+            "MarginUsed": "0.20",
+            "Net": "402108.1"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "179542.80",
+            "collateral": "222565.50",
+            "m2mrealized": "-20.25",
+            "m2munrealized": "100.50",
+            "utiliseddebits": "0.20"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/limits",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "seg": "ALL",
+            "exch": "ALL",
+            "prod": "ALL"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_missing_fields_are_zero",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/limits": {
+          "body": {
+            "stat": "Ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "0.00",
+            "collateral": "0.00",
+            "m2mrealized": "0.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "0.00"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/limits",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "seg": "ALL",
+            "exch": "ALL",
+            "prod": "ALL"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_failed",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/limits": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/limits",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "seg": "ALL",
+            "exch": "ALL",
+            "prod": "ALL"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_http_error",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /quick/user/limits": {
+          "status": 500,
+          "body": "oops"
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/user/limits",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "seg": "ALL",
+            "exch": "ALL",
+            "prod": "ALL"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_long",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/positions": {
+          "body": {
+            "stat": "Ok",
+            "data": [
+              {
+                "tok": "3045",
+                "exSeg": "nse_cm",
+                "trdSym": "SBIN-EQ",
+                "prod": "MIS",
+                "flBuyQty": "10",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "8000.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "49500",
+                "exSeg": "nse_fo",
+                "trdSym": "NIFTY25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "75",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "1800000.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "1594",
+                "exSeg": "nse_cm",
+                "trdSym": "INFY-EQ",
+                "prod": "CNC",
+                "flBuyQty": "5",
+                "flSellQty": "5",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "7400.00",
+                "sellAmt": "7500.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "80001",
+                "exSeg": "mcx_fo",
+                "trdSym": "GOLDM25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "10",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "750000.00",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "75000.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "90001",
+                "exSeg": "cde_fo",
+                "trdSym": "USDINR25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "1000",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "83500.00",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "99999",
+                "exSeg": "nse_cm",
+                "trdSym": "NOSUCH-EQ",
+                "prod": "MIS",
+                "flBuyQty": "4",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "20.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              }
+            ]
+          }
+        },
+        "GET /script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all": {
+          "body": [
+            {
+              "exchange": "nse_cm",
+              "exchange_token": "3045",
+              "display_symbol": "SBIN-EQ",
+              "ltp": "805.45",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "nse_fo",
+              "exchange_token": "49500",
+              "display_symbol": "NIFTY25NOV26FUT",
+              "ltp": "24005.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "mcx_fo",
+              "exchange_token": "80001",
+              "display_symbol": "GOLDM25NOV26FUT",
+              "ltp": "75100.0",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "cde_fo",
+              "exchange_token": "90001",
+              "display_symbol": "USDINR25NOV26FUT",
+              "ltp": "83.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": 10,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_short_is_negative",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/positions": {
+          "body": {
+            "stat": "Ok",
+            "data": [
+              {
+                "tok": "3045",
+                "exSeg": "nse_cm",
+                "trdSym": "SBIN-EQ",
+                "prod": "MIS",
+                "flBuyQty": "10",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "8000.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "49500",
+                "exSeg": "nse_fo",
+                "trdSym": "NIFTY25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "75",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "1800000.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "1594",
+                "exSeg": "nse_cm",
+                "trdSym": "INFY-EQ",
+                "prod": "CNC",
+                "flBuyQty": "5",
+                "flSellQty": "5",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "7400.00",
+                "sellAmt": "7500.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "80001",
+                "exSeg": "mcx_fo",
+                "trdSym": "GOLDM25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "10",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "750000.00",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "75000.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "90001",
+                "exSeg": "cde_fo",
+                "trdSym": "USDINR25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "1000",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "83500.00",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "99999",
+                "exSeg": "nse_cm",
+                "trdSym": "NOSUCH-EQ",
+                "prod": "MIS",
+                "flBuyQty": "4",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "20.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              }
+            ]
+          }
+        },
+        "GET /script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all": {
+          "body": [
+            {
+              "exchange": "nse_cm",
+              "exchange_token": "3045",
+              "display_symbol": "SBIN-EQ",
+              "ltp": "805.45",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "nse_fo",
+              "exchange_token": "49500",
+              "display_symbol": "NIFTY25NOV26FUT",
+              "ltp": "24005.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "mcx_fo",
+              "exchange_token": "80001",
+              "display_symbol": "GOLDM25NOV26FUT",
+              "ltp": "75100.0",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "cde_fo",
+              "exchange_token": "90001",
+              "display_symbol": "USDINR25NOV26FUT",
+              "ltp": "83.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": -75,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_carried_forward",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "GOLDM25NOV26FUT",
+        "exchange": "MCX",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/positions": {
+          "body": {
+            "stat": "Ok",
+            "data": [
+              {
+                "tok": "3045",
+                "exSeg": "nse_cm",
+                "trdSym": "SBIN-EQ",
+                "prod": "MIS",
+                "flBuyQty": "10",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "8000.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "49500",
+                "exSeg": "nse_fo",
+                "trdSym": "NIFTY25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "75",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "1800000.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "1594",
+                "exSeg": "nse_cm",
+                "trdSym": "INFY-EQ",
+                "prod": "CNC",
+                "flBuyQty": "5",
+                "flSellQty": "5",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "7400.00",
+                "sellAmt": "7500.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "80001",
+                "exSeg": "mcx_fo",
+                "trdSym": "GOLDM25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "10",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "750000.00",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "75000.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "90001",
+                "exSeg": "cde_fo",
+                "trdSym": "USDINR25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "1000",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "83500.00",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "99999",
+                "exSeg": "nse_cm",
+                "trdSym": "NOSUCH-EQ",
+                "prod": "MIS",
+                "flBuyQty": "4",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "20.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              }
+            ]
+          }
+        },
+        "GET /script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all": {
+          "body": [
+            {
+              "exchange": "nse_cm",
+              "exchange_token": "3045",
+              "display_symbol": "SBIN-EQ",
+              "ltp": "805.45",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "nse_fo",
+              "exchange_token": "49500",
+              "display_symbol": "NIFTY25NOV26FUT",
+              "ltp": "24005.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "mcx_fo",
+              "exchange_token": "80001",
+              "display_symbol": "GOLDM25NOV26FUT",
+              "ltp": "75100.0",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "cde_fo",
+              "exchange_token": "90001",
+              "display_symbol": "USDINR25NOV26FUT",
+              "ltp": "83.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": 10,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_other_product_is_zero",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "product": "CNC",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/positions": {
+          "body": {
+            "stat": "Ok",
+            "data": [
+              {
+                "tok": "3045",
+                "exSeg": "nse_cm",
+                "trdSym": "SBIN-EQ",
+                "prod": "MIS",
+                "flBuyQty": "10",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "8000.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "49500",
+                "exSeg": "nse_fo",
+                "trdSym": "NIFTY25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "75",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "1800000.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "1594",
+                "exSeg": "nse_cm",
+                "trdSym": "INFY-EQ",
+                "prod": "CNC",
+                "flBuyQty": "5",
+                "flSellQty": "5",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "7400.00",
+                "sellAmt": "7500.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "80001",
+                "exSeg": "mcx_fo",
+                "trdSym": "GOLDM25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "10",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "750000.00",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "75000.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "90001",
+                "exSeg": "cde_fo",
+                "trdSym": "USDINR25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "1000",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "83500.00",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "99999",
+                "exSeg": "nse_cm",
+                "trdSym": "NOSUCH-EQ",
+                "prod": "MIS",
+                "flBuyQty": "4",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "20.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              }
+            ]
+          }
+        },
+        "GET /script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all": {
+          "body": [
+            {
+              "exchange": "nse_cm",
+              "exchange_token": "3045",
+              "display_symbol": "SBIN-EQ",
+              "ltp": "805.45",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "nse_fo",
+              "exchange_token": "49500",
+              "display_symbol": "NIFTY25NOV26FUT",
+              "ltp": "24005.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "mcx_fo",
+              "exchange_token": "80001",
+              "display_symbol": "GOLDM25NOV26FUT",
+              "ltp": "75100.0",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "cde_fo",
+              "exchange_token": "90001",
+              "display_symbol": "USDINR25NOV26FUT",
+              "ltp": "83.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": 0,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/positions": {
+          "body": {
+            "stat": "Ok",
+            "data": [
+              {
+                "tok": "3045",
+                "exSeg": "nse_cm",
+                "trdSym": "SBIN-EQ",
+                "prod": "MIS",
+                "flBuyQty": "10",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "8000.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "49500",
+                "exSeg": "nse_fo",
+                "trdSym": "NIFTY25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "75",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "1800000.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "1594",
+                "exSeg": "nse_cm",
+                "trdSym": "INFY-EQ",
+                "prod": "CNC",
+                "flBuyQty": "5",
+                "flSellQty": "5",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "7400.00",
+                "sellAmt": "7500.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "80001",
+                "exSeg": "mcx_fo",
+                "trdSym": "GOLDM25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "10",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "750000.00",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "75000.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "90001",
+                "exSeg": "cde_fo",
+                "trdSym": "USDINR25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "1000",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "83500.00",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "99999",
+                "exSeg": "nse_cm",
+                "trdSym": "NOSUCH-EQ",
+                "prod": "MIS",
+                "flBuyQty": "4",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "20.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              }
+            ]
+          }
+        },
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        },
+        "GET /script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all": {
+          "body": [
+            {
+              "exchange": "nse_cm",
+              "exchange_token": "3045",
+              "display_symbol": "SBIN-EQ",
+              "ltp": "805.45",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "nse_fo",
+              "exchange_token": "49500",
+              "display_symbol": "NIFTY25NOV26FUT",
+              "ltp": "24005.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "mcx_fo",
+              "exchange_token": "80001",
+              "display_symbol": "GOLDM25NOV26FUT",
+              "ltp": "75100.0",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "cde_fo",
+              "exchange_token": "90001",
+              "display_symbol": "USDINR25NOV26FUT",
+              "ltp": "83.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "0",
+            "pt": "MKT",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "tt": "S",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_fo",
+            "mp": "0",
+            "pc": "NRML",
+            "pf": "N",
+            "pr": "0",
+            "pt": "MKT",
+            "qt": "75",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "NIFTY25NOV26FUT",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "mcx_fo",
+            "mp": "0",
+            "pc": "NRML",
+            "pf": "N",
+            "pr": "0",
+            "pt": "MKT",
+            "qt": "10",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "GOLDM25NOV26FUT",
+            "tt": "S",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "cde_fo",
+            "mp": "0",
+            "pc": "NRML",
+            "pf": "N",
+            "pr": "0",
+            "pt": "MKT",
+            "qt": "1000",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "USDINR25NOV26FUT",
+            "tt": "B",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "0",
+            "pt": "MKT",
+            "qt": "4",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": null,
+            "tt": "S",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_nothing_open",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/positions": {
+          "body": {
+            "stat": "Ok",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_book_failed",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/positions": {
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Session expired",
+            "stCode": 1003
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to close positions due to internal error",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_reduce",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/positions": {
+          "body": {
+            "stat": "Ok",
+            "data": [
+              {
+                "tok": "3045",
+                "exSeg": "nse_cm",
+                "trdSym": "SBIN-EQ",
+                "prod": "MIS",
+                "flBuyQty": "10",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "8000.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "49500",
+                "exSeg": "nse_fo",
+                "trdSym": "NIFTY25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "75",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "1800000.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "1594",
+                "exSeg": "nse_cm",
+                "trdSym": "INFY-EQ",
+                "prod": "CNC",
+                "flBuyQty": "5",
+                "flSellQty": "5",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "7400.00",
+                "sellAmt": "7500.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "80001",
+                "exSeg": "mcx_fo",
+                "trdSym": "GOLDM25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "10",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "750000.00",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "75000.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "90001",
+                "exSeg": "cde_fo",
+                "trdSym": "USDINR25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "1000",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "83500.00",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "99999",
+                "exSeg": "nse_cm",
+                "trdSym": "NOSUCH-EQ",
+                "prod": "MIS",
+                "flBuyQty": "4",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "20.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              }
+            ]
+          }
+        },
+        "POST /quick/order/rule/ms/place": {
+          "body": {
+            "stat": "Ok",
+            "nOrdNo": "250101000001",
+            "stCode": 200
+          }
+        },
+        "GET /script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all": {
+          "body": [
+            {
+              "exchange": "nse_cm",
+              "exchange_token": "3045",
+              "display_symbol": "SBIN-EQ",
+              "ltp": "805.45",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "nse_fo",
+              "exchange_token": "49500",
+              "display_symbol": "NIFTY25NOV26FUT",
+              "ltp": "24005.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "mcx_fo",
+              "exchange_token": "80001",
+              "display_symbol": "GOLDM25NOV26FUT",
+              "ltp": "75100.0",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "cde_fo",
+              "exchange_token": "90001",
+              "display_symbol": "USDINR25NOV26FUT",
+              "ltp": "83.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "250101000001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "kotak.test",
+          "path": "/quick/order/rule/ms/place",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {},
+          "json": {
+            "am": "NO",
+            "dq": "0",
+            "es": "nse_cm",
+            "mp": "0",
+            "pc": "MIS",
+            "pf": "N",
+            "pr": "800.5",
+            "pt": "L",
+            "qt": "6",
+            "rt": "DAY",
+            "tp": "0",
+            "ts": "SBIN-EQ",
+            "tt": "S",
+            "ig": "openalgo-12345678-1234-5678-1234-567812345678"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_already_matched",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "10",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quick/user/positions": {
+          "body": {
+            "stat": "Ok",
+            "data": [
+              {
+                "tok": "3045",
+                "exSeg": "nse_cm",
+                "trdSym": "SBIN-EQ",
+                "prod": "MIS",
+                "flBuyQty": "10",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "8000.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "49500",
+                "exSeg": "nse_fo",
+                "trdSym": "NIFTY25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "75",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "1800000.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "1594",
+                "exSeg": "nse_cm",
+                "trdSym": "INFY-EQ",
+                "prod": "CNC",
+                "flBuyQty": "5",
+                "flSellQty": "5",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "7400.00",
+                "sellAmt": "7500.00",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "80001",
+                "exSeg": "mcx_fo",
+                "trdSym": "GOLDM25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "10",
+                "cfSellQty": "0",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "750000.00",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "75000.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "90001",
+                "exSeg": "cde_fo",
+                "trdSym": "USDINR25NOV26FUT",
+                "prod": "NRML",
+                "flBuyQty": "0",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "1000",
+                "buyAmt": "0",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "83500.00",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              },
+              {
+                "tok": "99999",
+                "exSeg": "nse_cm",
+                "trdSym": "NOSUCH-EQ",
+                "prod": "MIS",
+                "flBuyQty": "4",
+                "flSellQty": "0",
+                "cfBuyQty": "0",
+                "cfSellQty": "0",
+                "buyAmt": "20.00",
+                "sellAmt": "0",
+                "cfBuyAmt": "0",
+                "cfSellAmt": "0",
+                "multiplier": "1",
+                "genNum": "1",
+                "genDen": "1",
+                "prcNum": "1",
+                "prcDen": "1",
+                "upldPrc": "0.00",
+                "avgnetprice": "0.00"
+              }
+            ]
+          }
+        },
+        "GET /script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all": {
+          "body": [
+            {
+              "exchange": "nse_cm",
+              "exchange_token": "3045",
+              "display_symbol": "SBIN-EQ",
+              "ltp": "805.45",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "805.45",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "nse_fo",
+              "exchange_token": "49500",
+              "display_symbol": "NIFTY25NOV26FUT",
+              "ltp": "24005.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "24005.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "mcx_fo",
+              "exchange_token": "80001",
+              "display_symbol": "GOLDM25NOV26FUT",
+              "ltp": "75100.0",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "75100.0",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            },
+            {
+              "exchange": "cde_fo",
+              "exchange_token": "90001",
+              "display_symbol": "USDINR25NOV26FUT",
+              "ltp": "83.5",
+              "ohlc": {
+                "open": "1",
+                "high": "2",
+                "low": "0.5",
+                "close": "1.5"
+              },
+              "depth": {
+                "buy": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "83.5",
+                    "quantity": 1
+                  }
+                ]
+              },
+              "last_volume": "10",
+              "open_int": "0",
+              "total_buy": 1,
+              "total_sell": 1
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "No OpenPosition Found. Not placing Exit order.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/quick/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "application/json",
+            "sid": "trade-sid",
+            "auth": "trade-token",
+            "neo-fin-key": "neotradeapi"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/script-details/1.0/quotes/neosymbol/nse_cm%7C3045,nse_fo%7C49500,nse_cm%7C1594,mcx_fo%7C80001,cde_fo%7C90001/all",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

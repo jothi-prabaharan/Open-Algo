@@ -75,6 +75,9 @@ state = {"canned": {}, "sent": [], "calls": {}, "analyze": False}
 
 def _handler(request: httpx.Request) -> httpx.Response:
     url = urlsplit(str(request.url))
+    if getattr(SCENARIOS, "ENCODE_PIPE", False):
+        # A path that carries a pipe is recorded in the form it goes on the wire (%7C), which is how .NET reports it.
+        url = url._replace(path=url.path.replace("|", "%7C"))
     body = request.content.decode() if request.content else ""
     ctype = request.headers.get("content-type", "")
     if body.startswith("jData=") and "&jKey=" in body:
@@ -102,7 +105,7 @@ def _handler(request: httpx.Request) -> httpx.Response:
             "headers": {
                 k: v
                 for k, v in request.headers.items()
-                if k.lower() in ("authorization", "x-kite-version", "content-type", "accept", "access-token", "client-id", "x-privatekey", "x-clientcode", "api-key", "x-jwt-token")
+                if k.lower() in ("authorization", "x-kite-version", "content-type", "accept", "access-token", "client-id", "x-privatekey", "x-clientcode", "api-key", "x-jwt-token", "sid", "auth", "neo-fin-key")
             },
             **parsed_body,
         }
