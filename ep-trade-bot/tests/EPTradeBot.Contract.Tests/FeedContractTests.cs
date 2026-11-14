@@ -761,3 +761,12 @@ public sealed class ArrowFeedContractTests
             }
             : null);
 }
+
+public sealed class HdfcSecuritiesFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_hdfcsecurities.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_hdfcsecurities.fixtures.json", name, () => new HdfcSecuritiesFeedCodec());
+}
