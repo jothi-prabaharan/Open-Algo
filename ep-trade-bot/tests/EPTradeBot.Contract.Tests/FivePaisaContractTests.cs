@@ -95,3 +95,69 @@ public sealed class FivePaisaContractTests(FivePaisaHost host, ITestOutputHelper
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class FivePaisaDataHost : BrokerContractHost
+{
+    public override string BrokerName => "fivepaisa";
+    public override string FixtureFile => "fivepaisa_data.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "fp-app-key:::fp-user:::4001234", ["ApiSecret"] = "fp-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["Brokers:RetryBackoffMs:fivepaisa"] = "0", ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>5paisa quotes, depth and several quotes (tools/contract-fixtures/fivepaisa_data.fixtures.json).</summary>
+public sealed class FivePaisaDataContractTests(FivePaisaDataHost host, ITestOutputHelper output) : IClassFixture<FivePaisaDataHost>
+{
+    private const string Words = "Same status. OpenAlgo words the failure for a developer (a library error, a call name). EP Trade bot says what 5paisa did and what to do.";
+
+    private static Deviation Says(string message) => new(Words, f => Expect(f, 500, Error(message)));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["quotes_refused"] = Says("5paisa could not give the quote: Invalid scrip"),
+        ["quotes_no_data"] = Says("5paisa sent no quote for SBIN on NSE."),
+        ["quotes_http_error"] = Says("5paisa could not give the quote just now. Try again in a moment."),
+        ["depth_snapshot_refused"] = Says("5paisa could not give the market depth: Invalid scrip"),
+        ["depth_snapshot_has_no_data"] = Says("5paisa sent no data for SBIN on NSE."),
+        ["depth_depth_refused"] = Says("5paisa could not give the market depth: No depth"),
+        ["multiquotes_refused"] = Says("5paisa could not give the quotes: Bad request"),
+        ["multiquotes_http_error"] = Says("5paisa could not give the quotes just now. Try again in a moment."),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("fivepaisa_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class FivePaisaHistoryHost : BrokerContractHost
+{
+    public override string BrokerName => "fivepaisa";
+    public override string FixtureFile => "history_fivepaisa.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "fp-app-key:::fp-user:::4001234", ["ApiSecret"] = "fp-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["Brokers:RetryBackoffMs:fivepaisa"] = "0", ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>5paisa history (tools/contract-fixtures/history_fivepaisa.fixtures.json).</summary>
+public sealed class FivePaisaHistoryContractTests(FivePaisaHistoryHost host, ITestOutputHelper output) : IClassFixture<FivePaisaHistoryHost>
+{
+    private const string Lacks = "OpenAlgo answers 500 with a developer's sentence. EP Trade bot answers 400, because the trader asked for something 5paisa does not offer.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_interval_5paisa_lacks"] = new(Lacks, f => { Expect(f, 400, Error("Interval 3m is not supported by 5paisa. Use one of: 1m, 5m, 10m, 15m, 30m, 1h, D.")); f["sent"]!.AsArray().Clear(); }),
+        ["history_weekly_is_not_offered"] = new(Lacks, f => { Expect(f, 400, Error("Interval W is not supported by 5paisa. Use one of: 1m, 5m, 10m, 15m, 30m, 1h, D.")); f["sent"]!.AsArray().Clear(); }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_fivepaisa.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}

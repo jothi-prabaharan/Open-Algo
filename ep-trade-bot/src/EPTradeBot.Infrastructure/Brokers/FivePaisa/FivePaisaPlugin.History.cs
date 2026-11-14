@@ -7,8 +7,8 @@ namespace EPTradeBot.Infrastructure.Brokers.FivePaisa;
 
 /// <summary>
 /// 5paisa history (broker/fivepaisa/api/data.py): GET /V2/historical/{exchange}/{type}/{token}/{interval}, a hundred days a call for daily candles and thirty for the rest. A chunk that fails or answers with an error is
-/// left out, so a range where every chunk fails is empty rather than an error. Candles outside the chunk's dates are dropped (5paisa answers a range with no sessions with its latest candle), an empty candle always, and, for a
-/// share, a daily candle with no volume or no range. Daily candles are stamped midnight UTC of their date, the rest with their Indian wall-clock time.
+/// left out, so a range where every chunk fails is empty rather than an error. Candles outside the chunk's dates are dropped (5paisa answers a range with no sessions with its latest candle), and an empty candle. (OpenAlgo means to drop a daily share candle with no volume or no range as well,
+/// but its test reads the interval after it has been renamed, so it never fires; the candles it keeps are kept here.) Daily candles are stamped midnight UTC of their date, the rest with their Indian wall-clock time.
 /// </summary>
 public sealed partial class FivePaisaPlugin
 {
@@ -22,7 +22,6 @@ public sealed partial class FivePaisaPlugin
     {
         if (!Intervals.TryGetValue(interval, out var code)) throw new BrokerException($"Interval {interval} is not supported by {DisplayName}. Use one of: {string.Join(", ", HistoryTimeframes)}.", 400);
         var daily = interval == "D";
-        var index = instrument.Exchange.EndsWith("_INDEX", StringComparison.Ordinal);
         var chunkDays = daily ? 100 : 30;
         var bars = new SortedDictionary<long, JsonObject>();
         for (var from = start; from <= end;)
@@ -36,7 +35,7 @@ public sealed partial class FivePaisaPlugin
                 using var response = await Client().SendAsync(request, cancellationToken);
                 if (response.IsSuccessStatusCode && await ReadAsync(response, cancellationToken) is JsonObject body && Str(body["status"]) == "success")
                 {
-                    foreach (var candle in (((body["data"] as JsonObject)?["candles"]) as JsonArray)?.OfType<JsonArray>() ?? []) Add(bars, candle, from, to, daily, index);
+                    foreach (var candle in (((body["data"] as JsonObject)?["candles"]) as JsonArray)?.OfType<JsonArray>() ?? []) Add(bars, candle, from, to, daily);
                 }
             }
             catch (HttpRequestException)
@@ -49,7 +48,7 @@ public sealed partial class FivePaisaPlugin
         return new JsonArray(bars.Values.Select(v => (JsonNode?)v).ToArray());
     }
 
-    private static void Add(SortedDictionary<long, JsonObject> bars, JsonArray candle, DateOnly from, DateOnly to, bool daily, bool index)
+    private static void Add(SortedDictionary<long, JsonObject> bars, JsonArray candle, DateOnly from, DateOnly to, bool daily)
     {
         if (candle.Count < 6) return;
         if (!DateTime.TryParseExact(Str(candle[0]), "yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var moment)) return;
@@ -58,7 +57,7 @@ public sealed partial class FivePaisaPlugin
         double open = Float(candle[1]), high = Float(candle[2]), low = Float(candle[3]), close = Float(candle[4]);
         long volume = Int(candle[5]);
         var empty = open == 0 && high == 0 && low == 0 && close == 0;
-        if (index || !daily ? empty : volume == 0 || empty || high == low) return;
+        if (empty) return;
         var epoch = daily ? new DateTimeOffset(moment.Date, TimeSpan.Zero).ToUnixTimeSeconds() : new DateTimeOffset(moment, Ist).ToUnixTimeSeconds();
         bars.TryAdd(epoch, new JsonObject { ["timestamp"] = epoch, ["open"] = open, ["high"] = high, ["low"] = low, ["close"] = close, ["volume"] = volume, ["oi"] = 0 });
     }
