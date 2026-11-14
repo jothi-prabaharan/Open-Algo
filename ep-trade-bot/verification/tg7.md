@@ -343,12 +343,13 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Recorded differences from OpenAlgo: an expired session or an error answer to the trade book, positions, holdings or funds is shown as an empty list or balance there and is a refusal naming the call here; an order accepted without an order id is a refusal here where OpenAlgo reports success with no id; an unlisted symbol is named by the platform; close-all names the positions still open instead of reporting all squared off; an empty strategy name is refused by the platform; cancel-all reads the whole order book (a second read) where OpenAlgo reads only the pending half; every failed history is the plain "could not return candles, try again" sentence; an interval HDFC Sky lacks is 400.
 - Mutation sets: `tg7-hdfcsky.json` (71 changes to the plugin, 71 killed after nine survivors were closed with new scenarios: a trade row without a quantity key, a zero multiplier, a rate limit cleared on the fourth try (price and candle), the candle error codes "ok" and "0", a chunk answering on the fourth attempt and an empty chunk beside a failed one) and `tg7-hdfcsky-feed.json` (18 of 18 killed). The parser shared with HDFC Securities is covered by that broker's set. No live-broker run (owner checklist).
 
-## IIFL Capital: orders, books, funds, sign-in and margin (partial)
+## IIFL Capital: orders, books, funds, sign-in, margin, quotes and depth (partial)
 
 - `IiflCapitalPlugin`, held to `broker/iiflcapital` by 64 recorded order, book and funds cases (`iiflcapital.fixtures.json`) and 8 sign-in cases (`login_iiflcapital.fixtures.json`). Bearer token. An order is a one-element list answered by a result list; a stop-market is sent as a stop-limit priced a slab beyond its trigger (sell below, buy above, at least a tick away, snapped to the tick, refused when the tick is unknown); a read that is rate limited is tried again up to three times with the broker's own wait; funds come from three limit calls (pooled, equity, F&O), the pooled figure when it has real values, else the two segments summed.
 - Recorded differences from OpenAlgo: an order write that is rate limited is never sent again (OpenAlgo sends it again, which can place it twice); a modify that IIFL Capital refuses with an ok status is a refusal here (reported as done there); funds, positions and holdings errors name the call; close-all names the positions still open (OpenAlgo answers 207 with a count) and tags its orders Squareoff; cancel-all cancels every order the book shows as open (OpenAlgo lists six raw statuses); an empty strategy or unknown symbol is refused by the platform with a plain sentence.
 - Margin (`margin_iiflcapital.fixtures.json`, 17 cases): one POST /spanexposure for every leg; the total is the broker's own figure when it sends one (an empty one reads as zero) and span plus exposure when it does not. A result that is not an object is a failure here (OpenAlgo answers 200 carrying an error message).
-- Not done: quotes, depth and several quotes, history and the feed (WebSocket and MQTT); the mutation set; the pacing at 8 calls a second that OpenAlgo applies to every call (EP Trade bot relies on its own rate handling and the retry above); no live-broker run.
+- Quotes, depth and several quotes (`iiflcapital_data.fixtures.json`, 49 cases): POST /marketdata/marketquotes (several instruments at once), /marketdata/marketdepth, and /marketdata/openinterest (one instrument a call, futures and options only, best effort, zero on any failure). The parsing is tolerant as OpenAlgo's is: the rows may sit under result, data or quotes, the figures may have other names (lastTradedPrice, openPrice, a misspelt besAskPrice, an XTS-style touchline), a row may carry its own error, and rows with no identity are matched to legs by position. Depth is cut or padded to five levels (levels as objects or lists); the totals are the broker's or the sum of the levels. Open interest is read one leg at a time here where OpenAlgo fans out in threads.
+- Not done: history and the feed (WebSocket and MQTT); the mutation set; the pacing at 8 calls a second that OpenAlgo applies to every call (EP Trade bot relies on its own rate handling and the retry above); no live-broker run.
 
 ## Decisions taken with the owner
 
@@ -372,7 +373,7 @@ Lines of Python in each broker's `api/` and `mapping/` (the REST side) and `stre
 | arrow | 2035 | 1104 | Done (see its section) |
 | hdfcsecurities | 2264 | 1345 | Done (see its section) |
 | hdfcsky | 2578 | 1085 | Done (see its section) |
-| iiflcapital | 2773 | 2490 | Partly done: orders, books, funds, sign-in, margin (see its section) |
+| iiflcapital | 2773 | 2490 | Partly done: orders, books, funds, sign-in, margin, quotes, depth (see its section) |
 | samco | 2892 | 1790 | Own REST API |
 | fivepaisa | 2950 | 1735 | Own REST API (5paisa's own, not its XTS) |
 | firstock | 3188 | 1706 | Own REST API |

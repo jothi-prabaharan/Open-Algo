@@ -97,3 +97,26 @@ public sealed class MarginIiflCapitalContractTests(MarginIiflCapitalHost host, I
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class IiflCapitalDataHost : BrokerContractHost
+{
+    public override string BrokerName => "iiflcapital";
+    public override string FixtureFile => "iiflcapital_data.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "iifl-app-key", ["ApiSecret"] = "iifl-app-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["Brokers:RetryBackoffMs:iiflcapital"] = "0" };
+}
+
+/// <summary>IIFL Capital quotes, depth and several quotes (tools/contract-fixtures/iiflcapital_data.fixtures.json).</summary>
+public sealed class IiflCapitalDataContractTests(IiflCapitalDataHost host, ITestOutputHelper output) : IClassFixture<IiflCapitalDataHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new();
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("iiflcapital_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}

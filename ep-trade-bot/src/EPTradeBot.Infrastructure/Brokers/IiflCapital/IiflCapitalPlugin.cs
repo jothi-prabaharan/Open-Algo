@@ -14,13 +14,13 @@ namespace EPTradeBot.Infrastructure.Brokers.IiflCapital;
 /// an order write is never sent again, because a rate-limit answer can arrive after the broker accepted it.
 /// </summary>
 [BrokerPlugin]
-public sealed partial class IiflCapitalPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
+public sealed partial class IiflCapitalPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
 {
     private const string DefaultBaseUrl = "https://api.iiflcapital.com/v1";
 
     public string Name => "iiflcapital";
     public string DisplayName => "IIFL Capital";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Margin;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Margin | BrokerCapability.Quotes | BrokerCapability.Depth;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     // ---- vocabulary ------------------------------------------------------------------------------------------
