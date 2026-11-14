@@ -354,9 +354,9 @@ public static class ContractRunner
         {
             if (!field.StartsWith(kind + ".", StringComparison.Ordinal)) continue;
             var key = field[(kind.Length + 1)..];
-            if (copy[key] is JsonValue v && v.TryGetValue<string>(out var text))
+            if (copy[key] is JsonValue v && (v.TryGetValue<string>(out var text) || (v.TryGetValue<System.Text.Json.JsonElement>(out var element) && element.ValueKind == System.Text.Json.JsonValueKind.Number && (text = element.GetRawText()) is not null)))
             {
-                Assert.Matches(pattern, text);
+                Assert.Matches(pattern, text!);
                 copy[key] = "<volatile>";
             }
         }
