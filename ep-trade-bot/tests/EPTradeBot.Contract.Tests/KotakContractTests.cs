@@ -94,6 +94,41 @@ public sealed class MarginKotakContractTests(MarginKotakHost host, ITestOutputHe
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
 
+public sealed class KotakHistoryHost() : KotakFileHost("history_kotak.fixtures.json");
+
+/// <summary>Kotak Neo history (tools/contract-fixtures/history_kotak.fixtures.json), with the clock stopped at the recording.</summary>
+public sealed class KotakHistoryContractTests(KotakHistoryHost host, ITestOutputHelper output) : IClassFixture<KotakHistoryHost>
+{
+    private const string NoCode = "Same status. OpenAlgo puts the symbol, the dates, the names it tried and Kotak's own words in the sentence, which a trader cannot act on. EP Trade bot says to try again in a moment.";
+
+    private static Deviation Down(string symbol) => new(NoCode, f => Expect(f, 500, Error($"Kotak Neo could not return candles for {symbol} right now. Try again in a moment.")));
+
+    private static Deviation QuoteOnly(string exchange) => new("OpenAlgo answers 500. EP Trade bot answers 400, because the trader asked for something Kotak Neo does not offer, and says so.",
+        f => { Expect(f, 400, Error($"Kotak Neo serves historical data for NSE, BSE, NFO, BFO, NSE_INDEX and BSE_INDEX only. {exchange} is quote-only.")); f["sent"]!.AsArray().Clear(); });
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_an_error_fault_fails_the_pull"] = Down("NSE:SBIN"),
+        ["history_a_failed_chunk_fails_the_pull"] = Down("NSE:SBIN"),
+        ["history_a_server_error_fails_the_pull"] = Down("NSE:SBIN"),
+        ["history_an_answer_that_is_not_json"] = Down("NSE:SBIN"),
+        ["history_an_answer_that_is_a_list"] = Down("NSE:SBIN"),
+        ["history_a_status_that_is_not_success"] = Down("NSE:SBIN"),
+        ["history_rate_limited_every_time"] = Down("NSE:SBIN"),
+        ["history_index_tries_every_spelling"] = Down("NSE_INDEX:MIDCPNIFTY"),
+        ["history_mcx_is_quote_only"] = QuoteOnly("MCX"),
+        ["history_currency_is_quote_only"] = QuoteOnly("CDS"),
+        ["history_start_after_end"] = new("OpenAlgo answers 500 with a developer's sentence. EP Trade bot answers 400 and says what to correct.", f => { Expect(f, 400, Error("The start date 2026-11-03 is after the end date 2026-11-02. Correct the dates, then try again.")); f["sent"]!.AsArray().Clear(); }),
+        ["history_interval_kotak_lacks"] = new("OpenAlgo answers 500. EP Trade bot answers 400 and names the intervals Kotak Neo offers.", f => { Expect(f, 400, Error("Interval 2m is not supported by Kotak Neo. Use one of: 1m, 3m, 5m, 10m, 15m, 30m, 1h, D, W.")); f["sent"]!.AsArray().Clear(); }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_kotak.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
 /// <summary>Kotak Neo against the Python implementation (tools/contract-fixtures/kotak.fixtures.json).</summary>
 public sealed class KotakContractTests(KotakHost host, ITestOutputHelper output) : IClassFixture<KotakHost>
 {
