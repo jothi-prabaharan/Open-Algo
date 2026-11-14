@@ -12,7 +12,7 @@ public sealed class SahiHost : BrokerContractHost
     public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "sahi-api-key", ["ApiSecret"] = "sahi-api-secret" };
     public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>
     {
-        [("NSE", "SBIN")] = 805m, [("NSE", "INFY")] = 1500m, [("NFO", "NIFTY25NOV26FUT")] = 24000m,
+        [("NSE", "SBIN")] = 805m, [("NSE", "INFY")] = 1500m, [("NFO", "NIFTY25NOV26FUT")] = 24000m, [("BFO", "SENSEX26NOVFUT")] = 80000m, [("NSE_INDEX", "NIFTY")] = 24000m,
     };
     public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>
     {
@@ -49,6 +49,76 @@ public sealed class SahiContractTests(SahiHost host, ITestOutputHelper output) :
     private const string Expired = "Your Sahi session has expired. Log in to EP Trade bot again.";
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("sahi.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class SahiDataHost : BrokerContractHost
+{
+    public override string BrokerName => "sahi";
+    public override string FixtureFile => "sahi_data.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "sahi-api-key", ["ApiSecret"] = "sahi-api-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+/// <summary>Sahi quotes, depth and several quotes (tools/contract-fixtures/sahi_data.fixtures.json), with the clock stopped at the recording.</summary>
+public sealed class SahiDataContractTests(SahiDataHost host, ITestOutputHelper output) : IClassFixture<SahiDataHost>
+{
+    private const string Brand = "Same status; the words name EP Trade bot where OpenAlgo's name its own product.";
+    private const string NoCode = "Same status; OpenAlgo puts the HTTP status code in the sentence, which a trader cannot act on. EP Trade bot says to try again in a moment.";
+    private const string Expired = "Your Sahi session has expired. Log in to EP Trade bot again.";
+    private const string Down = "Sahi could not return market data right now. Try again in a moment.";
+
+    private static Deviation Words(string reason, int status, string message) => new(reason, f => Expect(f, status, Error(message)));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["quotes_session_expired"] = Words(Brand, 500, Expired),
+        ["depth_refused"] = Words(Brand, 500, Expired),
+        ["multiquotes_refused"] = Words(Brand, 500, Expired),
+        ["quotes_refused_without_a_message"] = Words(NoCode, 500, Down),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("sahi_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class SahiHistoryHost : BrokerContractHost
+{
+    public override string BrokerName => "sahi";
+    public override string FixtureFile => "history_sahi.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "sahi-api-key", ["ApiSecret"] = "sahi-api-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>Sahi history (tools/contract-fixtures/history_sahi.fixtures.json), with the clock stopped at the recording.</summary>
+public sealed class SahiHistoryContractTests(SahiHistoryHost host, ITestOutputHelper output) : IClassFixture<SahiHistoryHost>
+{
+    private const string Brand = "Same status; the words name EP Trade bot where OpenAlgo's name its own product.";
+    private const string NoCode = "Same status; OpenAlgo puts the HTTP status code in the sentence, which a trader cannot act on. EP Trade bot says to try again in a moment.";
+    private const string Expired = "Your Sahi session has expired. Log in to EP Trade bot again.";
+    private const string Down = "Sahi could not return market data right now. Try again in a moment.";
+
+    private static Deviation Words(string reason, int status, string message) => new(reason, f => Expect(f, status, Error(message)));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_session_expired"] = Words(Brand, 500, Expired),
+        ["history_refused_without_a_message"] = Words(NoCode, 500, Down),
+        ["history_interval_sahi_lacks"] = Words("OpenAlgo answers 500 with the same sentence. EP Trade bot answers 400, because the trader asked for something Sahi does not offer.", 400, "Interval 4h is not supported by Sahi. Use one of: 1m, 3m, 5m, 15m, 30m, 1h, D."),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_sahi.fixtures.json");
 
     [PostgresTheory]
     [MemberData(nameof(Names))]
