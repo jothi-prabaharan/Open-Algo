@@ -322,6 +322,17 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Mutation set `tools/mutation/tg7-arrow.json` (122 mutants over orders, books, funds, quotes, history, margin, sign-in and the feed): all but ten turned a test red after 12 cases were added for the first run's survivors. The ten left are equivalent or unobservable here: a product default no caller reaches (twice), the ".0" on a whole-number price (the test compares numbers by value; Arrow takes either), the order number in a modify answer and a 202 on a cancel (the service layer and the test transport make both identical), an empty fill figure read as zero or kept (compared by value), whether candles with an open-interest column are only read for derivatives (a row shape Arrow never sends for cash), a time with no offset read as UTC (the test host runs in UTC), the 17-byte packet's mode name (it names the same topic as a 13-byte one), and the HTTP-status check at sign-in (the error body catches the same case).
 - Not yet done for Arrow: a live-broker run.
 
+## Decisions taken with the owner
+
+- **Live-broker runs are not part of what this work can close.** A live run needs the owner's own broker accounts, keys and registered static IPs. Gate 7 closes on the recorded OpenAlgo evidence in this file; each broker's live run is listed below as a task for the owner, and no row here claims one.
+- **Delta Exchange fractional (spot) quantities are out of scope for TG7.** Delta keeps whole-number quantities; spot decimals are a known limit.
+- **Dhan stays at 5 depth levels.** 20-level depth (a second socket and a depth-level field the subscribe request does not have) is a known limit, not a gap in the recorded behaviour.
+- **The remaining brokers go in size order** (hdfcsecurities, hdfcsky, iiflcapital, samco, fivepaisa, firstock, kotak, definedge, aliceblue, mstock, tradejini, indmoney, pocketful, nubra, groww, motilal).
+
+### Live-run checklist for the owner (none done)
+
+Flattrade, Shoonya, Zebu, TradeSmart, the seven XTS brokers, Rupeezy, Sahi and Arrow: sign in, place and cancel one small order, read the books and funds, and watch one feed subscription each on the broker's own account.
+
 ## Remaining brokers: size of the work (for planning)
 
 Lines of Python in each broker's `api/` and `mapping/` (the REST side) and `streaming/` (the feed). Each broker needs the same pass TradeSmart got: recorded cases for orders, books and funds, quotes and depth, history, margin and sign-in, the feed, and a mutation set, with the deviations written down. None of these shares an API with a broker already done, so none is a re-skin; the closest relatives are noted.
