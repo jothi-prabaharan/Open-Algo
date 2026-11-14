@@ -75,7 +75,7 @@
   "name": "SF10 mode omitted",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
   "old": "if (mode is { } m and not 0)",
-  "new": "if (false)",
+  "new": "if (false && mode is { } m and not 0)",
   "filter": "FullyQualifiedName~SahiFeed",
   "project": "EPTradeBot.Contract.Tests"
  },
@@ -83,7 +83,7 @@
   "name": "SF11 skip equal",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
   "old": "if (wanted == held) continue;",
-  "new": "if (false) continue;",
+  "new": "if (wanted == held && wanted < 0) continue;",
   "filter": "FullyQualifiedName~SahiFeed",
   "project": "EPTradeBot.Contract.Tests"
  },
@@ -131,7 +131,7 @@
   "name": "SF17 unsub missing mode",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
   "old": "if (mode is { } m && !sub.Modes.Contains(m)) return [];",
-  "new": "if (false) return [];",
+  "new": "if (mode is { } m && !sub.Modes.Contains(m) && subs.Count < 0) return [];",
   "filter": "FullyQualifiedName~SahiFeed",
   "project": "EPTradeBot.Contract.Tests"
  },
@@ -211,7 +211,7 @@
   "name": "SF27 tick price field",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
   "old": "case 4: price = v; break;",
-  "new": "case 5: price = v; break;",
+  "new": "case 9: price = v; break;",
   "filter": "FullyQualifiedName~SahiFeed",
   "project": "EPTradeBot.Contract.Tests"
  },
@@ -731,7 +731,7 @@
   "name": "SL3 locked",
   "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Login.cs",
   "old": "if (code == \"Locked\")",
-  "new": "if (false)",
+  "new": "if (code == \"LockedX\")",
   "filter": "FullyQualifiedName~LoginSahi",
   "project": "EPTradeBot.Contract.Tests"
  },
@@ -763,7 +763,7 @@
   "name": "SL7 reason",
   "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Login.cs",
   "old": "if (!string.IsNullOrEmpty(reason)) message +=",
-  "new": "if (false) message +=",
+  "new": "if (!string.IsNullOrEmpty(reason) && reason.Length < 0) message +=",
   "filter": "FullyQualifiedName~LoginSahi",
   "project": "EPTradeBot.Contract.Tests"
  },

@@ -67,6 +67,7 @@ SCENARIOS = [
     hist("history_puts_ask_for_open_interest", {"symbol": "NIFTY25NOV2624000PE", "exchange": "NFO"}, {CB: WITH_OI}),
     hist("history_partial_candle_is_asked_for_on_the_first_page_only", {"start_date": "2026-10-01", "end_date": "2026-11-13"}, {CB: [page([c(TODAY_T)], True), page([c(TODAY_T - 600 * M)], False)]}),
     hist("history_a_timestamp_on_two_pages_keeps_the_later_page_row", {"start_date": "2026-10-01", "end_date": "2026-11-02"}, {CB: [page([c(T, close=1)], True), page([c(T, close=2)], False)]}),
+    hist("history_the_two_hundredth_page_is_the_last_allowed", {"start_date": "2026-10-01", "end_date": "2026-11-02"}, {CB: [page([c(T - M * i)], True) for i in range(200)] + [page([c(T - M * 200)], False)]}),
     hist("history_session_expired", {}, {CB: d.REFUSED_401}),
     hist("history_key_without_market_data", {}, {CB: d.REFUSED_403}),
     hist("history_refused_with_a_message", {}, {CB: d.REFUSED_MSG}),

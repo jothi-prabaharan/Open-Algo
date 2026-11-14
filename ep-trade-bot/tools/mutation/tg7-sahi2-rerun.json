@@ -1,0 +1,234 @@
+[
+ {
+  "name": "SF10 mode omitted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
+  "old": "if (mode is { } m and not 0)",
+  "new": "if (false && mode is { } m and not 0)",
+  "filter": "FullyQualifiedName~SahiFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF11 skip equal",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
+  "old": "if (wanted == held) continue;",
+  "new": "if (wanted == held && wanted < 0) continue;",
+  "filter": "FullyQualifiedName~SahiFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF12 remove server",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
+  "old": "removes.Add(id);\n                server.Remove(id);",
+  "new": "removes.Add(id);",
+  "filter": "FullyQualifiedName~SahiFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF15 frames order",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
+  "old": "foreach (var ids in Chunks(removes.Order())) frames.Add(Hex(Message(2, null, ids)));\n        foreach (var (mode, ids) in changes) foreach (var c in Chunks(ids.Order())) frames.Add(Hex(Message(3, mode, c)));\n        foreach (var (mode, ids) in adds) foreach (var c in Chunks(ids.Order())) frames.Add(Hex(Message(1, mode, c)));",
+  "new": "foreach (var (mode, ids) in adds) foreach (var c in Chunks(ids.Order())) frames.Add(Hex(Message(1, mode, c)));\n        foreach (var (mode, ids) in changes) foreach (var c in Chunks(ids.Order())) frames.Add(Hex(Message(3, mode, c)));\n        foreach (var ids in Chunks(removes.Order())) frames.Add(Hex(Message(2, null, ids)));",
+  "filter": "FullyQualifiedName~SahiFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF17 unsub missing mode",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
+  "old": "if (mode is { } m && !sub.Modes.Contains(m)) return [];",
+  "new": "if (mode is { } m && !sub.Modes.Contains(m) && subs.Count < 0) return [];",
+  "filter": "FullyQualifiedName~SahiFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF19 unsub removal",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
+  "old": "subs.Remove(id);\n                order.Remove(id);",
+  "new": "order.Remove(id);",
+  "filter": "FullyQualifiedName~SahiFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF20 resubscribe server",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
+  "old": "server[id] = wanted;\n            }\n\n            return byMode",
+  "new": "}\n\n            return byMode",
+  "filter": "FullyQualifiedName~SahiFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF22 varint long",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
+  "old": "if (shift >= 70) throw new DecodeError();",
+  "new": "if (shift >= 140) throw new DecodeError();",
+  "filter": "FullyQualifiedName~SahiFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF23 skip fixed64",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
+  "old": "case 1:\n                pos += 8;",
+  "new": "case 1:\n                pos += 4;",
+  "filter": "FullyQualifiedName~SahiFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF24 skip fixed32",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
+  "old": "case 5:\n                pos += 4;",
+  "new": "case 5:\n                pos += 8;",
+  "filter": "FullyQualifiedName~SahiFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF25 skip bounds",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
+  "old": "if (pos > end) throw new DecodeError();\n        return pos;",
+  "new": "return pos;",
+  "filter": "FullyQualifiedName~SahiFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF27 tick price field",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
+  "old": "case 4: price = v; break;",
+  "new": "case 9: price = v; break;",
+  "filter": "FullyQualifiedName~SahiFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF33 ack validate",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/SahiFeedCodec.cs",
+  "old": "else Validate(buf, start, stop, field == 1);",
+  "new": "else { }",
+  "filter": "FullyQualifiedName~SahiFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD2 max pages",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Data.cs",
+  "old": "private const int MaxCandlePages = 200;",
+  "new": "private const int MaxCandlePages = 201;",
+  "filter": "FullyQualifiedName~SahiData|FullyQualifiedName~SahiHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD19 chain leg wanted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Data.cs",
+  "old": "!wanted.Contains(Int(leg[\"instrument_id\"]))",
+  "new": "false",
+  "filter": "FullyQualifiedName~SahiData|FullyQualifiedName~SahiHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD23 remaining sorted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Data.cs",
+  "old": ".Distinct().Order().ToList();\n        if (remaining.Count > 0)",
+  "new": ".Distinct().ToList();\n        if (remaining.Count > 0)",
+  "filter": "FullyQualifiedName~SahiData|FullyQualifiedName~SahiHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD29 oi types",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Data.cs",
+  "old": "instrument.InstrumentType is \"FUT\" or \"CE\" or \"PE\"",
+  "new": "instrument.InstrumentType is \"FUT\" or \"CE\"",
+  "filter": "FullyQualifiedName~SahiData|FullyQualifiedName~SahiHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD31 partial first only",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Data.cs",
+  "old": "query += \"&include_partial=true\";\n                includePartial = false;",
+  "new": "query += \"&include_partial=true\";",
+  "filter": "FullyQualifiedName~SahiData|FullyQualifiedName~SahiHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD34 prepend",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Data.cs",
+  "old": "rows.InsertRange(0, candles);",
+  "new": "rows.AddRange(candles);",
+  "filter": "FullyQualifiedName~SahiData|FullyQualifiedName~SahiHistory",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SM2 single",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Margin.cs",
+  "old": "bodies.Count == 1",
+  "new": "bodies.Count <= 1",
+  "filter": "FullyQualifiedName~MarginSahi",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SM7 status 200",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Margin.cs",
+  "old": "if (reply.Status != 200 || !reply.Body.ContainsKey(\"required_margin\"))",
+  "new": "if (!reply.Body.ContainsKey(\"required_margin\"))",
+  "filter": "FullyQualifiedName~MarginSahi",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SM10 round",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Margin.cs",
+  "old": "BookFormatting.Round2(required)",
+  "new": "required",
+  "filter": "FullyQualifiedName~MarginSahi",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SL1 forbidden",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Login.cs",
+  "old": "if (status == 403 || code == \"Forbidden\")",
+  "new": "if (code == \"Forbidden\")",
+  "filter": "FullyQualifiedName~LoginSahi",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SL2 forbidden code",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Login.cs",
+  "old": "if (status == 403 || code == \"Forbidden\")",
+  "new": "if (status == 403)",
+  "filter": "FullyQualifiedName~LoginSahi",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SL3 locked",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Login.cs",
+  "old": "if (code == \"Locked\")",
+  "new": "if (code == \"LockedX\")",
+  "filter": "FullyQualifiedName~LoginSahi",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SL6 server",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Login.cs",
+  "old": "if (status >= 500) return",
+  "new": "if (status >= 501) return",
+  "filter": "FullyQualifiedName~LoginSahi",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SL7 reason",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Login.cs",
+  "old": "if (!string.IsNullOrEmpty(reason)) message +=",
+  "new": "if (!string.IsNullOrEmpty(reason) && reason.Length < 0) message +=",
+  "filter": "FullyQualifiedName~LoginSahi",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SL9 token",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Login.cs",
+  "old": "if (status == 200 && Str(body[\"access_token\"]) is { Length: > 0 } token)",
+  "new": "if (Str(body[\"access_token\"]) is { Length: > 0 } token)",
+  "filter": "FullyQualifiedName~LoginSahi",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SL10 trim",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.Login.cs",
+  "old": "k.Trim()",
+  "new": "k",
+  "filter": "FullyQualifiedName~LoginSahi",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]
