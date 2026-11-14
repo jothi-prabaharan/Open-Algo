@@ -1,0 +1,518 @@
+{
+  "broker": "samco",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_key_and_secret",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /session/token": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "ok",
+            "sessionToken": "samco-session-777",
+            "accountID": "AB1234",
+            "srcIp": "203.0.113.5",
+            "primaryIp": "203.0.113.5",
+            "secondaryIp": ""
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "samco-session-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "apiKey": "samco-api-key",
+            "apiSecret": "samco-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_from_an_address_that_is_not_registered",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /session/token": {
+          "body": {
+            "status": "Success",
+            "sessionToken": "samco-session-778",
+            "srcIp": "198.51.100.9",
+            "primaryIp": "203.0.113.5",
+            "secondaryIp": ""
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "samco-session-778",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "apiKey": "samco-api-key",
+            "apiSecret": "samco-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_no_registered_address",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /session/token": {
+          "body": {
+            "status": "Success",
+            "sessionToken": "samco-session-779",
+            "srcIp": "198.51.100.9",
+            "primaryIp": "",
+            "secondaryIp": ""
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "samco-session-779",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "apiKey": "samco-api-key",
+            "apiSecret": "samco-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /session/token": {
+          "status": 400,
+          "body": {
+            "status": "Failure",
+            "statusMessage": "Invalid credentials"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid credentials"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "apiKey": "samco-api-key",
+            "apiSecret": "samco-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_an_unknown_key",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /session/token": {
+          "status": 400,
+          "body": {
+            "status": "Failure",
+            "statusMessage": "Invalid API key",
+            "errorCode": "EOAUTH001"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid API key. Check BROKER_API_KEY matches the API Key emailed when you created the OAuth app, and that the app is Active at https://tradeapi.samco.in/app/login"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "apiKey": "samco-api-key",
+            "apiSecret": "samco-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_wrong_secret",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /session/token": {
+          "status": 400,
+          "body": {
+            "status": "Failure",
+            "statusMessage": "Invalid API secret",
+            "errorCode": "EOAUTH008"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid API secret. Re-copy the secret from the dashboard's API Keys -> Reveal Secret flow, or regenerate it, and update BROKER_API_SECRET"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "apiKey": "samco-api-key",
+            "apiSecret": "samco-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_for_an_unregistered_address",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /session/token": {
+          "status": 403,
+          "body": {
+            "status": "Failure",
+            "statusMessage": "IP not whitelisted",
+            "errorCode": "EOAUTH009"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "IP not whitelisted. Register this server's IP under Static IPs at https://tradeapi.samco.in/app/login"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "apiKey": "samco-api-key",
+            "apiSecret": "samco-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_an_unknown_error_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /session/token": {
+          "status": 400,
+          "body": {
+            "status": "Failure",
+            "statusMessage": "Something else",
+            "errorCode": "EOAUTH999"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Something else"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "apiKey": "samco-api-key",
+            "apiSecret": "samco-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /session/token": {
+          "status": 400,
+          "body": {
+            "status": "Failure"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Failed to generate session token"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "apiKey": "samco-api-key",
+            "apiSecret": "samco-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_success_without_a_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /session/token": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "ok"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "apiKey": "samco-api-key",
+            "apiSecret": "samco-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_success_with_an_empty_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /session/token": {
+          "body": {
+            "status": "Success",
+            "sessionToken": ""
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Failed to generate session token"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "apiKey": "samco-api-key",
+            "apiSecret": "samco-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_a_token_without_a_success_status",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /session/token": {
+          "body": {
+            "status": "Failure",
+            "sessionToken": "samco-session-780"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Failed to generate session token"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/session/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "apiKey": "samco-api-key",
+            "apiSecret": "samco-api-secret"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

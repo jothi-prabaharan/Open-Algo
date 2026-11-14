@@ -149,3 +149,36 @@ public sealed class SamcoHistoryContractTests(SamcoHistoryHost host, ITestOutput
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class MarginSamcoHost : BrokerContractHost
+{
+    public override string BrokerName => "samco";
+    public override string FixtureFile => "margin_samco.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "samco-api-key", ["ApiSecret"] = "samco-api-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+/// <summary>Samco margin (tools/contract-fixtures/margin_samco.fixtures.json).</summary>
+public sealed class MarginSamcoContractTests(MarginSamcoHost host, ITestOutputHelper output) : IClassFixture<MarginSamcoHost>
+{
+    private static string Unknown(string symbol) => $"{symbol} on NFO is not in the Samco master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["margin_refused_with_a_message"] = new("OpenAlgo answers 200 carrying the refusal. EP Trade bot answers with a failure status and the same words, so a refusal is never read as a margin figure.", f => Expect(f, 400, Error("Invalid scrip"))),
+        ["margin_refused_without_a_message"] = new("OpenAlgo answers 200 carrying the refusal. EP Trade bot answers with a failure status.", f => Expect(f, 400, Error("Failed to calculate margin"))),
+        ["margin_an_answer_that_is_not_json"] = new("Same status; EP Trade bot says to try again.", f => Expect(f, 500, Error("Samco sent a margin answer EP Trade bot could not read. Try again in a moment."))),
+        ["margin_cash_equity_only"] = new("OpenAlgo answers that no position was valid. EP Trade bot names the leg Samco cannot work out margin for.", f => { Expect(f, 400, Error("Samco works out margin only for futures and options, so SBIN on NSE cannot be included. Remove it and try again.")); }),
+        ["margin_cash_equity_among_derivatives"] = new("OpenAlgo leaves the cash leg out of the calculation, which understates the margin. EP Trade bot refuses and names the leg.", f => { Expect(f, 400, Error("Samco works out margin only for futures and options, so SBIN on NSE cannot be included. Remove it and try again.")); f["sent"]!.AsArray().Clear(); }),
+        ["margin_unknown_symbol_alone"] = new("Same status; EP Trade bot names the symbol, where OpenAlgo says no symbol was valid.", f => Expect(f, 400, Error(Unknown("NOSUCH")))),
+        ["margin_unknown_symbol_among_others"] = new("OpenAlgo leaves the position whose symbol it cannot find out of the calculation and works out the rest, which understates the margin. EP Trade bot refuses and names the symbol.", f => { Expect(f, 400, Error(Unknown("NOSUCH"))); f["sent"]!.AsArray().Clear(); }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin_samco.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}

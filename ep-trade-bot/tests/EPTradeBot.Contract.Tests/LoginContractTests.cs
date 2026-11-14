@@ -714,3 +714,37 @@ public sealed class LoginIiflCapitalContractTests(LoginIiflCapitalHost host, ITe
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginSamcoHost : BrokerContractHost
+{
+    public override string BrokerName => "samco";
+    public override string FixtureFile => "login_samco.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "samco-api-key", ["ApiSecret"] = "samco-api-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginSamcoContractTests(LoginSamcoHost host, ITestOutputHelper output) : IClassFixture<LoginSamcoHost>
+{
+    private const string Generic = "Samco did not accept the sign-in. Check the API key and secret in the server's settings, then sign in again.";
+    private const string NoToken = "Samco accepted the sign-in but sent no session token. Start the sign-in again.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_with_a_message"] = LoginDeviations.Refused("Samco did not accept the sign-in: Invalid credentials"),
+        ["login_refused_with_an_unknown_key"] = LoginDeviations.Refused("Samco did not accept the sign-in: Invalid API key. Check that the API key in the server's settings is the one Samco emailed when the app was created, and that the app is Active at https://tradeapi.samco.in/app/login."),
+        ["login_refused_with_a_wrong_secret"] = LoginDeviations.Refused("Samco did not accept the sign-in: Invalid API secret. Copy the API secret again from the Samco dashboard (API Keys, then Reveal Secret), or generate a new one, and update it in the server's settings."),
+        ["login_refused_for_an_unregistered_address"] = LoginDeviations.Refused("Samco did not accept the sign-in: IP not whitelisted. Register this server's address under Static IPs at https://tradeapi.samco.in/app/login."),
+        ["login_refused_with_an_unknown_error_code"] = LoginDeviations.Refused("Samco did not accept the sign-in: Something else"),
+        ["login_refused_without_a_message"] = LoginDeviations.Refused(Generic),
+        ["login_success_without_a_token"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error(NoToken))),
+        ["login_success_with_an_empty_token"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error(NoToken))),
+        ["login_a_token_without_a_success_status"] = LoginDeviations.Refused(Generic),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_samco.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
