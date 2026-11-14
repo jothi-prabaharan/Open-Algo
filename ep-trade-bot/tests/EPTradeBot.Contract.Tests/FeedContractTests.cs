@@ -729,3 +729,12 @@ public sealed class RupeezyFeedContractTests
             : null,
         anyOrderAcrossInstruments: true);
 }
+
+public sealed class SahiFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_sahi.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_sahi.fixtures.json", name, () => new SahiFeedCodec());
+}

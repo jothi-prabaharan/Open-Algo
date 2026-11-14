@@ -21,7 +21,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Flattrade | yes | yes | yes | yes | yes | no | yes | yes |
 | TradeSmart (Noren v2) | yes | yes | yes | yes | yes | no | yes | yes |
 | Rupeezy (Vortex) | yes | yes | yes | yes | n/a | yes | yes | yes |
-| Sahi | yes | yes | yes | yes | yes | n/a | yes | no |
+| Sahi | yes | yes | yes | yes | yes | n/a | yes | yes |
 
 The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -305,7 +305,8 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Margin (`margin_sahi.fixtures.json`, 27 cases): each position becomes the body of a place-order call; one goes to the single calculator, two or more to the basket calculator ten legs at a time with the requirements added; Sahi gives one figure, so SPAN and exposure are zero; the calculator is closed for maintenance until 07:00 India time. Differences: OpenAlgo's note that a basket was priced in several parts is not carried (the margin answer has no place for it, so hedge benefits across parts are silently not counted past ten positions); wording as above; an unknown symbol is named by the platform's own sentence.
 - Sign-in (`login_sahi.fixtures.json`, 10 cases): no redirect and no code; the key id (pk_...) and secret (sahi_sk_...) are exchanged at Sahi's auth host for a token that lasts until 06:00 India time; a key not approved for today in the Sahi API Dashboard, a locked account, a 429 (repeated three times) and a down service each have their own sentence. Differences: the sentences point to the server's settings, not OpenAlgo's variable names.
 - GTT: OpenAlgo has no GTT for Sahi (n/a).
-- Not yet ported for Sahi: the feed; no mutation set for quotes, history, margin and sign-in; no live-broker run.
+- Feed (`feed_sahi.fixtures.json`, 39 cases; `SahiFeedCodec`): protobuf, one message per binary frame, hand-read (varints and length-delimited fields; unknown fields skipped, a malformed frame dropped, the last payload in a frame wins). Sahi holds one mode per instrument id: the highest wanted is asked for and its tick is fanned out to every lower mode; changes are grouped (Unsubscribe first, then a ModeChange and a Subscribe per mode, at most 500 ids a frame, 1000 instruments a connection); six exchanges stream (NSE, BSE, NFO, BFO and their indices). The stream carries no open, high, low, close, last quantity, average price or total quantities, so those are zero rather than derived. Sent as hex of the bytes. No difference from OpenAlgo was needed.
+- Not yet done for Sahi: a mutation set for quotes, history, margin, sign-in and the feed; no live-broker run.
 
 ## Remaining brokers: size of the work (for planning)
 
