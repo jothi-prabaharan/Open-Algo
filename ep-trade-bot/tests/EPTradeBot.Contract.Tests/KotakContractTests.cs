@@ -129,6 +129,40 @@ public sealed class KotakHistoryContractTests(KotakHistoryHost host, ITestOutput
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
 
+public sealed class LoginKotakHost() : KotakFileHost("login_kotak.fixtures.json");
+
+/// <summary>Kotak Neo sign-in (tools/contract-fixtures/login_kotak.fixtures.json).</summary>
+public sealed class LoginKotakContractTests(LoginKotakHost host, ITestOutputHelper output) : IClassFixture<LoginKotakHost>
+{
+    private const string Unreadable = "Kotak Neo sent an answer that could not be read. Try again in a moment.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_without_a_data_centre"] = new("OpenAlgo stores the text None as the data centre when Kotak sends null. EP Trade bot stores none.", f => f["stored"]!["auth_token"] = "trade-token:::trade-sid:::https://cis.kotaksecurities.com:::access-token:::"),
+        ["login_without_a_base_address"] = LoginDeviations.Refused("Kotak Neo accepted the sign-in but did not send the address of your account, so no call could be made. Start the sign-in again.", 502),
+        ["login_base_address_missing"] = LoginDeviations.Refused("Kotak Neo accepted the sign-in but did not send the address of your account, so no call could be made. Start the sign-in again.", 502),
+        ["login_totp_refused_with_a_message"] = LoginDeviations.Refused("Kotak Neo did not accept the one-time code: Invalid TOTP"),
+        ["login_totp_refused_with_the_short_message"] = LoginDeviations.Refused("Kotak Neo did not accept the one-time code: Bad request"),
+        ["login_totp_refused_without_a_message"] = LoginDeviations.Refused("Kotak Neo did not accept the one-time code. Check it, then try again."),
+        ["login_totp_status_not_success"] = LoginDeviations.Refused("Kotak Neo did not accept the one-time code. Check it, then try again."),
+        ["login_totp_answer_without_a_token"] = LoginDeviations.Refused("Kotak Neo accepted the one-time code but sent no session. Start the sign-in again.", 502),
+        ["login_totp_answer_that_is_not_json"] = LoginDeviations.Refused(Unreadable, 502),
+        ["login_totp_answer_data_is_text"] = LoginDeviations.Refused(Unreadable, 502),
+        ["login_mpin_refused_with_a_message"] = LoginDeviations.Refused("Kotak Neo did not accept the MPIN: Invalid MPIN"),
+        ["login_mpin_refused_with_the_short_message"] = LoginDeviations.Refused("Kotak Neo did not accept the MPIN: Bad pin"),
+        ["login_mpin_refused_without_a_message"] = LoginDeviations.Refused("Kotak Neo did not accept the MPIN. Check it, then try again."),
+        ["login_mpin_status_not_success"] = LoginDeviations.Refused("Kotak Neo did not accept the MPIN. Check it, then try again."),
+        ["login_mpin_answer_without_a_token"] = LoginDeviations.Refused("Kotak Neo accepted the MPIN but sent no session. Start the sign-in again.", 502),
+        ["login_mpin_answer_that_is_not_json"] = LoginDeviations.Refused(Unreadable, 502),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_kotak.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
+
 /// <summary>Kotak Neo against the Python implementation (tools/contract-fixtures/kotak.fixtures.json).</summary>
 public sealed class KotakContractTests(KotakHost host, ITestOutputHelper output) : IClassFixture<KotakHost>
 {

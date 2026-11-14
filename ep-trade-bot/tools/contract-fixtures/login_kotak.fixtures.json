@@ -1,0 +1,1407 @@
+{
+  "broker": "kotak",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_returns_the_session",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "view-token",
+              "sid": "view-sid"
+            }
+          }
+        },
+        "POST /login/1.0/tradeApiValidate": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "trade-token",
+              "sid": "trade-sid",
+              "baseUrl": "https://cis.kotaksecurities.com",
+              "dataCenter": "E43"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "trade-token:::trade-sid:::https://cis.kotaksecurities.com:::access-token:::E43",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiValidate",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "sid": "view-sid",
+            "auth": "view-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mpin": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_mobile_with_the_country_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "+919876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "view-token",
+              "sid": "view-sid"
+            }
+          }
+        },
+        "POST /login/1.0/tradeApiValidate": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "trade-token",
+              "sid": "trade-sid",
+              "baseUrl": "https://cis.kotaksecurities.com",
+              "dataCenter": "E43"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "trade-token:::trade-sid:::https://cis.kotaksecurities.com:::access-token:::E43",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiValidate",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "sid": "view-sid",
+            "auth": "view-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mpin": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_mobile_with_the_country_digits",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "919876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "view-token",
+              "sid": "view-sid"
+            }
+          }
+        },
+        "POST /login/1.0/tradeApiValidate": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "trade-token",
+              "sid": "trade-sid",
+              "baseUrl": "https://cis.kotaksecurities.com",
+              "dataCenter": "E43"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "trade-token:::trade-sid:::https://cis.kotaksecurities.com:::access-token:::E43",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiValidate",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "sid": "view-sid",
+            "auth": "view-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mpin": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_mobile_with_spaces",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": " +91 98765 43210 ",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "view-token",
+              "sid": "view-sid"
+            }
+          }
+        },
+        "POST /login/1.0/tradeApiValidate": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "trade-token",
+              "sid": "trade-sid",
+              "baseUrl": "https://cis.kotaksecurities.com",
+              "dataCenter": "E43"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "trade-token:::trade-sid:::https://cis.kotaksecurities.com:::access-token:::E43",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiValidate",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "sid": "view-sid",
+            "auth": "view-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mpin": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_without_a_data_centre",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "view-token",
+              "sid": "view-sid"
+            }
+          }
+        },
+        "POST /login/1.0/tradeApiValidate": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "trade-token",
+              "sid": "trade-sid",
+              "baseUrl": "https://cis.kotaksecurities.com",
+              "dataCenter": null
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "trade-token:::trade-sid:::https://cis.kotaksecurities.com:::access-token:::None",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiValidate",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "sid": "view-sid",
+            "auth": "view-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mpin": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_data_centre_missing",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "view-token",
+              "sid": "view-sid"
+            }
+          }
+        },
+        "POST /login/1.0/tradeApiValidate": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "trade-token",
+              "sid": "trade-sid",
+              "baseUrl": "https://cis.kotaksecurities.com"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "trade-token:::trade-sid:::https://cis.kotaksecurities.com:::access-token:::",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiValidate",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "sid": "view-sid",
+            "auth": "view-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mpin": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_without_a_base_address",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "view-token",
+              "sid": "view-sid"
+            }
+          }
+        },
+        "POST /login/1.0/tradeApiValidate": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "trade-token",
+              "sid": "trade-sid",
+              "baseUrl": "",
+              "dataCenter": "E43"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "trade-token:::trade-sid::::::access-token:::E43",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiValidate",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "sid": "view-sid",
+            "auth": "view-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mpin": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_base_address_missing",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "view-token",
+              "sid": "view-sid"
+            }
+          }
+        },
+        "POST /login/1.0/tradeApiValidate": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "trade-token",
+              "sid": "trade-sid"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "trade-token:::trade-sid::::::access-token:::",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiValidate",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "sid": "view-sid",
+            "auth": "view-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mpin": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "errMsg": "Invalid TOTP"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "TOTP Login Error: Invalid TOTP"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_refused_with_the_short_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "message": "Bad request"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "TOTP Login Error: Bad request"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "TOTP Login Error: TOTP login failed"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_status_not_success",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "failure",
+              "errMsg": "Locked"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "TOTP Login Error: TOTP login failed"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_answer_without_a_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Missing expected field in API response: 'token'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_answer_that_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "status": 502,
+          "body": "Bad gateway"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication error: 'str' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_answer_data_is_text",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": "oops"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication error: 'str' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_mpin_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "view-token",
+              "sid": "view-sid"
+            }
+          }
+        },
+        "POST /login/1.0/tradeApiValidate": {
+          "body": {
+            "errMsg": "Invalid MPIN"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "MPIN Validation Error: Invalid MPIN"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiValidate",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "sid": "view-sid",
+            "auth": "view-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mpin": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_mpin_refused_with_the_short_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "view-token",
+              "sid": "view-sid"
+            }
+          }
+        },
+        "POST /login/1.0/tradeApiValidate": {
+          "body": {
+            "message": "Bad pin"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "MPIN Validation Error: Bad pin"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiValidate",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "sid": "view-sid",
+            "auth": "view-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mpin": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_mpin_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "view-token",
+              "sid": "view-sid"
+            }
+          }
+        },
+        "POST /login/1.0/tradeApiValidate": {
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "MPIN Validation Error: MPIN validation failed"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiValidate",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "sid": "view-sid",
+            "auth": "view-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mpin": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_mpin_status_not_success",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "view-token",
+              "sid": "view-sid"
+            }
+          }
+        },
+        "POST /login/1.0/tradeApiValidate": {
+          "body": {
+            "data": {
+              "status": "failure"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "MPIN Validation Error: MPIN validation failed"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiValidate",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "sid": "view-sid",
+            "auth": "view-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mpin": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_mpin_answer_without_a_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "view-token",
+              "sid": "view-sid"
+            }
+          }
+        },
+        "POST /login/1.0/tradeApiValidate": {
+          "body": {
+            "data": {
+              "status": "success",
+              "sid": "x"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Missing expected field in API response: 'token'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiValidate",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "sid": "view-sid",
+            "auth": "view-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mpin": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_mpin_answer_that_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mobilenumber": "9876543210",
+        "totp": "123456",
+        "mpin": "654321"
+      },
+      "broker": {
+        "POST /login/1.0/tradeApiLogin": {
+          "body": {
+            "data": {
+              "status": "success",
+              "token": "view-token",
+              "sid": "view-sid"
+            }
+          }
+        },
+        "POST /login/1.0/tradeApiValidate": {
+          "status": 500,
+          "body": "down"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication error: 'str' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiLogin",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mobileNumber": "+919876543210",
+            "ucc": "UCC123",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "mis.kotaksecurities.com",
+          "path": "/login/1.0/tradeApiValidate",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "neo-fin-key": "neotradeapi",
+            "sid": "view-sid",
+            "auth": "view-token",
+            "content-type": "application/json"
+          },
+          "json": {
+            "mpin": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

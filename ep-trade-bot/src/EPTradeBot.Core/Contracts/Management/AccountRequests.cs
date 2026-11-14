@@ -84,6 +84,12 @@ public sealed class BrokerLoginCompleteRequest
     [StringLength(256)] [JsonPropertyName("password")] public string? Password { get; set; }
 
     [StringLength(64)] [JsonPropertyName("totp")] public string? Totp { get; set; }
+
+    /// <summary>The mobile number a broker that signs in with it (Kotak Neo) asks for.</summary>
+    [StringLength(32)] [JsonPropertyName("mobilenumber")] public string? MobileNumber { get; set; }
+
+    /// <summary>The trading MPIN of a broker that asks for one (Kotak Neo).</summary>
+    [StringLength(64)] [JsonPropertyName("mpin")] public string? Mpin { get; set; }
 }
 
 /// <summary>PUT /api/v1/accounts/{id}/apikeys/{keyId}/order-mode: <c>auto</c> sends this key's orders, <c>semi_auto</c> holds them in the Action Center.</summary>

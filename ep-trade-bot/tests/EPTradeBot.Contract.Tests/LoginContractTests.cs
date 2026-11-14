@@ -81,7 +81,7 @@ internal static class LoginDeviations
 {
     public const string Words = "OpenAlgo shows the broker's raw error text, prefixed with \"API error\" or not at all. EP Trade bot says in a sentence which broker refused and what to do next.";
 
-    public static Deviation Refused(string message) => new(Words, f => ContractRunner.Expect(f, 400, ContractRunner.Error(message)));
+    public static Deviation Refused(string message, int status = 400) => new(Words, f => ContractRunner.Expect(f, status, ContractRunner.Error(message)));
 }
 
 public sealed class LoginZerodhaContractTests(LoginZerodhaHost host, ITestOutputHelper output) : IClassFixture<LoginZerodhaHost>
