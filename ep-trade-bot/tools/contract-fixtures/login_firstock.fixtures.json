@@ -1,0 +1,545 @@
+{
+  "broker": "firstock",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_returns_the_session_key",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /V1/login": {
+          "body": {
+            "status": "success",
+            "data": {
+              "susertoken": "firstock-session-777",
+              "userId": "AB1234"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "firstock-session-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.firstock.in",
+          "path": "/V1/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "userId": "AB1234",
+            "password": "aa123aa6735e3a1cb6cc0ecf1f410862510d8e2da3c4c92fd122d0eff3253652",
+            "TOTP": "123456",
+            "vendorCode": "AB1234_API",
+            "apiKey": "firstock-api-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_session_key_under_its_old_name",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /V1/login": {
+          "body": {
+            "status": "success",
+            "data": {
+              "jKey": "firstock-session-778"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "firstock-session-778",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.firstock.in",
+          "path": "/V1/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "userId": "AB1234",
+            "password": "aa123aa6735e3a1cb6cc0ecf1f410862510d8e2da3c4c92fd122d0eff3253652",
+            "TOTP": "123456",
+            "vendorCode": "AB1234_API",
+            "apiKey": "firstock-api-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_success_without_a_session_key",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /V1/login": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication successful but no session token received"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.firstock.in",
+          "path": "/V1/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "userId": "AB1234",
+            "password": "aa123aa6735e3a1cb6cc0ecf1f410862510d8e2da3c4c92fd122d0eff3253652",
+            "TOTP": "123456",
+            "vendorCode": "AB1234_API",
+            "apiKey": "firstock-api-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /V1/login": {
+          "body": {
+            "status": "failed",
+            "message": "Invalid TOTP"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid TOTP"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.firstock.in",
+          "path": "/V1/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "userId": "AB1234",
+            "password": "aa123aa6735e3a1cb6cc0ecf1f410862510d8e2da3c4c92fd122d0eff3253652",
+            "TOTP": "123456",
+            "vendorCode": "AB1234_API",
+            "apiKey": "firstock-api-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_naming_a_field",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /V1/login": {
+          "body": {
+            "status": "failed",
+            "message": "Bad",
+            "error": {
+              "field": "TOTP",
+              "message": "TOTP is invalid"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Field 'TOTP': TOTP is invalid"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.firstock.in",
+          "path": "/V1/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "userId": "AB1234",
+            "password": "aa123aa6735e3a1cb6cc0ecf1f410862510d8e2da3c4c92fd122d0eff3253652",
+            "TOTP": "123456",
+            "vendorCode": "AB1234_API",
+            "apiKey": "firstock-api-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_an_error_object_and_no_field",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /V1/login": {
+          "body": {
+            "status": "failed",
+            "message": "Bad",
+            "error": {
+              "message": "Only a message"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Bad"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.firstock.in",
+          "path": "/V1/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "userId": "AB1234",
+            "password": "aa123aa6735e3a1cb6cc0ecf1f410862510d8e2da3c4c92fd122d0eff3253652",
+            "TOTP": "123456",
+            "vendorCode": "AB1234_API",
+            "apiKey": "firstock-api-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /V1/login": {
+          "body": {
+            "status": "failed"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.firstock.in",
+          "path": "/V1/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "userId": "AB1234",
+            "password": "aa123aa6735e3a1cb6cc0ecf1f410862510d8e2da3c4c92fd122d0eff3253652",
+            "TOTP": "123456",
+            "vendorCode": "AB1234_API",
+            "apiKey": "firstock-api-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_bad_request_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /V1/login": {
+          "status": 400,
+          "body": {
+            "status": "failed",
+            "error": {
+              "message": "userId is required"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Bad Request: userId is required"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.firstock.in",
+          "path": "/V1/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "userId": "AB1234",
+            "password": "aa123aa6735e3a1cb6cc0ecf1f410862510d8e2da3c4c92fd122d0eff3253652",
+            "TOTP": "123456",
+            "vendorCode": "AB1234_API",
+            "apiKey": "firstock-api-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_bad_request_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /V1/login": {
+          "status": 400,
+          "body": {
+            "status": "failed"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Bad Request: Bad request - check required fields"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.firstock.in",
+          "path": "/V1/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "userId": "AB1234",
+            "password": "aa123aa6735e3a1cb6cc0ecf1f410862510d8e2da3c4c92fd122d0eff3253652",
+            "TOTP": "123456",
+            "vendorCode": "AB1234_API",
+            "apiKey": "firstock-api-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_unauthorized",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /V1/login": {
+          "status": 401,
+          "body": {
+            "status": "failed"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Unauthorized: Invalid credentials or API key"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.firstock.in",
+          "path": "/V1/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "userId": "AB1234",
+            "password": "aa123aa6735e3a1cb6cc0ecf1f410862510d8e2da3c4c92fd122d0eff3253652",
+            "TOTP": "123456",
+            "vendorCode": "AB1234_API",
+            "apiKey": "firstock-api-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_other_http_error",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /V1/login": {
+          "status": 503,
+          "body": "Service unavailable"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "HTTP Error 503: \"Service unavailable\""
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.firstock.in",
+          "path": "/V1/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "userId": "AB1234",
+            "password": "aa123aa6735e3a1cb6cc0ecf1f410862510d8e2da3c4c92fd122d0eff3253652",
+            "TOTP": "123456",
+            "vendorCode": "AB1234_API",
+            "apiKey": "firstock-api-key"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

@@ -35,6 +35,7 @@ public sealed partial class FirstockPlugin
                 continue;
             }
 
+            if (answer.Count == 0 && status is 429) throw new BrokerException($"{DisplayName} is limiting how often it can be asked. Wait a moment, then try again.", 500);
             if (answer.Count == 0) throw new BrokerException($"{DisplayName} sent an answer that could not be read. Try again in a moment.", 500);
             return answer;
         }
