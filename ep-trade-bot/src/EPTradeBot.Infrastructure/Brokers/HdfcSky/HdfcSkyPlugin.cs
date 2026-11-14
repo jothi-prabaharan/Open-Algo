@@ -14,7 +14,7 @@ namespace EPTradeBot.Infrastructure.Brokers.HdfcSky;
 /// API, so a market order is sent as a limit order a protection slab beyond the last price, and a stop-market as a stop-limit beyond its trigger. The order book is two calls (pending and completed).
 /// </summary>
 [BrokerPlugin]
-public sealed partial class HdfcSkyPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<HdfcSkyPlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
+public sealed partial class HdfcSkyPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ILogger<HdfcSkyPlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory, IBrokerMargin
 {
     private const string DefaultBaseUrl = "https://developer.hdfcsky.com";
     private const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36";
@@ -22,7 +22,7 @@ public sealed partial class HdfcSkyPlugin(IHttpClientFactory http, BrokerSession
 
     public string Name => "hdfcsky";
     public string DisplayName => "HDFC Sky";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     // ---- vocabulary ------------------------------------------------------------------------------------------
