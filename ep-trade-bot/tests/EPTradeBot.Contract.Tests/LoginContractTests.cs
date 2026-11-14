@@ -598,3 +598,33 @@ public sealed class LoginSahiContractTests(LoginSahiHost host, ITestOutputHelper
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginArrowHost : BrokerContractHost
+{
+    public override string BrokerName => "arrow";
+    public override string FixtureFile => "login_arrow.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "arrow-app-id", ["ApiSecret"] = "arrow-app-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginArrowContractTests(LoginArrowHost host, ITestOutputHelper output) : IClassFixture<LoginArrowHost>
+{
+    private const string Again = "Arrow did not accept the sign-in. Start it again from the beginning.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_with_a_message"] = LoginDeviations.Refused("Arrow did not accept the sign-in: Invalid checksum"),
+        ["login_refused_without_a_message"] = LoginDeviations.Refused(Again),
+        ["login_failure_envelope_with_a_message"] = LoginDeviations.Refused("Arrow did not accept the sign-in: Token expired"),
+        ["login_failure_envelope_without_a_message"] = LoginDeviations.Refused(Again),
+        ["login_success_without_a_token"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error("Arrow accepted the sign-in but sent no access token. Start the sign-in again."))),
+        ["login_success_without_data"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error("Arrow accepted the sign-in but sent no access token. Start the sign-in again."))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_arrow.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

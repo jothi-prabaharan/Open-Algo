@@ -460,3 +460,35 @@ public sealed class MarginSahiContractTests(MarginSahiHost host, ITestOutputHelp
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class MarginArrowHost : BrokerContractHost
+{
+    public override string BrokerName => "arrow";
+    public override string FixtureFile => "margin_arrow.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "arrow-app-id", ["ApiSecret"] = "arrow-api-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class MarginArrowContractTests(MarginArrowHost host, ITestOutputHelper output) : IClassFixture<MarginArrowHost>
+{
+    private static string Unknown(string symbol) => $"{symbol} on NSE is not in the Arrow master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["margin_unknown_symbol_alone"] = new("Same status; EP Trade bot names the symbol, where OpenAlgo says no symbol was valid.", f => ContractRunner.Expect(f, 400, ContractRunner.Error(Unknown("NOSUCH")))),
+        ["margin_unknown_symbol_among_others"] = new(
+            "OpenAlgo leaves the position whose symbol it cannot find out of the basket and calculates the rest, which understates the margin. EP Trade bot refuses and names the symbol.",
+            f =>
+            {
+                ContractRunner.Expect(f, 400, ContractRunner.Error(Unknown("NOSUCH")));
+                f["sent"]!.AsArray().Clear();
+            }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin_arrow.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
