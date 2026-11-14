@@ -22,7 +22,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | TradeSmart (Noren v2) | yes | yes | yes | yes | yes | no | yes | yes |
 | Rupeezy (Vortex) | yes | yes | yes | yes | n/a | yes | yes | yes |
 | Sahi | yes | yes | yes | yes | yes | n/a | yes | yes |
-| Arrow | yes | yes | yes | yes | yes | n/a | yes | no |
+| Arrow | yes | yes | yes | yes | yes | n/a | yes | yes |
 
 The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -318,7 +318,8 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Margin (`margin_arrow.fixtures.json`, 22 cases): one position goes to the single-order calculator (charges come with it), two or more to the basket calculator with the open positions netted in; a basket Arrow refuses is replaced by the sum of the single-order answers, which stops at the first order Arrow refuses; stop orders are priced as limit orders; Arrow gives no SPAN and exposure split, so both are zero. The one difference is the platform's own naming of an unlisted symbol (OpenAlgo calculates the rest of the basket without it, which understates the margin).
 - Sign-in (`login_arrow.fixtures.json`, 7 cases): the request token Arrow's page returns is exchanged at /auth/app/authenticate-token with a SHA-256 checksum of "appID:appSecret:token" (colons); the recorded body pins it. Differences: refusals are plain sentences naming Arrow; a success with no token is a 502 here, a 400 there.
 - GTT: OpenAlgo has no GTT for Arrow (n/a).
-- Not yet ported for Arrow: the feed; no mutation set; no live-broker run.
+- Feed (`feed_arrow.fixtures.json`, 34 cases; `ArrowFeedCodec`): a subscribe is a JSON frame whose array key is the mode (ltpc, quote or full), consecutive tokens of one mode share a frame (100 at most); the stream sends one big-endian packet per message, told apart by length (13 ltp, 17 ltpc, 93 quote, 249 or 241 full; an odd size takes the richest layout it can hold); the server expects the text PONG every 3 seconds. Arrow holds one mode per token and the adapter publishes a tick to the topic of its own mode only, so a client that asked for LTP on a token another client asked for Quote on gets no LTP tick; an unsubscribe ends the token whatever mode it names; the 1000-token limit counts what has been sent, not what one call queues. All of that is OpenAlgo's behaviour, kept. One recorded difference: OpenAlgo repeats subscriptions in the order of a Python set of integers, here ascending.
+- Not yet done for Arrow: a mutation set; no live-broker run.
 
 ## Remaining brokers: size of the work (for planning)
 

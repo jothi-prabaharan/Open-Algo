@@ -10,7 +10,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Arrow;
 /// <summary>
 /// Arrow (edge.arrow.trade). Port of broker/arrow: api/order_api.py, api/funds.py, mapping/transform_data.py and mapping/order_data.py. Every call carries the application id
 /// and the access token in two headers of their own (appID and token). Prices and quantities travel as text; a market order is sent as MKT with market price protection (mpp);
-/// the books show the broker's own text values unchanged. Not ported yet: the feed.
+/// the books show the broker's own text values unchanged. The feed is in ArrowPlugin.Feed.cs.
 /// </summary>
 [BrokerPlugin]
 public sealed partial class ArrowPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory

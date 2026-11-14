@@ -738,3 +738,26 @@ public sealed class SahiFeedContractTests
     [MemberData(nameof(Names))]
     public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_sahi.fixtures.json", name, () => new SahiFeedCodec());
 }
+
+public sealed class ArrowFeedContractTests
+{
+    /// <summary>
+    /// OpenAlgo repeats its subscriptions in the order of a Python set of integers, which for a hundred and one tokens starts in the middle of the range. The same tokens in the same
+    /// two frames of at most a hundred, in ascending order, are the same state.
+    /// </summary>
+    private static readonly HashSet<string> SetOrder = ["a_hundred_and_one_tokens_are_repeated_in_two_frames"];
+
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_arrow.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_arrow.fixtures.json", name, () => new ArrowFeedCodec(),
+        SetOrder.Contains(name)
+            ? scenario =>
+            {
+                var tokens = Enumerable.Range(0, 101).Select(i => 900000L + i).ToList();
+                scenario["steps"]![1]!["result"]!["sent"] = new JsonArray(
+                    tokens.Chunk(100).Select(c => (JsonNode?)new JsonObject { ["code"] = "sub", ["mode"] = "ltpc", ["ltpc"] = new JsonArray(c.Select(t => (JsonNode?)JsonValue.Create(t)).ToArray()) }).ToArray());
+            }
+            : null);
+}
