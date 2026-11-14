@@ -28,6 +28,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | IIFL Capital | yes | yes | yes | yes | yes | n/a | yes | yes (MQTT) |
 | Samco | yes | yes | yes | yes | yes | n/a | yes | yes |
 | 5paisa | yes | yes | yes | yes | n/a (no calculator) | n/a | yes | yes |
+| Firstock | yes | yes | yes | yes | yes | n/a | yes | yes |
 
 The other brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -36,7 +37,7 @@ The other brokers in the task list are not started (Shoonya, Zebu and Flattrade 
 - Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **The 11 brokers not started** (aliceblue, definedge, firstock, groww, indmoney, kotak, motilal, mstock, nubra, pocketful, tradejini), and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **The 10 brokers not started** (aliceblue, definedge, groww, indmoney, kotak, motilal, mstock, nubra, pocketful, tradejini), and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
 ## Upstox sign-in
 
@@ -378,6 +379,15 @@ The other brokers in the task list are not started (Shoonya, Zebu and Flattrade 
 - Mutation set `tg7-fivepaisa.json` (61 changes across the plugin, sign-in and feed codec): all killed, one only after a scenario was added (a candle with zero prices but a volume).
 - Not done: OpenAlgo gathers a burst of subscribes over half a second into one frame per method, and the codec here has no timer, so one subscribe at a time is one frame (the protocol allows it, the volume is higher for a large option chain); a slow position read is tried again after sixty seconds, which no scenario exercises; no live-broker run.
 
+## Firstock (api.firstock.in/V1): orders, books, funds, quotes, depth, history, margin, sign-in and feed
+
+- `FirstockPlugin`, held to `broker/firstock` by recorded cases for orders, books and funds (`firstock`), quotes, depth and several quotes (`firstock_data`), history (`history_firstock`), margin (`margin_firstock`), sign-in (`login_firstock`) and 105 feed cases (`feed_firstock.fixtures.json`), plus feed-address and codec tests. Every call is a POST with the session key (jKey) and the user id (the API key without its `_API` ending) in the body. A market order and a stop-market go as a limit and a stop-limit a slab beyond the last price (read with `/getQuote`), and as they are when no price can be had.
+- Recorded differences from OpenAlgo: a refused book, positions or funds read is an error naming the call (OpenAlgo shows it empty); the trigger-pending status is worded "trigger pending" so cancel-all sees it; a position returned as one object is read as a list of one; the wasteful `/getLtp` call in holdings is dropped; an order accepted with no order number is a refusal that says it may have been placed; a quote that fails is an error in plain words (OpenAlgo answers 200 with an error dictionary); an interval Firstock lacks is 400; margin refusals are 400, and an unknown or cash leg is refused by name.
+- History: one call a day for one-minute candles, chunks of 2, 3, 5, 7, 10, 15, 15, 15 and 30 days for the others; a range that fits one chunk leaves an empty answer when it fails, a longer range leaves out the chunk that failed; daily candles are stamped 09:15 of their date.
+- Feed: the server answers a connection with a status frame and nothing is sent before it says success, so scrips wait and go in one subscribe frame (EXCHANGE:TOKEN joined by bars, grouped by exchange). A scrip is on the wire once however many modes want it and comes off with the last; one still waiting is just dropped. A refused sign-in sends nothing further until a new connection. A tick arrives at the top level or wrapped under its EXCHANGE:TOKEN key and goes to every subscription on its scrip; the snapshot is per scrip (not per token, so the same token on two exchanges does not mix), holds the last valid value of each field (a zero price and the invalid marker are not valid), and an empty book never replaces a held one. A reconnect puts every scrip back in the queue until the server accepts it again.
+- Mutation set `tg7-firstock.json` (159 changes): the five feed-codec survivors of the first run (Begin and Resubscribe each ending a refusal, Begin waiting for the server, Reset forgetting values and refusal) were killed with new tests. 20 REST-side changes survived and are not covered by a recorded case: the default product for an unknown product (the platform refuses it first), the order remark when no strategy is named, a 500 with an empty body at the boundary, an empty order number, the status of a refusal that arrives with HTTP 200, the modify of a symbol not in the master contract (the platform refuses it first), the wording when a cancel gives no reason, the exact-four-character key, the "may have been placed" flag when the connection drops, a fractional volume cut, the 2/3/30-minute and one-chunk range boundaries, the zone of a text candle time, an empty leg product in margin, a bare 500 at sign-in and a blank password, and a holding row missing its exchange or token. Each needs a new recorded scenario; none is a known defect.
+- Not done: OpenAlgo gathers a burst of subscribes over half a second into one frame and the codec here has no timer, so each host call is its own frame; a duplicate subscribe of the same symbol and mode is held once by the feed host where OpenAlgo publishes it twice; after a refused sign-in OpenAlgo stops for good, and here the host tries again on its next connection; no live-broker run.
+
 ## Decisions taken with the owner
 
 - **Live-broker runs are not part of what this work can close.** A live run needs the owner's own broker accounts, keys and registered static IPs. Gate 7 closes on the recorded OpenAlgo evidence in this file; each broker's live run is listed below as a task for the owner, and no row here claims one.
@@ -403,7 +413,7 @@ Lines of Python in each broker's `api/` and `mapping/` (the REST side) and `stre
 | iiflcapital | 2773 | 2490 | Done (see its section) |
 | samco | 2892 | 1790 | Done (see its section) |
 | fivepaisa | 2950 | 1735 | Done (see its section) |
-| firstock | 3188 | 1706 | Own REST API |
+| firstock | 3188 | 1706 | Done (see its section) |
 | kotak | 3269 | 5390 | Own REST API; the largest feed |
 | definedge | 3690 | 2115 | Noren-flavoured feed, own REST API |
 | aliceblue | 4248 | 2330 | Noren-flavoured feed, own REST API |

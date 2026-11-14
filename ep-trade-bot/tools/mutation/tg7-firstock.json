@@ -1,0 +1,1274 @@
+[
+ {
+  "name": "O1 nrml product",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "\"NRML\" => \"M\"",
+  "new": "\"NRML\" => \"I\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O2 default product",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "\"MIS\" => \"I\", _ => \"I\" }",
+  "new": "\"MIS\" => \"I\", _ => \"M\" }",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O3 shown mis",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "product == \"I\" ? \"MIS\"",
+  "new": "product == \"I\" ? \"NRML\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O4 ampersand",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "Replace(\"&\", \"%26\"",
+  "new": "Replace(\"&\", \"%25\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O5 float text",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "text + \".0\"",
+  "new": "text",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O6 sl-m type",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "priceType == \"SL-M\" ? \"SL-MKT\"",
+  "new": "priceType == \"SL-M\" ? \"SL-LMT\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O7 only market protected",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "is not (\"MARKET\" or \"SL-M\")",
+  "new": "is not \"MARKET\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O8 zero price protected",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "if (quote.Ltp > 0)",
+  "new": "if (quote.Ltp >= 0)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O9 protected type",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "priceType == \"MARKET\" ? \"LMT\" : \"SL-LMT\", true",
+  "new": "priceType == \"MARKET\" ? \"SL-LMT\" : \"LMT\", true",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O10 tick size",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "info.TickSize is { } t && t > 0 ? t : null",
+  "new": "info.TickSize is { } t && t > 1 ? t : null",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O11 side",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "[\"transactionType\"] = action == \"BUY\" ? \"B\" : \"S\"",
+  "new": "[\"transactionType\"] = action == \"BUY\" ? \"S\" : \"B\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O12 protection flag",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "[\"mkt_protection\"] = \"0\"",
+  "new": "[\"mkt_protection\"] = \"1\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O13 remarks",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "\"Place Order\"",
+  "new": "\"Order\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O14 server error boundary",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "reply.Body.Count == 0 && reply.Status >= 500",
+  "new": "reply.Body.Count == 0 && reply.Status >= 501",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O15 empty order id",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "Length: > 0 } id) return BrokerCallResult.Success(id)",
+  "new": "Length: >= 0 } id) return BrokerCallResult.Success(id)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O16 refused status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "reply.Status is >= 400 ? reply.Status : 400, Reason(reply.Body, \"Failed to place order\")",
+  "new": "400, Reason(reply.Body, \"Failed to place order\")",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O17 modify protection",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "if (!converted) protection = \"1\";",
+  "new": "if (converted) protection = \"1\";",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O18 modify no symbol type",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "change.PriceType == \"MARKET\" ? \"MKT\" : \"SL-MKT\", false)",
+  "new": "change.PriceType == \"MARKET\" ? \"SL-MKT\" : \"MKT\", false)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O19 modify sl type",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "change.PriceType == \"SL\" ? \"SL-LMT\" : \"MKT\"",
+  "new": "change.PriceType == \"SL\" ? \"SL-MKT\" : \"MKT\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O20 modify product",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "if (!string.IsNullOrEmpty(change.Product)) body[\"product\"]",
+  "new": "if (string.IsNullOrEmpty(change.Product)) body[\"product\"]",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O21 modify fallback text",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "\"Failed to modify order\"",
+  "new": "\"Failed\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O22 cancel code",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "&& c >= 400 ? c : 400",
+  "new": "&& c >= 400 ? 400 : 400",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "O23 cancel text",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "\"Failed to cancel order\"",
+  "new": "\"Failed\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B1 book status check",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "if (!Succeeded(body)) throw new BrokerException($\"{DisplayName} could not send the {what}",
+  "new": "if (Succeeded(body)) throw new BrokerException($\"{DisplayName} could not send the {what}",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B2 cancelled spelling",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "\"CANCELED\" or \"CANCELLED\" => \"cancelled\"",
+  "new": "\"CANCELLED\" => \"cancelled\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B3 pending status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "\"PENDING\" => \"open\", _",
+  "new": "\"PENDING\" => \"pending\", _",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B4 trigger pending",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "\"TRIGGER PENDING\" or \"TRIGGER_PENDING\" => \"trigger pending\"",
+  "new": "\"TRIGGER PENDING\" => \"trigger pending\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B5 open count",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "or \"TRIGGER_PENDING\" or \"PENDING\") open++",
+  "new": "or \"TRIGGER_PENDING\") open++",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B6 rejected count",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "rejected++;",
+  "new": "rejected += 2;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B7 buy count",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "buy++; side = \"BUY\"",
+  "new": "sell++; side = \"BUY\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B8 trigger text",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "trigger is null || Str(trigger) == \"\" ? \"0.00\"",
+  "new": "trigger is null ? \"0.00\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B9 sl-market spelling",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "\"SL-MKT\" or \"SL-MARKET\" or \"SL-M\" => \"SL-M\"",
+  "new": "\"SL-MKT\" or \"SL-M\" => \"SL-M\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B10 trade value",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "Num(r[\"fillQuantity\"]) * Num(r[\"fillPrice\"])",
+  "new": "Num(r[\"fillQuantity\"]) + Num(r[\"fillPrice\"])",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B11 position pnl",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "[\"pnl\"] = Raw(r, \"RealizedPNL\", \"0.00\")",
+  "new": "[\"pnl\"] = Raw(r, \"unrealizedMTOM\", \"0.00\")",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B12 last price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "[\"last_price\"] = \"0.00\"",
+  "new": "[\"last_price\"] = \"1.00\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B13 holding suffix",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": ".Replace(\"-EQ\", \"\", StringComparison.Ordinal)",
+  "new": "",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B14 holding shape",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "if (!r.ContainsKey(\"exchange\") || !r.ContainsKey(\"tradingSymbol\")) continue;",
+  "new": "if (!r.ContainsKey(\"exchange\") && !r.ContainsKey(\"tradingSymbol\")) continue;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "B15 holding token",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "Truthy(r[\"token\"]) ? await SymbolAsync",
+  "new": "!Truthy(r[\"token\"]) ? await SymbolAsync",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F1 available cash",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "Num(data[\"cash\"]) + Num(data[\"payin\"]) - Num(data[\"marginused\"])",
+  "new": "Num(data[\"cash\"]) - Num(data[\"payin\"]) - Num(data[\"marginused\"])",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F2 collateral",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "Fixed2(Num(data[\"brkcollamt\"]))",
+  "new": "Fixed2(Num(data[\"cash\"]))",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U1 user id",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "key[..^4]",
+  "new": "key[..^3]",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U2 short key",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "key.Length <= 4",
+  "new": "key.Length < 4",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U3 number fallback",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "BookFormatting.Number(node) ?? fallback;",
+  "new": "BookFormatting.Number(node) ?? fallback + 1;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U4 session key",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "body[\"jKey\"] = session.AuthToken;",
+  "new": "body[\"jKey\"] = \"x\";",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U5 accept header",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "if (accept) request",
+  "new": "if (!accept) request",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U6 unsent text",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "before trying again.\", MayHaveBeenSent: true);\n        }\n\n        if (reply.Body.Count",
+  "new": "before trying again.\", MayHaveBeenSent: false);\n        }\n\n        if (reply.Body.Count",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "U7 reason fallback",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "is { Length: > 0 } t ? t : fallback",
+  "new": "is { Length: > 0 } t ? fallback : fallback",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D1 retry once",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Data.cs",
+  "old": "answer.Count == 0 && status is 429 && attempt == 0",
+  "new": "answer.Count == 0 && status is 429 && attempt == 5",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D3 quote prices",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Data.cs",
+  "old": "new(F(item[\"bestBuyPrice1\"]), F(item[\"bestSellPrice1\"])",
+  "new": "new(F(item[\"bestSellPrice1\"]), F(item[\"bestBuyPrice1\"])",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D4 whole numbers",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Data.cs",
+  "old": "(long)Math.Truncate(Num(node))",
+  "new": "(long)Math.Round(Num(node))",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D5 five levels",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Data.cs",
+  "old": "i <= 5",
+  "new": "i < 5",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D6 last quantity",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Data.cs",
+  "old": "[\"ltq\"] = W(data[\"lastTradedQuantity\"])",
+  "new": "[\"ltq\"] = W(data[\"volume\"])",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D7 batch size",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Data.cs",
+  "old": "BatchSize = 50",
+  "new": "BatchSize = 49",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D8 batch map exchange",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Data.cs",
+  "old": "map[$\"{MapExchange(r.Exchange)}:{r.BrokerSymbol}\"]",
+  "new": "map[$\"{r.Exchange}:{r.BrokerSymbol}\"]",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D9 batch symbol",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Data.cs",
+  "old": "known?.Symbol ?? name",
+  "new": "name",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D10 quote exchange",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Data.cs",
+  "old": "[\"exchange\"] = MapExchange(exchange), [\"tradingSymbol\"] = record.BrokerSymbol",
+  "new": "[\"exchange\"] = exchange, [\"tradingSymbol\"] = record.BrokerSymbol",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D11 index exchange",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.cs",
+  "old": "\"NSE_INDEX\" => \"NSE\", \"BSE_INDEX\" => \"BSE\"",
+  "new": "\"NSE_INDEX\" => \"NSE\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H1 hour interval",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "[\"1h\"] = \"60mi\"",
+  "new": "[\"1h\"] = \"60m\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H2 four hour interval",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "[\"4h\"] = \"240mi\"",
+  "new": "[\"4h\"] = \"120mi\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H3 three minute chunk",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "[\"3m\"] = 2",
+  "new": "[\"3m\"] = 3",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H4 daily chunk",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "[\"D\"] = 30 }",
+  "new": "[\"D\"] = 31 }",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H5 thirty minute chunk",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "[\"30m\"] = 10",
+  "new": "[\"30m\"] = 11",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H6 day format",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "\"dd-MM-yyyy\"",
+  "new": "\"MM-dd-yyyy\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H7 daily stamp",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "+ 33300",
+  "new": "+ 33000",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H8 volume missing",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "if (!candle.ContainsKey(\"volume\")) return true;",
+  "new": "if (!candle.ContainsKey(\"volume\")) return false;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H9 volume cut",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "volume = (long)Math.Truncate(n);",
+  "new": "volume = (long)Math.Round(n);",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H10 time zone",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "TimeSpan.FromHours(5.5)",
+  "new": "TimeSpan.FromHours(0)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H11 one chunk",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "days <= chunk",
+  "new": "days < chunk",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H12 daily end",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "daily ? $\"00:00:00 {Day(d)}\" : $\"23:59:59 {Day(d)}\"",
+  "new": "daily ? $\"23:59:59 {Day(d)}\" : $\"00:00:00 {Day(d)}\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H13 dedupe",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "deduplicate: false)",
+  "new": "deduplicate: true)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H14 oi",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "[\"oi\"] = 0 }",
+  "new": "[\"oi\"] = 1 }",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H15 failed series",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "return Succeeded(answer) ? answer[\"data\"]",
+  "new": "return !Succeeded(answer) ? answer[\"data\"]",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H16 one minute step",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.History.cs",
+  "old": "day = day.AddDays(1)",
+  "new": "day = day.AddDays(2)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G1 market leg type",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Margin.cs",
+  "old": "type = leg.PriceType == \"MARKET\" ? \"LMT\" : \"SL-LMT\";",
+  "new": "type = leg.PriceType == \"MARKET\" ? \"SL-LMT\" : \"LMT\";",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G2 market leg fallback",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Margin.cs",
+  "old": "leg.PriceType == \"MARKET\" ? Whole(leg.Price) : Whole(leg.TriggerPrice)",
+  "new": "leg.PriceType == \"MARKET\" ? Whole(leg.TriggerPrice) : Whole(leg.Price)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G3 leg quote",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Margin.cs",
+  "old": "if (quote.Ltp > 0)",
+  "new": "if (quote.Ltp >= 0)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G4 leg product",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Margin.cs",
+  "old": "\"NRML\" : leg.Product",
+  "new": "\"MIS\" : leg.Product",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G5 basket",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Margin.cs",
+  "old": "built.Skip(1)",
+  "new": "built.Skip(0)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G6 margin fallback text",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Margin.cs",
+  "old": "\"Failed to calculate margin\"",
+  "new": "\"Failed\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G7 margin refusal status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Margin.cs",
+  "old": "throw new BrokerException(said, 400);",
+  "new": "throw new BrokerException(said, 500);",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G8 traded margin",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Margin.cs",
+  "old": "Truthy(traded) ? Num(traded) : 0.0",
+  "new": "Truthy(traded) ? Num(traded) : 1.0",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G9 empty margin answer",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Margin.cs",
+  "old": "if (answer.Count == 0) throw",
+  "new": "if (answer.Count == 1) throw",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "G10 tick size",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Margin.cs",
+  "old": "instrument.TickSize is { } t && t > 0 ? t : null",
+  "new": "instrument.TickSize is { } t && t > 1 ? t : null",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L1 password case",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Login.cs",
+  "old": ".ToLowerInvariant(), [\"TOTP\"]",
+  "new": ", [\"TOTP\"]",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L2 vendor and key",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Login.cs",
+  "old": "[\"vendorCode\"] = vendor, [\"apiKey\"] = apiKey",
+  "new": "[\"vendorCode\"] = apiKey, [\"apiKey\"] = vendor",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L3 success",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Login.cs",
+  "old": "status == 200 && Succeeded(answer)",
+  "new": "status == 200 || Succeeded(answer)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L4 token",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Login.cs",
+  "old": "{ Length: > 0 } fresh",
+  "new": "{ Length: > 99 } fresh",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L5 unauthorised",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Login.cs",
+  "old": "status == 401",
+  "new": "status == 403",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L6 server error",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Login.cs",
+  "old": "status >= 500",
+  "new": "status > 500",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L7 field message",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Login.cs",
+  "old": "$\"{field}: {fieldMessage}\"",
+  "new": "$\"{fieldMessage}\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L8 empty password",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Login.cs",
+  "old": "string.IsNullOrEmpty(password)",
+  "new": "string.IsNullOrWhiteSpace(password)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "E1 token encode keep",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Feed.cs",
+  "old": "'_' or '.' or '-' or '~'",
+  "new": "'_' or '.' or '-'",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "E2 space",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Feed.cs",
+  "old": "else if (c == ' ') text.Append('+');",
+  "new": "else if (c == ' ') text.Append(\"%20\");",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "E3 api ending",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Feed.cs",
+  "old": ".Replace(\"_API\", \"\", StringComparison.Ordinal)",
+  "new": "",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "E4 keepalive",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Feed.cs",
+  "old": "FromSeconds(30)",
+  "new": "FromSeconds(10)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "E5 source",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Feed.cs",
+  "old": "source=developer-api",
+  "new": "source=api",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "E6 token check",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Feed.cs",
+  "old": "string.IsNullOrWhiteSpace(session.AuthToken) ||",
+  "new": "false ||",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "E7 percent case",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Firstock/FirstockPlugin.Feed.cs",
+  "old": "b.ToString(\"X2\"",
+  "new": "b.ToString(\"x2\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C1 sends before sign in",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "if (!authenticated || failed) return frames;",
+  "new": "if (failed) return frames;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C2 sends after refusal",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "if (!authenticated || failed) return frames;",
+  "new": "if (!authenticated) return frames;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C3 separator",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "string.Join('|', tokens)",
+  "new": "string.Join(',', tokens)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C4 action",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "[\"action\"] = \"subscribe\"",
+  "new": "[\"action\"] = \"unsubscribe\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C5 first on wire",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "var first = !OnWire(sub.Scrip);",
+  "new": "var first = true;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C6 remove flag",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "removed |= subs.Remove(Key(target.Symbol, target.Exchange, m));",
+  "new": "removed |= subs.Remove(Key(target.Symbol, target.Exchange, m)) || true;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C7 other mode remains",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "if (!removed || OnWire(scrip)) return [];",
+  "new": "if (!removed) return [];",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C8 snapshot kept on unsubscribe",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "            snapshots.Remove(scrip);\n",
+  "new": "            _ = scrip;\n",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C9 queue take back",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "q.Token == target.Token) > 0 || failed) return [];",
+  "new": "q.Token == target.Token) > 99 || failed) return [];",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C10 unsubscribe after refusal",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "> 0 || failed) return [];",
+  "new": "> 0) return [];",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C11 resubscribe waits",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "            authenticated = false;\n            failed = false;\n            foreach (var sub in subs.Values)",
+  "new": "            failed = false;\n            foreach (var sub in subs.Values)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C12 resubscribe clears refusal",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "            failed = false;\n            foreach (var sub in subs.Values)",
+  "new": "            foreach (var sub in subs.Values)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C13 begin clears refusal",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "            authenticated = false;\n            failed = false;\n        }\n    }\n\n    private void Enqueue",
+  "new": "            authenticated = false;\n        }\n    }\n\n    private void Enqueue",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C14 begin waits",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "            authenticated = false;\n            failed = false;\n        }\n    }\n\n    private void Enqueue",
+  "new": "            failed = false;\n        }\n    }\n\n    private void Enqueue",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C15 success word",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "Text(data, \"status\") == \"success\"",
+  "new": "Text(data, \"status\") == \"ok\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C16 unauthenticated message",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "\"failed\" || Text(data, \"message\") == \"unauthenticated\"",
+  "new": "\"failed\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C17 refusal",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "failed = true;",
+  "new": "failed = false;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C18 accepted",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "authenticated = true;",
+  "new": "authenticated = false;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C19 top level tick",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "data.ContainsKey(\"c_symbol\")) return OnTick",
+  "new": "data.ContainsKey(\"c_symbolx\")) return OnTick",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C20 wrapped key",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "!key.Contains(':') || value is not JsonObject tick",
+  "new": "key.Contains(':') || value is not JsonObject tick",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C21 wrapped token",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "key[(colon + 1)..]",
+  "new": "key[colon..]",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C22 wrapped exchange",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "key[..colon]",
+  "new": "key[..(colon + 1)]",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C23 wrapped own token",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "if (!tick.ContainsKey(\"c_symbol\")) tick",
+  "new": "if (tick.ContainsKey(\"c_symbol\")) tick",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C24 wrapped own exchange",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "if (!tick.ContainsKey(\"c_exch_seg\")) tick",
+  "new": "if (tick.ContainsKey(\"c_exch_seg\")) tick",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C25 exchange routing",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "s.Token == token && s.BrokerExchange == exchange",
+  "new": "s.Token == token",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C26 not a number",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "throw new FormatException(\"Not a number.\");",
+  "new": "return 0;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C27 zero price",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "if (IsInvalid(value) || (number == 0 && PriceFields.Contains(field))) continue;",
+  "new": "if (IsInvalid(value)) continue;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C28 invalid marker",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "if (IsInvalid(value) || (number == 0 && PriceFields.Contains(field))) continue;",
+  "new": "if (number == 0 && PriceFields.Contains(field)) continue;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C29 zero on every field",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "(number == 0 && PriceFields.Contains(field))",
+  "new": "(number == 0)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C30 upper circuit price",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "\"i_average_trade_price\", \"i_upper_circuit_limit\", \"i_lower_circuit_limit\",",
+  "new": "\"i_average_trade_price\", \"i_upper_circuit_limit\",",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C31 last price field",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "\"i_last_traded_price\", \"i_open_price\", \"i_high_price\"",
+  "new": "\"i_open_price\", \"i_high_price\"",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C32 book needs both sides",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "data.ContainsKey(\"best_buy\") && data.ContainsKey(\"best_sell\")",
+  "new": "data.ContainsKey(\"best_buy\") || data.ContainsKey(\"best_sell\")",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C33 buy side hold",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "if (buy.Count > 0) snapshot.Buy = buy;",
+  "new": "if (buy.Count >= 0) snapshot.Buy = buy;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C34 sell side hold",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "if (sell.Count > 0) snapshot.Sell = sell;",
+  "new": "if (sell.Count >= 0) snapshot.Sell = sell;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C35 empty buy start",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "else snapshot.Buy ??= [];",
+  "new": "else snapshot.Buy = [];",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C36 empty sell start",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "else snapshot.Sell ??= [];",
+  "new": "else snapshot.Sell = [];",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C37 level needs price or quantity",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "Level(level, \"price\") > 0 || Level(level, \"quantity\") > 0",
+  "new": "Level(level, \"price\") > 0 && Level(level, \"quantity\") > 0",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C38 level price",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "Level(level, \"price\") > 0 ||",
+  "new": "Level(level, \"price\") >= 0 ||",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C39 level quantity",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "|| Level(level, \"quantity\") > 0",
+  "new": "|| Level(level, \"quantity\") >= 0",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C40 level orders marker",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "new[] { \"price\", \"quantity\", \"orders\" }",
+  "new": "new[] { \"price\", \"quantity\" }",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C41 level quantity marker",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "new[] { \"price\", \"quantity\", \"orders\" }",
+  "new": "new[] { \"price\", \"orders\" }",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C42 level price marker",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "new[] { \"price\", \"quantity\", \"orders\" }",
+  "new": "new[] { \"quantity\", \"orders\" }",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C43 cut",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": ".Take(5))",
+  "new": ".Take(6))",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C44 pad",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "ladder.Count < 5",
+  "new": "ladder.Count < 4",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C45 quote oi",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "[\"oi\"] = Field(snapshot, \"i_open_interest\")",
+  "new": "[\"oi\"] = Field(snapshot, \"i_total_open_interest\")",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C46 depth oi",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "[\"oi\"] = Field(snapshot, \"i_total_open_interest\"),\n            [\"upper_circuit\"]",
+  "new": "[\"oi\"] = Field(snapshot, \"i_open_interest\"),\n            [\"upper_circuit\"]",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C47 last quantity",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "Field(snapshot, \"i_last_trade_quantity\")",
+  "new": "Field(snapshot, \"i_volume_traded_today\")",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C48 paise",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "0.0) / 100.0)",
+  "new": "0.0) / 10.0)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C49 level paise",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "Level(level, \"price\") / 100.0",
+  "new": "Level(level, \"price\") / 10.0",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C50 boolean",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "v.TryGetValue<bool>(out var b) ? b ? 1 : 0 : null",
+  "new": "v.TryGetValue<bool>(out var b) ? b ? 2 : 0 : null",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C51 exact marker",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "return exact == InvalidMarkerExact;",
+  "new": "return exact != InvalidMarkerExact;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C52 float marker",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "d == InvalidMarker;",
+  "new": "d != InvalidMarker;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C53 stored value",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "snapshot.Fields[field] = value?.DeepClone();",
+  "new": "snapshot.Fields[field] = JsonValue.Create(0);",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C54 mode",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "result[\"mode\"] = (int)sub.Mode;",
+  "new": "result[\"mode\"] = 1;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C55 queue emptied",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "        queue.Clear();\n        if (items.Count == 0)",
+  "new": "        if (items.Count == 0)",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C56 queue dedupe",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "if (!queue.Any(q => q.Exchange == exchange && q.Token == token)) queue.Add((exchange, token));",
+  "new": "queue.Add((exchange, token));",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C57 outgoing emptied",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "            outgoing.Clear();\n            return taken;",
+  "new": "            return taken;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C58 reset snapshots",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "            snapshots.Clear();\n            outgoing.Clear();",
+  "new": "            outgoing.Clear();",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C59 reset subscriptions",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "            subs.Clear();\n            queue.Clear();",
+  "new": "            queue.Clear();",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C60 reset refusal",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "            outgoing.Clear();\n            authenticated = false;\n            failed = false;",
+  "new": "            outgoing.Clear();\n            authenticated = false;",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "C61 time",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FirstockFeedCodec.cs",
+  "old": "[\"ltt\"] = Field(snapshot, \"i_last_trade_time\"), [\"volume\"] = Field(snapshot, \"i_volume_traded_today\"), [\"open\"] = Rupees(snapshot, \"i_open_price\"),\n                [\"high\"]",
+  "new": "[\"ltt\"] = Field(snapshot, \"i_feed_time\"), [\"volume\"] = Field(snapshot, \"i_volume_traded_today\"), [\"open\"] = Rupees(snapshot, \"i_open_price\"),\n                [\"high\"]",
+  "filter": "FullyQualifiedName~Firstock",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

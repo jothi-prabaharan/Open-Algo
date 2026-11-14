@@ -1068,3 +1068,160 @@ public sealed class FivePaisaFeedEndpointTests
         Assert.Contains("\"ClientCode\":\"4001234\"", Assert.Single(sent), StringComparison.Ordinal);
     }
 }
+
+public sealed class FirstockFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_firstock.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_firstock.fixtures.json", name, () => new FirstockFeedCodec());
+}
+
+public sealed class FirstockFeedEndpointTests
+{
+    private static BrokerSession Session(string token = "j-key", string key = "AB1234_API") =>
+        new(Guid.NewGuid(), "firstock", token, null, null, new Dictionary<string, string> { ["ApiKey"] = key });
+
+    private static EPTradeBot.Infrastructure.Brokers.Firstock.FirstockPlugin Plugin() => new(null!, null!, null!);
+
+    [Fact]
+    public void The_user_id_and_the_token_ride_in_the_query()
+    {
+        var plugin = Plugin();
+        var endpoint = plugin.FeedEndpoint(Session(), null)!;
+        Assert.Equal("wss://socket.firstock.in/V2/ws?userId=AB1234&jKey=j-key&source=developer-api", endpoint.Url.OriginalString);
+        Assert.Empty(endpoint.Headers);
+        Assert.Null(plugin.FeedKeepAliveText);
+        Assert.Equal(TimeSpan.FromSeconds(30), plugin.FeedKeepAliveEvery);
+    }
+
+    [Fact]
+    public void A_token_is_encoded_the_way_python_encodes_a_query()
+    {
+        var endpoint = Plugin().FeedEndpoint(Session("a b+c/d=e~f_g.h-i&j"), null)!;
+        Assert.Contains("jKey=a+b%2Bc%2Fd%3De~f_g.h-i%26j&", endpoint.Url.OriginalString, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void The_user_id_loses_every_api_ending() =>
+        Assert.Contains("userId=ABAPI1&", Plugin().FeedEndpoint(Session(key: "AB_APIAPI1_API"), null)!.Url.OriginalString, StringComparison.Ordinal);
+
+    [Fact]
+    public void An_address_can_be_overridden() =>
+        Assert.StartsWith("wss://example.test/ws?userId=AB1234&", Plugin().FeedEndpoint(Session(), "wss://example.test/ws")!.Url.OriginalString, StringComparison.Ordinal);
+
+    [Theory]
+    [InlineData("", "AB1234_API")]
+    [InlineData("  ", "AB1234_API")]
+    [InlineData("tok", "")]
+    [InlineData("tok", "_API")]
+    public void Without_a_token_or_a_user_id_there_is_no_endpoint(string token, string key) => Assert.Null(Plugin().FeedEndpoint(Session(token, key), null));
+
+    [Fact]
+    public void Begin_makes_the_next_connection_wait_for_the_server_again()
+    {
+        var codec = new FirstockFeedCodec();
+        var request = new FeedRequest("NSE", "SBIN", "3045", "NSE", StreamMode.Quote);
+        codec.DecodeText("""{"status":"success"}""", 1);
+        Assert.Single(codec.Subscribe([request], 2));
+        codec.Begin(Session());
+        Assert.Empty(codec.Resubscribe(3));
+        Assert.Empty(codec.TakeOutgoing());
+        codec.DecodeText("""{"status":"success"}""", 4);
+        Assert.Single(codec.TakeOutgoing());
+    }
+
+    [Fact]
+    public void A_new_connection_is_tried_after_a_refused_sign_in()
+    {
+        var codec = new FirstockFeedCodec();
+        var request = new FeedRequest("NSE", "SBIN", "3045", "NSE", StreamMode.Quote);
+        codec.Subscribe([request], 1);
+        codec.DecodeText("""{"status":"failed"}""", 2);
+        codec.DecodeText("""{"status":"success"}""", 3);
+        Assert.Empty(codec.TakeOutgoing());
+        codec.Begin(Session());
+        codec.Resubscribe(4);
+        codec.DecodeText("""{"status":"success"}""", 5);
+        Assert.Equal("""{"action":"subscribe","tokens":"NSE:3045"}""", Assert.Single(codec.TakeOutgoing()));
+    }
+
+    [Fact]
+    public void An_unsubscribe_with_no_mode_ends_every_mode()
+    {
+        var codec = new FirstockFeedCodec();
+        codec.DecodeText("""{"status":"success"}""", 1);
+        codec.Subscribe([new FeedRequest("NSE", "SBIN", "3045", "NSE", StreamMode.Ltp), new FeedRequest("NSE", "SBIN", "3045", "NSE", StreamMode.Depth)], 2);
+        var sent = codec.Unsubscribe(new FeedTarget("NSE", "SBIN", "3045", "NSE"), null, 3);
+        Assert.Equal("""{"action":"unsubscribe","tokens":"NSE:3045"}""", Assert.Single(sent));
+        Assert.Empty(codec.DecodeText("""{"c_symbol":"3045","c_exch_seg":"NSE","i_last_traded_price":80545}""", 4));
+    }
+
+    private static readonly FeedRequest Sbin = new("NSE", "SBIN", "3045", "NSE", StreamMode.Quote);
+
+    [Fact]
+    public void A_new_connection_waits_for_the_server_before_a_subscribe_goes()
+    {
+        var codec = new FirstockFeedCodec();
+        codec.DecodeText("""{"status":"success"}""", 1);
+        codec.Begin(Session());
+        Assert.Empty(codec.Subscribe([Sbin], 2));
+        codec.DecodeText("""{"status":"success"}""", 3);
+        Assert.Single(codec.TakeOutgoing());
+    }
+
+    [Fact]
+    public void Begin_alone_ends_a_refusal()
+    {
+        var codec = new FirstockFeedCodec();
+        codec.Subscribe([Sbin], 1);
+        codec.DecodeText("""{"status":"failed"}""", 2);
+        codec.Begin(Session());
+        codec.DecodeText("""{"status":"success"}""", 3);
+        Assert.Single(codec.TakeOutgoing());
+    }
+
+    [Fact]
+    public void Resubscribe_alone_ends_a_refusal()
+    {
+        var codec = new FirstockFeedCodec();
+        codec.Subscribe([Sbin], 1);
+        codec.DecodeText("""{"status":"failed"}""", 2);
+        codec.Resubscribe(3);
+        codec.DecodeText("""{"status":"success"}""", 4);
+        Assert.Single(codec.TakeOutgoing());
+    }
+
+    [Fact]
+    public void Reset_forgets_the_held_values_and_the_refusal()
+    {
+        var codec = new FirstockFeedCodec();
+        codec.DecodeText("""{"status":"success"}""", 1);
+        codec.Subscribe([Sbin], 2);
+        codec.DecodeText("""{"c_symbol":"3045","c_exch_seg":"NSE","i_last_traded_price":80545}""", 3);
+        codec.Reset();
+        codec.DecodeText("""{"status":"success"}""", 4);
+        codec.Subscribe([Sbin], 5);
+        var tick = Assert.Single(codec.DecodeText("""{"c_symbol":"3045","c_exch_seg":"NSE","i_last_traded_price":0}""", 6));
+        Assert.Equal(0.0, tick.Data["ltp"]!.GetValue<double>());
+
+        codec.DecodeText("""{"status":"failed"}""", 7);
+        codec.Reset();
+        codec.DecodeText("""{"status":"success"}""", 8);
+        Assert.Single(codec.Subscribe([Sbin], 9));
+    }
+
+    [Fact]
+    public void Reset_forgets_everything()
+    {
+        var codec = new FirstockFeedCodec();
+        codec.DecodeText("""{"status":"success"}""", 1);
+        codec.Subscribe([new FeedRequest("NSE", "SBIN", "3045", "NSE", StreamMode.Quote)], 2);
+        codec.Reset();
+        Assert.Empty(codec.DecodeText("""{"c_symbol":"3045","c_exch_seg":"NSE","i_last_traded_price":80545}""", 3));
+        codec.DecodeText("""{"status":"success"}""", 4);
+        Assert.Empty(codec.Subscribe([], 5));
+        Assert.Empty(codec.TakeOutgoing());
+    }
+}
