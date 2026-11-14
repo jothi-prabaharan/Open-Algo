@@ -119,6 +119,15 @@ public interface IBrokerPortfolio : IBrokerPlugin
     Task<BrokerBook> GetHoldingsAsync(BrokerSession session, CancellationToken cancellationToken);
 }
 
+/// <summary>
+/// A broker that keeps positions in more than one book (Samco's DAY and NET), so a square-off must read all of them or it leaves the carried-forward ones open.
+/// The positions are in the same shape as <see cref="IBrokerPortfolio.GetPositionsAsync"/>; a book that cannot be read is a <see cref="BrokerException"/>, never a shorter list.
+/// </summary>
+public interface IBrokerSquareOffPositions : IBrokerPortfolio
+{
+    Task<JsonArray> GetSquareOffPositionsAsync(BrokerSession session, CancellationToken cancellationToken);
+}
+
 public interface IBrokerFunds : IBrokerPlugin
 {
     Task<JsonObject> GetFundsAsync(BrokerSession session, CancellationToken cancellationToken);

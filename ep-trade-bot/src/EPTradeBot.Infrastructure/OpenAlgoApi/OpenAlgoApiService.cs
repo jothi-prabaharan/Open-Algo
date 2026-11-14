@@ -460,7 +460,8 @@ public sealed partial class OpenAlgoApiService(
         var session = sessions.Create(account) ?? throw new InvalidOperationException($"{account.DisplayName} is not logged in to {account.Broker}.");
         var whole = new List<OpenPosition>();
         var fractional = new List<(string, string, double)>();
-        foreach (var p in (await portfolio.GetPositionsAsync(session, ct)).OfType<JsonObject>())
+        var held = portfolio is IBrokerSquareOffPositions all ? await all.GetSquareOffPositionsAsync(session, ct) : await portfolio.GetPositionsAsync(session, ct);
+        foreach (var p in held.OfType<JsonObject>())
         {
             var quantity = BookFormatting.Number(p["quantity"]) ?? (double.TryParse(Text(p["quantity"]), System.Globalization.CultureInfo.InvariantCulture, out var q) ? q : 0);
             if (quantity == 0) continue;

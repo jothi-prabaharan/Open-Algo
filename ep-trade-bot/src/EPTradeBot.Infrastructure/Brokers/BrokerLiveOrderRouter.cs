@@ -113,7 +113,7 @@ public sealed class BrokerLiveOrderRouter(
     public async Task<IReadOnlyList<OpenPosition>> GetOpenPositionsAsync(BrokerAccount account, CancellationToken cancellationToken = default)
     {
         var (portfolio, _, session) = Require(account);
-        var positions = await portfolio.GetPositionsAsync(session, cancellationToken);
+        var positions = portfolio is IBrokerSquareOffPositions all ? await all.GetSquareOffPositionsAsync(session, cancellationToken) : await portfolio.GetPositionsAsync(session, cancellationToken);
         return positions.OfType<JsonObject>()
             .Select(p => new OpenPosition(Text(p["symbol"]) ?? "", Text(p["exchange"]) ?? "", Text(p["product"]) ?? "",
                 (int)(BookFormatting.Number(p["quantity"]) ?? Parse(p["quantity"]))))

@@ -1,0 +1,5167 @@
+{
+  "broker": "samco",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "samco-session-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN_EQ",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY_EQ",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "TATAMOTORS",
+      "brsymbol": "TATAMOTORS_EQ",
+      "name": "TATA MOTORS",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500570",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "NIFTY 50",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE_INDEX",
+      "token": "26000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY25NOV26FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "49500",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY25NOV2624000CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "49599",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "CE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "SENSEX26NOVFUT",
+      "brsymbol": "SENSEX26NOVFUT",
+      "name": "SENSEX",
+      "exchange": "BFO",
+      "brexchange": "BFO",
+      "token": "60001",
+      "expiry": "26-NOV-26",
+      "strike": -1.0,
+      "lotsize": 20,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "GOLDM25NOV26FUT",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "MFO",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 10,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "USDINR25NOV26FUT",
+      "brsymbol": "USDINR25NOV26FUT",
+      "name": "USDINR",
+      "exchange": "CDS",
+      "brexchange": "CDS",
+      "token": "90001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 1000,
+      "instrumenttype": "FUT",
+      "tick_size": 0.0025
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "SBIN_EQ",
+            "exchange": "NSE",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "10",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "MIS",
+            "afterMarketOrderFlag": "NO",
+            "price": "800.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_cnc_with_disclosed_quantity",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "2",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "SBIN_EQ",
+            "exchange": "NSE",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "10",
+            "disclosedQuantity": "2",
+            "orderValidity": "DAY",
+            "productType": "CNC",
+            "afterMarketOrderFlag": "NO",
+            "price": "800.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_becomes_a_protected_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        },
+        "GET /quote/getQuote": {
+          "body": {
+            "status": "Success",
+            "quoteDetails": {
+              "lastTradedPrice": "805.45",
+              "openValue": "801.00",
+              "highValue": "809.50",
+              "lowValue": "799.00",
+              "previousClose": "800.00",
+              "totalTradedVolume": "1,234,567",
+              "openInterest": "0",
+              "bestBids": [
+                {
+                  "price": "805.40",
+                  "quantity": "100"
+                }
+              ],
+              "bestAsks": [
+                {
+                  "price": "805.50",
+                  "quantity": "110"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "SBIN_EQ"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "SBIN_EQ",
+            "exchange": "NSE",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "10",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "MIS",
+            "afterMarketOrderFlag": "NO",
+            "price": "809.5",
+            "marketProtection": "0.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_sell_is_protected_below",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        },
+        "GET /quote/getQuote": {
+          "body": {
+            "status": "Success",
+            "quoteDetails": {
+              "lastTradedPrice": "805.45",
+              "openValue": "801.00",
+              "highValue": "809.50",
+              "lowValue": "799.00",
+              "previousClose": "800.00",
+              "totalTradedVolume": "1,234,567",
+              "openInterest": "0",
+              "bestBids": [
+                {
+                  "price": "805.40",
+                  "quantity": "100"
+                }
+              ],
+              "bestAsks": [
+                {
+                  "price": "805.50",
+                  "quantity": "110"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "SBIN_EQ"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "SBIN_EQ",
+            "exchange": "NSE",
+            "transactionType": "SELL",
+            "orderType": "L",
+            "quantity": "10",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "MIS",
+            "afterMarketOrderFlag": "NO",
+            "price": "801.4",
+            "marketProtection": "0.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_future_uses_the_half_percent_slab",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        },
+        "GET /quote/getQuote": {
+          "body": {
+            "status": "Success",
+            "quoteDetails": {
+              "lastTradedPrice": "24005.5",
+              "openValue": "801.00",
+              "highValue": "809.50",
+              "lowValue": "799.00",
+              "previousClose": "800.00",
+              "totalTradedVolume": "1,234,567",
+              "openInterest": "0",
+              "bestBids": [
+                {
+                  "price": "805.40",
+                  "quantity": "100"
+                }
+              ],
+              "bestAsks": [
+                {
+                  "price": "805.50",
+                  "quantity": "110"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "NIFTY25NOV26FUT"
+            ],
+            [
+              "exchange",
+              "NFO"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "75",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "NRML",
+            "afterMarketOrderFlag": "NO",
+            "price": "24125.5",
+            "marketProtection": "0.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_option_uses_the_option_slab",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV2624000CE",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        },
+        "GET /quote/getQuote": {
+          "body": {
+            "status": "Success",
+            "quoteDetails": {
+              "lastTradedPrice": "7.35",
+              "openValue": "801.00",
+              "highValue": "809.50",
+              "lowValue": "799.00",
+              "previousClose": "800.00",
+              "totalTradedVolume": "1,234,567",
+              "openInterest": "0",
+              "bestBids": [
+                {
+                  "price": "805.40",
+                  "quantity": "100"
+                }
+              ],
+              "bestAsks": [
+                {
+                  "price": "805.50",
+                  "quantity": "110"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "NIFTY25NOV2624000CE"
+            ],
+            [
+              "exchange",
+              "NFO"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "NIFTY25NOV2624000CE",
+            "exchange": "NFO",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "75",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "NRML",
+            "afterMarketOrderFlag": "NO",
+            "price": "7.7",
+            "marketProtection": "5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_mcx_asks_for_the_mfo_exchange",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "GOLDM25NOV26FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        },
+        "GET /quote/getQuote": {
+          "body": {
+            "status": "Success",
+            "quoteDetails": {
+              "lastTradedPrice": "75000.0",
+              "openValue": "801.00",
+              "highValue": "809.50",
+              "lowValue": "799.00",
+              "previousClose": "800.00",
+              "totalTradedVolume": "1,234,567",
+              "openInterest": "0",
+              "bestBids": [
+                {
+                  "price": "805.40",
+                  "quantity": "100"
+                }
+              ],
+              "bestAsks": [
+                {
+                  "price": "805.50",
+                  "quantity": "110"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "GOLDM25NOV26FUT"
+            ],
+            [
+              "exchange",
+              "MFO"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "GOLDM25NOV26FUT",
+            "exchange": "MCX",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "10",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "NRML",
+            "afterMarketOrderFlag": "NO",
+            "price": "75375.0",
+            "marketProtection": "0.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_without_a_price_is_refused",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        },
+        "GET /quote/getQuote": {
+          "body": {
+            "status": "Success",
+            "quoteDetails": {
+              "lastTradedPrice": "0",
+              "openValue": "801.00",
+              "highValue": "809.50",
+              "lowValue": "799.00",
+              "previousClose": "800.00",
+              "totalTradedVolume": "1,234,567",
+              "openInterest": "0",
+              "bestBids": [
+                {
+                  "price": "805.40",
+                  "quantity": "100"
+                }
+              ],
+              "bestAsks": [
+                {
+                  "price": "805.50",
+                  "quantity": "110"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "MARKET order failed: LTP is 0 for Symbol=SBIN. Cannot determine market price.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "SBIN_EQ"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_when_the_quote_fails_is_refused",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        },
+        "GET /quote/getQuote": {
+          "body": {
+            "status": "Failure",
+            "statusMessage": "no quote"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "MARKET order failed: Error fetching quotes: Error from Samco API: no quote",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "SBIN_EQ"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_with_no_quote_details_is_refused",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        },
+        "GET /quote/getQuote": {
+          "body": {
+            "status": "Success",
+            "quoteDetails": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "MARKET order failed: Error fetching quotes: No quote data received",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "SBIN_EQ"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL",
+        "product": "MIS",
+        "price": "800",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "SBIN_EQ",
+            "exchange": "NSE",
+            "transactionType": "BUY",
+            "orderType": "SL",
+            "quantity": "10",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "MIS",
+            "afterMarketOrderFlag": "NO",
+            "price": "800.0",
+            "triggerPrice": "801.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market_becomes_a_protected_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "SBIN_EQ",
+            "exchange": "NSE",
+            "transactionType": "BUY",
+            "orderType": "SL",
+            "quantity": "10",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "MIS",
+            "afterMarketOrderFlag": "NO",
+            "price": "805.5",
+            "triggerPrice": "801.5",
+            "marketProtection": "0.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market_without_a_trigger_is_refused",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "SL-M order failed: trigger price is required for Symbol=SBIN",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_bse_equity",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "TATAMOTORS",
+        "exchange": "BSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "500",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "TATAMOTORS_EQ",
+            "exchange": "BSE",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "10",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "CNC",
+            "afterMarketOrderFlag": "NO",
+            "price": "500.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_index_future",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "24005",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "75",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "NRML",
+            "afterMarketOrderFlag": "NO",
+            "price": "24005.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_bse_derivative",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SENSEX26NOVFUT",
+        "exchange": "BFO",
+        "action": "BUY",
+        "quantity": "20",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "80000",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "SENSEX26NOVFUT",
+            "exchange": "BFO",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "20",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "NRML",
+            "afterMarketOrderFlag": "NO",
+            "price": "80000.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_mcx_future",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "GOLDM25NOV26FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "75000",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "GOLDM25NOV26FUT",
+            "exchange": "MCX",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "10",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "NRML",
+            "afterMarketOrderFlag": "NO",
+            "price": "75000.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_currency_future",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "USDINR25NOV26FUT",
+        "exchange": "CDS",
+        "action": "BUY",
+        "quantity": "1000",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "83.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "USDINR25NOV26FUT",
+            "exchange": "CDS",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "1000",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "NRML",
+            "afterMarketOrderFlag": "NO",
+            "price": "83.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "status": 400,
+          "body": {
+            "status": "Failure",
+            "statusMessage": "Insufficient funds"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "SBIN_EQ",
+            "exchange": "NSE",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "10",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "MIS",
+            "afterMarketOrderFlag": "NO",
+            "price": "800.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_success_without_an_order_number",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "SBIN_EQ",
+            "exchange": "NSE",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "10",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "MIS",
+            "afterMarketOrderFlag": "NO",
+            "price": "800.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": null,
+            "exchange": "NSE",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "10",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "MIS",
+            "afterMarketOrderFlag": "NO",
+            "price": "800.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "S1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /order/modifyOrder/S1": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "ok",
+            "orderNumber": "S1"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "tradeapi.samco.in",
+          "path": "/order/modifyOrder/S1",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "orderType": "L",
+            "quantity": "12",
+            "orderValidity": "DAY",
+            "price": "801.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_lowercase_order_number_in_the_answer",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "S1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /order/modifyOrder/S1": {
+          "body": {
+            "status": "Success",
+            "ordernumber": "S2"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "tradeapi.samco.in",
+          "path": "/order/modifyOrder/S1",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "orderType": "L",
+            "quantity": "12",
+            "orderValidity": "DAY",
+            "price": "801.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_answer_without_a_number_keeps_the_given_one",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "S1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /order/modifyOrder/S1": {
+          "body": {
+            "status": "Success"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "tradeapi.samco.in",
+          "path": "/order/modifyOrder/S1",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "orderType": "L",
+            "quantity": "12",
+            "orderValidity": "DAY",
+            "price": "801.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "S1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "SL",
+        "product": "MIS",
+        "price": "800",
+        "disclosed_quantity": "5",
+        "trigger_price": "801.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /order/modifyOrder/S1": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "ok",
+            "orderNumber": "S1"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "tradeapi.samco.in",
+          "path": "/order/modifyOrder/S1",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "orderType": "SL",
+            "quantity": "12",
+            "orderValidity": "DAY",
+            "disclosedQuantity": "5",
+            "price": "800.0",
+            "triggerPrice": "801.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_to_market_becomes_a_protected_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "S1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote/getQuote": {
+          "body": {
+            "status": "Success",
+            "quoteDetails": {
+              "lastTradedPrice": "805.45",
+              "openValue": "801.00",
+              "highValue": "809.50",
+              "lowValue": "799.00",
+              "previousClose": "800.00",
+              "totalTradedVolume": "1,234,567",
+              "openInterest": "0",
+              "bestBids": [
+                {
+                  "price": "805.40",
+                  "quantity": "100"
+                }
+              ],
+              "bestAsks": [
+                {
+                  "price": "805.50",
+                  "quantity": "110"
+                }
+              ]
+            }
+          }
+        },
+        "PUT /order/modifyOrder/S1": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "ok",
+            "orderNumber": "S1"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "SBIN_EQ"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "tradeapi.samco.in",
+          "path": "/order/modifyOrder/S1",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "orderType": "L",
+            "quantity": "12",
+            "orderValidity": "DAY",
+            "price": "809.5",
+            "marketProtection": "0.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_market_becomes_a_protected_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "S1",
+        "action": "SELL",
+        "quantity": "12",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "disclosed_quantity": "0",
+        "trigger_price": "801.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /order/modifyOrder/S1": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "ok",
+            "orderNumber": "S1"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "tradeapi.samco.in",
+          "path": "/order/modifyOrder/S1",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "orderType": "SL",
+            "quantity": "12",
+            "orderValidity": "DAY",
+            "price": "797.5",
+            "triggerPrice": "801.5",
+            "marketProtection": "0.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_market_with_a_failed_quote",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "S1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /quote/getQuote": {
+          "body": {
+            "status": "Failure",
+            "statusMessage": "no quote"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "MARKET order failed: Error fetching quotes: Error from Samco API: no quote",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "SBIN_EQ"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "S1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /order/modifyOrder/S1": {
+          "status": 400,
+          "body": {
+            "status": "Failure",
+            "statusMessage": "Order is not open"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Order is not open",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "tradeapi.samco.in",
+          "path": "/order/modifyOrder/S1",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "orderType": "L",
+            "quantity": "12",
+            "orderValidity": "DAY",
+            "price": "801.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "S1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /order/modifyOrder/S1": {
+          "status": 400,
+          "body": {
+            "status": "Failure"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to modify order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "tradeapi.samco.in",
+          "path": "/order/modifyOrder/S1",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "orderType": "L",
+            "quantity": "12",
+            "orderValidity": "DAY",
+            "price": "801.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "S1",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /order/cancelOrder": {
+          "body": {
+            "status": "Success"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "tradeapi.samco.in",
+          "path": "/order/cancelOrder",
+          "query": [
+            [
+              "orderNumber",
+              "S1"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "S2",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /order/cancelOrder": {
+          "status": 400,
+          "body": {
+            "status": "Failure",
+            "statusMessage": "Order already executed"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Order already executed",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "tradeapi.samco.in",
+          "path": "/order/cancelOrder",
+          "query": [
+            [
+              "orderNumber",
+              "S2"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "S2",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /order/cancelOrder": {
+          "status": 400,
+          "body": {
+            "status": "Failure"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to cancel order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "tradeapi.samco.in",
+          "path": "/order/cancelOrder",
+          "query": [
+            [
+              "orderNumber",
+              "S2"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /order/orderBook": {
+          "body": {
+            "status": "Success",
+            "orderBookDetails": [
+              {
+                "orderNumber": "S1",
+                "tradingSymbol": "SBIN_EQ",
+                "exchange": "NSE",
+                "transactionType": "BUY",
+                "totalQuanity": "10",
+                "orderPrice": "800.50",
+                "triggerPrice": "0.00",
+                "orderType": "L",
+                "productCode": "MIS",
+                "orderStatus": "Open",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": "10",
+                "averagePrice": "0",
+                "rejectionReason": "--"
+              },
+              {
+                "orderNumber": "S2",
+                "tradingSymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "transactionType": "BUY",
+                "totalQuanity": "75",
+                "orderPrice": "24010.00",
+                "triggerPrice": "24000.00",
+                "orderType": "SL",
+                "productCode": "NRML",
+                "orderStatus": "Trigger Pending",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": "75",
+                "averagePrice": "0",
+                "rejectionReason": "--"
+              },
+              {
+                "orderNumber": "S3",
+                "tradingSymbol": "INFY_EQ",
+                "exchange": "NSE",
+                "transactionType": "SELL",
+                "totalQuanity": "5",
+                "orderPrice": "1495.00",
+                "triggerPrice": "0.00",
+                "orderType": "L",
+                "productCode": "CNC",
+                "orderStatus": "Complete",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "5",
+                "unfilledQuantity": "0",
+                "averagePrice": "1,499.95",
+                "rejectionReason": "--",
+                "marketProtection": "2"
+              },
+              {
+                "orderNumber": "S4",
+                "tradingSymbol": "SBIN_EQ",
+                "exchange": "NSE",
+                "transactionType": "SELL",
+                "totalQuanity": "1",
+                "orderPrice": "0.00",
+                "triggerPrice": "790.50",
+                "orderType": "SL-M",
+                "productCode": "MIS",
+                "orderStatus": "Rejected",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": "1",
+                "averagePrice": "0",
+                "rejectionReason": "Price out of range"
+              },
+              {
+                "orderNumber": "S5",
+                "tradingSymbol": "TATAMOTORS_EQ",
+                "exchange": "BSE",
+                "transactionType": "BUY",
+                "totalQuanity": "2",
+                "orderPrice": "0.00",
+                "triggerPrice": "0.00",
+                "orderType": "MKT",
+                "productCode": "CNC",
+                "orderStatus": "Cancelled",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": "2",
+                "averagePrice": "0",
+                "rejectionReason": "--"
+              },
+              {
+                "orderNumber": "S6",
+                "tradingSymbol": "USDINR25NOV26FUT",
+                "exchange": "CDS",
+                "transactionType": "BUY",
+                "totalQuanity": "1000",
+                "orderPrice": "83.50",
+                "triggerPrice": "0",
+                "orderType": "L",
+                "productCode": "NRML",
+                "orderStatus": "Pending",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": "1000",
+                "averagePrice": "0",
+                "rejectionReason": "--"
+              },
+              {
+                "orderNumber": "S7",
+                "tradingSymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "transactionType": "SELL",
+                "totalQuanity": "10",
+                "orderPrice": "75000",
+                "triggerPrice": "0",
+                "orderType": "L",
+                "productCode": "NRML",
+                "orderStatus": "After Market Order Req Received",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": "10",
+                "averagePrice": "0",
+                "rejectionReason": "--"
+              },
+              {
+                "orderNumber": "S8",
+                "tradingSymbol": "NOSUCH",
+                "exchange": "NSE",
+                "transactionType": "BUY",
+                "totalQuanity": "3",
+                "orderPrice": "5",
+                "triggerPrice": "0",
+                "orderType": "XX",
+                "productCode": "ODD",
+                "orderStatus": "Something Else",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": null,
+                "averagePrice": "0",
+                "rejectionReason": "--",
+                "pendingQuantity": "2"
+              },
+              {
+                "orderNumber": "S9",
+                "tradingSymbol": "SBIN_EQ",
+                "exchange": "NSE",
+                "transactionType": "BUY",
+                "totalQuanity": "4",
+                "orderPrice": "800",
+                "triggerPrice": "0",
+                "orderType": "L",
+                "productCode": "MIS",
+                "orderStatus": "Executed",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": "4",
+                "averagePrice": "",
+                "rejectionReason": "--",
+                "fillPrice": "801.25"
+              }
+            ]
+          }
+        },
+        "DELETE /order/cancelOrder": [
+          {
+            "body": {
+              "status": "Success"
+            }
+          },
+          {
+            "status": 400,
+            "body": {
+              "status": "Failure"
+            }
+          },
+          {
+            "body": {
+              "status": "Success"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "S1",
+            "S6"
+          ],
+          "failed_cancellations": [
+            "S2"
+          ],
+          "message": "Canceled 2 orders. Failed to cancel 1 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/order/orderBook",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "tradeapi.samco.in",
+          "path": "/order/cancelOrder",
+          "query": [
+            [
+              "orderNumber",
+              "S1"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "tradeapi.samco.in",
+          "path": "/order/cancelOrder",
+          "query": [
+            [
+              "orderNumber",
+              "S2"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "tradeapi.samco.in",
+          "path": "/order/cancelOrder",
+          "query": [
+            [
+              "orderNumber",
+              "S6"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_book_empty",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /order/orderBook": {
+          "body": {
+            "status": "Success",
+            "orderBookDetails": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/order/orderBook",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_book_error",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /order/orderBook": {
+          "body": {
+            "status": "Failure",
+            "statusMessage": "bad"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/order/orderBook",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /order/orderBook": {
+          "body": {
+            "status": "Success",
+            "orderBookDetails": [
+              {
+                "orderNumber": "S1",
+                "tradingSymbol": "SBIN_EQ",
+                "exchange": "NSE",
+                "transactionType": "BUY",
+                "totalQuanity": "10",
+                "orderPrice": "800.50",
+                "triggerPrice": "0.00",
+                "orderType": "L",
+                "productCode": "MIS",
+                "orderStatus": "Open",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": "10",
+                "averagePrice": "0",
+                "rejectionReason": "--"
+              },
+              {
+                "orderNumber": "S2",
+                "tradingSymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "transactionType": "BUY",
+                "totalQuanity": "75",
+                "orderPrice": "24010.00",
+                "triggerPrice": "24000.00",
+                "orderType": "SL",
+                "productCode": "NRML",
+                "orderStatus": "Trigger Pending",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": "75",
+                "averagePrice": "0",
+                "rejectionReason": "--"
+              },
+              {
+                "orderNumber": "S3",
+                "tradingSymbol": "INFY_EQ",
+                "exchange": "NSE",
+                "transactionType": "SELL",
+                "totalQuanity": "5",
+                "orderPrice": "1495.00",
+                "triggerPrice": "0.00",
+                "orderType": "L",
+                "productCode": "CNC",
+                "orderStatus": "Complete",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "5",
+                "unfilledQuantity": "0",
+                "averagePrice": "1,499.95",
+                "rejectionReason": "--",
+                "marketProtection": "2"
+              },
+              {
+                "orderNumber": "S4",
+                "tradingSymbol": "SBIN_EQ",
+                "exchange": "NSE",
+                "transactionType": "SELL",
+                "totalQuanity": "1",
+                "orderPrice": "0.00",
+                "triggerPrice": "790.50",
+                "orderType": "SL-M",
+                "productCode": "MIS",
+                "orderStatus": "Rejected",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": "1",
+                "averagePrice": "0",
+                "rejectionReason": "Price out of range"
+              },
+              {
+                "orderNumber": "S5",
+                "tradingSymbol": "TATAMOTORS_EQ",
+                "exchange": "BSE",
+                "transactionType": "BUY",
+                "totalQuanity": "2",
+                "orderPrice": "0.00",
+                "triggerPrice": "0.00",
+                "orderType": "MKT",
+                "productCode": "CNC",
+                "orderStatus": "Cancelled",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": "2",
+                "averagePrice": "0",
+                "rejectionReason": "--"
+              },
+              {
+                "orderNumber": "S6",
+                "tradingSymbol": "USDINR25NOV26FUT",
+                "exchange": "CDS",
+                "transactionType": "BUY",
+                "totalQuanity": "1000",
+                "orderPrice": "83.50",
+                "triggerPrice": "0",
+                "orderType": "L",
+                "productCode": "NRML",
+                "orderStatus": "Pending",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": "1000",
+                "averagePrice": "0",
+                "rejectionReason": "--"
+              },
+              {
+                "orderNumber": "S7",
+                "tradingSymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "transactionType": "SELL",
+                "totalQuanity": "10",
+                "orderPrice": "75000",
+                "triggerPrice": "0",
+                "orderType": "L",
+                "productCode": "NRML",
+                "orderStatus": "After Market Order Req Received",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": "10",
+                "averagePrice": "0",
+                "rejectionReason": "--"
+              },
+              {
+                "orderNumber": "S8",
+                "tradingSymbol": "NOSUCH",
+                "exchange": "NSE",
+                "transactionType": "BUY",
+                "totalQuanity": "3",
+                "orderPrice": "5",
+                "triggerPrice": "0",
+                "orderType": "XX",
+                "productCode": "ODD",
+                "orderStatus": "Something Else",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": null,
+                "averagePrice": "0",
+                "rejectionReason": "--",
+                "pendingQuantity": "2"
+              },
+              {
+                "orderNumber": "S9",
+                "tradingSymbol": "SBIN_EQ",
+                "exchange": "NSE",
+                "transactionType": "BUY",
+                "totalQuanity": "4",
+                "orderPrice": "800",
+                "triggerPrice": "0",
+                "orderType": "L",
+                "productCode": "MIS",
+                "orderStatus": "Executed",
+                "orderTime": "03-Nov-2026 10:20:01",
+                "filledQuantity": "0",
+                "unfilledQuantity": "4",
+                "averagePrice": "",
+                "rejectionReason": "--",
+                "fillPrice": "801.25"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "filled_quantity": 0,
+                "order_status": "open",
+                "orderid": "S1",
+                "pending_quantity": 10,
+                "price": "800.50",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "10",
+                "rejection_reason": "",
+                "symbol": "SBIN",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "0.00"
+              },
+              {
+                "action": "BUY",
+                "average_price": 0.0,
+                "exchange": "NFO",
+                "filled_quantity": 0,
+                "order_status": "open",
+                "orderid": "S2",
+                "pending_quantity": 75,
+                "price": "24010.00",
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": "75",
+                "rejection_reason": "",
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "24000.00"
+              },
+              {
+                "action": "SELL",
+                "average_price": 1499.95,
+                "exchange": "NSE",
+                "filled_quantity": 5,
+                "order_status": "complete",
+                "orderid": "S3",
+                "pending_quantity": 0,
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": "5",
+                "rejection_reason": "",
+                "symbol": "INFY",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "0.00"
+              },
+              {
+                "action": "SELL",
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "filled_quantity": 0,
+                "order_status": "rejected",
+                "orderid": "S4",
+                "pending_quantity": 1,
+                "price": "0.00",
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": "1",
+                "rejection_reason": "Price out of range",
+                "symbol": "SBIN",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "790.50"
+              },
+              {
+                "action": "BUY",
+                "average_price": 0.0,
+                "exchange": "BSE",
+                "filled_quantity": 0,
+                "order_status": "cancelled",
+                "orderid": "S5",
+                "pending_quantity": 2,
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": "2",
+                "rejection_reason": "",
+                "symbol": "TATAMOTORS",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "0.00"
+              },
+              {
+                "action": "BUY",
+                "average_price": 0.0,
+                "exchange": "CDS",
+                "filled_quantity": 0,
+                "order_status": "open",
+                "orderid": "S6",
+                "pending_quantity": 1000,
+                "price": "83.50",
+                "pricetype": "LIMIT",
+                "product": "NRML",
+                "quantity": "1000",
+                "rejection_reason": "",
+                "symbol": "USDINR25NOV26FUT",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "0"
+              },
+              {
+                "action": "SELL",
+                "average_price": 0.0,
+                "exchange": "MCX",
+                "filled_quantity": 0,
+                "order_status": "open",
+                "orderid": "S7",
+                "pending_quantity": 10,
+                "price": "75000",
+                "pricetype": "LIMIT",
+                "product": "NRML",
+                "quantity": "10",
+                "rejection_reason": "",
+                "symbol": "GOLDM25NOV26FUT",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "0"
+              },
+              {
+                "action": "BUY",
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "filled_quantity": 0,
+                "order_status": "something else",
+                "orderid": "S8",
+                "pending_quantity": 2,
+                "price": "5",
+                "pricetype": "XX",
+                "product": "ODD",
+                "quantity": "3",
+                "rejection_reason": "",
+                "symbol": "NOSUCH",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "0"
+              },
+              {
+                "action": "BUY",
+                "average_price": 801.25,
+                "exchange": "NSE",
+                "filled_quantity": 0,
+                "order_status": "complete",
+                "orderid": "S9",
+                "pending_quantity": 4,
+                "price": "800",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "4",
+                "rejection_reason": "",
+                "symbol": "SBIN",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": "0"
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 6,
+              "total_completed_orders": 2,
+              "total_open_orders": 3,
+              "total_rejected_orders": 1,
+              "total_sell_orders": 3
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/order/orderBook",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_empty",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /order/orderBook": {
+          "body": {
+            "status": "Success",
+            "orderBookDetails": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/order/orderBook",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_details_null",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /order/orderBook": {
+          "body": {
+            "status": "Success",
+            "orderBookDetails": null
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/order/orderBook",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_refused",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /order/orderBook": {
+          "body": {
+            "status": "Failure",
+            "statusMessage": "bad"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/order/orderBook",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /trade/tradeBook": {
+          "body": {
+            "status": "Success",
+            "tradeBookDetails": [
+              {
+                "orderNumber": "S3",
+                "tradingSymbol": "INFY_EQ",
+                "exchange": "NSE",
+                "transactionType": "SELL",
+                "filledQuantity": "5",
+                "tradePrice": "1499.95",
+                "orderValue": "7499.75",
+                "productCode": "CNC",
+                "tradeTime": "03-Nov-2026 10:21:12"
+              },
+              {
+                "orderNumber": "S2",
+                "tradingSymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "transactionType": "BUY",
+                "filledQuantity": "75",
+                "tradePrice": "24005.50",
+                "orderValue": "1800412.5",
+                "productCode": "NRML",
+                "tradeTime": "03-Nov-2026 10:22:00"
+              },
+              {
+                "orderNumber": "S9",
+                "tradingSymbol": "NOSUCH",
+                "exchange": "NSE",
+                "transactionType": "BUY",
+                "filledQuantity": "2",
+                "tradePrice": "2900",
+                "orderValue": "5800",
+                "productCode": "MIS",
+                "tradeTime": "03-Nov-2026 10:23:00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "SELL",
+              "average_price": "1499.95",
+              "exchange": "NSE",
+              "orderid": "S3",
+              "product": "CNC",
+              "quantity": "5",
+              "symbol": "INFY",
+              "timestamp": "03-Nov-2026 10:21:12",
+              "trade_value": "7499.75"
+            },
+            {
+              "action": "BUY",
+              "average_price": "24005.50",
+              "exchange": "NFO",
+              "orderid": "S2",
+              "product": "NRML",
+              "quantity": "75",
+              "symbol": "NIFTY25NOV26FUT",
+              "timestamp": "03-Nov-2026 10:22:00",
+              "trade_value": "1800412.5"
+            },
+            {
+              "action": "BUY",
+              "average_price": "2900",
+              "exchange": "NSE",
+              "orderid": "S9",
+              "product": "MIS",
+              "quantity": "2",
+              "symbol": "NOSUCH",
+              "timestamp": "03-Nov-2026 10:23:00",
+              "trade_value": "5800"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/trade/tradeBook",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_empty",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /trade/tradeBook": {
+          "body": {
+            "status": "Success",
+            "tradeBookDetails": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/trade/tradeBook",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /position/getPositions": {
+          "body": {
+            "status": "Success",
+            "positionDetails": [
+              {
+                "tradingSymbol": "SBIN_EQ",
+                "exchange": "NSE",
+                "productCode": "MIS",
+                "netQuantity": "10",
+                "transactionType": "BUY",
+                "averageBuyPrice": "800.00",
+                "averageSellPrice": "0",
+                "lastTradedPrice": "805.45",
+                "realizedGainAndLoss": 12.5,
+                "unrealizedGainAndLoss": 54.5
+              },
+              {
+                "tradingSymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "productCode": "NRML",
+                "netQuantity": "75",
+                "transactionType": "SELL",
+                "averageBuyPrice": "0",
+                "averageSellPrice": "24,000.00",
+                "lastTradedPrice": "24,005.50",
+                "realizedGainAndLoss": 0,
+                "unrealizedGainAndLoss": "-412.5"
+              },
+              {
+                "tradingSymbol": "INFY_EQ",
+                "exchange": "NSE",
+                "productCode": "CNC",
+                "netQuantity": "0",
+                "transactionType": "BUY",
+                "averageBuyPrice": "1500",
+                "averageSellPrice": "1510",
+                "lastTradedPrice": "1505",
+                "realizedGainAndLoss": 100,
+                "unrealizedGainAndLoss": 0
+              },
+              {
+                "tradingSymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "productCode": "NRML",
+                "netQuantity": "10",
+                "transactionType": "BUY",
+                "averageBuyPrice": "75000",
+                "averageSellPrice": "0",
+                "lastTradedPrice": "75010",
+                "realizedGainAndLoss": 0,
+                "unrealizedGainAndLoss": 100
+              },
+              {
+                "tradingSymbol": "NOSUCH",
+                "exchange": "NSE",
+                "productCode": "MIS",
+                "netQuantity": "4",
+                "transactionType": "BUY",
+                "averageBuyPrice": "",
+                "averageSellPrice": "",
+                "lastTradedPrice": "",
+                "realizedGainAndLoss": null,
+                "unrealizedGainAndLoss": null
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "800.00",
+              "exchange": "NSE",
+              "ltp": 805.45,
+              "pnl": 67.0,
+              "product": "MIS",
+              "quantity": "10",
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": "24000.00",
+              "exchange": "NFO",
+              "ltp": 24005.5,
+              "pnl": -412.5,
+              "product": "NRML",
+              "quantity": "-75",
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": "1500.00",
+              "exchange": "NSE",
+              "ltp": 1505.0,
+              "pnl": 100.0,
+              "product": "CNC",
+              "quantity": "0",
+              "symbol": "INFY"
+            },
+            {
+              "average_price": "75000.00",
+              "exchange": "MCX",
+              "ltp": 75010.0,
+              "pnl": 100.0,
+              "product": "NRML",
+              "quantity": "10",
+              "symbol": "GOLDM25NOV26FUT"
+            },
+            {
+              "average_price": "0.00",
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "MIS",
+              "quantity": "4",
+              "symbol": "NOSUCH"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "DAY"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_empty",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /position/getPositions": {
+          "body": {
+            "status": "Success",
+            "positionDetails": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "DAY"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_failed",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /position/getPositions": {
+          "body": {
+            "status": "Failure",
+            "statusMessage": "no"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "DAY"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /holding/getHoldings": {
+          "body": {
+            "status": "Success",
+            "holdingDetails": [
+              {
+                "tradingSymbol": "INFY_EQ",
+                "exchange": "NSE",
+                "holdingsQuantity": "5",
+                "totalGainAndLoss": "502.5",
+                "holdingsValue": "7502.5"
+              },
+              {
+                "tradingSymbol": "TATAMOTORS_EQ",
+                "exchange": "BSE",
+                "holdingsQuantity": "2",
+                "totalGainAndLoss": "-10",
+                "holdingsValue": "1000"
+              },
+              {
+                "tradingSymbol": "NOSUCH",
+                "exchange": "NSE",
+                "holdingsQuantity": null,
+                "totalGainAndLoss": null,
+                "holdingsValue": "0"
+              }
+            ],
+            "holdingSummary": {
+              "portfolioValue": "8502.5",
+              "totalGainAndLossAmount": "492.5"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "exchange": "NSE",
+                "pnl": 502.5,
+                "pnlpercent": 7.18,
+                "product": "CNC",
+                "quantity": 5,
+                "symbol": "INFY"
+              },
+              {
+                "exchange": "BSE",
+                "pnl": -10.0,
+                "pnlpercent": -0.99,
+                "product": "CNC",
+                "quantity": 2,
+                "symbol": "TATAMOTORS"
+              },
+              {
+                "exchange": "NSE",
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 0,
+                "symbol": "NOSUCH"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 8502.5,
+              "totalinvvalue": 8010.0,
+              "totalpnlpercentage": 6.15,
+              "totalprofitandloss": 492.5
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/holding/getHoldings",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_without_a_summary",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /holding/getHoldings": {
+          "body": {
+            "status": "Success",
+            "holdingDetails": [
+              {
+                "tradingSymbol": "INFY_EQ",
+                "exchange": "NSE",
+                "holdingsQuantity": "5",
+                "totalGainAndLoss": "0",
+                "holdingsValue": "100"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "exchange": "NSE",
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 5,
+                "symbol": "INFY"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/holding/getHoldings",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_empty",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /holding/getHoldings": {
+          "body": {
+            "status": "Success",
+            "holdingDetails": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/holding/getHoldings",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_failed",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /holding/getHoldings": {
+          "body": {
+            "status": "Failure",
+            "statusMessage": "no"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/holding/getHoldings",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /limit/getLimits": {
+          "body": {
+            "status": "Success",
+            "equityLimit": {
+              "netAvailableMargin": "100000.5",
+              "marginUsed": "1184.5",
+              "collateralMarginAgainstShares": "2500.25"
+            },
+            "commodityLimit": {
+              "netAvailableMargin": "1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "100000.50",
+            "collateral": "2500.25",
+            "m2mrealized": "0.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "1184.50"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/limit/getLimits",
+          "query": [],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_nothing_in_the_answer",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /limit/getLimits": {
+          "body": {
+            "status": "Success"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "0.00",
+            "collateral": "0.00",
+            "m2mrealized": "0.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "0.00"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/limit/getLimits",
+          "query": [],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_failed",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /limit/getLimits": {
+          "body": {
+            "status": "Failure",
+            "statusMessage": "Invalid session"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/limit/getLimits",
+          "query": [],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_long",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /position/getPositions": {
+          "body": {
+            "status": "Success",
+            "positionDetails": [
+              {
+                "tradingSymbol": "SBIN_EQ",
+                "exchange": "NSE",
+                "productCode": "MIS",
+                "netQuantity": "10",
+                "transactionType": "BUY",
+                "averageBuyPrice": "800.00",
+                "averageSellPrice": "0",
+                "lastTradedPrice": "805.45",
+                "realizedGainAndLoss": 12.5,
+                "unrealizedGainAndLoss": 54.5
+              },
+              {
+                "tradingSymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "productCode": "NRML",
+                "netQuantity": "75",
+                "transactionType": "SELL",
+                "averageBuyPrice": "0",
+                "averageSellPrice": "24,000.00",
+                "lastTradedPrice": "24,005.50",
+                "realizedGainAndLoss": 0,
+                "unrealizedGainAndLoss": "-412.5"
+              },
+              {
+                "tradingSymbol": "INFY_EQ",
+                "exchange": "NSE",
+                "productCode": "CNC",
+                "netQuantity": "0",
+                "transactionType": "BUY",
+                "averageBuyPrice": "1500",
+                "averageSellPrice": "1510",
+                "lastTradedPrice": "1505",
+                "realizedGainAndLoss": 100,
+                "unrealizedGainAndLoss": 0
+              },
+              {
+                "tradingSymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "productCode": "NRML",
+                "netQuantity": "10",
+                "transactionType": "BUY",
+                "averageBuyPrice": "75000",
+                "averageSellPrice": "0",
+                "lastTradedPrice": "75010",
+                "realizedGainAndLoss": 0,
+                "unrealizedGainAndLoss": 100
+              },
+              {
+                "tradingSymbol": "NOSUCH",
+                "exchange": "NSE",
+                "productCode": "MIS",
+                "netQuantity": "4",
+                "transactionType": "BUY",
+                "averageBuyPrice": "",
+                "averageSellPrice": "",
+                "lastTradedPrice": "",
+                "realizedGainAndLoss": null,
+                "unrealizedGainAndLoss": null
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": "10",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "DAY"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_short_is_negative",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /position/getPositions": {
+          "body": {
+            "status": "Success",
+            "positionDetails": [
+              {
+                "tradingSymbol": "SBIN_EQ",
+                "exchange": "NSE",
+                "productCode": "MIS",
+                "netQuantity": "10",
+                "transactionType": "BUY",
+                "averageBuyPrice": "800.00",
+                "averageSellPrice": "0",
+                "lastTradedPrice": "805.45",
+                "realizedGainAndLoss": 12.5,
+                "unrealizedGainAndLoss": 54.5
+              },
+              {
+                "tradingSymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "productCode": "NRML",
+                "netQuantity": "75",
+                "transactionType": "SELL",
+                "averageBuyPrice": "0",
+                "averageSellPrice": "24,000.00",
+                "lastTradedPrice": "24,005.50",
+                "realizedGainAndLoss": 0,
+                "unrealizedGainAndLoss": "-412.5"
+              },
+              {
+                "tradingSymbol": "INFY_EQ",
+                "exchange": "NSE",
+                "productCode": "CNC",
+                "netQuantity": "0",
+                "transactionType": "BUY",
+                "averageBuyPrice": "1500",
+                "averageSellPrice": "1510",
+                "lastTradedPrice": "1505",
+                "realizedGainAndLoss": 100,
+                "unrealizedGainAndLoss": 0
+              },
+              {
+                "tradingSymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "productCode": "NRML",
+                "netQuantity": "10",
+                "transactionType": "BUY",
+                "averageBuyPrice": "75000",
+                "averageSellPrice": "0",
+                "lastTradedPrice": "75010",
+                "realizedGainAndLoss": 0,
+                "unrealizedGainAndLoss": 100
+              },
+              {
+                "tradingSymbol": "NOSUCH",
+                "exchange": "NSE",
+                "productCode": "MIS",
+                "netQuantity": "4",
+                "transactionType": "BUY",
+                "averageBuyPrice": "",
+                "averageSellPrice": "",
+                "lastTradedPrice": "",
+                "realizedGainAndLoss": null,
+                "unrealizedGainAndLoss": null
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": "-75",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "DAY"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_other_product_is_zero",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "product": "CNC",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /position/getPositions": {
+          "body": {
+            "status": "Success",
+            "positionDetails": [
+              {
+                "tradingSymbol": "SBIN_EQ",
+                "exchange": "NSE",
+                "productCode": "MIS",
+                "netQuantity": "10",
+                "transactionType": "BUY",
+                "averageBuyPrice": "800.00",
+                "averageSellPrice": "0",
+                "lastTradedPrice": "805.45",
+                "realizedGainAndLoss": 12.5,
+                "unrealizedGainAndLoss": 54.5
+              },
+              {
+                "tradingSymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "productCode": "NRML",
+                "netQuantity": "75",
+                "transactionType": "SELL",
+                "averageBuyPrice": "0",
+                "averageSellPrice": "24,000.00",
+                "lastTradedPrice": "24,005.50",
+                "realizedGainAndLoss": 0,
+                "unrealizedGainAndLoss": "-412.5"
+              },
+              {
+                "tradingSymbol": "INFY_EQ",
+                "exchange": "NSE",
+                "productCode": "CNC",
+                "netQuantity": "0",
+                "transactionType": "BUY",
+                "averageBuyPrice": "1500",
+                "averageSellPrice": "1510",
+                "lastTradedPrice": "1505",
+                "realizedGainAndLoss": 100,
+                "unrealizedGainAndLoss": 0
+              },
+              {
+                "tradingSymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "productCode": "NRML",
+                "netQuantity": "10",
+                "transactionType": "BUY",
+                "averageBuyPrice": "75000",
+                "averageSellPrice": "0",
+                "lastTradedPrice": "75010",
+                "realizedGainAndLoss": 0,
+                "unrealizedGainAndLoss": 100
+              },
+              {
+                "tradingSymbol": "NOSUCH",
+                "exchange": "NSE",
+                "productCode": "MIS",
+                "netQuantity": "4",
+                "transactionType": "BUY",
+                "averageBuyPrice": "",
+                "averageSellPrice": "",
+                "lastTradedPrice": "",
+                "realizedGainAndLoss": null,
+                "unrealizedGainAndLoss": null
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": 0,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "DAY"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_merges_the_day_and_net_books",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /position/getPositions": [
+          {
+            "body": {
+              "status": "Success",
+              "positionDetails": [
+                {
+                  "tradingSymbol": "SBIN_EQ",
+                  "exchange": "NSE",
+                  "productCode": "MIS",
+                  "netQuantity": "10",
+                  "transactionType": "BUY",
+                  "averageBuyPrice": "800.00",
+                  "averageSellPrice": "0",
+                  "lastTradedPrice": "805.45",
+                  "realizedGainAndLoss": 12.5,
+                  "unrealizedGainAndLoss": 54.5
+                },
+                {
+                  "tradingSymbol": "NIFTY25NOV26FUT",
+                  "exchange": "NFO",
+                  "productCode": "NRML",
+                  "netQuantity": "75",
+                  "transactionType": "SELL",
+                  "averageBuyPrice": "0",
+                  "averageSellPrice": "24,000.00",
+                  "lastTradedPrice": "24,005.50",
+                  "realizedGainAndLoss": 0,
+                  "unrealizedGainAndLoss": "-412.5"
+                },
+                {
+                  "tradingSymbol": "INFY_EQ",
+                  "exchange": "NSE",
+                  "productCode": "CNC",
+                  "netQuantity": "0",
+                  "transactionType": "BUY",
+                  "averageBuyPrice": "1500",
+                  "averageSellPrice": "1510",
+                  "lastTradedPrice": "1505",
+                  "realizedGainAndLoss": 100,
+                  "unrealizedGainAndLoss": 0
+                },
+                {
+                  "tradingSymbol": "GOLDM25NOV26FUT",
+                  "exchange": "MCX",
+                  "productCode": "NRML",
+                  "netQuantity": "10",
+                  "transactionType": "BUY",
+                  "averageBuyPrice": "75000",
+                  "averageSellPrice": "0",
+                  "lastTradedPrice": "75010",
+                  "realizedGainAndLoss": 0,
+                  "unrealizedGainAndLoss": 100
+                },
+                {
+                  "tradingSymbol": "NOSUCH",
+                  "exchange": "NSE",
+                  "productCode": "MIS",
+                  "netQuantity": "4",
+                  "transactionType": "BUY",
+                  "averageBuyPrice": "",
+                  "averageSellPrice": "",
+                  "lastTradedPrice": "",
+                  "realizedGainAndLoss": null,
+                  "unrealizedGainAndLoss": null
+                }
+              ]
+            }
+          },
+          {
+            "body": {
+              "status": "Success",
+              "positionDetails": [
+                {
+                  "tradingSymbol": "SBIN_EQ",
+                  "exchange": "NSE",
+                  "productCode": "MIS",
+                  "netQuantity": "99",
+                  "transactionType": "BUY",
+                  "averageBuyPrice": "800.00",
+                  "averageSellPrice": "0",
+                  "lastTradedPrice": "805.45",
+                  "realizedGainAndLoss": 0,
+                  "unrealizedGainAndLoss": 0
+                },
+                {
+                  "tradingSymbol": "USDINR25NOV26FUT",
+                  "exchange": "CDS",
+                  "productCode": "NRML",
+                  "netQuantity": "1000",
+                  "transactionType": "BUY",
+                  "averageBuyPrice": "83.5",
+                  "averageSellPrice": "0",
+                  "lastTradedPrice": "83.6",
+                  "realizedGainAndLoss": 0,
+                  "unrealizedGainAndLoss": 100
+                }
+              ]
+            }
+          }
+        ],
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        },
+        "GET /quote/getQuote": [
+          {
+            "body": {
+              "status": "Success",
+              "quoteDetails": {
+                "lastTradedPrice": "805.45",
+                "openValue": "801.00",
+                "highValue": "809.50",
+                "lowValue": "799.00",
+                "previousClose": "800.00",
+                "totalTradedVolume": "1,234,567",
+                "openInterest": "0",
+                "bestBids": [
+                  {
+                    "price": "805.40",
+                    "quantity": "100"
+                  }
+                ],
+                "bestAsks": [
+                  {
+                    "price": "805.50",
+                    "quantity": "110"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "Success",
+              "quoteDetails": {
+                "lastTradedPrice": "24005.5",
+                "openValue": "801.00",
+                "highValue": "809.50",
+                "lowValue": "799.00",
+                "previousClose": "800.00",
+                "totalTradedVolume": "1,234,567",
+                "openInterest": "0",
+                "bestBids": [
+                  {
+                    "price": "805.40",
+                    "quantity": "100"
+                  }
+                ],
+                "bestAsks": [
+                  {
+                    "price": "805.50",
+                    "quantity": "110"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "Success",
+              "quoteDetails": {
+                "lastTradedPrice": "75010.0",
+                "openValue": "801.00",
+                "highValue": "809.50",
+                "lowValue": "799.00",
+                "previousClose": "800.00",
+                "totalTradedVolume": "1,234,567",
+                "openInterest": "0",
+                "bestBids": [
+                  {
+                    "price": "805.40",
+                    "quantity": "100"
+                  }
+                ],
+                "bestAsks": [
+                  {
+                    "price": "805.50",
+                    "quantity": "110"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "Success",
+              "quoteDetails": {
+                "lastTradedPrice": "83.6",
+                "openValue": "801.00",
+                "highValue": "809.50",
+                "lowValue": "799.00",
+                "previousClose": "800.00",
+                "totalTradedVolume": "1,234,567",
+                "openInterest": "0",
+                "bestBids": [
+                  {
+                    "price": "805.40",
+                    "quantity": "100"
+                  }
+                ],
+                "bestAsks": [
+                  {
+                    "price": "805.50",
+                    "quantity": "110"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "DAY"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "NET"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "SBIN_EQ"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "SBIN_EQ",
+            "exchange": "NSE",
+            "transactionType": "SELL",
+            "orderType": "L",
+            "quantity": "10",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "MIS",
+            "afterMarketOrderFlag": "NO",
+            "price": "801.4",
+            "marketProtection": "0.5"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "NIFTY25NOV26FUT"
+            ],
+            [
+              "exchange",
+              "NFO"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "transactionType": "BUY",
+            "orderType": "L",
+            "quantity": "75",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "NRML",
+            "afterMarketOrderFlag": "NO",
+            "price": "24125.5",
+            "marketProtection": "0.5"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "GOLDM25NOV26FUT"
+            ],
+            [
+              "exchange",
+              "MFO"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "GOLDM25NOV26FUT",
+            "exchange": "MCX",
+            "transactionType": "SELL",
+            "orderType": "L",
+            "quantity": "10",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "NRML",
+            "afterMarketOrderFlag": "NO",
+            "price": "74635.0",
+            "marketProtection": "0.5"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "None"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/quote/getQuote",
+          "query": [
+            [
+              "symbolName",
+              "USDINR25NOV26FUT"
+            ],
+            [
+              "exchange",
+              "CDS"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "USDINR25NOV26FUT",
+            "exchange": "CDS",
+            "transactionType": "SELL",
+            "orderType": "L",
+            "quantity": "1000",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "NRML",
+            "afterMarketOrderFlag": "NO",
+            "price": "81.93",
+            "marketProtection": "2"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_the_net_book_cannot_be_read",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /position/getPositions": [
+          {
+            "body": {
+              "status": "Success",
+              "positionDetails": [
+                {
+                  "tradingSymbol": "SBIN_EQ",
+                  "exchange": "NSE",
+                  "productCode": "MIS",
+                  "netQuantity": "10",
+                  "transactionType": "BUY",
+                  "averageBuyPrice": "800.00",
+                  "averageSellPrice": "0",
+                  "lastTradedPrice": "805.45",
+                  "realizedGainAndLoss": 12.5,
+                  "unrealizedGainAndLoss": 54.5
+                },
+                {
+                  "tradingSymbol": "NIFTY25NOV26FUT",
+                  "exchange": "NFO",
+                  "productCode": "NRML",
+                  "netQuantity": "75",
+                  "transactionType": "SELL",
+                  "averageBuyPrice": "0",
+                  "averageSellPrice": "24,000.00",
+                  "lastTradedPrice": "24,005.50",
+                  "realizedGainAndLoss": 0,
+                  "unrealizedGainAndLoss": "-412.5"
+                },
+                {
+                  "tradingSymbol": "INFY_EQ",
+                  "exchange": "NSE",
+                  "productCode": "CNC",
+                  "netQuantity": "0",
+                  "transactionType": "BUY",
+                  "averageBuyPrice": "1500",
+                  "averageSellPrice": "1510",
+                  "lastTradedPrice": "1505",
+                  "realizedGainAndLoss": 100,
+                  "unrealizedGainAndLoss": 0
+                },
+                {
+                  "tradingSymbol": "GOLDM25NOV26FUT",
+                  "exchange": "MCX",
+                  "productCode": "NRML",
+                  "netQuantity": "10",
+                  "transactionType": "BUY",
+                  "averageBuyPrice": "75000",
+                  "averageSellPrice": "0",
+                  "lastTradedPrice": "75010",
+                  "realizedGainAndLoss": 0,
+                  "unrealizedGainAndLoss": 100
+                },
+                {
+                  "tradingSymbol": "NOSUCH",
+                  "exchange": "NSE",
+                  "productCode": "MIS",
+                  "netQuantity": "4",
+                  "transactionType": "BUY",
+                  "averageBuyPrice": "",
+                  "averageSellPrice": "",
+                  "lastTradedPrice": "",
+                  "realizedGainAndLoss": null,
+                  "unrealizedGainAndLoss": null
+                }
+              ]
+            }
+          },
+          {
+            "body": {
+              "status": "Failure",
+              "statusMessage": "no"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Could not read the NET position book, so positions may remain open. No square-off was attempted. Please retry.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "DAY"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "NET"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_the_day_book_cannot_be_read",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /position/getPositions": [
+          {
+            "body": {
+              "status": "Failure",
+              "statusMessage": "no"
+            }
+          },
+          {
+            "body": {
+              "status": "Success",
+              "positionDetails": [
+                {
+                  "tradingSymbol": "SBIN_EQ",
+                  "exchange": "NSE",
+                  "productCode": "MIS",
+                  "netQuantity": "99",
+                  "transactionType": "BUY",
+                  "averageBuyPrice": "800.00",
+                  "averageSellPrice": "0",
+                  "lastTradedPrice": "805.45",
+                  "realizedGainAndLoss": 0,
+                  "unrealizedGainAndLoss": 0
+                },
+                {
+                  "tradingSymbol": "USDINR25NOV26FUT",
+                  "exchange": "CDS",
+                  "productCode": "NRML",
+                  "netQuantity": "1000",
+                  "transactionType": "BUY",
+                  "averageBuyPrice": "83.5",
+                  "averageSellPrice": "0",
+                  "lastTradedPrice": "83.6",
+                  "realizedGainAndLoss": 0,
+                  "unrealizedGainAndLoss": 100
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Could not read the DAY position book, so positions may remain open. No square-off was attempted. Please retry.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "DAY"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "NET"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_nothing_open",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /position/getPositions": [
+          {
+            "body": {
+              "status": "Success",
+              "positionDetails": []
+            }
+          },
+          {
+            "body": {
+              "status": "Success",
+              "positionDetails": []
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "DAY"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "NET"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_reduce",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /position/getPositions": {
+          "body": {
+            "status": "Success",
+            "positionDetails": [
+              {
+                "tradingSymbol": "SBIN_EQ",
+                "exchange": "NSE",
+                "productCode": "MIS",
+                "netQuantity": "10",
+                "transactionType": "BUY",
+                "averageBuyPrice": "800.00",
+                "averageSellPrice": "0",
+                "lastTradedPrice": "805.45",
+                "realizedGainAndLoss": 12.5,
+                "unrealizedGainAndLoss": 54.5
+              },
+              {
+                "tradingSymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "productCode": "NRML",
+                "netQuantity": "75",
+                "transactionType": "SELL",
+                "averageBuyPrice": "0",
+                "averageSellPrice": "24,000.00",
+                "lastTradedPrice": "24,005.50",
+                "realizedGainAndLoss": 0,
+                "unrealizedGainAndLoss": "-412.5"
+              },
+              {
+                "tradingSymbol": "INFY_EQ",
+                "exchange": "NSE",
+                "productCode": "CNC",
+                "netQuantity": "0",
+                "transactionType": "BUY",
+                "averageBuyPrice": "1500",
+                "averageSellPrice": "1510",
+                "lastTradedPrice": "1505",
+                "realizedGainAndLoss": 100,
+                "unrealizedGainAndLoss": 0
+              },
+              {
+                "tradingSymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "productCode": "NRML",
+                "netQuantity": "10",
+                "transactionType": "BUY",
+                "averageBuyPrice": "75000",
+                "averageSellPrice": "0",
+                "lastTradedPrice": "75010",
+                "realizedGainAndLoss": 0,
+                "unrealizedGainAndLoss": 100
+              },
+              {
+                "tradingSymbol": "NOSUCH",
+                "exchange": "NSE",
+                "productCode": "MIS",
+                "netQuantity": "4",
+                "transactionType": "BUY",
+                "averageBuyPrice": "",
+                "averageSellPrice": "",
+                "lastTradedPrice": "",
+                "realizedGainAndLoss": null,
+                "unrealizedGainAndLoss": null
+              }
+            ]
+          }
+        },
+        "POST /order/placeOrder": {
+          "body": {
+            "status": "Success",
+            "statusMessage": "Order placed",
+            "orderNumber": "S0001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "S0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "DAY"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "tradeapi.samco.in",
+          "path": "/order/placeOrder",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "symbolName": "SBIN_EQ",
+            "exchange": "NSE",
+            "transactionType": "SELL",
+            "orderType": "L",
+            "quantity": "6",
+            "disclosedQuantity": "0",
+            "orderValidity": "DAY",
+            "productType": "MIS",
+            "afterMarketOrderFlag": "NO",
+            "price": "800.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_already_matched",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "10",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /position/getPositions": {
+          "body": {
+            "status": "Success",
+            "positionDetails": [
+              {
+                "tradingSymbol": "SBIN_EQ",
+                "exchange": "NSE",
+                "productCode": "MIS",
+                "netQuantity": "10",
+                "transactionType": "BUY",
+                "averageBuyPrice": "800.00",
+                "averageSellPrice": "0",
+                "lastTradedPrice": "805.45",
+                "realizedGainAndLoss": 12.5,
+                "unrealizedGainAndLoss": 54.5
+              },
+              {
+                "tradingSymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "productCode": "NRML",
+                "netQuantity": "75",
+                "transactionType": "SELL",
+                "averageBuyPrice": "0",
+                "averageSellPrice": "24,000.00",
+                "lastTradedPrice": "24,005.50",
+                "realizedGainAndLoss": 0,
+                "unrealizedGainAndLoss": "-412.5"
+              },
+              {
+                "tradingSymbol": "INFY_EQ",
+                "exchange": "NSE",
+                "productCode": "CNC",
+                "netQuantity": "0",
+                "transactionType": "BUY",
+                "averageBuyPrice": "1500",
+                "averageSellPrice": "1510",
+                "lastTradedPrice": "1505",
+                "realizedGainAndLoss": 100,
+                "unrealizedGainAndLoss": 0
+              },
+              {
+                "tradingSymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "productCode": "NRML",
+                "netQuantity": "10",
+                "transactionType": "BUY",
+                "averageBuyPrice": "75000",
+                "averageSellPrice": "0",
+                "lastTradedPrice": "75010",
+                "realizedGainAndLoss": 0,
+                "unrealizedGainAndLoss": 100
+              },
+              {
+                "tradingSymbol": "NOSUCH",
+                "exchange": "NSE",
+                "productCode": "MIS",
+                "netQuantity": "4",
+                "transactionType": "BUY",
+                "averageBuyPrice": "",
+                "averageSellPrice": "",
+                "lastTradedPrice": "",
+                "realizedGainAndLoss": null,
+                "unrealizedGainAndLoss": null
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "No OpenPosition Found. Not placing Exit order.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "tradeapi.samco.in",
+          "path": "/position/getPositions",
+          "query": [
+            [
+              "positionType",
+              "DAY"
+            ]
+          ],
+          "headers": {
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
