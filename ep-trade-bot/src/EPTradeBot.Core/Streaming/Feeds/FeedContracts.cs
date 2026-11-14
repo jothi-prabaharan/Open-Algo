@@ -62,3 +62,38 @@ public interface IFeedHttpCodec : IFeedCodec
     /// <summary>The calls owed since the last time, in order.</summary>
     IReadOnlyList<FeedHttpCall> TakeHttp();
 }
+
+/// <summary>One MQTT command: subscribe or unsubscribe a list of topics.</summary>
+public sealed record MqttCommand(bool Subscribe, IReadOnlyList<string> Topics);
+
+/// <summary>
+/// A broker's market-data protocol over MQTT: the topics to subscribe and unsubscribe, and how to read a message. Like <see cref="IFeedCodec"/> it holds no socket; the connection (reconnecting, pacing)
+/// is the feed host's.
+/// </summary>
+public interface IMqttFeedCodec
+{
+    string Broker { get; }
+
+    IReadOnlyList<MqttCommand> Subscribe(IReadOnlyList<FeedRequest> requests, long nowMs);
+
+    IReadOnlyList<MqttCommand> Unsubscribe(FeedTarget target, StreamMode? mode, long nowMs);
+
+    /// <summary>The commands that restore every subscription after a reconnect.</summary>
+    IReadOnlyList<MqttCommand> Resubscribe(long nowMs);
+
+    IReadOnlyList<FeedPublish> DecodeMessage(string topic, ReadOnlySpan<byte> payload, long nowMs);
+
+    void Reset();
+}
+
+/// <summary>Where an MQTT feed connects and as whom.</summary>
+public sealed record MqttEndpoint(string Host, int Port, bool Tls, string ClientId, string UserName, string Password);
+
+/// <summary>A broker plugin whose market data comes over MQTT rather than a WebSocket (IIFL Capital).</summary>
+public interface IBrokerMqttFeed : EPTradeBot.Core.Brokers.IBrokerPlugin
+{
+    IMqttFeedCodec CreateMqttCodec();
+
+    /// <summary>The broker's MQTT endpoint for this session, or null when the session cannot connect.</summary>
+    MqttEndpoint? MqttEndpoint(EPTradeBot.Core.Brokers.BrokerSession session);
+}

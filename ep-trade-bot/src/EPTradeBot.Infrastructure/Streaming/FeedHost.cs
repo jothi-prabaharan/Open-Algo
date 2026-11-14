@@ -42,7 +42,7 @@ public sealed class FeedHost(
     private readonly ILogger<FeedHost> logger = logger;
 
     private readonly object gate = new();
-    private readonly Dictionary<Guid, Connection> connections = [];
+    private readonly Dictionary<Guid, IFeedConnection> connections = [];
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -57,7 +57,7 @@ public sealed class FeedHost(
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        List<Connection> all;
+        List<IFeedConnection> all;
         lock (gate)
         {
             all = [.. connections.Values];
@@ -80,10 +80,13 @@ public sealed class FeedHost(
     public async Task<FeedAnswer> SubscribeAsync(Guid accountId, string broker, string exchange, string symbol, StreamMode mode, CancellationToken cancellationToken)
     {
         if (!options.Value.FeedsEnabled) return FeedAnswer.Taken;
-        if (registry.Get<IBrokerFeed>(broker) is not { } plugin)
+        var mqttPlugin = registry.Get<IBrokerMqttFeed>(broker);
+        var plugin = mqttPlugin is null ? registry.Get<IBrokerFeed>(broker) : null;
+        if (plugin is null && mqttPlugin is null)
             return FeedAnswer.Refused($"Live prices from {broker} are not available yet. The subscription is kept, but no ticks will arrive.");
-        if (await symbols.FindAsync(plugin.Name, symbol, exchange, cancellationToken) is not { } instrument)
-            return FeedAnswer.Refused($"{symbol} on {exchange} is not in the {plugin.DisplayName} master contract. Check the symbol, or download the master contract again.");
+        IBrokerPlugin named = (IBrokerPlugin?)plugin ?? mqttPlugin!;
+        if (await symbols.FindAsync(named.Name, symbol, exchange, cancellationToken) is not { } instrument)
+            return FeedAnswer.Refused($"{symbol} on {exchange} is not in the {named.DisplayName} master contract. Check the symbol, or download the master contract again.");
 
         // A feed that could never start is refused here, where the client can be told, not later in a log.
         bool known;
@@ -93,20 +96,21 @@ public sealed class FeedHost(
             await using var db = await contexts.CreateDbContextAsync(cancellationToken);
             var account = await db.BrokerAccounts.AsNoTracking().SingleOrDefaultAsync(a => a.Id == accountId, cancellationToken);
             var session = account is null ? null : sessions.Create(account);
-            if (session is null) return FeedAnswer.Refused($"{plugin.DisplayName} is not signed in, so there are no live prices. Sign in to {plugin.DisplayName}, then subscribe again.");
-            if (plugin.FeedEndpoint(session, null) is null)
-                return FeedAnswer.Refused($"{plugin.DisplayName} did not give this account a live price feed. Sign in to {plugin.DisplayName} again, then subscribe again.");
+            if (session is null) return FeedAnswer.Refused($"{named.DisplayName} is not signed in, so there are no live prices. Sign in to {named.DisplayName}, then subscribe again.");
+            var usable = plugin is not null ? plugin.FeedEndpoint(session, null) is not null : mqttPlugin!.MqttEndpoint(session) is not null;
+            if (!usable)
+                return FeedAnswer.Refused($"{named.DisplayName} did not give this account a live price feed. Sign in to {named.DisplayName} again, then subscribe again.");
         }
 
         // A hold taken on a connection that was just closed is taken again on a new one.
         for (var attempt = 0; attempt < 3; attempt++)
         {
-            Connection connection;
+            IFeedConnection connection;
             lock (gate)
             {
                 if (!connections.TryGetValue(accountId, out connection!))
                 {
-                    connection = new Connection(this, accountId, plugin);
+                    connection = plugin is not null ? new Connection(this, accountId, plugin) : new MqttConnection(this, accountId, mqttPlugin!);
                     connections[accountId] = connection;
                 }
             }
@@ -125,25 +129,37 @@ public sealed class FeedHost(
 
     public async Task UnsubscribeAsync(Guid accountId, string exchange, string symbol, StreamMode mode, CancellationToken cancellationToken)
     {
-        Connection? connection;
+        IFeedConnection? connection;
         lock (gate) connections.TryGetValue(accountId, out connection);
         if (connection is null) return;
         await LetGoAsync(accountId, connection, exchange, symbol, mode);
     }
 
     /// <summary>Gives up one hold on the connection the caller looked up, and closes that connection if it is now empty.</summary>
-    private async Task LetGoAsync(Guid accountId, Connection connection, string exchange, string symbol, StreamMode mode)
+    private async Task LetGoAsync(Guid accountId, IFeedConnection connection, string exchange, string symbol, StreamMode mode)
     {
         if (connection.Release(exchange, symbol, mode) != 0) return;
         // Removed only if it is still this connection: two clients letting go together both reach zero, and the second must not take out a newer
         // connection that a subscription opened in between (it would be left running with nothing able to stop it).
         bool removed;
-        lock (gate) removed = ((ICollection<KeyValuePair<Guid, Connection>>)connections).Remove(new KeyValuePair<Guid, Connection>(accountId, connection));
+        lock (gate) removed = ((ICollection<KeyValuePair<Guid, IFeedConnection>>)connections).Remove(new KeyValuePair<Guid, IFeedConnection>(accountId, connection));
         if (removed) await connection.StopAsync();
     }
 
     /// <summary>One account's connection to its broker.</summary>
-    private sealed class Connection(FeedHost host, Guid accountId, IBrokerFeed plugin)
+    /// <summary>One account's feed connection, whatever the transport.</summary>
+    private interface IFeedConnection
+    {
+        string? Hold(FeedRequest request);
+
+        int Release(string exchange, string symbol, StreamMode mode);
+
+        void Start();
+
+        Task StopAsync();
+    }
+
+    private sealed class Connection(FeedHost host, Guid accountId, IBrokerFeed plugin) : IFeedConnection
     {
         private readonly IFeedCodec codec = plugin.CreateFeedCodec();
         private readonly object sync = new();
@@ -507,5 +523,274 @@ public sealed class FeedHost(
             socket.State == WebSocketState.Open
                 ? socket.SendAsync((codec.MessagesAreHex ? Convert.FromHexString(text) : Encoding.UTF8.GetBytes(text)).AsMemory(), codec.SendsBinary || codec.MessagesAreHex ? WebSocketMessageType.Binary : WebSocketMessageType.Text, true, ct).AsTask()
                 : Task.CompletedTask;
+    }
+
+    /// <summary>One account's connection to a broker whose market data comes over MQTT (IIFL Capital): the same holds, limits and reconnects as the WebSocket connection, with topics in place of frames.</summary>
+    private sealed class MqttConnection(FeedHost host, Guid accountId, IBrokerMqttFeed plugin) : IFeedConnection
+    {
+        private readonly IMqttFeedCodec codec = plugin.CreateMqttCodec();
+        private readonly object sync = new();
+        private readonly Dictionary<(string Exchange, string Symbol, StreamMode Mode), (FeedRequest Request, int Holders)> held = [];
+        private readonly CancellationTokenSource stop = new();
+        private readonly SemaphoreSlim sending = new(1, 1);
+        private Task? run;
+        private bool connected;
+        private MQTTnet.IMqttClient? client;
+        private Task? stopping;
+
+        private long Now => host.clock.GetUtcNow().ToUnixTimeMilliseconds();
+
+        public string? Hold(FeedRequest request)
+        {
+            IReadOnlyList<MqttCommand> commands;
+            lock (sync)
+            {
+                var key = (request.Exchange, request.Symbol, request.Mode);
+                if (held.TryGetValue(key, out var existing))
+                {
+                    held[key] = (existing.Request, existing.Holders + 1);
+                    return null;
+                }
+
+                if (held.Count >= host.options.Value.FeedMaxInstruments)
+                    return $"{plugin.DisplayName} allows {host.options.Value.FeedMaxInstruments} instruments on one live feed. Unsubscribe some before adding more.";
+                held[key] = (request, 1);
+                commands = codec.Subscribe([request], Now);
+            }
+
+            if (IsConnected) _ = SendAsync(commands);
+            return null;
+        }
+
+        public int Release(string exchange, string symbol, StreamMode mode)
+        {
+            IReadOnlyList<MqttCommand> commands;
+            int count;
+            lock (sync)
+            {
+                var key = (exchange, symbol, mode);
+                if (!held.TryGetValue(key, out var existing)) return held.Count;
+                if (existing.Holders > 1)
+                {
+                    held[key] = (existing.Request, existing.Holders - 1);
+                    return held.Count;
+                }
+
+                held.Remove(key);
+                commands = codec.Unsubscribe(existing.Request.Target, mode, Now);
+                count = held.Count;
+            }
+
+            if (IsConnected) _ = SendAsync(commands);
+            return count;
+        }
+
+        private bool IsConnected
+        {
+            get
+            {
+                lock (sync) return connected;
+            }
+        }
+
+        public void Start()
+        {
+            lock (sync) run ??= Task.Run(() => RunAsync(stop.Token));
+        }
+
+        public Task StopAsync()
+        {
+            lock (sync) return stopping ??= StopCoreAsync();
+        }
+
+        private async Task StopCoreAsync()
+        {
+            await stop.CancelAsync();
+            Task? task;
+            MQTTnet.IMqttClient? current;
+            lock (sync)
+            {
+                task = run;
+                current = client;
+            }
+
+            if (current is not null)
+            {
+                try
+                {
+                    await current.DisconnectAsync(new MQTTnet.MqttClientDisconnectOptions());
+                }
+                catch (Exception ex) when (ex is not OutOfMemoryException)
+                {
+                    host.logger.LogDebug(ex, "The {Broker} feed of {AccountId} was already closed.", plugin.Name, accountId);
+                }
+            }
+
+            if (task is not null)
+            {
+                try
+                {
+                    await task.WaitAsync(TimeSpan.FromSeconds(5));
+                }
+                catch (Exception ex) when (ex is OperationCanceledException or TimeoutException)
+                {
+                    host.logger.LogWarning("The {Broker} feed of {AccountId} did not stop in time.", plugin.Name, accountId);
+                }
+            }
+
+            stop.Dispose();
+        }
+
+        /// <summary>Sends commands one batch after another; a failure is logged and the reconnect repeats the subscriptions.</summary>
+        private async Task SendAsync(IReadOnlyList<MqttCommand> commands)
+        {
+            if (commands.Count == 0) return;
+            await sending.WaitAsync();
+            try
+            {
+                MQTTnet.IMqttClient? current;
+                lock (sync) current = client;
+                if (current is not { IsConnected: true }) return;
+                foreach (var command in commands)
+                {
+                    if (command.Subscribe)
+                    {
+                        var options = new MQTTnet.MqttClientFactory().CreateSubscribeOptionsBuilder();
+                        foreach (var topic in command.Topics) options.WithTopicFilter(f => f.WithTopic(topic).WithAtMostOnceQoS());
+                        await current.SubscribeAsync(options.Build(), stop.Token);
+                    }
+                    else
+                    {
+                        var options = new MQTTnet.MqttClientFactory().CreateUnsubscribeOptionsBuilder();
+                        foreach (var topic in command.Topics) options.WithTopicFilter(topic);
+                        await current.UnsubscribeAsync(options.Build(), stop.Token);
+                    }
+                }
+            }
+            catch (Exception ex) when (ex is not OutOfMemoryException)
+            {
+                host.logger.LogWarning(ex, "A {Broker} subscription could not be sent; it is repeated when the feed reconnects.", plugin.Name);
+            }
+            finally
+            {
+                sending.Release();
+            }
+        }
+
+        private async Task RunAsync(CancellationToken ct)
+        {
+            var o = host.options.Value;
+            var attempts = 0;
+            string? lastRefusedToken = null;
+            while (!ct.IsCancellationRequested)
+            {
+                BrokerSession? session;
+                await using (var db = await host.contexts.CreateDbContextAsync(ct))
+                {
+                    var account = await db.BrokerAccounts.AsNoTracking().SingleOrDefaultAsync(a => a.Id == accountId, ct);
+                    session = account is null ? null : host.sessions.Create(account);
+                }
+
+                var endpoint = session is null ? null : plugin.MqttEndpoint(session);
+                if (session is null || endpoint is null)
+                {
+                    host.logger.LogWarning("The {Broker} feed of {AccountId} cannot start: the account is not signed in to {Broker}. Sign in, then subscribe again.", plugin.Name, accountId, plugin.Name);
+                    return;
+                }
+
+                using var mqtt = new MQTTnet.MqttClientFactory().CreateMqttClient();
+                var dropped = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+                mqtt.ApplicationMessageReceivedAsync += e =>
+                {
+                    try
+                    {
+                        foreach (var tick in codec.DecodeMessage(e.ApplicationMessage.Topic, System.Buffers.BuffersExtensions.ToArray(e.ApplicationMessage.Payload), Now)) host.publisher.Publish(tick.Topic, tick.Data);
+                    }
+                    catch (Exception ex) when (ex is not OutOfMemoryException)
+                    {
+                        host.logger.LogWarning(ex, "A {Broker} message could not be read and was skipped.", plugin.Name);
+                    }
+
+                    return Task.CompletedTask;
+                };
+                mqtt.DisconnectedAsync += _ =>
+                {
+                    dropped.TrySetResult();
+                    return Task.CompletedTask;
+                };
+
+                var options = new MQTTnet.MqttClientOptionsBuilder()
+                    .WithTcpServer(endpoint.Host, endpoint.Port)
+                    .WithClientId(endpoint.ClientId)
+                    .WithCredentials(endpoint.UserName, endpoint.Password)
+                    .WithCleanSession()
+                    .WithKeepAlivePeriod(TimeSpan.FromSeconds(30));
+                if (endpoint.Tls) options.WithTlsOptions(t => t.UseTls());
+                try
+                {
+                    using var connecting = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                    connecting.CancelAfter(TimeSpan.FromSeconds(o.FeedConnectSeconds));
+                    var result = await mqtt.ConnectAsync(options.Build(), connecting.Token);
+                    if (result.ResultCode != MQTTnet.MqttClientConnectResultCode.Success) throw new IOException($"{plugin.Name} refused the connection: {result.ResultCode}.");
+                    attempts = 0;
+                    lastRefusedToken = null;
+                    IReadOnlyList<MqttCommand> again;
+                    lock (sync)
+                    {
+                        client = mqtt;
+                        connected = true;
+                        again = codec.Resubscribe(Now);
+                    }
+
+                    await SendAsync(again);
+                    await dropped.Task.WaitAsync(ct);
+                }
+                catch (OperationCanceledException) when (ct.IsCancellationRequested)
+                {
+                    return;
+                }
+                catch (Exception ex) when (ex is MQTTnet.Exceptions.MqttCommunicationException or MQTTnet.Exceptions.MqttProtocolViolationException or IOException or OperationCanceledException or System.Net.Sockets.SocketException)
+                {
+                    if (ex.Message.Contains("NotAuthorized", StringComparison.OrdinalIgnoreCase) || ex.Message.Contains("BadUserNameOrPassword", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (lastRefusedToken == session.AuthToken)
+                        {
+                            host.logger.LogError("{Broker} refused the feed token of {AccountId} again. The account needs to sign in to {Broker} again.", plugin.Name, accountId, plugin.Name);
+                            return;
+                        }
+
+                        lastRefusedToken = session.AuthToken;
+                    }
+                    else
+                    {
+                        host.logger.LogWarning(ex, "The {Broker} feed of {AccountId} dropped.", plugin.Name, accountId);
+                    }
+                }
+                finally
+                {
+                    lock (sync)
+                    {
+                        connected = false;
+                        client = null;
+                    }
+                }
+
+                attempts++;
+                if (attempts > 50)
+                {
+                    host.logger.LogError("The {Broker} feed of {AccountId} gave up after {Attempts} attempts.", plugin.Name, accountId, attempts);
+                    return;
+                }
+
+                try
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(Math.Min(o.FeedReconnectBaseMs * Math.Pow(1.5, attempts - 1), 60_000)), ct);
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
+            }
+        }
     }
 }

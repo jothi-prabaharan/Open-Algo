@@ -836,3 +836,77 @@ public sealed class HdfcSkyFeedEndpointTests
         Assert.Null(Plugin().FeedEndpoint(Session(key: null), null));
     }
 }
+
+/// <summary>An MQTT feed codec against the Python adapter: the topics each step subscribes or drops and the ticks each message publishes.</summary>
+public static class MqttFeedRunner
+{
+    public static void Run(string file, string name, Func<IMqttFeedCodec> codec)
+    {
+        var fixtures = BrokerContractHost.Load(file);
+        var now = fixtures["now_ms"]!.GetValue<long>();
+        var symbols = fixtures["symbols"]!.AsArray().OfType<JsonObject>().ToDictionary(s => (s["exchange"]!.GetValue<string>(), s["symbol"]!.GetValue<string>()), s => (Token: s["token"]!.GetValue<string>(), BrokerExchange: s["brexchange"]!.GetValue<string>(), BrokerSymbol: s["brsymbol"]!.GetValue<string>(), Name: s["name"]?.GetValue<string>()));
+        var scenario = fixtures["scenarios"]!.AsArray().OfType<JsonObject>().Single(s => s["name"]!.GetValue<string>() == name);
+        var feed = codec();
+        var index = 0;
+        foreach (var entry in scenario["steps"]!.AsArray().OfType<JsonObject>())
+        {
+            var step = entry["step"]!.AsObject();
+            var result = entry["result"]!.AsObject();
+            var kind = step.First().Key;
+            var label = $"{name} step {++index} ({kind})";
+            IReadOnlyList<MqttCommand> sent = [];
+            IReadOnlyList<FeedPublish> published = [];
+            switch (kind)
+            {
+                case "subscribe":
+                    sent = feed.Subscribe(step["subscribe"]!.AsArray().OfType<JsonObject>().Select(i =>
+                    {
+                        var (token, brokerExchange, brokerSymbol, symbolName) = symbols[(i["exchange"]!.GetValue<string>(), i["symbol"]!.GetValue<string>())];
+                        return new FeedRequest(i["exchange"]!.GetValue<string>(), i["symbol"]!.GetValue<string>(), token, brokerExchange, (StreamMode)i["mode"]!.GetValue<int>(), brokerSymbol, symbolName);
+                    }).Where(r => (int)r.Mode is >= 1 and <= 3).ToList(), now);
+                    break;
+                case "unsubscribe":
+                    var u = step["unsubscribe"]!.AsObject();
+                    var (uToken, uBrokerExchange, uBrokerSymbol, uName) = symbols[(u["exchange"]!.GetValue<string>(), u["symbol"]!.GetValue<string>())];
+                    sent = feed.Unsubscribe(new FeedTarget(u["exchange"]!.GetValue<string>(), u["symbol"]!.GetValue<string>(), uToken, uBrokerExchange, uBrokerSymbol, uName), u["mode"] is JsonValue m ? (StreamMode)m.GetValue<int>() : null, now);
+                    break;
+                case "reconnect":
+                    sent = feed.Resubscribe(now);
+                    break;
+                case "message":
+                    var message = step["message"]!.AsObject();
+                    published = feed.DecodeMessage(message["topic"]!.GetValue<string>(), Convert.FromHexString(message["payload"]!.GetValue<string>()), now);
+                    break;
+                default:
+                    throw new InvalidOperationException($"Unknown step {kind}.");
+            }
+
+            var expectedSent = result["sent"]!.AsArray();
+            Assert.True(expectedSent.Count == sent.Count, $"{label}: expected {expectedSent.Count} commands, got {sent.Count}");
+            for (var i = 0; i < sent.Count; i++)
+            {
+                var expected = expectedSent[i]!.AsObject();
+                Assert.Equal(sent[i].Subscribe ? "subscribe" : "unsubscribe", expected.First().Key);
+                Assert.Equal(expected.First().Value!.AsArray().Select(x => x!.GetValue<string>()), sent[i].Topics);
+            }
+
+            var expectedPublished = result["published"]!.AsArray();
+            Assert.True(expectedPublished.Count == published.Count, $"{label}: expected {expectedPublished.Count} ticks, got {published.Count}: {string.Join(", ", published.Select(p => p.Topic))}");
+            for (var i = 0; i < published.Count; i++)
+            {
+                Assert.Equal(expectedPublished[i]!["topic"]!.GetValue<string>(), published[i].Topic);
+                var diffs = JsonCompare.Differences(expectedPublished[i]!["data"], published[i].Data);
+                Assert.True(diffs.Count == 0, $"{label}: tick {published[i].Topic} differs:\n{string.Join("\n", diffs)}");
+            }
+        }
+    }
+}
+
+public sealed class IiflCapitalFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_iiflcapital.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => MqttFeedRunner.Run("feed_iiflcapital.fixtures.json", name, () => new IiflCapitalFeedCodec());
+}
