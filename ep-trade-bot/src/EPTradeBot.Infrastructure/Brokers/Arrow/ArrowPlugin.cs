@@ -10,16 +10,16 @@ namespace EPTradeBot.Infrastructure.Brokers.Arrow;
 /// <summary>
 /// Arrow (edge.arrow.trade). Port of broker/arrow: api/order_api.py, api/funds.py, mapping/transform_data.py and mapping/order_data.py. Every call carries the application id
 /// and the access token in two headers of their own (appID and token). Prices and quantities travel as text; a market order is sent as MKT with market price protection (mpp);
-/// the books show the broker's own text values unchanged. Not ported yet: quotes and depth, history, margin, sign-in and the feed.
+/// the books show the broker's own text values unchanged. Not ported yet: margin, sign-in and the feed.
 /// </summary>
 [BrokerPlugin]
-public sealed partial class ArrowPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
+public sealed partial class ArrowPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerHistory
 {
     private const string DefaultBaseUrl = "https://edge.arrow.trade";
 
     public string Name => "arrow";
     public string DisplayName => "Arrow";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     // ---- vocabulary ------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ public sealed partial class ArrowPlugin(IHttpClientFactory http, BrokerSessionFa
 
     private HttpClient Client() => http.CreateClient(Name);
 
-    private async Task<(int Status, JsonNode? Body)> CallAsync(BrokerSession session, HttpMethod method, string path, JsonObject? body, CancellationToken cancellationToken)
+    private async Task<(int Status, JsonNode? Body)> CallAsync(BrokerSession session, HttpMethod method, string path, JsonNode? body, CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(method, sessions.BaseUrl(Name, DefaultBaseUrl) + path);
         if (session.Key("ApiKey") is { } appId) request.Headers.TryAddWithoutValidation("appID", appId);
