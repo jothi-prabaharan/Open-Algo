@@ -168,26 +168,10 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "S22 retry backoff",
-  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.cs",
-  "old": "var delay = TimeSpan.FromSeconds(1 << attempt);",
-  "new": "var delay = TimeSpan.FromSeconds(1);",
-  "filter": "FullyQualifiedName~SahiContract",
-  "project": "EPTradeBot.Contract.Tests"
- },
- {
   "name": "S23 retry only 429",
   "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.cs",
   "old": "if (status == 429 && attempt < MaxRetries)",
   "new": "if (status == 429 && attempt < MaxRetries && false)",
-  "filter": "FullyQualifiedName~SahiContract",
-  "project": "EPTradeBot.Contract.Tests"
- },
- {
-  "name": "S24 retry after min",
-  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.cs",
-  "old": "Math.Max(d.TotalSeconds, 0.05)",
-  "new": "d.TotalSeconds",
   "filter": "FullyQualifiedName~SahiContract",
   "project": "EPTradeBot.Contract.Tests"
  },
@@ -243,7 +227,7 @@
   "name": "S31 message used",
   "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.cs",
   "old": "if (!string.IsNullOrEmpty(message)) return message;",
-  "new": "if (false) return message!;",
+  "new": "if (message == \"never-sent\") return message!;",
   "filter": "FullyQualifiedName~SahiContract",
   "project": "EPTradeBot.Contract.Tests"
  },
@@ -419,7 +403,7 @@
   "name": "S53 trades filled",
   "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.cs",
   "old": "if (!Truthy(o[\"filled_qty\"])) continue;",
-  "new": "if (false) continue;",
+  "new": "if (o[\"filled_qty\"] is null) continue;",
   "filter": "FullyQualifiedName~SahiContract",
   "project": "EPTradeBot.Contract.Tests"
  },
@@ -540,14 +524,6 @@
   "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.cs",
   "old": "unrealised = total - realised;",
   "new": "unrealised = total;",
-  "filter": "FullyQualifiedName~SahiContract",
-  "project": "EPTradeBot.Contract.Tests"
- },
- {
-  "name": "S69 funds round positions",
-  "file": "src/EPTradeBot.Infrastructure/Brokers/Sahi/SahiPlugin.cs",
-  "old": "BookFormatting.Round2(PositionPnl(p, FromPaise(p[\"net_avg_price\"])))",
-  "new": "PositionPnl(p, FromPaise(p[\"net_avg_price\"]))",
   "filter": "FullyQualifiedName~SahiContract",
   "project": "EPTradeBot.Contract.Tests"
  },

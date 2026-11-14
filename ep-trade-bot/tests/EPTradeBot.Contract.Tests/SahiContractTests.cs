@@ -33,6 +33,8 @@ public sealed class SahiContractTests(SahiHost host, ITestOutputHelper output) :
         ["modifyorder_session_expired"] = Words(401, Expired),
         ["orderbook_session_expired"] = Words(500, Expired),
         ["positionbook_refused"] = Words(500, Expired),
+        ["placeorder_401_with_another_code"] = Words(401, Expired),
+        ["placeorder_unauthorized_code_on_another_status"] = Words(400, Expired),
         ["placeorder_ip_not_allowed"] = Words(403, "Sahi refused the order because it did not come from your registered static IP. Check the IP in Sahi web, Profile, API Dashboard, and that EP Trade bot runs on that machine."),
         ["placeorder_forbidden"] = Words(403, "Your Sahi API key does not have permission for this. Create a key with Full access in the Sahi API Dashboard and use it in EP Trade bot."),
         ["placeorder_unknown_symbol"] = new("Same status; the platform's own words for a symbol missing from the master contract, where OpenAlgo's plugin words it itself.",
@@ -40,6 +42,7 @@ public sealed class SahiContractTests(SahiHost host, ITestOutputHelper output) :
         ["closeposition_mtf_position_stays_open"] = new("OpenAlgo refuses to square off a margin-trading position and says to do it in the Sahi app. EP Trade bot's close-all sends a plain product error from the shared order path, so it reads the same way for every broker; the position still stays open and the run reports failure.",
             f => Expect(f, 500, Error("1 position(s) could not be squared off and are still open: SBIN (NSE): Product MTF is not supported. Use CNC, MIS or NRML."))),
         ["funds_refused"] = new("OpenAlgo shows an empty balance when Sahi refuses the funds call. EP Trade bot reports the refusal, so an empty balance is never mistaken for a real one.", Status: 500),
+        ["funds_error_status_with_an_available_block"] = new("OpenAlgo shows an empty balance when Sahi answers the funds call with an error status, even if the answer carries figures. EP Trade bot reports the refusal.", Status: 500),
         ["funds_without_the_available_block"] = new("OpenAlgo shows an empty balance when Sahi answers the funds call without an available block. EP Trade bot reports it, so an empty balance is never mistaken for a real one.", Status: 500),
     };
 

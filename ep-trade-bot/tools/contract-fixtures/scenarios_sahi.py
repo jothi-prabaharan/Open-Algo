@@ -16,7 +16,9 @@ SYMBOLS = [
     _sym("INFY", "INFY", "BSE", 2002, "INFOSYS"),
     _sym("NIFTY25NOV26FUT", "NIFTY25NOV26FUT", "NFO", 50001, "NIFTY", 75, "FUTIDX", "25-NOV-26", -1.0, 0.1),
     _sym("NIFTY", "NIFTY", "NSE_INDEX", 26000, "NIFTY"),
+    _sym("SENSEX26NOVFUT", "SENSEX26NOVFUT", "BFO", 60001, "SENSEX", 20, "FUTIDX", "26-NOV-26", -1.0, 0.1),
 ]
+SYMBOLS += [_sym(f"BULK{i}", f"BULK{i}", "NSE", 3000 + i, f"BULK{i}") for i in range(130)]
 
 PLACE = {"strategy": "t", "symbol": "SBIN", "exchange": "NSE", "action": "BUY", "quantity": "10", "pricetype": "LIMIT", "product": "MIS", "price": "800.5", "trigger_price": "0", "disclosed_quantity": "0"}
 ORDER_OK = {"status": 201, "body": {"order_ids": ["S0001"]}}
@@ -86,6 +88,15 @@ LTPS_HOLD = {"body": {"data": {"1002": {"last_trade_price": 151000}, "2002": {"l
 NO_HOLDINGS = {"body": {"holdings": []}}
 FUNDS = {"body": {"available": {"intraday_and_fno_selling": 10122580}, "balance": {"collateral": 150000}, "utilised": {"span": 10000, "exposure": 5000, "delivery_margin": 1000, "intraday_margin": 2000,
          "delivery_buy": 3000, "charges": 495, "mtm_loss": 0}, "option_premium": {"paid": 20000}}}
+POSITIONS_EDGE = {"body": {"positions": [
+    pos("INFY", "NSE", "C", 1002, 0, 150000, 0, 5, 5),
+    pos("SBIN", "NSE", "I", None, 10, 80000, 0, 10, 0),
+    {"symbol": "SBIN", "exchange_segment": "NSE", "product": "I", "net_qty": 2, "net_avg_price": 80000, "realised_pnl": 0},
+]}}
+LTPS_EDGE = {"body": {"data": {"1002": {"last_trade_price": 151000}}}}
+BULK = {"body": {"positions": [pos(f"BULK{i}", "NSE", "I", 3000 + i, 1, 1000, 0, 1, 0) for i in range(130)]}}
+BULK_LTP = {"body": {"data": {str(3000 + i): {"last_trade_price": 1100} for i in range(130)}}}
+FUNDS_MTM = {"body": {"available": {"intraday_and_fno_selling": 100000}, "utilised": {"mtm_loss": 700, "span": 100}}}
 FUNDS_BARE = {"body": {"available": {}}}
 
 
@@ -158,5 +169,22 @@ SCENARIOS = [
     req("closeposition_mtf_position_stays_open", "/api/v1/closeposition", {"strategy": "t"}, {PB: {"body": {"positions": [pos("SBIN", "NSE", "F", 1001, 4, 80000, 0, 4, 0)]}}, LB: LTPS}),
     req("placeorder_rate_limited_then_accepted", "/api/v1/placeorder", PLACE, {PLACE_EP: [failure(429, "RATE_LIMITED", "x"), ORDER_OK]}),
     req("closeposition_nothing_open", "/api/v1/closeposition", {"strategy": "t"}, {PB: NO_POSITIONS}),
+    req("placeorder_bfo", "/api/v1/placeorder", {**PLACE, "symbol": "SENSEX26NOVFUT", "exchange": "BFO", "quantity": "20", "product": "NRML", "price": "80000"}, {PLACE_EP: ORDER_OK}),
+    req("placeorder_market_price_is_not_sent", "/api/v1/placeorder", {**PLACE, "pricetype": "MARKET", "price": "800.5"}, {PLACE_EP: ORDER_OK}),
+    req("placeorder_stop_market_price_is_not_sent", "/api/v1/placeorder", {**PLACE, "pricetype": "SL-M", "price": "800.5", "trigger_price": "801.5"}, {PLACE_EP: ORDER_OK}),
+    req("placeorder_ok_status_with_ids", "/api/v1/placeorder", PLACE, {PLACE_EP: {"status": 200, "body": {"order_ids": ["S0009"]}}}),
+    req("placeorder_unauthorized_code_on_another_status", "/api/v1/placeorder", PLACE, {PLACE_EP: failure(400, "UNAUTHORIZED", "m")}),
+    req("placeorder_401_with_another_code", "/api/v1/placeorder", PLACE, {PLACE_EP: failure(401, "OTHER", "m")}),
+    req("placeorder_rate_limited_code_on_another_status", "/api/v1/placeorder", PLACE, {PLACE_EP: failure(400, "RATE_LIMITED", "m")}),
+    req("placeorder_429_with_another_code", "/api/v1/placeorder", PLACE, {PLACE_EP: failure(429, "OTHER", "m")}),
+    req("modifyorder_stop_market_keeps_the_trigger", "/api/v1/modifyorder", {**CHANGE, "pricetype": "SL-M", "price": "0", "trigger_price": "801.5"}, {"PUT /v1/orders/S1": {"body": {"order_id": "S1"}}}),
+    req("modifyorder_answer_with_another_id", "/api/v1/modifyorder", CHANGE, {"PUT /v1/orders/S1": {"body": {"order_id": "S9"}}}),
+    req("modifyorder_created_status_is_a_refusal", "/api/v1/modifyorder", CHANGE, {"PUT /v1/orders/S1": {"status": 201, "body": {"order_id": "S1"}}}),
+    req("orderbook_odd_rows", "/api/v1/orderbook", {}, {OB: {"body": {"orders": [order("S8", "SBIN", "NSE", "B", 1, 0, "", "", 0, "LMT", "I", ""), order("S9", "SBIN", "NSE", "B", 1, 0, 100, 0, 0, "LMT", "I", "Weird")]}}}),
+    req("positionbook_flat_and_unpriced_rows", "/api/v1/positionbook", {}, {PB: POSITIONS_EDGE, LB: LTPS_EDGE}),
+    req("positionbook_more_than_a_hundred_prices_go_in_batches", "/api/v1/positionbook", {}, {PB: BULK, LB: BULK_LTP}),
+    req("positionbook_prices_answer_with_an_error_status_and_data", "/api/v1/positionbook", {}, {PB: POSITIONS, LB: {"status": 400, "body": LTPS["body"]}}),
+    req("funds_with_a_mark_to_market_loss", "/api/v1/funds", {}, {FB: FUNDS_MTM, PB: NO_POSITIONS}),
+    req("funds_error_status_with_an_available_block", "/api/v1/funds", {}, {FB: {"status": 400, "body": FUNDS["body"]}, PB: NO_POSITIONS}),
     req("placesmartorder_reduce", "/api/v1/placesmartorder", {**PLACE, "quantity": "0", "position_size": "4"}, {PB: POSITIONS, PLACE_EP: ORDER_OK, LB: LTPS}),
 ]
