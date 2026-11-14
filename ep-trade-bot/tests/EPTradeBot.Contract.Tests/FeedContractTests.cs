@@ -1225,3 +1225,110 @@ public sealed class FirstockFeedEndpointTests
         Assert.Empty(codec.TakeOutgoing());
     }
 }
+
+public sealed class KotakFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_kotak.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_kotak.fixtures.json", name, () => new KotakFeedCodec());
+}
+
+public sealed class KotakFeedEndpointTests
+{
+    private sealed class Config(Func<HttpRequestMessage, HttpResponseMessage> answer) : IHttpClientFactory
+    {
+        public int Calls { get; private set; }
+
+        public HttpClient CreateClient(string name) => new(new Handler(this, answer));
+
+        private sealed class Handler(Config owner, Func<HttpRequestMessage, HttpResponseMessage> answer) : HttpMessageHandler
+        {
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                owner.Calls++;
+                return Task.FromResult(answer(request));
+            }
+        }
+    }
+
+    private static BrokerSession Session(string token = "t:::sid:::https://cis.test:::access:::E43") => new(Guid.NewGuid(), "kotak", token, null, null, new Dictionary<string, string>());
+
+    private static HttpResponseMessage Json(string body, System.Net.HttpStatusCode status = System.Net.HttpStatusCode.OK) => new(status) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") };
+
+    private static EPTradeBot.Infrastructure.Brokers.Kotak.KotakPlugin Plugin(IHttpClientFactory http) => new(http, null!, null!, TimeProvider.System);
+
+    private const string Default = "wss://sfeed.kotaksecurities.com/apifeed";
+
+    [Fact]
+    public async Task The_data_centre_names_the_host()
+    {
+        var http = new Config(r => Json("""{"data":{"configs":{"E43_broadcast_source":"sh","E43_sh_broadcast_endpoint":"https://feed.test/apifeed"}}}"""));
+        var endpoint = await Plugin(http).AuthorizeAsync(Session(), null, CancellationToken.None);
+        Assert.Equal("wss://feed.test/apifeed", endpoint!.Url.AbsoluteUri);
+    }
+
+    [Theory]
+    [InlineData("""{"data":{"configs":{"E43_broadcast_source":"ks","E43_ks_broadcast_endpoint":"cdt.test/stream"}}}""", "wss://cdt.test/stream")]
+    [InlineData("""{"data":{"configs":{"E43_broadcast_source":"sh","E43_sh_broadcast_endpoint":"http://feed.test/x"}}}""", "ws://feed.test/x")]
+    [InlineData("""{"data":{"configs":{"E43_broadcast_source":"sh","E43_sh_broadcast_endpoint":"wss://feed.test/x"}}}""", "wss://feed.test/x")]
+    [InlineData("""{"data":{"configs":{"E43_broadcast_source":"hs","E43_hs_broadcast_endpoint":"hs.test"}}}""", Default)]
+    [InlineData("""{"data":{"configs":{"E43_broadcast_source":"sh"}}}""", Default)]
+    [InlineData("""{"data":{"configs":{"E21_broadcast_source":"sh","E21_sh_broadcast_endpoint":"x.test"}}}""", Default)]
+    [InlineData("""{"data":{}}""", Default)]
+    [InlineData("""[1]""", Default)]
+    [InlineData("not json", Default)]
+    public async Task The_config_decides_the_host_and_anything_unusable_is_the_default(string body, string expected)
+    {
+        var endpoint = await Plugin(new Config(r => Json(body))).AuthorizeAsync(Session(), null, CancellationToken.None);
+        Assert.Equal(expected, endpoint!.Url.AbsoluteUri);
+    }
+
+    [Fact]
+    public async Task A_config_that_fails_is_the_default() =>
+        Assert.Equal(Default, (await Plugin(new Config(r => Json("{}", System.Net.HttpStatusCode.InternalServerError))).AuthorizeAsync(Session(), null, CancellationToken.None))!.Url.AbsoluteUri);
+
+    [Fact]
+    public async Task A_session_with_no_data_centre_does_not_ask()
+    {
+        var http = new Config(r => Json("{}"));
+        var endpoint = await Plugin(http).AuthorizeAsync(Session("t:::sid:::https://cis.test:::access"), null, CancellationToken.None);
+        Assert.Equal(Default, endpoint!.Url.AbsoluteUri);
+        Assert.Equal(0, http.Calls);
+    }
+
+    [Fact]
+    public async Task An_override_is_used_without_asking()
+    {
+        var http = new Config(r => Json("{}"));
+        Assert.Equal("wss://example.test/ws", (await Plugin(http).AuthorizeAsync(Session(), "wss://example.test/ws", CancellationToken.None))!.Url.AbsoluteUri);
+        Assert.Equal(0, http.Calls);
+    }
+
+    [Fact]
+    public async Task A_session_that_is_not_a_kotak_session_has_no_feed()
+    {
+        Assert.Null(await Plugin(new Config(r => Json("{}"))).AuthorizeAsync(Session("plain"), null, CancellationToken.None));
+        Assert.Null(Plugin(new Config(r => Json("{}"))).FeedEndpoint(Session("plain"), null));
+    }
+
+    [Fact]
+    public void The_codec_signs_in_with_the_session_id_and_the_client_code()
+    {
+        var codec = new KotakFeedCodec();
+        codec.Begin(new BrokerSession(Guid.NewGuid(), "kotak", "t:::the-sid:::https://cis.test:::access:::E43", null, null, new Dictionary<string, string> { ["ApiKey"] = "UCC123" }));
+        var frame = System.Text.Json.Nodes.JsonNode.Parse(Assert.Single(codec.Resubscribe(5)))!;
+        Assert.Equal("UCC123", frame["user"]!.GetValue<string>());
+        Assert.Equal("the-sid", frame["auth"]!.GetValue<string>());
+        Assert.Equal(5, frame["conn_req_time"]!.GetValue<long>());
+    }
+
+    [Fact]
+    public void The_keep_alive_is_a_ping_every_thirty_seconds()
+    {
+        var plugin = Plugin(new Config(r => Json("{}")));
+        Assert.Null(plugin.FeedKeepAliveText);
+        Assert.Equal(TimeSpan.FromSeconds(30), plugin.FeedKeepAliveEvery);
+    }
+}
