@@ -20,7 +20,7 @@ public sealed partial class IiflCapitalPlugin(IHttpClientFactory http, BrokerSes
 
     public string Name => "iiflcapital";
     public string DisplayName => "IIFL Capital";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Margin;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     // ---- vocabulary ------------------------------------------------------------------------------------------

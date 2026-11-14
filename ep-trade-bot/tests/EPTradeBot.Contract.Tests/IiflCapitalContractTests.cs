@@ -62,3 +62,38 @@ public sealed class IiflCapitalContractTests(IiflCapitalHost host, ITestOutputHe
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class MarginIiflCapitalHost : BrokerContractHost
+{
+    public override string BrokerName => "iiflcapital";
+    public override string FixtureFile => "margin_iiflcapital.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "iifl-app-key", ["ApiSecret"] = "iifl-app-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+/// <summary>IIFL Capital margin (tools/contract-fixtures/margin_iiflcapital.fixtures.json).</summary>
+public sealed class MarginIiflCapitalContractTests(MarginIiflCapitalHost host, ITestOutputHelper output) : IClassFixture<MarginIiflCapitalHost>
+{
+    private static string Unknown(string symbol) => $"{symbol} on NSE is not in the IIFL Capital master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["margin_a_result_that_is_not_an_object"] = new("OpenAlgo answers 200 carrying an error message. EP Trade bot answers with a failure status and says to try again.", f => Expect(f, 502, Error("IIFL Capital sent a margin answer EP Trade bot could not read. Try again in a moment."))),
+        ["margin_unknown_symbol_alone"] = new("Same status; EP Trade bot names the symbol, where OpenAlgo says no symbol was valid.", f => Expect(f, 400, Error(Unknown("NOSUCH")))),
+        ["margin_unknown_symbol_among_others"] = new(
+            "OpenAlgo leaves the position whose symbol it cannot find out of the calculation and works out the rest, which understates the margin. EP Trade bot refuses and names the symbol.",
+            f =>
+            {
+                Expect(f, 400, Error(Unknown("NOSUCH")));
+                f["sent"]!.AsArray().Clear();
+            }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin_iiflcapital.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
