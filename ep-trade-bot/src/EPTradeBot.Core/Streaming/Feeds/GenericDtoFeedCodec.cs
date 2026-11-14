@@ -199,6 +199,57 @@ public sealed class GenericDtoFeedCodec(string broker, Func<string, string> pref
         return published;
     }
 
+    /// <summary>The index fields of a tick (kind, price, day range, close, a zero volume and the packet's own time when it has one).</summary>
+    internal static void FillIndex(JsonObject tick, GenericDto p)
+    {
+        var ix = p.Index ?? new GenericDto.IndexData();
+        tick["kind"] = "index";
+        tick["ltp"] = ix.Value;
+        tick["open"] = ix.Open;
+        tick["high"] = ix.High;
+        tick["low"] = ix.Low;
+        tick["close"] = ix.Close;
+        tick["volume"] = 0;
+        if (ix.Timestamp != 0) tick["timestamp"] = ix.Timestamp;
+    }
+
+    /// <summary>The market-by-price fields of a tick (price, day range, volume, totals, open interest, circuit band, trade time and the book, five levels a side).</summary>
+    internal static void FillMbp(JsonObject tick, GenericDto p)
+    {
+        var m = p.Mbp ?? new GenericDto.MbpData();
+        tick["kind"] = "mbp";
+        tick["ltp"] = m.Ltp;
+        tick["open"] = m.Open;
+        tick["high"] = m.High;
+        tick["low"] = m.Low;
+        tick["close"] = m.Close;
+        tick["volume"] = m.Volume;
+        tick["ltq"] = m.Ltq;
+        tick["average_price"] = m.Average;
+        tick["total_buy_quantity"] = m.TotalBuy;
+        tick["total_sell_quantity"] = m.TotalSell;
+        tick["oi"] = m.Oi;
+        tick["lower_limit"] = m.Lower;
+        tick["upper_limit"] = m.Upper;
+        if (m.LastTradeTime != 0) tick["ltt"] = m.LastTradeTime;
+        var buy = new JsonArray();
+        var sell = new JsonArray();
+        foreach (var l in m.Levels)
+        {
+            var entry = new JsonObject { ["price"] = l.Price, ["quantity"] = l.Quantity, ["orders"] = l.Orders };
+            (l.Buy ? buy : sell).Add(entry);
+        }
+
+        if (buy.Count > 0 || sell.Count > 0)
+        {
+            tick["depth"] = new JsonObject
+            {
+                ["buy"] = new JsonArray(buy.Take(5).Select(x => x!.DeepClone()).ToArray()),
+                ["sell"] = new JsonArray(sell.Take(5).Select(x => x!.DeepClone()).ToArray()),
+            };
+        }
+    }
+
     private static JsonObject? ToTick(GenericDto p, long nowMs)
     {
         if (p.PacketType == Heartbeat) return null;
@@ -213,15 +264,7 @@ public sealed class GenericDtoFeedCodec(string broker, Func<string, string> pref
         switch (p.PacketType)
         {
             case 2 or 5:
-                var ix = p.Index ?? new GenericDto.IndexData();
-                tick["kind"] = "index";
-                tick["ltp"] = ix.Value;
-                tick["open"] = ix.Open;
-                tick["high"] = ix.High;
-                tick["low"] = ix.Low;
-                tick["close"] = ix.Close;
-                tick["volume"] = 0;
-                if (ix.Timestamp != 0) tick["timestamp"] = ix.Timestamp;
+                FillIndex(tick, p);
                 return tick;
             case 17 or 18:
                 return null; // option greeks are not part of the tick contract
@@ -238,39 +281,7 @@ public sealed class GenericDtoFeedCodec(string broker, Func<string, string> pref
 
         if (p.PacketType is 0 or 1 or 3 or 4 or 6 or 7 || p.Mbp is not null)
         {
-            var m = p.Mbp ?? new GenericDto.MbpData();
-            tick["kind"] = "mbp";
-            tick["ltp"] = m.Ltp;
-            tick["open"] = m.Open;
-            tick["high"] = m.High;
-            tick["low"] = m.Low;
-            tick["close"] = m.Close;
-            tick["volume"] = m.Volume;
-            tick["ltq"] = m.Ltq;
-            tick["average_price"] = m.Average;
-            tick["total_buy_quantity"] = m.TotalBuy;
-            tick["total_sell_quantity"] = m.TotalSell;
-            tick["oi"] = m.Oi;
-            tick["lower_limit"] = m.Lower;
-            tick["upper_limit"] = m.Upper;
-            if (m.LastTradeTime != 0) tick["ltt"] = m.LastTradeTime;
-            var buy = new JsonArray();
-            var sell = new JsonArray();
-            foreach (var l in m.Levels)
-            {
-                var entry = new JsonObject { ["price"] = l.Price, ["quantity"] = l.Quantity, ["orders"] = l.Orders };
-                (l.Buy ? buy : sell).Add(entry);
-            }
-
-            if (buy.Count > 0 || sell.Count > 0)
-            {
-                tick["depth"] = new JsonObject
-                {
-                    ["buy"] = new JsonArray(buy.Take(5).Select(x => x!.DeepClone()).ToArray()),
-                    ["sell"] = new JsonArray(sell.Take(5).Select(x => x!.DeepClone()).ToArray()),
-                };
-            }
-
+            FillMbp(tick, p);
             return tick;
         }
 
@@ -322,7 +333,7 @@ public sealed class GenericDtoFeedCodec(string broker, Func<string, string> pref
         return merged;
     }
 
-    private static JsonObject Normalize(JsonObject tick, long token, string symbol, string exchange, StreamMode topic)
+    internal static JsonObject Normalize(JsonObject tick, long token, string symbol, string exchange, StreamMode topic)
     {
         var ltp = tick["ltp"]?.GetValue<double>() ?? 0;
         var data = new JsonObject

@@ -800,3 +800,39 @@ public sealed class HdfcSecuritiesFeedEndpointTests
     public void A_test_address_replaces_the_host_and_path() =>
         Assert.StartsWith("ws://localhost:9/x?token=", new EPTradeBot.Infrastructure.Brokers.HdfcSecurities.HdfcSecuritiesPlugin(null!, null!, null!).FeedEndpoint(Session(), "ws://localhost:9/x")!.Url.AbsoluteUri);
 }
+
+public sealed class HdfcSkyFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_hdfcsky.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_hdfcsky.fixtures.json", name, () => new HdfcSkyFeedCodec());
+}
+
+public sealed class HdfcSkyFeedEndpointTests
+{
+    private static BrokerSession Session(string token = "tok en", string? key = "key&1") =>
+        new(Guid.NewGuid(), "hdfcsky", token, null, null, key is null ? new Dictionary<string, string>() : new Dictionary<string, string> { ["ApiKey"] = key });
+
+    private static EPTradeBot.Infrastructure.Brokers.HdfcSky.HdfcSkyPlugin Plugin() => new(null!, null!, null!, TimeProvider.System, null!);
+
+    [Fact]
+    public void The_token_and_key_ride_in_the_address_and_the_token_again_in_the_header()
+    {
+        var plugin = Plugin();
+        var endpoint = plugin.FeedEndpoint(Session(), null)!;
+        Assert.Equal("wss://developer.hdfcsky.com/wsapi/v1/session?token=tok%20en&api_key=key%261", endpoint.Url.AbsoluteUri);
+        Assert.Equal("tok en", endpoint.Headers["Authorization"]);
+        Assert.StartsWith("Mozilla/5.0", endpoint.Headers["User-Agent"]);
+        Assert.Equal("{\"heart_beat\": true}", plugin.FeedKeepAliveText);
+        Assert.Equal(TimeSpan.FromSeconds(10), plugin.FeedKeepAliveEvery);
+    }
+
+    [Fact]
+    public void Without_a_token_or_a_key_there_is_no_endpoint()
+    {
+        Assert.Null(Plugin().FeedEndpoint(Session(token: ""), null));
+        Assert.Null(Plugin().FeedEndpoint(Session(key: null), null));
+    }
+}
