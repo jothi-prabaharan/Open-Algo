@@ -23,7 +23,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Rupeezy (Vortex) | yes | yes | yes | yes | n/a | yes | yes | yes |
 | Sahi | yes | yes | yes | yes | yes | n/a | yes | yes |
 | Arrow | yes | yes | yes | yes | yes | n/a | yes | yes |
-| HDFC Securities | yes | yes | no | n/a | n/a | n/a | yes | no |
+| HDFC Securities | yes | yes | yes | n/a | n/a | n/a | yes | yes |
 
 The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -32,7 +32,7 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **The 20 brokers not started** (fivepaisa, aliceblue, arrow, definedge, firstock, groww, hdfcsecurities, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, rupeezy, sahi, samco, tradejini, tradesmart), and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **The 15 brokers not started** (fivepaisa, aliceblue, definedge, firstock, groww, hdfcsky, iiflcapital, indmoney, kotak, motilal, mstock, nubra, pocketful, samco, tradejini), and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
 ## Upstox sign-in
 
@@ -327,7 +327,9 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 
 - `HdfcSecuritiesPlugin`, held to `broker/hdfcsecurities` by 62 recorded cases (`hdfcsecurities.fixtures.json`): the access token goes in Authorization with no prefix, the api_key in the query, and a user agent is mandatory; an instrument is addressed by the parent exchange (NFO and CDS are NSE, BFO is BSE), an instrument segment (EQUITY, FUTIDX, OPTIDX, FUTSTK, OPTSTK, FUTCUR, OPTCUR, FUTCOM, OPTFUT) and the broker code; a derivative also carries its expiry as YYYYMMDD, the strike, the option type and the underlying's own broker code (found on the index exchange, else the cash one; MCX and currency underlyings carry the plain name); products are DELIVERY or INTRADAY on cash and OVERNIGHT or INTRADAY on derivatives; every order carries a caller-side tracking number, a millisecond counter that never repeats. A book row's symbol is its code in the master contract, else rebuilt from the underlying, expiry, strike and option type, else the code, else the ISIN; the trade book puts the underlying name where the order book puts the code, so a code is only taken as an underlying when the master lists it. Positions and holdings carry no price, so one batched /fetch-ltp call (ten instruments at a time, a 429 tried again up to four times) prices them; the profit of a position is the sold less the bought value plus the net quantity at the last price; funds are the available and used limits, the pledge limit as collateral, and the profit figures from the position book.
 - Recorded differences from OpenAlgo: an expired session, or any error answer, to a book or funds call is shown as an empty book or an empty balance there, so close-all reports "no open positions" while real ones exist; here it is a refusal that names the call. An order HDFC Securities accepts without an order id is a refusal here where OpenAlgo reports success with no id; an unlisted symbol is named by the platform where OpenAlgo fails with an internal error; the shared close-all path names its failures in its own words.
-- Not offered by HDFC Securities in OpenAlgo: history, margin and GTT (n/a). Not yet ported: quotes, depth and several quotes (the live feed supplies the open, high, low, volume, open interest and book, which a short socket collects; the REST part is /fetch-ltp), the feed; no mutation set; no live-broker run.
+- Not offered by HDFC Securities in OpenAlgo: history, margin and GTT (n/a). No live-broker run (owner checklist).
+- Quotes, depth and several quotes (`hdfcsecurities_data.fixtures.json`, 30 cases; mutation set `tg7-hdfcsecurities-data.json`, 10 of 12 killed; the two survivors are equivalent: the key built from the broker exchange equals the OpenAlgo one for every instrument in the recordings, and the not-found status in the plugin is unreachable because the platform names an unlisted symbol before the plugin is called): /fetch-ltp (PUT, ten instruments at a time, a 429 tried again up to four times, a blank exchange recovered when the token was asked for under one code, a lowercase one read) is the only REST market-data call and gives the last price and the previous close. A refused or failed call, or a leg missing from the answer, is a price of zero in a single quote and depth (as in OpenAlgo), and "No quote data available" for that leg of several quotes. Recorded deviation: OpenAlgo opens a one-off feed connection to fill open, high, low, volume, open interest, best bid and ask and the five-level book, and shows zeros when it does not answer in time. EP Trade bot's REST path does not open that connection, so those fields are always zero there; the live stream (the feed below) is where a trader reads them. The recordings were made with that snapshot empty, so both sides agree on the zero fields; the open-interest enrichment for derivative legs in several quotes is likewise zero.
+- Feed (`feed_hdfcsecurities.fixtures.json`, 79 cases, plus 3 address tests; mutation set `tg7-hdfcsecurities-feed.json`, 56 of 57 mutants killed, the survivor being the varint-length mutant, killed after its scenario was rewritten; one real defect found and fixed: ten-byte numbers with overflow bits are read as protobuf reads them). One `GenericDtoFeedCodec` (shared with HDFC Sky, whose schema is byte-identical) reads the GenericDTO protobuf by hand: a list of packets or a bare packet, wrong-wire-type fields skipped, malformed input drops the whole frame; the packet type names the exchange (a token is only unique within one), circuit and open-interest packets are merged into the last full quote and publish nothing without one, option-greek packets are not published; subscribe is a JSON frame (LTP or ALL, a hundred scrips a frame, one connection capped at 1500), unsubscribe is the same frame under unSubscribe, and a lower-mode drop subscribes again at the type left. The feed is addressed with the token and key in the address, the token again in Authorization and the browser user agent; the keepalive is {"heart_beat": true} every ten seconds. Not in the codec: OpenAlgo refreshes its token and reconnects when a text frame reports an authentication failure; EP Trade bot's feed host reconnects on close and re-reads the stored token.
 - Sign-in (`login_hdfcsecurities.fixtures.json`, 8 cases): the request token the page returns is exchanged at /oapi/v1/access-token with the api_key and token in the query and the secret in the body; the access token is read from accessToken, access_token or either inside a data envelope. Differences: refusals are plain sentences naming HDFC Securities (OpenAlgo prints a Python dict when the answer has no message).
 
 ## Decisions taken with the owner
@@ -347,10 +349,10 @@ Lines of Python in each broker's `api/` and `mapping/` (the REST side) and `stre
 
 | Broker | REST lines | Feed lines | Note |
 |---|---|---|---|
-| rupeezy | 2150 | 698 | Own paged REST API; has GTT. Smallest feed. |
-| sahi | 1802 | 1318 | Own REST API |
-| arrow | 2035 | 1104 | Own REST API |
-| hdfcsecurities | 2264 | 1345 | Own REST API |
+| rupeezy | 2150 | 698 | Done (see its section) |
+| sahi | 1802 | 1318 | Done (see its section) |
+| arrow | 2035 | 1104 | Done (see its section) |
+| hdfcsecurities | 2264 | 1345 | Done (see its section) |
 | hdfcsky | 2578 | 1085 | Own REST API |
 | iiflcapital | 2773 | 2490 | Own REST API |
 | samco | 2892 | 1790 | Own REST API |

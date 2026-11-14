@@ -52,3 +52,26 @@ public sealed class HdfcSecuritiesContractTests(HdfcSecuritiesHost host, ITestOu
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class HdfcSecuritiesDataHost : BrokerContractHost
+{
+    public override string BrokerName => "hdfcsecurities";
+    public override string FixtureFile => "hdfcsecurities_data.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "hdfc-api-key", ["ApiSecret"] = "hdfc-api-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["Brokers:RetryBackoffMs:hdfcsecurities"] = "0" };
+}
+
+/// <summary>HDFC Securities quotes, depth and several quotes (tools/contract-fixtures/hdfcsecurities_data.fixtures.json). Both sides leave the feed-only fields at zero.</summary>
+public sealed class HdfcSecuritiesDataContractTests(HdfcSecuritiesDataHost host, ITestOutputHelper output) : IClassFixture<HdfcSecuritiesDataHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new();
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("hdfcsecurities_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}

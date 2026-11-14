@@ -13,7 +13,7 @@ namespace EPTradeBot.Infrastructure.Brokers.HdfcSecurities;
 /// Not ported yet: quotes, depth, several quotes and the feed (history and margin are not offered).
 /// </summary>
 [BrokerPlugin]
-public sealed partial class HdfcSecuritiesPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
+public sealed partial class HdfcSecuritiesPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
 {
     private const string DefaultBaseUrl = "https://developer.hdfcsec.com";
     private const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36";
@@ -21,7 +21,7 @@ public sealed partial class HdfcSecuritiesPlugin(IHttpClientFactory http, Broker
 
     public string Name => "hdfcsecurities";
     public string DisplayName => "HDFC Securities";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     // ---- vocabulary ------------------------------------------------------------------------------------------

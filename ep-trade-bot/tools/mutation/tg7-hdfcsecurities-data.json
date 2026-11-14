@@ -1,0 +1,98 @@
+[
+ {
+  "name": "HQ1 batch size",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSecurities/HdfcSecuritiesPlugin.cs",
+  "old": "private const int LtpBatch = 10;",
+  "new": "private const int LtpBatch = 11;",
+  "filter": "FullyQualifiedName~HdfcSecuritiesData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HQ2 quote ltp",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSecurities/HdfcSecuritiesPlugin.Data.cs",
+  "old": "[\"ltp\"] = ltp, [\"open\"] = 0.0, [\"prev_close\"] = prev, [\"volume\"] = 0, [\"oi\"] = oi,",
+  "new": "[\"ltp\"] = prev, [\"open\"] = 0.0, [\"prev_close\"] = prev, [\"volume\"] = 0, [\"oi\"] = oi,",
+  "filter": "FullyQualifiedName~HdfcSecuritiesData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HQ3 quote prev",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSecurities/HdfcSecuritiesPlugin.Data.cs",
+  "old": "[\"ltp\"] = ltp, [\"open\"] = 0.0, [\"prev_close\"] = prev, [\"volume\"] = 0, [\"oi\"] = oi,",
+  "new": "[\"ltp\"] = ltp, [\"open\"] = 0.0, [\"prev_close\"] = ltp, [\"volume\"] = 0, [\"oi\"] = oi,",
+  "filter": "FullyQualifiedName~HdfcSecuritiesData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HQ4 depth levels",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSecurities/HdfcSecuritiesPlugin.Data.cs",
+  "old": "Enumerable.Range(0, 5)",
+  "new": "Enumerable.Range(0, 4)",
+  "filter": "FullyQualifiedName~HdfcSecuritiesData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HQ5 depth prev",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSecurities/HdfcSecuritiesPlugin.Data.cs",
+  "old": "[\"ltq\"] = 0, [\"oi\"] = 0, [\"open\"] = 0.0, [\"prev_close\"] = prev,",
+  "new": "[\"ltq\"] = 0, [\"oi\"] = 0, [\"open\"] = 0.0, [\"prev_close\"] = ltp,",
+  "filter": "FullyQualifiedName~HdfcSecuritiesData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HQ6 depth ltp",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSecurities/HdfcSecuritiesPlugin.Data.cs",
+  "old": "[\"low\"] = 0.0, [\"ltp\"] = ltp, [\"ltq\"]",
+  "new": "[\"low\"] = 0.0, [\"ltp\"] = prev, [\"ltq\"]",
+  "filter": "FullyQualifiedName~HdfcSecuritiesData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HQ7 missing leg text",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSecurities/HdfcSecuritiesPlugin.Data.cs",
+  "old": "\"No quote data available\"",
+  "new": "\"No quote\"",
+  "filter": "FullyQualifiedName~HdfcSecuritiesData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HQ8 batches merged",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSecurities/HdfcSecuritiesPlugin.Data.cs",
+  "old": "foreach (var (key, price) in await FetchLtpAsync(session, batch, cancellationToken)) prices[key] = price;",
+  "new": "foreach (var (key, price) in await FetchLtpAsync(session, batch, cancellationToken)) { prices.Clear(); prices[key] = price; }",
+  "filter": "FullyQualifiedName~HdfcSecuritiesData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HQ9 batch step",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSecurities/HdfcSecuritiesPlugin.Data.cs",
+  "old": "start += LtpBatch)\n        {\n            var batch",
+  "new": "start += LtpBatch + 1)\n        {\n            var batch",
+  "filter": "FullyQualifiedName~HdfcSecuritiesData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HQ10 missing price default",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSecurities/HdfcSecuritiesPlugin.Data.cs",
+  "old": "prices.GetValueOrDefault((record.Exchange, record.Token), (0.0, 0.0))",
+  "new": "prices.GetValueOrDefault((record.Exchange, record.Token), (1.0, 0.0))",
+  "filter": "FullyQualifiedName~HdfcSecuritiesData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HQ11 multi key",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSecurities/HdfcSecuritiesPlugin.Data.cs",
+  "old": "prices.TryGetValue((r.Exchange, r.Token), out var p)",
+  "new": "prices.TryGetValue((r.BrokerExchange, r.Token), out var p)",
+  "filter": "FullyQualifiedName~HdfcSecuritiesData",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "HQ12 quote error status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSecurities/HdfcSecuritiesPlugin.Data.cs",
+  "old": "\", 400);\n        var prices",
+  "new": "\", 500);\n        var prices",
+  "filter": "FullyQualifiedName~HdfcSecuritiesData",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]
