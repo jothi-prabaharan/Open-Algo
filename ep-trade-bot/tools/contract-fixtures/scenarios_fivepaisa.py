@@ -95,6 +95,8 @@ ORDERS = {"head": head(), "body": {"OrderBookDetail": [
     order(1010, "5000010", 3045, "N", "C", "B", 6, 800.0, 0, "N", "I", "Xmitted"),
     order(1011, "5000011", 3045, "N", "C", "S", 6, 800.0, 0, "N", "I", "AH Cancelled"),
     order(1012, "5000012", 3045, "N", "C", "S", 6, 800.0, 0, "N", "I", "Rejected by 5P"),
+    order(1013, "5000013", 3045, "N", "C", "B", 1, 800.0, 0, "N", "I", "Placed", BrokerOrderTime=date(1793591100000, "-0430")),
+    order(1014, "5000014", 3045, "N", "C", "B", 1, 800.0, 0, "N", "I", "Pending", BrokerOrderTime="not a date"),
 ]}}
 NO_ORDERS = {"head": head(), "body": {"OrderBookDetail": None}}
 CANCEL_BOOK = {"head": head(), "body": {"OrderBookDetail": [

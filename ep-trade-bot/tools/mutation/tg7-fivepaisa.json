@@ -1,0 +1,490 @@
+[
+ {
+  "name": "P1 bse derivatives exchange",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "\"BSE\" or \"BFO\" or \"BCD\" or \"BSE_INDEX\" => \"B\"",
+  "new": "\"BSE\" or \"BCD\" or \"BSE_INDEX\" => \"B\"",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P2 currency type",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "\"CDS\" or \"BCD\" => \"U\"",
+  "new": "\"BCD\" => \"U\"",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P3 reverse currency",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "(\"N\", \"U\") => \"CDS\"",
+  "new": "(\"N\", \"U\") => \"NFO\"",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P4 xmitted is open",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "\"modified\" or \"placed\" or \"ah placed\" or \"ah modified\" or \"xmitted\" => \"open\"",
+  "new": "\"modified\" or \"placed\" or \"ah placed\" or \"ah modified\" => \"open\"",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P5 offset minutes sign",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "int.Parse(offset[0] + offset[3..]",
+  "new": "int.Parse(offset[3..]",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P6 stop market type",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "(\"Y\", true) => \"SL-M\"",
+  "new": "(\"Y\", true) => \"SL\"",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P7 nrml product",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "exchange is \"NFO\" or \"MCX\" or \"BFO\" or \"CDS\" && delivery == \"D\" ? \"NRML\"",
+  "new": "exchange is \"NFO\" or \"MCX\" or \"BFO\" && delivery == \"D\" ? \"NRML\"",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P8 mis product",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "delivery == \"I\" ? \"MIS\"",
+  "new": "delivery == \"I\" ? \"NRML\"",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P9 intraday flag",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "[\"IsIntraday\"] = order.Product == \"MIS\"",
+  "new": "[\"IsIntraday\"] = order.Product == \"CNC\"",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P10 after hours flag",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "[\"AHPlaced\"] = \"N\"",
+  "new": "[\"AHPlaced\"] = \"Y\"",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P11 stop market without a trigger",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "order.PriceType == \"SL-M\" && trigger > 0",
+  "new": "order.PriceType == \"SL-M\" && trigger >= 0",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P12 buy stop limit rounds up",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "return SnapToTick(Math.Max(trigger * (1 + pct), trigger + tick), tick, false);",
+  "new": "return SnapToTick(Math.Max(trigger * (1 + pct), trigger + tick), tick, true);",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P13 cancel by exchange id",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "(Str(r[\"ExchOrderID\"]) ?? \"\") == orderId ||",
+  "new": "false ||",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P14 pending without an exchange id",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "Str(match[\"OrderStatus\"]) == \"Pending\" && string.IsNullOrEmpty(exchangeId)",
+  "new": "Str(match[\"OrderStatus\"]) == \"Open\" && string.IsNullOrEmpty(exchangeId)",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P15 modify success status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "Str((answer[\"head\"] as JsonObject)?[\"status\"]) == \"0\"",
+  "new": "Str((answer[\"head\"] as JsonObject)?[\"status\"]) == \"1\"",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P16 cancel success",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "if (status < 400 && Succeeded(answer)) return BrokerCallResult.Success(orderId);",
+  "new": "if (status < 400) return BrokerCallResult.Success(orderId);",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P17 cancelled count",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "case \"cancelled\": cancelled++; break;",
+  "new": "case \"cancelled\": break;",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P18 trade value",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "[\"trade_value\"] = BookFormatting.Round2(quantity * rate)",
+  "new": "[\"trade_value\"] = BookFormatting.Round2(quantity + rate)",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P19 flat position average",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "Float(r[\"NetQty\"]) > 0 ? r[\"BuyAvgRate\"]",
+  "new": "Float(r[\"NetQty\"]) >= 0 ? r[\"BuyAvgRate\"]",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P20 unrealised and realised",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "[\"m2munrealized\"] = BookFormatting.Round2(mark),",
+  "new": "[\"m2munrealized\"] = BookFormatting.Round2(booked),",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P21 holding percent",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "[\"pnlpercent\"] = buyValue != 0 ? BookFormatting.Round2(pnl / buyValue * 100) : 0.0",
+  "new": "[\"pnlpercent\"] = buyValue != 0 ? BookFormatting.Round2(pnl / ltpValue * 100) : 0.0",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P22 status code on quantity",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "[\"quantity\"] = Truthy(r[\"Qty\"]) ? r[\"Qty\"]!.DeepClone() : 0",
+  "new": "[\"quantity\"] = Truthy(r[\"TradedQty\"]) ? r[\"TradedQty\"]!.DeepClone() : 0",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P23 refusal reason",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "var reason = !string.IsNullOrEmpty(said) && said != \"Success\" ? said",
+  "new": "var reason = !string.IsNullOrEmpty(said) ? said",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P24 order id must be non zero",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "&& Truthy(id)) return BrokerCallResult.Success(Str(id)!);",
+  "new": ") return BrokerCallResult.Success(Str(id)!);",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "P25 modify matches broker id",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.cs",
+  "old": "(Str(r[\"BrokerOrderId\"]) ?? \"\") == change.OrderId);",
+  "new": "(Str(r[\"ExchOrderID\"]) ?? \"\") == change.OrderId);",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D1 previous close fallback",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.Data.cs",
+  "old": "if (close == 0) close = Float(quote[\"PreviousClose\"]);",
+  "new": "",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D2 best bid",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.Data.cs",
+  "old": "if (buys.Count > 0) bid = buys.Max();",
+  "new": "if (buys.Count > 0) bid = buys.Min();",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D3 best ask",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.Data.cs",
+  "old": "if (sells.Count > 0) ask = sells.Min();",
+  "new": "if (sells.Count > 0) ask = sells.Max();",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D4 quote reads buys",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.Data.cs",
+  "old": "var buys = depth.Where(o => Float(o[\"BbBuySellFlag\"]) == 66)",
+  "new": "var buys = depth.Where(o => Float(o[\"BbBuySellFlag\"]) == 83)",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D5 five levels",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.Data.cs",
+  "old": "new JsonArray(side.Take(5)",
+  "new": "new JsonArray(side.Take(4)",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D6 totals count every level",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.Data.cs",
+  "old": "[\"totalbuyqty\"] = buys.Sum(o => Int(o[\"Quantity\"]))",
+  "new": "[\"totalbuyqty\"] = buys.Take(5).Sum(o => Int(o[\"Quantity\"]))",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D7 batch size",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.Data.cs",
+  "old": "private const int BatchSize = 50;",
+  "new": "private const int BatchSize = 51;",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D8 token zero by name",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.Data.cs",
+  "old": "r.Token == \"0\" ? $\"scripdata:{r.BrokerSymbol}\" : r.Token",
+  "new": "r.Token",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D9 match by the symbol field",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.Data.cs",
+  "old": "record ??= batch.FirstOrDefault(r => r.BrokerSymbol == name);",
+  "new": "",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D10 scrip data for token zero",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.Data.cs",
+  "old": "[\"ScripData\"] = record.Token == \"0\" ? record.BrokerSymbol : \"\"",
+  "new": "[\"ScripData\"] = \"\"",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "D11 depth sorted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.Data.cs",
+  "old": ".OrderByDescending(o => Float(o[\"Price\"])).ToList();",
+  "new": ".ToList();",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H1 daily chunk",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.History.cs",
+  "old": "var chunkDays = daily ? 100 : 30;",
+  "new": "var chunkDays = daily ? 99 : 30;",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H2 intraday chunk",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.History.cs",
+  "old": "var chunkDays = daily ? 100 : 30;",
+  "new": "var chunkDays = daily ? 100 : 31;",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H3 candles after the range",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.History.cs",
+  "old": "if (day < from || day > to) return;",
+  "new": "if (day < from) return;",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H4 daily stamp",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.History.cs",
+  "old": "new DateTimeOffset(moment.Date, TimeSpan.Zero).ToUnixTimeSeconds()",
+  "new": "new DateTimeOffset(moment.Date, Ist).ToUnixTimeSeconds()",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H5 intraday stamp",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.History.cs",
+  "old": "new DateTimeOffset(moment, Ist).ToUnixTimeSeconds()",
+  "new": "new DateTimeOffset(moment, TimeSpan.Zero).ToUnixTimeSeconds()",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H6 empty candle",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.History.cs",
+  "old": "var empty = open == 0 && high == 0 && low == 0 && close == 0;",
+  "new": "var empty = open == 0 && high == 0 && low == 0 && close == 0 && volume == 0;",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H7 duplicate candle",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.History.cs",
+  "old": "bars.TryAdd(epoch,",
+  "new": "bars.Remove(epoch); bars.TryAdd(epoch,",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H8 hourly code",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.History.cs",
+  "old": "[\"1h\"] = \"60m\"",
+  "new": "[\"1h\"] = \"1h\"",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "H9 short candle",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.History.cs",
+  "old": "if (candle.Count < 6) return;",
+  "new": "",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L1 first call status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.Login.cs",
+  "old": "if (first.Status >= 400) return Unavailable(first.Status);",
+  "new": "if (first.Status >= 600) return Unavailable(first.Status);",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "L2 forbidden",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/FivePaisa/FivePaisaPlugin.Login.cs",
+  "old": "status is 401 or 403 ? $\"{DisplayName} did not accept the app key.",
+  "new": "status is 401 ? $\"{DisplayName} did not accept the app key.",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F1 frame size",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FivePaisaFeedCodec.cs",
+  "old": "private const int MaxPerFrame = 50;",
+  "new": "private const int MaxPerFrame = 51;",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F2 depth method order",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FivePaisaFeedCodec.cs",
+  "old": "mode == StreamMode.Depth ? [Ladder, Feed] : [Feed]",
+  "new": "mode == StreamMode.Depth ? [Feed, Ladder] : [Feed]",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F3 method still needed",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FivePaisaFeedCodec.cs",
+  "old": "foreach (var method in methods.Where(x => !needed.Contains(x))) frames.Add",
+  "new": "foreach (var method in methods) frames.Add",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F4 depth cut",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FivePaisaFeedCodec.cs",
+  "old": "if (flag == 66 && buy.Count < 5) buy.Add(level);",
+  "new": "if (flag == 66 && buy.Count < 6) buy.Add(level);",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F5 sell flag",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FivePaisaFeedCodec.cs",
+  "old": "else if (flag == 83 && sell.Count < 5) sell.Add(level);",
+  "new": "else if (flag == 84 && sell.Count < 5) sell.Add(level);",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F6 bse derivatives code",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FivePaisaFeedCodec.cs",
+  "old": "\"BSE\" or \"BFO\" or \"BSE_INDEX\" => \"B\", \"MCX\" => \"M\"",
+  "new": "\"BSE\" or \"BSE_INDEX\" => \"B\", \"MCX\" => \"M\"",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F7 currency type",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FivePaisaFeedCodec.cs",
+  "old": "\"NFO\" or \"BFO\" or \"MCX\" => \"D\", \"CDS\" => \"U\", _ => \"C\"",
+  "new": "\"NFO\" or \"BFO\" or \"MCX\" => \"D\", _ => \"C\"",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F8 reconnect dedupe",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FivePaisaFeedCodec.cs",
+  "old": "if (seen.Add((m, sub.Token))) queue.Add((m, sub.Scrip));",
+  "new": "queue.Add((m, sub.Scrip));",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F9 held price per mode",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FivePaisaFeedCodec.cs",
+  "old": "if (!subs.Values.Any(s => s.Token == target.Token && s.Mode == m)) lastSnapshot.Remove",
+  "new": "if (!subs.Values.Any(s => s.Token == target.Token)) lastSnapshot.Remove",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F10 zero holds the last price",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FivePaisaFeedCodec.cs",
+  "old": "if (last.TryGetValue(field, out var held) && !IsZero(held)) merged[field] = held!.DeepClone();",
+  "new": "",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F11 date text",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FivePaisaFeedCodec.cs",
+  "old": "return match.Success ? long.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture) : 0;",
+  "new": "return 0;",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F12 correlation prefix",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FivePaisaFeedCodec.cs",
+  "old": "k.StartsWith(corr + \"_\", StringComparison.Ordinal)",
+  "new": "false",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F13 method already live",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FivePaisaFeedCodec.cs",
+  "old": "foreach (var m in methods.Where(m => !live.Contains(m))) queue.Add((m, scrip));",
+  "new": "foreach (var m in methods) queue.Add((m, scrip));",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F14 time of depth",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/FivePaisaFeedCodec.cs",
+  "old": "[\"ltp\"] = Or(message, \"LastRate\"), [\"total_buy_quantity\"] = Or(message, \"TBidQ\"), [\"total_sell_quantity\"] = Or(message, \"TOffQ\") };",
+  "new": "[\"ltp\"] = 0, [\"total_buy_quantity\"] = Or(message, \"TBidQ\"), [\"total_sell_quantity\"] = Or(message, \"TOffQ\") };",
+  "filter": "FullyQualifiedName~FivePaisa",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

@@ -748,3 +748,37 @@ public sealed class LoginSamcoContractTests(LoginSamcoHost host, ITestOutputHelp
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginFivePaisaHost : BrokerContractHost
+{
+    public override string BrokerName => "fivepaisa";
+    public override string FixtureFile => "login_fivepaisa.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "fp-app-key:::fp-user:::4001234", ["ApiSecret"] = "fp-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginFivePaisaContractTests(LoginFivePaisaHost host, ITestOutputHelper output) : IClassFixture<LoginFivePaisaHost>
+{
+    private const string Generic = "5paisa did not accept the sign-in. Check the client code, PIN and one-time code, then try again.";
+    private const string GenericSecret = "5paisa did not accept the sign-in. Check the app secret in the server's settings, then sign in again.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_one_time_code_refused"] = LoginDeviations.Refused("5paisa did not accept the sign-in: Invalid TOTP"),
+        ["login_one_time_code_refused_without_a_message"] = LoginDeviations.Refused(Generic),
+        ["login_one_time_code_answer_has_no_body"] = LoginDeviations.Refused(Generic),
+        ["login_one_time_call_fails"] = new(LoginDeviations.Words, f => ContractRunner.Expect(f, 502, ContractRunner.Error("5paisa could not sign you in right now. Try again in a minute."))),
+        ["login_access_token_refused"] = LoginDeviations.Refused("5paisa did not accept the sign-in: Invalid encrypted key"),
+        ["login_access_token_refused_without_a_message"] = LoginDeviations.Refused(GenericSecret),
+        ["login_access_token_answer_has_no_body"] = LoginDeviations.Refused(GenericSecret),
+        ["login_access_token_call_is_forbidden"] = LoginDeviations.Refused("5paisa did not accept the app key. Check it in the server's settings, then sign in again."),
+        ["login_access_token_call_fails"] = LoginDeviations.Refused("5paisa did not accept the app key. Check it in the server's settings, then sign in again."),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_fivepaisa.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

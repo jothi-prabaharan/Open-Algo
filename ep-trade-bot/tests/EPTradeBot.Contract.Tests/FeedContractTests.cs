@@ -1016,3 +1016,55 @@ public sealed class SamcoFeedEndpointTests
         Assert.DoesNotContain("-23", sent[0], StringComparison.Ordinal);
     }
 }
+
+public sealed class FivePaisaFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_fivepaisa.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_fivepaisa.fixtures.json", name, () => new FivePaisaFeedCodec("4001234"));
+}
+
+public sealed class FivePaisaFeedEndpointTests
+{
+    private static string Jwt(string claims) => $"e30.{Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(claims)).TrimEnd('=').Replace('+', '-').Replace('/', '_')}.sig";
+
+    private static BrokerSession Session(string token, string key = "app:::user:::4001234") =>
+        new(Guid.NewGuid(), "fivepaisa", token, null, null, new Dictionary<string, string> { ["ApiKey"] = key });
+
+    private static EPTradeBot.Infrastructure.Brokers.FivePaisa.FivePaisaPlugin Plugin() => new(null!, null!, null!);
+
+    [Theory]
+    [InlineData("""{"RedirectServer":"A"}""", "wss://aopenfeed.5paisa.com/feeds/api/chat")]
+    [InlineData("""{"RedirectServer":"B"}""", "wss://bopenfeed.5paisa.com/feeds/api/chat")]
+    [InlineData("""{"RedirectServer":"C"}""", "wss://openfeed.5paisa.com/feeds/api/chat")]
+    [InlineData("""{"RedirectServer":"Z"}""", "wss://openfeed.5paisa.com/Feeds/api/chat")]
+    [InlineData("""{"other":1}""", "wss://openfeed.5paisa.com/Feeds/api/chat")]
+    public void The_host_is_the_one_the_token_names(string claims, string host)
+    {
+        var token = Jwt(claims);
+        var endpoint = Plugin().FeedEndpoint(Session(token), null)!;
+        Assert.Equal($"{host}?Value1={token}|4001234", endpoint.Url.OriginalString);
+    }
+
+    [Fact]
+    public void A_token_that_is_not_a_jwt_takes_the_default_host() =>
+        Assert.StartsWith("wss://openfeed.5paisa.com/Feeds/api/chat?Value1=plain|4001234", Plugin().FeedEndpoint(Session("plain"), null)!.Url.OriginalString, StringComparison.Ordinal);
+
+    [Fact]
+    public void Without_a_token_or_a_client_code_there_is_no_endpoint()
+    {
+        Assert.Null(Plugin().FeedEndpoint(Session(""), null));
+        Assert.Null(Plugin().FeedEndpoint(Session("t", "app:::user"), null));
+    }
+
+    [Fact]
+    public void The_codec_reads_the_client_code_from_the_session()
+    {
+        var codec = new FivePaisaFeedCodec();
+        codec.Begin(Session("t"));
+        var sent = codec.Subscribe([new FeedRequest("NSE", "SBIN", "3045", "NSE", StreamMode.Quote)], 1);
+        Assert.Contains("\"ClientCode\":\"4001234\"", Assert.Single(sent), StringComparison.Ordinal);
+    }
+}

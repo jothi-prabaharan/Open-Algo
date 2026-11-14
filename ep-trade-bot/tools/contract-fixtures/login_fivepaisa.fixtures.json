@@ -1,0 +1,707 @@
+{
+  "broker": "fivepaisa",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_request_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "user@example.com",
+        "password": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /VendorsAPI/Service1.svc/TOTPLogin": {
+          "body": {
+            "head": {
+              "Status": "0"
+            },
+            "body": {
+              "RequestToken": "req-token-1",
+              "Message": "Success"
+            }
+          }
+        },
+        "POST /VendorsAPI/Service1.svc/GetAccessToken": {
+          "body": {
+            "head": {
+              "Status": "0"
+            },
+            "body": {
+              "AccessToken": "fp-access-777",
+              "Message": "Success"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "fp-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/TOTPLogin",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "Email_ID": "user@example.com",
+              "TOTP": "654321",
+              "PIN": "123456"
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/GetAccessToken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "RequestToken": "req-token-1",
+              "EncryKey": "fp-secret",
+              "UserId": "fp-user"
+            }
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_one_time_code_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "user@example.com",
+        "password": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /VendorsAPI/Service1.svc/TOTPLogin": {
+          "body": {
+            "head": {},
+            "body": {
+              "Message": "Invalid TOTP"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "TOTP Login Error: Invalid TOTP"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/TOTPLogin",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "Email_ID": "user@example.com",
+              "TOTP": "654321",
+              "PIN": "123456"
+            }
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_one_time_code_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "user@example.com",
+        "password": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /VendorsAPI/Service1.svc/TOTPLogin": {
+          "body": {
+            "head": {},
+            "body": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "TOTP Login Error: Failed to obtain request token. Please try again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/TOTPLogin",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "Email_ID": "user@example.com",
+              "TOTP": "654321",
+              "PIN": "123456"
+            }
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_one_time_code_answer_has_no_body",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "user@example.com",
+        "password": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /VendorsAPI/Service1.svc/TOTPLogin": {
+          "body": {
+            "head": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "TOTP Login Error: Failed to obtain request token. Please try again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/TOTPLogin",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "Email_ID": "user@example.com",
+              "TOTP": "654321",
+              "PIN": "123456"
+            }
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_one_time_call_fails",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "user@example.com",
+        "password": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /VendorsAPI/Service1.svc/TOTPLogin": {
+          "status": 500,
+          "body": {
+            "x": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "HTTP error occurred: 500 - {\"x\":1}"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/TOTPLogin",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "Email_ID": "user@example.com",
+              "TOTP": "654321",
+              "PIN": "123456"
+            }
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_access_token_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "user@example.com",
+        "password": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /VendorsAPI/Service1.svc/TOTPLogin": {
+          "body": {
+            "head": {
+              "Status": "0"
+            },
+            "body": {
+              "RequestToken": "req-token-1",
+              "Message": "Success"
+            }
+          }
+        },
+        "POST /VendorsAPI/Service1.svc/GetAccessToken": {
+          "body": {
+            "head": {},
+            "body": {
+              "Message": "Invalid encrypted key"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Access Token Error: Invalid encrypted key"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/TOTPLogin",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "Email_ID": "user@example.com",
+              "TOTP": "654321",
+              "PIN": "123456"
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/GetAccessToken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "RequestToken": "req-token-1",
+              "EncryKey": "fp-secret",
+              "UserId": "fp-user"
+            }
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_access_token_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "user@example.com",
+        "password": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /VendorsAPI/Service1.svc/TOTPLogin": {
+          "body": {
+            "head": {
+              "Status": "0"
+            },
+            "body": {
+              "RequestToken": "req-token-1",
+              "Message": "Success"
+            }
+          }
+        },
+        "POST /VendorsAPI/Service1.svc/GetAccessToken": {
+          "body": {
+            "head": {},
+            "body": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Access Token Error: Failed to obtain access token. Please try again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/TOTPLogin",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "Email_ID": "user@example.com",
+              "TOTP": "654321",
+              "PIN": "123456"
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/GetAccessToken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "RequestToken": "req-token-1",
+              "EncryKey": "fp-secret",
+              "UserId": "fp-user"
+            }
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_access_token_answer_has_no_body",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "user@example.com",
+        "password": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /VendorsAPI/Service1.svc/TOTPLogin": {
+          "body": {
+            "head": {
+              "Status": "0"
+            },
+            "body": {
+              "RequestToken": "req-token-1",
+              "Message": "Success"
+            }
+          }
+        },
+        "POST /VendorsAPI/Service1.svc/GetAccessToken": {
+          "body": {
+            "head": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Access Token Error: Failed to obtain access token. Please try again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/TOTPLogin",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "Email_ID": "user@example.com",
+              "TOTP": "654321",
+              "PIN": "123456"
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/GetAccessToken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "RequestToken": "req-token-1",
+              "EncryKey": "fp-secret",
+              "UserId": "fp-user"
+            }
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_access_token_call_is_forbidden",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "user@example.com",
+        "password": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /VendorsAPI/Service1.svc/TOTPLogin": {
+          "body": {
+            "head": {
+              "Status": "0"
+            },
+            "body": {
+              "RequestToken": "req-token-1",
+              "Message": "Success"
+            }
+          }
+        },
+        "POST /VendorsAPI/Service1.svc/GetAccessToken": {
+          "status": 403,
+          "body": {
+            "x": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "HTTP error occurred: 403 - {\"x\":1}"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/TOTPLogin",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "Email_ID": "user@example.com",
+              "TOTP": "654321",
+              "PIN": "123456"
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/GetAccessToken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "RequestToken": "req-token-1",
+              "EncryKey": "fp-secret",
+              "UserId": "fp-user"
+            }
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_access_token_call_fails",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "user@example.com",
+        "password": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /VendorsAPI/Service1.svc/TOTPLogin": {
+          "body": {
+            "head": {
+              "Status": "0"
+            },
+            "body": {
+              "RequestToken": "req-token-1",
+              "Message": "Success"
+            }
+          }
+        },
+        "POST /VendorsAPI/Service1.svc/GetAccessToken": {
+          "status": 401,
+          "body": {
+            "x": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "HTTP error occurred: 401 - {\"x\":1}"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/TOTPLogin",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "Email_ID": "user@example.com",
+              "TOTP": "654321",
+              "PIN": "123456"
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.5paisa.com",
+          "path": "/VendorsAPI/Service1.svc/GetAccessToken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "head": {
+              "Key": "fp-app-key"
+            },
+            "body": {
+              "RequestToken": "req-token-1",
+              "EncryKey": "fp-secret",
+              "UserId": "fp-user"
+            }
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
