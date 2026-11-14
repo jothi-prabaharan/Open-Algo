@@ -1,0 +1,570 @@
+[
+ {
+  "name": "SO1 rest exchange index",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "\"NSE_INDEX\" => \"NSE\", \"BSE_INDEX\" => \"BSE\", _ => exchange };",
+  "new": "\"NSE_INDEX\" => \"BSE\", \"BSE_INDEX\" => \"BSE\", _ => exchange };",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO2 ltp exchange",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "exchange is \"NSE_INDEX\" or \"BSE_INDEX\" ? exchange : RestExchange(exchange);",
+  "new": "RestExchange(exchange);",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO3 ncd",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "\"NCD\" => \"CDS\",",
+  "new": "\"NCD\" => \"NCD\",",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO4 slm",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "\"SL-M\" => \"SLM\", _ => \"MARKET\" };",
+  "new": "\"SL-M\" => \"SL\", _ => \"MARKET\" };",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO5 reverse slm",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "\"SLM\" or \"SL-M\" => \"SL-M\", _ => type ?? \"\" };",
+  "new": "\"SLM\" or \"SL-M\" => \"SL\", _ => type ?? \"\" };",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO6 mtf",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "\"MTF\" => \"CNC\"",
+  "new": "\"MTF\" => \"MIS\"",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO7 trigger status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "[\"SL_TRIGGER_CONFIRMED\"] = \"trigger pending\",",
+  "new": "[\"SL_TRIGGER_CONFIRMED\"] = \"open\",",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO8 partial trade",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "[\"PARTIAL_TRADE\"] = \"open\",",
+  "new": "[\"PARTIAL_TRADE\"] = \"complete\",",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO9 statistics status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "return cased && text == text.ToUpperInvariant() ? MapStatus(text) : text.ToLowerInvariant();",
+  "new": "return text.ToLowerInvariant();",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO10 client claim",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "Truthy(claims[\"sub\"]) ? Str(claims[\"sub\"]) : Str(claims[\"client_id\"]);",
+  "new": "Str(claims[\"client_id\"]);",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO11 client id in query",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "if (withClientId && ClientId(session) is { Length: > 0 } cid)",
+  "new": "if (ClientId(session) is { Length: > 0 } cid)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO13 protect stop market",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "if (order.PriceType is not (\"MARKET\" or \"SL-M\")) return (type, fallback);",
+  "new": "if (order.PriceType is not \"MARKET\") return (type, fallback);",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO14 stop limit type",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "var limitType = order.PriceType == \"SL-M\" ? \"SL\" : \"LIMIT\";",
+  "new": "var limitType = \"LIMIT\";",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO15 no reference price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "if (basePrice <= 0)",
+  "new": "if (basePrice < 0)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO16 tag cut",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "strategy.Length > 32 ? strategy[..32] : strategy",
+  "new": "strategy.Length > 32 ? strategy[..31] : strategy",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO20 cancel type",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "[\"execution_type\"] = \"REGULAR\" }, null, true",
+  "new": "[\"execution_type\"] = \"AMO\" }, null, true",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO22 one half only",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "new[] { \"pending\", \"completed\" }",
+  "new": "new[] { \"pending\" }",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO24 side case",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "(o.ContainsKey(\"order_side\") ? \"None\" : \"\")).ToUpperInvariant();",
+  "new": "(o.ContainsKey(\"order_side\") ? \"None\" : \"\")).Trim();",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO25 trade quantity",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "t.ContainsKey(\"trade_quantity\") ? t[\"trade_quantity\"] : t[\"filled_quantity\"]",
+  "new": "t[\"trade_quantity\"]",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO26 multiplier",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "(net * ltp * multiplier)",
+  "new": "(net * ltp)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO27 average",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "net > 0 ? Flt(p[\"average_buy_price\"]) : net < 0 ? Flt(p[\"average_sell_price\"]) : Flt(p[\"average_price\"]);",
+  "new": "net > 0 ? Flt(p[\"average_sell_price\"]) : net < 0 ? Flt(p[\"average_buy_price\"]) : Flt(p[\"average_price\"]);",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO28 zero multiplier",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "if (multiplier == 0) multiplier = 1.0;",
+  "new": "if (multiplier == -1) multiplier = 1.0;",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO29 holding symbol",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "Truthy(details?[\"trading_symbol\"]) ? Str(details?[\"trading_symbol\"]) : Str(h[\"trading_symbol\"]);",
+  "new": "Str(h[\"trading_symbol\"]);",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO30 funds label",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "[\"marginused\"] = \"utiliseddebits\"",
+  "new": "[\"marginused\"] = \"collateral\"",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO31 named mtm",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "if (data[field] is { } named) processed[key]",
+  "new": "if (data[field] is { } named && processed[key] == \"x\") processed[key]",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO32 numbered rows",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "JsonObject o => (o[\"0\"], o[\"1\"]),",
+  "new": "JsonObject o => (o[\"1\"], o[\"0\"]),",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO33 ltp attempts",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "for (var attempt = 0; attempt < 4; attempt++)\n            {\n                reply = await CallAsync(session, HttpMethod.Put, \"/oapi/v1/fetch-ltp\"",
+  "new": "for (var attempt = 0; attempt < 3; attempt++)\n            {\n                reply = await CallAsync(session, HttpMethod.Put, \"/oapi/v1/fetch-ltp\"",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO34 ltp retry edge",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "if (reply.Status == 429 && attempt < 3)\n                {\n                    await Task.Delay(sessions.RetryBackoff(Name, TimeSpan.FromSeconds(0.5 * (1 << attempt))), cancellationToken);\n                    continue;\n                }\n\n                break;\n            }\n        }\n        catch (BrokerException)\n        {\n            return result;",
+  "new": "if (reply.Status == 429 && attempt < 2)\n                {\n                    await Task.Delay(sessions.RetryBackoff(Name, TimeSpan.FromSeconds(0.5 * (1 << attempt))), cancellationToken);\n                    continue;\n                }\n\n                break;\n            }\n        }\n        catch (BrokerException)\n        {\n            return result;",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO35 ltp batch",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "private const int LtpBatch = 10;",
+  "new": "private const int LtpBatch = 11;",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO36 exchange case",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "result[((Str(row[\"exchange\"]) ?? \"\").ToUpperInvariant(), Str(row[\"token\"]) ?? \"\")]",
+  "new": "result[((Str(row[\"exchange\"]) ?? \"\"), Str(row[\"token\"]) ?? \"\")]",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD1 index series",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "return exchange == \"NSE_INDEX\" ? \"INDICES\" : \"IDX\";",
+  "new": "return exchange == \"NSE_INDEX\" ? \"IDX\" : \"INDICES\";",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD3 nfo series",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "(nfoIndex ? \"FUTIDX\" : \"FUTSTK\")",
+  "new": "(nfoIndex ? \"FUTSTK\" : \"FUTIDX\")",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD4 bfo series",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "(bfoIndex ? \"IF\" : \"SF\")",
+  "new": "(bfoIndex ? \"SF\" : \"IF\")",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD5 mcx series",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "return instrument == \"FUT\" ? \"FUTCOM\" : \"OPTFUT\";",
+  "new": "return instrument == \"FUT\" ? \"OPTFUT\" : \"FUTCOM\";",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD6 cds series",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "return instrument == \"FUT\" ? \"FUTCUR\" : \"OPTCUR\";",
+  "new": "return instrument == \"FUT\" ? \"OPTCUR\" : \"FUTCUR\";",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD7 second index name",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "if (brokerForm.Length > 0 && brokerForm != r.Symbol) candidates.Add(brokerForm);",
+  "new": "if (brokerForm.Length > 0 && brokerForm == r.Symbol) candidates.Add(brokerForm);",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD8 cash symbol",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "return r.Exchange is \"NSE\" or \"BSE\" ? [r.Symbol] : [r.BrokerSymbol ?? \"\"];",
+  "new": "return r.Exchange is \"NSE\" or \"BSE\" ? [r.BrokerSymbol ?? \"\"] : [r.Symbol];",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD9 candle attempts",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "for (var attempt = 0; attempt < 4; attempt++)\n        {\n            reply = await CallAsync(session, HttpMethod.Get",
+  "new": "for (var attempt = 0; attempt < 3; attempt++)\n        {\n            reply = await CallAsync(session, HttpMethod.Get",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD10 candle retry edge",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "if (reply.Status == 429 && attempt < 3)",
+  "new": "if (reply.Status == 429 && attempt < 2)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD11 ok code",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "err is not (\"success\" or \"ok\" or \"0\")",
+  "new": "err is not (\"success\" or \"0\")",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD13 window",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "today.AddDays(-7)",
+  "new": "today.AddDays(-6)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD14 latest candle",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "string.CompareOrdinal(key, lastKey) > 0",
+  "new": "string.CompareOrdinal(key, lastKey) < 0",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD16 volume",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "Whole(last[4]));",
+  "new": "Whole(last[5]));",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD17 ltp exchange in quote",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "var code = LtpExchange(record.Exchange);",
+  "new": "var code = RestExchange(record.Exchange);",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD18 multi batch step",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "for (var start = 0; start < wanted.Count; start += LtpBatch)",
+  "new": "for (var start = 0; start < wanted.Count; start += LtpBatch + 1)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD19 missing leg",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "[\"error\"] = \"No quote data available\"",
+  "new": "[\"error\"] = \"No quote\"",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD20 quote fields",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "[\"ltp\"] = f.Ltp, [\"open\"] = f.Open, [\"prev_close\"] = f.PrevClose, [\"volume\"] = f.Volume, [\"oi\"] = 0 };",
+  "new": "[\"ltp\"] = f.PrevClose, [\"open\"] = f.Open, [\"prev_close\"] = f.Ltp, [\"volume\"] = f.Volume, [\"oi\"] = 0 };",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH1 3m",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "[\"3m\"] = (\"MINUTE\", 3, null)",
+  "new": "[\"3m\"] = (\"MINUTE\", 4, null)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH2 1h",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "[\"1h\"] = (\"MINUTE\", 60, null)",
+  "new": "[\"1h\"] = (\"MINUTE\", 30, null)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH3 week start",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "(((int)day.DayOfWeek + 6) % 7)",
+  "new": "(((int)day.DayOfWeek + 5) % 7)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH4 month start",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "new DateTime(day.Year, day.Month, 1, 0, 0, 0, DateTimeKind.Utc)",
+  "new": "new DateTime(day.Year, day.Month, 2, 0, 0, 0, DateTimeKind.Utc)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH5 chunk days",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "spec.ChartType == \"DAY\" ? 2000 : 31;",
+  "new": "spec.ChartType == \"DAY\" ? 2000 : 30;",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH6 today end",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "var endDate = end == DateOnly.FromDateTime(now)",
+  "new": "var endDate = end != DateOnly.FromDateTime(now)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH8 chunk attempts",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "for (var attempt = 0; attempt < 4; attempt++)\n            {\n                try",
+  "new": "for (var attempt = 0; attempt < 3; attempt++)\n            {\n                try",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH11 daily stamp",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": ".ToUnixTimeSeconds() + 19800",
+  "new": ".ToUnixTimeSeconds() + 19801",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH12 intraday stamp",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "new DateTimeOffset(stamp, Ist).ToUnixTimeSeconds();",
+  "new": "new DateTimeOffset(stamp, TimeSpan.Zero).ToUnixTimeSeconds();",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH15 high",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "items.Max(i => i.High)",
+  "new": "items.Min(i => i.High)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH16 close",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "items[^1].Close",
+  "new": "items[0].Close",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH17 volume",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "items.Sum(i => i.Volume)",
+  "new": "items.Max(i => i.Volume)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH18 oi",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "items[^1].Oi);",
+  "new": "items[0].Oi);",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH20 next chunk",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "current = currentEnd.AddDays(1);",
+  "new": "current = currentEnd.AddDays(2);",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH21 all failed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "failedChunks == chunkCount",
+  "new": "failedChunks > 0",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SM3 rounding",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Margin.cs",
+  "old": "(long)Math.Round(underlying, MidpointRounding.ToEven)",
+  "new": "(long)Math.Round(underlying, MidpointRounding.AwayFromZero)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SM4 mode",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Margin.cs",
+  "old": "[\"mode\"] = \"NEW\"",
+  "new": "[\"mode\"] = \"OLD\"",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SM5 currency",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Margin.cs",
+  "old": "\"CDS\" => \"Currency\"",
+  "new": "\"CDS\" => \"Capital\"",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SM5b commodity",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Margin.cs",
+  "old": "\"MCX\" => \"Commodities\"",
+  "new": "\"MCX\" => \"Capital\"",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SM6 nrml",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Margin.cs",
+  "old": "\"NRML\" => \"0\"",
+  "new": "\"NRML\" => \"1\"",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SM7 benefit",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Margin.cs",
+  "old": "- Flt(o[\"premium_benefit\"])",
+  "new": "+ Flt(o[\"premium_benefit\"])",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SM9 sum edge",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Margin.cs",
+  "old": "if (total <= 0 && individuals.Count > 0)",
+  "new": "if (total < 0 && individuals.Count > 0)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SM10 error block",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Margin.cs",
+  "old": "if (Str(payload[\"status\"]) == \"error\" || Truthy(errorBlock[\"code\"]))",
+  "new": "if (Str(payload[\"status\"]) == \"error\")",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SM13 distinct",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Margin.cs",
+  "old": "wanted.Values.Distinct().ToList()",
+  "new": "wanted.Values.ToList()",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

@@ -2456,6 +2456,231 @@
       "ignore": []
     },
     {
+      "name": "quotes_succeeds_on_the_fourth_try",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /oapi/v1/fetch-ltp": [
+          {
+            "status": 429,
+            "body": {
+              "status": "error",
+              "message": "Too many requests"
+            }
+          },
+          {
+            "status": 429,
+            "body": {
+              "status": "error",
+              "message": "Too many requests"
+            }
+          },
+          {
+            "status": 429,
+            "body": {
+              "status": "error",
+              "message": "Too many requests"
+            }
+          },
+          {
+            "body": {
+              "status": "success",
+              "data": [
+                {
+                  "token": "3045",
+                  "exchange": "NSE",
+                  "ltp": 805.45,
+                  "prev_close": 800.0
+                }
+              ]
+            }
+          }
+        ],
+        "GET /oapi/charts-api/charts/v1/fetch-candle": {
+          "body": {
+            "meta": {
+              "err_code": "success"
+            },
+            "data": {
+              "results": [
+                [
+                  801.0,
+                  809.5,
+                  799.0,
+                  805.45,
+                  1234567,
+                  0,
+                  "13-11-2026",
+                  1234567
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 0.0,
+            "bid": 0.0,
+            "high": 809.5,
+            "low": 799.0,
+            "ltp": 805.45,
+            "oi": 0,
+            "open": 801.0,
+            "prev_close": 800.0,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "developer.hdfcsky.com",
+          "path": "/oapi/v1/fetch-ltp",
+          "query": [
+            [
+              "api_key",
+              "sky-api-key"
+            ]
+          ],
+          "headers": {
+            "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "exchange": "NSE",
+                "token": "3045"
+              }
+            ]
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "developer.hdfcsky.com",
+          "path": "/oapi/v1/fetch-ltp",
+          "query": [
+            [
+              "api_key",
+              "sky-api-key"
+            ]
+          ],
+          "headers": {
+            "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "exchange": "NSE",
+                "token": "3045"
+              }
+            ]
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "developer.hdfcsky.com",
+          "path": "/oapi/v1/fetch-ltp",
+          "query": [
+            [
+              "api_key",
+              "sky-api-key"
+            ]
+          ],
+          "headers": {
+            "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "exchange": "NSE",
+                "token": "3045"
+              }
+            ]
+          }
+        },
+        {
+          "method": "PUT",
+          "host": "developer.hdfcsky.com",
+          "path": "/oapi/v1/fetch-ltp",
+          "query": [
+            [
+              "api_key",
+              "sky-api-key"
+            ]
+          ],
+          "headers": {
+            "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "exchange": "NSE",
+                "token": "3045"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "host": "developer.hdfcsky.com",
+          "path": "/oapi/charts-api/charts/v1/fetch-candle",
+          "query": [
+            [
+              "api_key",
+              "sky-api-key"
+            ],
+            [
+              "symbol",
+              "SBIN"
+            ],
+            [
+              "exchange",
+              "NSE"
+            ],
+            [
+              "chartType",
+              "DAY"
+            ],
+            [
+              "seriesType",
+              "EQ"
+            ],
+            [
+              "start",
+              "2026-11-06"
+            ],
+            [
+              "end",
+              "2026-11-13"
+            ]
+          ],
+          "headers": {
+            "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "quotes_rate_limited_every_time",
       "method": "POST",
       "path": "/api/v1/quotes",
@@ -3177,6 +3402,536 @@
           "headers": {
             "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
             "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "developer.hdfcsky.com",
+          "path": "/oapi/charts-api/charts/v1/fetch-candle",
+          "query": [
+            [
+              "api_key",
+              "sky-api-key"
+            ],
+            [
+              "symbol",
+              "SBIN"
+            ],
+            [
+              "exchange",
+              "NSE"
+            ],
+            [
+              "chartType",
+              "DAY"
+            ],
+            [
+              "seriesType",
+              "EQ"
+            ],
+            [
+              "start",
+              "2026-11-06"
+            ],
+            [
+              "end",
+              "2026-11-13"
+            ]
+          ],
+          "headers": {
+            "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_candle_succeeds_on_the_fourth_try",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /oapi/v1/fetch-ltp": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "token": "3045",
+                "exchange": "NSE",
+                "ltp": 805.45,
+                "prev_close": 800.0
+              }
+            ]
+          }
+        },
+        "GET /oapi/charts-api/charts/v1/fetch-candle": [
+          {
+            "status": 429,
+            "body": {
+              "status": "error",
+              "message": "Too many requests"
+            }
+          },
+          {
+            "status": 429,
+            "body": {
+              "status": "error",
+              "message": "Too many requests"
+            }
+          },
+          {
+            "status": 429,
+            "body": {
+              "status": "error",
+              "message": "Too many requests"
+            }
+          },
+          {
+            "body": {
+              "meta": {
+                "err_code": "success"
+              },
+              "data": {
+                "results": [
+                  [
+                    801.0,
+                    809.5,
+                    799.0,
+                    805.45,
+                    1234567,
+                    0,
+                    "13-11-2026",
+                    1234567
+                  ]
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 0.0,
+            "bid": 0.0,
+            "high": 809.5,
+            "low": 799.0,
+            "ltp": 805.45,
+            "oi": 0,
+            "open": 801.0,
+            "prev_close": 800.0,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "developer.hdfcsky.com",
+          "path": "/oapi/v1/fetch-ltp",
+          "query": [
+            [
+              "api_key",
+              "sky-api-key"
+            ]
+          ],
+          "headers": {
+            "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "exchange": "NSE",
+                "token": "3045"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "host": "developer.hdfcsky.com",
+          "path": "/oapi/charts-api/charts/v1/fetch-candle",
+          "query": [
+            [
+              "api_key",
+              "sky-api-key"
+            ],
+            [
+              "symbol",
+              "SBIN"
+            ],
+            [
+              "exchange",
+              "NSE"
+            ],
+            [
+              "chartType",
+              "DAY"
+            ],
+            [
+              "seriesType",
+              "EQ"
+            ],
+            [
+              "start",
+              "2026-11-06"
+            ],
+            [
+              "end",
+              "2026-11-13"
+            ]
+          ],
+          "headers": {
+            "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "developer.hdfcsky.com",
+          "path": "/oapi/charts-api/charts/v1/fetch-candle",
+          "query": [
+            [
+              "api_key",
+              "sky-api-key"
+            ],
+            [
+              "symbol",
+              "SBIN"
+            ],
+            [
+              "exchange",
+              "NSE"
+            ],
+            [
+              "chartType",
+              "DAY"
+            ],
+            [
+              "seriesType",
+              "EQ"
+            ],
+            [
+              "start",
+              "2026-11-06"
+            ],
+            [
+              "end",
+              "2026-11-13"
+            ]
+          ],
+          "headers": {
+            "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "developer.hdfcsky.com",
+          "path": "/oapi/charts-api/charts/v1/fetch-candle",
+          "query": [
+            [
+              "api_key",
+              "sky-api-key"
+            ],
+            [
+              "symbol",
+              "SBIN"
+            ],
+            [
+              "exchange",
+              "NSE"
+            ],
+            [
+              "chartType",
+              "DAY"
+            ],
+            [
+              "seriesType",
+              "EQ"
+            ],
+            [
+              "start",
+              "2026-11-06"
+            ],
+            [
+              "end",
+              "2026-11-13"
+            ]
+          ],
+          "headers": {
+            "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "developer.hdfcsky.com",
+          "path": "/oapi/charts-api/charts/v1/fetch-candle",
+          "query": [
+            [
+              "api_key",
+              "sky-api-key"
+            ],
+            [
+              "symbol",
+              "SBIN"
+            ],
+            [
+              "exchange",
+              "NSE"
+            ],
+            [
+              "chartType",
+              "DAY"
+            ],
+            [
+              "seriesType",
+              "EQ"
+            ],
+            [
+              "start",
+              "2026-11-06"
+            ],
+            [
+              "end",
+              "2026-11-13"
+            ]
+          ],
+          "headers": {
+            "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_candle_error_code_ok_is_a_success",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /oapi/v1/fetch-ltp": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "token": "3045",
+                "exchange": "NSE",
+                "ltp": 805.45,
+                "prev_close": 800.0
+              }
+            ]
+          }
+        },
+        "GET /oapi/charts-api/charts/v1/fetch-candle": {
+          "body": {
+            "meta": {
+              "err_code": "OK"
+            },
+            "data": {
+              "results": [
+                [
+                  801.0,
+                  809.5,
+                  799.0,
+                  805.45,
+                  1234567,
+                  0,
+                  "13-11-2026",
+                  1234567
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 0.0,
+            "bid": 0.0,
+            "high": 809.5,
+            "low": 799.0,
+            "ltp": 805.45,
+            "oi": 0,
+            "open": 801.0,
+            "prev_close": 800.0,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "developer.hdfcsky.com",
+          "path": "/oapi/v1/fetch-ltp",
+          "query": [
+            [
+              "api_key",
+              "sky-api-key"
+            ]
+          ],
+          "headers": {
+            "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "exchange": "NSE",
+                "token": "3045"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "host": "developer.hdfcsky.com",
+          "path": "/oapi/charts-api/charts/v1/fetch-candle",
+          "query": [
+            [
+              "api_key",
+              "sky-api-key"
+            ],
+            [
+              "symbol",
+              "SBIN"
+            ],
+            [
+              "exchange",
+              "NSE"
+            ],
+            [
+              "chartType",
+              "DAY"
+            ],
+            [
+              "seriesType",
+              "EQ"
+            ],
+            [
+              "start",
+              "2026-11-06"
+            ],
+            [
+              "end",
+              "2026-11-13"
+            ]
+          ],
+          "headers": {
+            "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "quotes_candle_error_code_zero_is_a_success",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /oapi/v1/fetch-ltp": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "token": "3045",
+                "exchange": "NSE",
+                "ltp": 805.45,
+                "prev_close": 800.0
+              }
+            ]
+          }
+        },
+        "GET /oapi/charts-api/charts/v1/fetch-candle": {
+          "body": {
+            "meta": {
+              "err_code": "0"
+            },
+            "data": {
+              "results": [
+                [
+                  801.0,
+                  809.5,
+                  799.0,
+                  805.45,
+                  1234567,
+                  0,
+                  "13-11-2026",
+                  1234567
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 0.0,
+            "bid": 0.0,
+            "high": 809.5,
+            "low": 799.0,
+            "ltp": 805.45,
+            "oi": 0,
+            "open": 801.0,
+            "prev_close": 800.0,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "developer.hdfcsky.com",
+          "path": "/oapi/v1/fetch-ltp",
+          "query": [
+            [
+              "api_key",
+              "sky-api-key"
+            ]
+          ],
+          "headers": {
+            "authorization": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiUzAxOTAwMDciLCAiZXhwIjogMTk5OTk5OTk5OX0.signature",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "data": [
+              {
+                "exchange": "NSE",
+                "token": "3045"
+              }
+            ]
           }
         },
         {

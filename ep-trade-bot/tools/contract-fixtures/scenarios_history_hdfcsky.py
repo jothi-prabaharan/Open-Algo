@@ -80,6 +80,8 @@ SCENARIOS = [
     hist("history_fifty_days_of_minutes_go_in_two_calls", {"interval": "1m", "start_date": "2026-09-01", "end_date": "2026-10-20"}, {CB: [reply(*mins(9 * 60 + 15, 2, "01-09-2026")), reply(*mins(9 * 60 + 15, 2, "02-10-2026"))]}),
     hist("history_a_chunk_that_fails_is_tried_again", {"interval": "1m"}, {CB: [HTTP_DOWN, M16]}),
     hist("history_a_chunk_that_always_fails_leaves_a_gap", {"interval": "1m", "start_date": "2026-09-01", "end_date": "2026-10-20"}, {CB: [reply(*mins(9 * 60 + 15, 2, "01-09-2026")), HTTP_DOWN, HTTP_DOWN, HTTP_DOWN, HTTP_DOWN]}),
+    hist("history_a_chunk_answers_on_the_fourth_attempt", {"interval": "1m"}, {CB: [HTTP_DOWN, HTTP_DOWN, HTTP_DOWN, M16]}),
+    hist("history_an_empty_chunk_and_a_failed_one_is_not_an_error", {"interval": "1m", "start_date": "2026-09-01", "end_date": "2026-10-20"}, {CB: [EMPTY, HTTP_DOWN, HTTP_DOWN, HTTP_DOWN, HTTP_DOWN]}),
     hist("history_every_chunk_failing_is_an_error", {"interval": "1m"}, {CB: [HTTP_DOWN, HTTP_DOWN, HTTP_DOWN, HTTP_DOWN]}),
     hist("history_a_chart_refusal_with_a_message", {"interval": "1m"}, {CB: CHART_REFUSED}),
     hist("history_a_chart_error_code_with_a_message", {"interval": "1m"}, {CB: CHART_ERR}),

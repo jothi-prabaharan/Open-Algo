@@ -41,7 +41,7 @@ SCENARIOS = [
     margin("margin_cnc_equity", [pos(product="CNC", price="805")], {MEP: SINGLE}),
     margin("margin_an_unknown_product_is_intraday", [pos(product="XYZ")], {MEP: SINGLE}),
     margin("margin_a_future_reads_its_underlying", [FUT], {LB: UNDERLYING_NIFTY, MEP: COMBINED}),
-    margin("margin_the_underlying_price_is_rounded_to_a_whole_number", [FUT], {LB: ltp((26000, "NSE_INDEX", 23767.5, 23700.0)), MEP: SINGLE}),
+    margin("margin_the_underlying_price_is_rounded_to_a_whole_number", [FUT], {LB: ltp((26000, "NSE_INDEX", 23766.5, 23700.0)), MEP: SINGLE}),
     margin("margin_an_option", [pos("NIFTY25NOV2624000CE", "NFO", "BUY", "75", "NRML", price="7.35")], {LB: UNDERLYING_NIFTY, MEP: SINGLE}),
     margin("margin_a_stock_future_reads_its_cash_underlying", [pos("RELIANCE25NOV26FUT", "NFO", "SELL", "250", "NRML", price="2900")], {LB: ltp((2885, "NSE", 2901.5, 2890.0)), MEP: SINGLE}),
     margin("margin_a_bse_derivative", [pos("SENSEX26NOVFUT", "BFO", "BUY", "20", "NRML", price="80000")], {LB: ltp((26001, "BSE_INDEX", 79050.49, 78980.0)), MEP: SINGLE}),

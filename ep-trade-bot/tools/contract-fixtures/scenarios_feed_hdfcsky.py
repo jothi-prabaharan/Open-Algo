@@ -144,6 +144,9 @@ SCENARIOS = [
     {"name": "a_quote_packet_type_without_a_body_is_a_zero_quote", "steps": [
         {"subscribe": [sub("SBIN", "NSE", 3), sub("NIFTY25NOV26FUT", "NFO", 3), sub("SENSEX26NOVFUT", "BFO", 3), sub("RELIANCE", "BSE", 3), sub("USDINR25NOV26FUT", "CDS", 3), sub("GOLDM25NOV26FUT", "MCX", 3)]},
         frame(dto(1001, NSE_CM)), frame(dto(50001, NSE_FO)), frame(dto(60001, BSE_FO)), frame(dto(2003, BSE_CM)), frame(dto(1001, NSE_CD)), frame(dto(80001, MCX))]},
+    {"name": "a_circuit_or_open_interest_packet_type_without_a_body_is_a_zero_quote", "steps": [
+        {"subscribe": [sub("SBIN", "NSE", 3), sub("NIFTY25NOV26FUT", "NFO", 3), sub("USDINR25NOV26FUT", "CDS", 3), sub("SENSEX26NOVFUT", "BFO", 3)]},
+        frame(dto(1001, NSE_CM_CIRC)), frame(dto(1001, NSE_CD_CIRC)), frame(dto(50001, NSE_FO_CIRC)), frame(dto(1001, NSE_CD_OI)), frame(dto(50001, NSE_FO_OI)), frame(dto(60001, BSE_FO_OI))]},
     {"name": "several_packets_in_one_frame", "steps": [
         {"subscribe": [sub("SBIN", "NSE", 1), sub("INFY", "NSE", 1), sub("NIFTY", "NSE_INDEX", 1)]},
         frame(dto(1001, NSE_CM, mbp(ltp=805.45, close=800.0)), dto(1002, NSE_CM, mbp(ltp=1500.5, close=1490.0)), dto(26000, NSE_INDEX, idx=index(24050.5, close=23980.0)), dto(0, HEARTBEAT))]},

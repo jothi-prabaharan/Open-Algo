@@ -1,0 +1,74 @@
+[
+ {
+  "name": "SO25 trade quantity",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "t.ContainsKey(\"trade_quantity\") ? t[\"trade_quantity\"] : t[\"filled_quantity\"]",
+  "new": "t[\"trade_quantity\"]",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO28 zero multiplier",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "if (multiplier == 0) multiplier = 1.0;",
+  "new": "if (multiplier == -1) multiplier = 1.0;",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO33 ltp attempts",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "for (var attempt = 0; attempt < 4; attempt++)\n            {\n                reply = await CallAsync(session, HttpMethod.Put, \"/oapi/v1/fetch-ltp\"",
+  "new": "for (var attempt = 0; attempt < 3; attempt++)\n            {\n                reply = await CallAsync(session, HttpMethod.Put, \"/oapi/v1/fetch-ltp\"",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SO34 ltp retry edge",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.cs",
+  "old": "if (reply.Status == 429 && attempt < 3)\n                {\n                    await Task.Delay(sessions.RetryBackoff(Name, TimeSpan.FromSeconds(0.5 * (1 << attempt))), cancellationToken);\n                    continue;\n                }\n\n                break;\n            }\n        }\n        catch (BrokerException)\n        {\n            return result;",
+  "new": "if (reply.Status == 429 && attempt < 2)\n                {\n                    await Task.Delay(sessions.RetryBackoff(Name, TimeSpan.FromSeconds(0.5 * (1 << attempt))), cancellationToken);\n                    continue;\n                }\n\n                break;\n            }\n        }\n        catch (BrokerException)\n        {\n            return result;",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD9 candle attempts",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "for (var attempt = 0; attempt < 4; attempt++)\n        {\n            reply = await CallAsync(session, HttpMethod.Get",
+  "new": "for (var attempt = 0; attempt < 3; attempt++)\n        {\n            reply = await CallAsync(session, HttpMethod.Get",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD10 candle retry edge",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "if (reply.Status == 429 && attempt < 3)",
+  "new": "if (reply.Status == 429 && attempt < 2)",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SD11 ok code",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.Data.cs",
+  "old": "err is not (\"success\" or \"ok\" or \"0\")",
+  "new": "err is not (\"success\" or \"0\")",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH8 chunk attempts",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "for (var attempt = 0; attempt < 4; attempt++)\n            {\n                try",
+  "new": "for (var attempt = 0; attempt < 3; attempt++)\n            {\n                try",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SH21 all failed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/HdfcSky/HdfcSkyPlugin.History.cs",
+  "old": "failedChunks == chunkCount",
+  "new": "failedChunks > 0",
+  "filter": "FullyQualifiedName~HdfcSkyContract|FullyQualifiedName~HdfcSkyData|FullyQualifiedName~HdfcSkyHistory|FullyQualifiedName~HdfcSkyMargin",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

@@ -1,0 +1,146 @@
+[
+ {
+  "name": "SF1 limit",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "private const int MaxInstruments = 300;",
+  "new": "private const int MaxInstruments = 301;",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF2 frame size",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "private const int MaxPerFrame = 100;",
+  "new": "private const int MaxPerFrame = 101;",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF3 type",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "mode == StreamMode.Ltp ? \"LTP\" : \"ALL\";",
+  "new": "mode != StreamMode.Depth ? \"LTP\" : \"ALL\";",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF4 limit edge",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "subscribed.Count + 1 > MaxInstruments",
+  "new": "subscribed.Count + 1 >= MaxInstruments",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF5 default type",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "subscribed.GetValueOrDefault(scrip) ?? \"ALL\"",
+  "new": "subscribed.GetValueOrDefault(scrip) ?? \"LTP\"",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF6 subscribed kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "subscribed.Remove(scrip);\n            info.Remove(token);",
+  "new": "info.Remove(token);",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF7 info kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "subscribed.Remove(scrip);\n            info.Remove(token);",
+  "new": "subscribed.Remove(scrip);",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF8 reconnect order",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "Frames(subscribed.Select(s => (s.Key, s.Value))).ToList()",
+  "new": "Frames(subscribed.Reverse().Select(s => (s.Key, s.Value))).ToList()",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF10 sent type kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "foreach (var s in chunk) subscribed[s] = group.Key;",
+  "new": "foreach (var s in chunk) _ = s;",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF11 circuit without a body",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "p.PacketType is 0 or 1 or 3 or 4 or 6 or 7 or 10 or 11 or 12 or 13 or 14 or 15 ||",
+  "new": "p.PacketType is 0 or 1 or 3 or 4 or 6 or 7 ||",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF12 bse greek",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "case 17 or 18:\n                return null;",
+  "new": "case 17:\n                return null;",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF13 ltp topic",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "StreamMode.Ltp => StreamMode.Ltp, StreamMode.Depth",
+  "new": "StreamMode.Ltp => StreamMode.Quote, StreamMode.Depth",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF14 cds prefix",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "exchange == \"CDS\" ? \"NCD\" : exchange",
+  "new": "exchange == \"CDS\" ? \"NCO\" : exchange",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF15 bare packet",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "if (packets is null || packets.Count == 0)",
+  "new": "if (packets is null)",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF16 heartbeat",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "if (p.PacketType == 16) return null;",
+  "new": "if (p.PacketType == -1) return null;",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF17 time fallback",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "p.PacketTimestamp != 0 ? p.PacketTimestamp : nowMs",
+  "new": "p.PacketTimestamp != 0 ? p.PacketTimestamp : 0",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF18 index types",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "case 2 or 5:\n                GenericDtoFeedCodec.FillIndex",
+  "new": "case 2:\n                GenericDtoFeedCodec.FillIndex",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "SF19 nse body-less",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/HdfcSkyFeedCodec.cs",
+  "old": "p.PacketType is 0 or 1 or 3 or 4 or 6 or 7 or 10",
+  "new": "p.PacketType is 1 or 3 or 4 or 6 or 7 or 10",
+  "filter": "FullyQualifiedName~HdfcSkyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

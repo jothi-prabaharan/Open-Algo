@@ -103,6 +103,7 @@ TRADES = {"body": {"status": "success", "data": {"trades": [
     trade("C5", "NOSUCH-EQ", "NSE", "BUY", "2", "2900", product="MTF"),
     trade("C6", "SBIN-EQ", "NSE", "BUY", None, None, filled_quantity=4, order_price=801.25, trade_time=None),
     trade("C7", "USDINR25NOV26FUT", "NCD", "SELL", 1000, 83.25, product="NRML"),
+    {"oms_order_id": "C8", "exchange": "NSE", "trading_symbol": "SBIN-EQ", "order_side": "BUY", "filled_quantity": 6, "order_price": 802.5, "product": "MIS", "exchange_time": "2026-11-03 10:30:00"},
 ]}}}
 
 
@@ -120,6 +121,7 @@ POSITIONS = {"body": {"status": "success", "data": [
     pos("GOLDM25NOV26FUT", "MCX", "NRML", 10, 750000.0, 0.0, 75000.0, 0, 75010.0, multiplier=10),
     pos("USDINR25NOV26FUT", "NCD", "NRML", 1000, 83500.0, 0, 83.5, 0, 83.6),
     pos("UNKNOWN-EQ", "NSE", "MTF", 5, "100", "0", "20", 0, "21.5"),
+    pos("TATAMOTORS-EQ", "BSE", "CNC", 2, 1000.0, 0.0, 500.0, 0, 501.0, multiplier=0),
 ]}}
 NO_POSITIONS = {"body": {"status": "success", "data": []}}
 NESTED_POSITIONS = {"body": {"status": "success", "data": {"positions": [pos("SBIN-EQ", "NSE", "MIS", 10, 8000.0, 0.0, 800.0, 0, 805.45)]}}}
