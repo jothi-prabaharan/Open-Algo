@@ -684,3 +684,33 @@ public sealed class LoginHdfcSkyContractTests(LoginHdfcSkyHost host, ITestOutput
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginIiflCapitalHost : BrokerContractHost
+{
+    public override string BrokerName => "iiflcapital";
+    public override string FixtureFile => "login_iiflcapital.fixtures.json";
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "iifl-app-key", ["ApiSecret"] = "iifl-app-secret", ["RedirectUrl"] = "http://127.0.0.1:5000/iiflcapital/callback" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+}
+
+public sealed class LoginIiflCapitalContractTests(LoginIiflCapitalHost host, ITestOutputHelper output) : IClassFixture<LoginIiflCapitalHost>
+{
+    private const string Again = "IIFL Capital did not accept the sign-in. Start it again from the beginning.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_with_a_message"] = LoginDeviations.Refused("IIFL Capital did not accept the sign-in: Invalid checksum"),
+        ["login_refused_with_an_error_text"] = LoginDeviations.Refused("IIFL Capital did not accept the sign-in: authCode expired"),
+        ["login_refused_with_nothing_useful"] = LoginDeviations.Refused(Again),
+        ["login_ok_status_without_a_session"] = LoginDeviations.Refused("IIFL Capital did not accept the sign-in: no session"),
+        ["login_not_ok_with_a_message"] = LoginDeviations.Refused("IIFL Capital did not accept the sign-in: Account locked"),
+        ["login_not_ok_without_a_message"] = LoginDeviations.Refused(Again),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_iiflcapital.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

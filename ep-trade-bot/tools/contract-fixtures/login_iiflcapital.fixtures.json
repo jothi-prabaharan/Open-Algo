@@ -1,0 +1,353 @@
+{
+  "broker": "iiflcapital",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": "CL1234",
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v1/getusersession": {
+          "body": {
+            "status": "Ok",
+            "userSession": "iifl-session-777",
+            "message": "ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "iifl-session-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/getusersession",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "checkSum": "6b11b1aedf4efc829e796b16cf90455cad83c6981ae060e28ad8a612dc72ebac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_status_in_another_case",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v1/getusersession": {
+          "body": {
+            "status": "OK",
+            "userSession": "iifl-session-778"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "iifl-session-778",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/getusersession",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "checkSum": "6b11b1aedf4efc829e796b16cf90455cad83c6981ae060e28ad8a612dc72ebac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v1/getusersession": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "Invalid checksum"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Invalid checksum"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/getusersession",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "checkSum": "6b11b1aedf4efc829e796b16cf90455cad83c6981ae060e28ad8a612dc72ebac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_an_error_text",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v1/getusersession": {
+          "status": 400,
+          "body": {
+            "error": "authCode expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: authCode expired"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/getusersession",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "checkSum": "6b11b1aedf4efc829e796b16cf90455cad83c6981ae060e28ad8a612dc72ebac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_nothing_useful",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v1/getusersession": {
+          "status": 500,
+          "body": {
+            "x": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Authentication failed"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/getusersession",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "checkSum": "6b11b1aedf4efc829e796b16cf90455cad83c6981ae060e28ad8a612dc72ebac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_ok_status_without_a_session",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v1/getusersession": {
+          "body": {
+            "status": "Ok",
+            "message": "no session"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "no session"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/getusersession",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "checkSum": "6b11b1aedf4efc829e796b16cf90455cad83c6981ae060e28ad8a612dc72ebac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_not_ok_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v1/getusersession": {
+          "body": {
+            "status": "Failed",
+            "message": "Account locked"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Account locked"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/getusersession",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "checkSum": "6b11b1aedf4efc829e796b16cf90455cad83c6981ae060e28ad8a612dc72ebac"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_not_ok_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /v1/getusersession": {
+          "body": {
+            "status": "Failed"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/getusersession",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "checkSum": "6b11b1aedf4efc829e796b16cf90455cad83c6981ae060e28ad8a612dc72ebac"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
