@@ -710,3 +710,22 @@ public sealed class TradesmartFeedSignInTests
         Assert.Equal("tok-1", auth["accesstoken"]!.GetValue<string>());
     }
 }
+
+public sealed class RupeezyFeedContractTests
+{
+    /// <summary>
+    /// OpenAlgo's unsubscribe without a mode removes nothing (it discards the mode "None") and sends the subscribe again at the richest mode, so the
+    /// instrument stays subscribed. EP Trade bot ends every mode, and the unsubscribe goes to Vortex.
+    /// </summary>
+    private static readonly HashSet<string> UnsubscribeWithoutMode = ["unsubscribe_without_a_mode"];
+
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_rupeezy.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_rupeezy.fixtures.json", name, () => new VortexFeedCodec(),
+        UnsubscribeWithoutMode.Contains(name)
+            ? scenario => scenario["steps"]![1]!["result"]!["sent"] = new JsonArray(new JsonObject { ["ticker"] = "NSE:SBIN", ["mode"] = "full", ["message_type"] = "unsubscribe" })
+            : null,
+        anyOrderAcrossInstruments: true);
+}

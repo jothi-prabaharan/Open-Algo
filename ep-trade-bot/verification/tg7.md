@@ -20,7 +20,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Zebu | yes | yes | yes | yes | n/a (no calculator) | no | yes | yes |
 | Flattrade | yes | yes | yes | yes | yes | no | yes | yes |
 | TradeSmart (Noren v2) | yes | yes | yes | yes | yes | no | yes | yes |
-| Rupeezy (Vortex) | yes | yes | yes | yes | n/a | yes | yes | no |
+| Rupeezy (Vortex) | yes | yes | yes | yes | n/a | yes | yes | yes |
 
 The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -247,7 +247,8 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Sign-in (`login_rupeezy.fixtures.json`, 5 cases): the auth code Rupeezy's page returns is exchanged at /user/session with a SHA-256 checksum of application id, code and secret (the recorded request body pins the checksum). Differences: the refusals are plain sentences naming Rupeezy, not the raw broker text with an "API error" prefix; a success with no token is a 502 here, 400 there. No mutation set yet for the sign-in.
 - GTT (`rupeezy_gtt.fixtures.json`, 28 cases): single and OCO. OpenAlgo names the OCO legs by price and Vortex by role, so a SELL GTT sends its stoploss as the lower trigger and a BUY GTT as the higher (swapping them turns 3 cases red). A modify reads the book first, keeps a leg's trailing stop, refuses a change between single and OCO, and an MCX quantity counts lots. No difference from OpenAlgo was needed on any case. The GTT mutation set is not written yet.
 - Margin: OpenAlgo has no margin calculator for Rupeezy (its only margin function is the funds call, already ported), so there is nothing to port and the column says n/a.
-- Not yet ported for Rupeezy: the feed.
+- Feed (`feed_rupeezy.fixtures.json`, 31 cases; `VortexFeedCodec`): one JSON frame per instrument at its richest mode (ltp, ohlcv, full), little-endian binary packets told apart by length (22, 62, 266), a packet fanned out to every mode it can serve, 1000 instruments per connection, and change and percent rounded the way Python rounds (a value such as 2.675 rounds down; the codec rounds the exact binary value). Mutation set `tg7-rupeezy-feed.json`: 46 mutants, all turned a test red (one more was dropped as unreachable: an instrument that exists is always already subscribed, so the limit never refuses a new mode of it). One recorded difference: OpenAlgo's unsubscribe without a mode removes nothing and resends the subscribe, so the instrument stays subscribed; here it ends every mode.
+- Rupeezy is complete except the open survivors of the orders mutation set and a mutation set for sign-in and GTT; no live-broker run.
 
 ## Shoonya sign-in
 

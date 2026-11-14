@@ -1,0 +1,370 @@
+[
+ {
+  "name": "F1 ltp mode",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "StreamMode.Ltp => \"ltp\", StreamMode.Quote => \"ohlcv\", _ => \"full\"",
+  "new": "StreamMode.Ltp => \"ltp\", StreamMode.Quote => \"full\", _ => \"full\"",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F2 quote mode",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "StreamMode.Ltp => \"ltp\", StreamMode.Quote => \"ohlcv\", _ => \"full\"",
+  "new": "StreamMode.Ltp => \"ohlcv\", StreamMode.Quote => \"ohlcv\", _ => \"full\"",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F3 richest",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "VortexMode(modes.Max())",
+  "new": "VortexMode(modes.Min())",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F4 ticker prefix",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "brokerExchange.Length > 3 ? brokerExchange[..3] : brokerExchange",
+  "new": "brokerExchange",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F5 limit",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "public const int MaxInstruments = 1000;",
+  "new": "public const int MaxInstruments = 1001;",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F6 limit check",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "wanted.Count >= MaxInstruments",
+  "new": "wanted.Count > MaxInstruments",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F7 limit new removal",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "if (isNew) instruments.Remove(key);",
+  "new": "if (isNew && wanted.Count < 0) instruments.Remove(key);",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F9 non numeric token",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "if (!long.TryParse(r.Token, out var token) || r.BrokerSymbol is null) continue;",
+  "new": "if (r.BrokerSymbol is null) continue; long.TryParse(r.Token, out var token);",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F10 unsub clear",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "else entry.Modes.Clear();",
+  "new": "else { }",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F11 unsub remaining",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "if (entry.Modes.Count > 0)\n            {\n                var richest",
+  "new": "if (entry.Modes.Count > 0 && wanted.Count < 0)\n            {\n                var richest",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F12 unsub stored mode",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "[Frame(entry.Ticker, stored, \"unsubscribe\")]",
+  "new": "[Frame(entry.Ticker, \"ltp\", \"unsubscribe\")]",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F13 unsub exchange",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "k.Exchange == target.BrokerExchange &&",
+  "new": "true &&",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F14 resub",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "wanted.Select(w => Frame(w.Key, w.Value, \"subscribe\"))",
+  "new": "wanted.Select(w => Frame(w.Key, w.Value, \"unsubscribe\"))",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F15 short frame",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "if (frame.Length < 2) return published;",
+  "new": "if (frame.Length < 1) return published;",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F16 packet length break",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "if (offset + 2 > frame.Length) break;",
+  "new": "if (offset + 2 > frame.Length + 5) break;",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F17 clamp",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "var available = Math.Min(length, frame.Length - offset);",
+  "new": "var available = length;",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F18 ltp size",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "private const int LtpSize = 22,",
+  "new": "private const int LtpSize = 23,",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F19 ltp price offset",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "new Tick(\"ltp\", exchange, token, D(14)",
+  "new": "new Tick(\"ltp\", exchange, token, D(13)",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F20 ohlcv ltt",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "D(14), I(22), D(26), D(34), D(42), D(50), I(58), 0, 0",
+  "new": "D(14), I(58), D(26), D(34), D(42), D(50), I(22), 0, 0",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F21 ohlcv high low",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "D(26), D(34), D(42), D(50), I(58), 0, 0",
+  "new": "D(26), D(42), D(34), D(50), I(58), 0, 0",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F22 full lut ltq",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "I(58), I(62), I(66), D(70),",
+  "new": "I(58), I(66), I(62), D(70),",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F23 full buy sell qty",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "BinaryPrimitives.ReadInt64LittleEndian(p.AsSpan(78)), BinaryPrimitives.ReadInt64LittleEndian(p.AsSpan(86)), I(94)",
+  "new": "BinaryPrimitives.ReadInt64LittleEndian(p.AsSpan(86)), BinaryPrimitives.ReadInt64LittleEndian(p.AsSpan(78)), I(94)",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F24 depth sides",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "Side(98), Side(178)",
+  "new": "Side(178), Side(98)",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F25 depth quantity orders",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "[\"quantity\"] = I(at + 8), [\"orders\"] = I(at + 12)",
+  "new": "[\"quantity\"] = I(at + 12), [\"orders\"] = I(at + 8)",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F26 depth levels",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "Enumerable.Range(0, 5)",
+  "new": "Enumerable.Range(0, 4)",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F27 limits",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "I(258) / 100.0, I(262) / 100.0",
+  "new": "I(262) / 100.0, I(258) / 100.0",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F28 limits scale",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "I(258) / 100.0",
+  "new": "I(258) / 10.0",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F29 packet topic",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "\"ohlcv\" => \"QUOTE\", _ => \"DEPTH\"",
+  "new": "\"ohlcv\" => \"DEPTH\", _ => \"DEPTH\"",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F30 fan out rank",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "Where(t => Rank(t) <= Rank(packetTopic))",
+  "new": "Where(t => Rank(t) == Rank(packetTopic))",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F31 fan out fallback",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "if (topics.Length == 0) topics = [packetTopic];",
+  "new": "if (topics.Length == 0) topics = [];",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F32 unknown token",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "if (!instruments.TryGetValue((tick.Exchange, tick.Token), out var known)) return;",
+  "new": "if (!instruments.TryGetValue((tick.Exchange, tick.Token), out var known) && !instruments.Any()) return; known ??= instruments.Values.First();",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F33 timestamp",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "(tick.LastUpdate != 0 ? tick.LastUpdate : tick.Ltt) * 1000",
+  "new": "tick.Ltt * 1000",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F34 ltt null",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "long? Seconds(long v) => v != 0 ? v * 1000 : null;",
+  "new": "long? Seconds(long v) => v * 1000;",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F35 timestamp null",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "[\"timestamp\"] = timestamp != 0 ? timestamp : null",
+  "new": "[\"timestamp\"] = timestamp",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F36 close block",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "if (tick.Mode != \"ltp\" && tick.Close != 0)",
+  "new": "if (tick.Close != -1)",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F37 change",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "data[\"change\"] = Round2(change);",
+  "new": "data[\"change\"] = change;",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F38 change percent",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "Round2(change / tick.Close * 100)",
+  "new": "Math.Round(change / tick.Close * 100, 2)",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F39 round even",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "(compare == 0 && !quotient.IsEven)",
+  "new": "(compare == 0)",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F40 round up",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "compare > 0 ||",
+  "new": "compare >= 0 ||",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F41 round negative",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "return negative ? -result : result;",
+  "new": "return result;",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F42 quote fields",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "if (topic is \"QUOTE\" or \"DEPTH\")",
+  "new": "if (topic is \"DEPTH\")",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F43 oi alias",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "data[\"open_interest\"] = tick.OpenInterest;",
+  "new": "data[\"open_interest\"] = 0;",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F44 average",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "data[\"average_price\"] = tick.Average;",
+  "new": "data[\"average_price\"] = 0.0;",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F45 token text",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "[\"token\"] = tick.Token.ToString(System.Globalization.CultureInfo.InvariantCulture)",
+  "new": "[\"token\"] = \"0\"",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F46 exchange trim",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "TrimEnd((byte)0)",
+  "new": "TrimEnd((byte)1)",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "F47 subscribe frame type",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/VortexFeedCodec.cs",
+  "old": "Frame(ticker, mode, \"subscribe\"));\n            }\n        }\n\n        return messages;",
+  "new": "Frame(ticker, mode, \"unsubscribe\"));\n            }\n        }\n\n        return messages;",
+  "filter": "FullyQualifiedName~RupeezyFeed",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]
