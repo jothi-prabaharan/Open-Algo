@@ -104,6 +104,8 @@ SCENARIOS = [
     req("multiquotes_option_chain_without_the_strike_falls_back_to_quotes", "/api/v1/multiquotes", {"symbols": [{"symbol": "NIFTY25NOV2624000CE", "exchange": "NFO"}]}, {OB: CHAIN_EMPTY, QB: qr(**{"70001": quote(7500)})}),
     req("multiquotes_option_chain_refused_falls_back_to_quotes", "/api/v1/multiquotes", {"symbols": [{"symbol": "NIFTY25NOV2624000CE", "exchange": "NFO"}]}, {OB: REFUSED_401, QB: qr(**{"70001": quote(7500)})}),
     req("multiquotes_an_option_without_an_expiry_uses_quotes", "/api/v1/multiquotes", {"symbols": [{"symbol": "NOEXPIRYCE", "exchange": "NFO"}]}, {QB: EMPTY}),
+    req("multiquotes_ids_are_asked_in_ascending_order", "/api/v1/multiquotes", {"symbols": [{"symbol": "NIFTY25NOV26FUT", "exchange": "NFO"}, {"symbol": "INFY", "exchange": "NSE"}, {"symbol": "SBIN", "exchange": "NSE"}]},
+        {QB: qr(**{"1001": quote(), "1002": quote(150000), "50001": quote(2400550)})}),
     req("multiquotes_more_than_a_hundred_go_in_batches", "/api/v1/multiquotes", {"symbols": [{"symbol": f"BULK{i}", "exchange": "NSE"} for i in range(130)]},
         {QB: [qr(**{str(3000 + i): quote(100000 + i) for i in range(100)}), qr(**{str(3000 + i): quote(100000 + i) for i in range(100, 130)})]}),
 ]

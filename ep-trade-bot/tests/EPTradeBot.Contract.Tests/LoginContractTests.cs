@@ -589,6 +589,7 @@ public sealed class LoginSahiContractTests(LoginSahiHost host, ITestOutputHelper
         ["login_refused_with_a_reason"] = LoginDeviations.Refused("Sahi did not issue an access token: key_id is malformed. " + Settings),
         ["login_refused_without_a_reason"] = LoginDeviations.Refused("Sahi did not issue an access token. " + Settings),
         ["login_ok_without_a_token"] = LoginDeviations.Refused("Sahi did not issue an access token. " + Settings),
+        ["login_created_status_with_a_token_is_refused"] = LoginDeviations.Refused("Sahi did not issue an access token. " + Settings),
     };
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("login_sahi.fixtures.json");

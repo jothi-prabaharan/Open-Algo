@@ -191,4 +191,24 @@ SCENARIOS = [
     {"name": "a_frame_cut_off_in_the_middle_is_dropped", "steps": [{"subscribe": [sub("SBIN", "NSE", 1)]}, {"frame": msg(LTP, tick(ID["SBIN"], 80545))[:-6]}]},
     {"name": "garbage_is_dropped", "steps": [{"subscribe": [sub("SBIN", "NSE", 1)]}, {"frame": "ffffffffffffffffffffffff"}]},
     {"name": "an_unsupported_wire_type_is_dropped", "steps": [{"subscribe": [sub("SBIN", "NSE", 1)]}, {"frame": "0b"}]},
+    {"name": "subscribe_again_after_unsubscribing_sends_the_subscribe_again", "steps": [
+        {"subscribe": [sub("SBIN", "NSE", 1)]}, {"unsubscribe": sub("SBIN", "NSE", 1)}, {"subscribe": [sub("SBIN", "NSE", 1)]},
+    ]},
+    {"name": "a_mode_change_and_a_new_subscribe_in_one_flush", "steps": [
+        {"subscribe": [sub("SBIN", "NSE", 1)]}, {"subscribe": [sub("SBIN", "NSE", 3), sub("INFY", "NSE", 1), sub("NIFTY25NOV26FUT", "NFO", 2)]},
+    ]},
+    {"name": "a_freed_place_under_the_thousand_limit_can_be_taken", "steps": [
+        {"subscribe": [sub(f"TKN{i}", "NSE", 1) for i in range(1000)]}, {"unsubscribe": sub("TKN7", "NSE", 1)}, {"subscribe": [sub("TKN1000", "NSE", 1)]}, frame(LTP, tick(900000 + 1000, 1000)),
+    ]},
+    {"name": "unsubscribe_after_a_reconnect_reaches_the_server", "steps": [
+        {"subscribe": [sub("SBIN", "NSE", 1)]}, {"reconnect": None}, {"unsubscribe": sub("SBIN", "NSE", 1)},
+    ]},
+    {"name": "a_varint_of_eleven_bytes_drops_the_frame", "steps": [
+        {"subscribe": [sub("SBIN", "NSE", 1)]}, {"frame": ("80" * 10 + "0100" + msg(LTP, tick(ID["SBIN"], 80545)))},
+    ]},
+    {"name": "a_fixed64_field_is_skipped", "steps": [{"subscribe": [sub("SBIN", "NSE", 1)]}, {"frame": ("49" + "00" * 8 + msg(LTP, tick(ID["SBIN"], 80545)))}]},
+    {"name": "a_fixed32_field_is_skipped", "steps": [{"subscribe": [sub("SBIN", "NSE", 1)]}, {"frame": ("4d" + "00" * 4 + msg(LTP, tick(ID["SBIN"], 80545)))}]},
+    {"name": "a_unknown_field_running_past_the_end_drops_the_frame", "steps": [{"subscribe": [sub("SBIN", "NSE", 1)]}, {"frame": (msg(LTP, tick(ID["SBIN"], 80545)) + "4a32aabb")}]},
+    {"name": "a_malformed_ack_after_a_tick_drops_the_frame", "steps": [{"subscribe": [sub("SBIN", "NSE", 1)]}, {"frame": (msg(LTP, tick(ID["SBIN"], 80545)) + msg(1, b"\x12\x05\x01"))}]},
+    {"name": "a_malformed_error_after_a_tick_drops_the_frame", "steps": [{"subscribe": [sub("SBIN", "NSE", 1)]}, {"frame": (msg(LTP, tick(ID["SBIN"], 80545)) + msg(5, b"\x0a\x09ab"))}]},
 ]

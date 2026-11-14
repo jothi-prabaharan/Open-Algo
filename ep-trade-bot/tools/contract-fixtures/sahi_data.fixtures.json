@@ -6220,6 +6220,263 @@
       "ignore": []
     },
     {
+      "name": "multiquotes_ids_are_asked_in_ascending_order",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v1/marketdata/quotes": {
+          "body": {
+            "data": {
+              "1001": {
+                "last_trade_price": 80545,
+                "volume_today": 1234567,
+                "open_interest": 1500,
+                "best_buys": [
+                  {
+                    "price": 80540,
+                    "qty": 100
+                  },
+                  {
+                    "price": 80535,
+                    "qty": 200
+                  },
+                  {
+                    "price": 80530,
+                    "qty": 300
+                  },
+                  {
+                    "price": 80525,
+                    "qty": 400
+                  },
+                  {
+                    "price": 80520,
+                    "qty": 500
+                  }
+                ],
+                "best_sells": [
+                  {
+                    "price": 80550,
+                    "qty": 110
+                  },
+                  {
+                    "price": 80555,
+                    "qty": 220
+                  },
+                  {
+                    "price": 80560,
+                    "qty": 330
+                  },
+                  {
+                    "price": 80565,
+                    "qty": 440
+                  },
+                  {
+                    "price": 80570,
+                    "qty": 550
+                  }
+                ]
+              },
+              "1002": {
+                "last_trade_price": 150000,
+                "volume_today": 1234567,
+                "open_interest": 1500,
+                "best_buys": [
+                  {
+                    "price": 80540,
+                    "qty": 100
+                  },
+                  {
+                    "price": 80535,
+                    "qty": 200
+                  },
+                  {
+                    "price": 80530,
+                    "qty": 300
+                  },
+                  {
+                    "price": 80525,
+                    "qty": 400
+                  },
+                  {
+                    "price": 80520,
+                    "qty": 500
+                  }
+                ],
+                "best_sells": [
+                  {
+                    "price": 80550,
+                    "qty": 110
+                  },
+                  {
+                    "price": 80555,
+                    "qty": 220
+                  },
+                  {
+                    "price": 80560,
+                    "qty": 330
+                  },
+                  {
+                    "price": 80565,
+                    "qty": 440
+                  },
+                  {
+                    "price": 80570,
+                    "qty": 550
+                  }
+                ]
+              },
+              "50001": {
+                "last_trade_price": 2400550,
+                "volume_today": 1234567,
+                "open_interest": 1500,
+                "best_buys": [
+                  {
+                    "price": 80540,
+                    "qty": 100
+                  },
+                  {
+                    "price": 80535,
+                    "qty": 200
+                  },
+                  {
+                    "price": 80530,
+                    "qty": 300
+                  },
+                  {
+                    "price": 80525,
+                    "qty": 400
+                  },
+                  {
+                    "price": 80520,
+                    "qty": 500
+                  }
+                ],
+                "best_sells": [
+                  {
+                    "price": 80550,
+                    "qty": 110
+                  },
+                  {
+                    "price": 80555,
+                    "qty": 220
+                  },
+                  {
+                    "price": 80560,
+                    "qty": 330
+                  },
+                  {
+                    "price": 80565,
+                    "qty": 440
+                  },
+                  {
+                    "price": 80570,
+                    "qty": 550
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [
+            {
+              "data": {
+                "ask": 805.5,
+                "bid": 805.4,
+                "high": 0.0,
+                "low": 0.0,
+                "ltp": 24005.5,
+                "oi": 1500,
+                "open": 0.0,
+                "prev_close": 0.0,
+                "volume": 1234567
+              },
+              "exchange": "NFO",
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "data": {
+                "ask": 805.5,
+                "bid": 805.4,
+                "high": 0.0,
+                "low": 0.0,
+                "ltp": 1500.0,
+                "oi": 1500,
+                "open": 0.0,
+                "prev_close": 0.0,
+                "volume": 1234567
+              },
+              "exchange": "NSE",
+              "symbol": "INFY"
+            },
+            {
+              "data": {
+                "ask": 805.5,
+                "bid": 805.4,
+                "high": 0.0,
+                "low": 0.0,
+                "ltp": 805.45,
+                "oi": 1500,
+                "open": 0.0,
+                "prev_close": 0.0,
+                "volume": 1234567
+              },
+              "exchange": "NSE",
+              "symbol": "SBIN"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "direct.sahi.com",
+          "path": "/v1/marketdata/quotes",
+          "query": [
+            [
+              "i",
+              "1001"
+            ],
+            [
+              "i",
+              "1002"
+            ],
+            [
+              "i",
+              "50001"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer sahi-access-token",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "multiquotes_more_than_a_hundred_go_in_batches",
       "method": "POST",
       "path": "/api/v1/multiquotes",

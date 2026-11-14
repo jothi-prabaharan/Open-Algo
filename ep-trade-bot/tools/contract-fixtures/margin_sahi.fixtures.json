@@ -3517,6 +3517,336 @@
       "ignore": []
     },
     {
+      "name": "margin_created_status_is_a_refusal",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/order": {
+          "status": 201,
+          "body": {
+            "required_margin": 160805,
+            "available_margin": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 502,
+        "body": {
+          "message": "Sahi did not accept the request.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "direct.sahi.com",
+          "path": "/v1/margins/order",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer sahi-access-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange_segment": "NSE",
+            "symbol": "SBIN",
+            "txn_type": "B",
+            "qty": 10,
+            "order_type": "MKT",
+            "product": "I",
+            "validity": "DAY",
+            "price": 0
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_two_baskets_with_fractions_are_added_then_rounded",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "BULK0",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "BULK1",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "BULK2",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "BULK3",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "BULK4",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "BULK5",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "BULK6",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "BULK7",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "BULK8",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "BULK9",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "BULK10",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/basket": [
+          {
+            "body": {
+              "required_margin": 10,
+              "available_margin": 1
+            }
+          },
+          {
+            "body": {
+              "required_margin": 20,
+              "available_margin": 2
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "available_margin": 0.02,
+            "exposure_margin": 0.0,
+            "span_margin": 0.0,
+            "total_margin_required": 0.3
+          },
+          "message": "Sahi prices at most 10 legs together; this basket was priced in 2 parts and added, so hedge benefits across parts are not counted.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "direct.sahi.com",
+          "path": "/v1/margins/basket",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer sahi-access-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "legs": [
+              {
+                "exchange_segment": "NSE",
+                "symbol": "BULK0",
+                "txn_type": "B",
+                "qty": 10,
+                "order_type": "MKT",
+                "product": "I",
+                "validity": "DAY",
+                "price": 0
+              },
+              {
+                "exchange_segment": "NSE",
+                "symbol": "BULK1",
+                "txn_type": "B",
+                "qty": 10,
+                "order_type": "MKT",
+                "product": "I",
+                "validity": "DAY",
+                "price": 0
+              },
+              {
+                "exchange_segment": "NSE",
+                "symbol": "BULK2",
+                "txn_type": "B",
+                "qty": 10,
+                "order_type": "MKT",
+                "product": "I",
+                "validity": "DAY",
+                "price": 0
+              },
+              {
+                "exchange_segment": "NSE",
+                "symbol": "BULK3",
+                "txn_type": "B",
+                "qty": 10,
+                "order_type": "MKT",
+                "product": "I",
+                "validity": "DAY",
+                "price": 0
+              },
+              {
+                "exchange_segment": "NSE",
+                "symbol": "BULK4",
+                "txn_type": "B",
+                "qty": 10,
+                "order_type": "MKT",
+                "product": "I",
+                "validity": "DAY",
+                "price": 0
+              },
+              {
+                "exchange_segment": "NSE",
+                "symbol": "BULK5",
+                "txn_type": "B",
+                "qty": 10,
+                "order_type": "MKT",
+                "product": "I",
+                "validity": "DAY",
+                "price": 0
+              },
+              {
+                "exchange_segment": "NSE",
+                "symbol": "BULK6",
+                "txn_type": "B",
+                "qty": 10,
+                "order_type": "MKT",
+                "product": "I",
+                "validity": "DAY",
+                "price": 0
+              },
+              {
+                "exchange_segment": "NSE",
+                "symbol": "BULK7",
+                "txn_type": "B",
+                "qty": 10,
+                "order_type": "MKT",
+                "product": "I",
+                "validity": "DAY",
+                "price": 0
+              },
+              {
+                "exchange_segment": "NSE",
+                "symbol": "BULK8",
+                "txn_type": "B",
+                "qty": 10,
+                "order_type": "MKT",
+                "product": "I",
+                "validity": "DAY",
+                "price": 0
+              },
+              {
+                "exchange_segment": "NSE",
+                "symbol": "BULK9",
+                "txn_type": "B",
+                "qty": 10,
+                "order_type": "MKT",
+                "product": "I",
+                "validity": "DAY",
+                "price": 0
+              }
+            ]
+          }
+        },
+        {
+          "method": "POST",
+          "host": "direct.sahi.com",
+          "path": "/v1/margins/basket",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer sahi-access-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "legs": [
+              {
+                "exchange_segment": "NSE",
+                "symbol": "BULK10",
+                "txn_type": "B",
+                "qty": 10,
+                "order_type": "MKT",
+                "product": "I",
+                "validity": "DAY",
+                "price": 0
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "margin_ok_status_without_a_figure",
       "method": "POST",
       "path": "/api/v1/margin",

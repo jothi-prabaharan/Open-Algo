@@ -443,6 +443,7 @@ public sealed class MarginSahiContractTests(MarginSahiHost host, ITestOutputHelp
     {
         ["margin_eleven_positions_go_in_two_baskets"] = new(Parts, f => f["expected"]!["body"]!.AsObject().Remove("message")),
         ["margin_twenty_positions_go_in_two_full_baskets"] = new(Parts, f => f["expected"]!["body"]!.AsObject().Remove("message")),
+        ["margin_two_baskets_with_fractions_are_added_then_rounded"] = new(Parts, f => f["expected"]!["body"]!.AsObject().Remove("message")),
         ["margin_session_expired"] = new(Brand, f => ContractRunner.Expect(f, 401, ContractRunner.Error("Your Sahi session has expired. Log in to EP Trade bot again."))),
         ["margin_key_without_permission"] = new(Brand, f => ContractRunner.Expect(f, 403, ContractRunner.Error("Your Sahi API key does not have permission for this. Create a key with Full access in the Sahi API Dashboard and use it in EP Trade bot."))),
         ["margin_unknown_symbol_alone"] = new("Same status; the platform's own words for a symbol missing from the master contract.", f => ContractRunner.Expect(f, 400, ContractRunner.Error(Unknown("NOSUCH")))),

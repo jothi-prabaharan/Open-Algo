@@ -420,6 +420,168 @@
       "ignore": []
     },
     {
+      "name": "login_forbidden_status_with_another_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /api/v1/apikeys/token": {
+          "status": 403,
+          "body": {
+            "code": "Other",
+            "message": "m"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Sahi did not issue an access token because the API key is not approved for today. Open Sahi web, go to Profile, API Dashboard, and click Approve on the key, then log in again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apis.sahi.com",
+          "path": "/api/v1/apikeys/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "key_id": "pk_test_key",
+            "secret": "sahi_sk_test_secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_forbidden_code_on_another_status",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /api/v1/apikeys/token": {
+          "status": 400,
+          "body": {
+            "code": "Forbidden",
+            "message": "m"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Sahi did not issue an access token because the API key is not approved for today. Open Sahi web, go to Profile, API Dashboard, and click Approve on the key, then log in again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apis.sahi.com",
+          "path": "/api/v1/apikeys/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "key_id": "pk_test_key",
+            "secret": "sahi_sk_test_secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_server_error_500",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /api/v1/apikeys/token": {
+          "status": 500,
+          "body": {
+            "x": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Sahi's login service is not responding right now. Try again in a few minutes."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apis.sahi.com",
+          "path": "/api/v1/apikeys/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "key_id": "pk_test_key",
+            "secret": "sahi_sk_test_secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_created_status_with_a_token_is_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "POST /api/v1/apikeys/token": {
+          "status": 201,
+          "body": {
+            "access_token": "t"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Sahi did not issue an access token. Check the API key and secret in your OpenAlgo settings."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "apis.sahi.com",
+          "path": "/api/v1/apikeys/token",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "key_id": "pk_test_key",
+            "secret": "sahi_sk_test_secret"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "login_locked_on_any_status",
       "method": "POST",
       "path": "/api/v1/accounts/{account}/broker-login/complete",

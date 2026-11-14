@@ -12493,6 +12493,364 @@
       "ignore": []
     },
     {
+      "name": "history_puts_ask_for_open_interest",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "NIFTY25NOV2624000PE",
+        "exchange": "NFO",
+        "interval": "5m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v1/marketdata/candles": {
+          "body": {
+            "candles": [
+              [
+                1793591100000,
+                80000,
+                80200,
+                79900,
+                80100,
+                1000,
+                1500
+              ],
+              [
+                1793591400000,
+                80100,
+                80300,
+                80000,
+                80250,
+                2000,
+                1600
+              ]
+            ],
+            "has_more": false
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 1500,
+              "open": 800.0,
+              "timestamp": 1793591100,
+              "volume": 1000
+            },
+            {
+              "close": 802.5,
+              "high": 803.0,
+              "low": 800.0,
+              "oi": 1600,
+              "open": 801.0,
+              "timestamp": 1793591400,
+              "volume": 2000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "direct.sahi.com",
+          "path": "/v1/marketdata/candles",
+          "query": [
+            [
+              "instrument_id",
+              "70002"
+            ],
+            [
+              "size",
+              "5m"
+            ],
+            [
+              "from",
+              "1793557800000"
+            ],
+            [
+              "to",
+              "1793644199000"
+            ],
+            [
+              "oi",
+              "true"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer sahi-access-token",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_partial_candle_is_asked_for_on_the_first_page_only",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-10-01",
+        "end_date": "2026-11-13",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v1/marketdata/candles": [
+          {
+            "body": {
+              "candles": [
+                [
+                  1794541500000,
+                  80000,
+                  80200,
+                  79900,
+                  80100,
+                  1000
+                ]
+              ],
+              "has_more": true
+            }
+          },
+          {
+            "body": {
+              "candles": [
+                [
+                  1794505500000,
+                  80000,
+                  80200,
+                  79900,
+                  80100,
+                  1000
+                ]
+              ],
+              "has_more": false
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1794505500,
+              "volume": 1000
+            },
+            {
+              "close": 801.0,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1794541500,
+              "volume": 1000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "direct.sahi.com",
+          "path": "/v1/marketdata/candles",
+          "query": [
+            [
+              "instrument_id",
+              "1001"
+            ],
+            [
+              "size",
+              "5m"
+            ],
+            [
+              "from",
+              "1790793000000"
+            ],
+            [
+              "to",
+              "1794547800000"
+            ],
+            [
+              "include_partial",
+              "true"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer sahi-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "direct.sahi.com",
+          "path": "/v1/marketdata/candles",
+          "query": [
+            [
+              "instrument_id",
+              "1001"
+            ],
+            [
+              "size",
+              "5m"
+            ],
+            [
+              "from",
+              "1790793000000"
+            ],
+            [
+              "to",
+              "1794541499999"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer sahi-access-token",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "history_a_timestamp_on_two_pages_keeps_the_later_page_row",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "5m",
+        "start_date": "2026-10-01",
+        "end_date": "2026-11-02",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v1/marketdata/candles": [
+          {
+            "body": {
+              "candles": [
+                [
+                  1793591100000,
+                  80000,
+                  80200,
+                  79900,
+                  1,
+                  1000
+                ]
+              ],
+              "has_more": true
+            }
+          },
+          {
+            "body": {
+              "candles": [
+                [
+                  1793591100000,
+                  80000,
+                  80200,
+                  79900,
+                  2,
+                  1000
+                ]
+              ],
+              "has_more": false
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "close": 0.01,
+              "high": 802.0,
+              "low": 799.0,
+              "oi": 0,
+              "open": 800.0,
+              "timestamp": 1793591100,
+              "volume": 1000
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "direct.sahi.com",
+          "path": "/v1/marketdata/candles",
+          "query": [
+            [
+              "instrument_id",
+              "1001"
+            ],
+            [
+              "size",
+              "5m"
+            ],
+            [
+              "from",
+              "1790793000000"
+            ],
+            [
+              "to",
+              "1793644199000"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer sahi-access-token",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "direct.sahi.com",
+          "path": "/v1/marketdata/candles",
+          "query": [
+            [
+              "instrument_id",
+              "1001"
+            ],
+            [
+              "size",
+              "5m"
+            ],
+            [
+              "from",
+              "1790793000000"
+            ],
+            [
+              "to",
+              "1793591099999"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer sahi-access-token",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "history_session_expired",
       "method": "POST",
       "path": "/api/v1/history",

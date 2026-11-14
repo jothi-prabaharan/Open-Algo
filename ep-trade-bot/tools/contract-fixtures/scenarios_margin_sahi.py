@@ -37,6 +37,8 @@ SCENARIOS = [
     margin("margin_session_expired", [pos()], {ONE_EP: failure(401, "UNAUTHORIZED", "x")}),
     margin("margin_key_without_permission", [pos()], {ONE_EP: failure(403, "FORBIDDEN", "x")}),
     margin("margin_rate_limited", [pos()], {ONE_EP: failure(429, "RATE_LIMITED", "x")}),
+    margin("margin_created_status_is_a_refusal", [pos()], {ONE_EP: {"status": 201, "body": {"required_margin": 160805, "available_margin": 1}}}),
+    margin("margin_two_baskets_with_fractions_are_added_then_rounded", [pos(f"BULK{i}") for i in range(11)], {BASKET_EP: [{"body": {"required_margin": 10, "available_margin": 1}}, {"body": {"required_margin": 20, "available_margin": 2}}]}),
     margin("margin_ok_status_without_a_figure", [pos()], {ONE_EP: {"body": {"x": 1}}}),
     margin("margin_second_basket_refused", [pos(f"BULK{i}") for i in range(11)], {BASKET_EP: [BASKET, failure(400, "INVALID", "bad leg")]}),
     margin("margin_index_exchange_refused", [pos("NIFTY", "NSE_INDEX")], {}),

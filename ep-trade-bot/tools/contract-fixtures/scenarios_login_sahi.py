@@ -26,5 +26,9 @@ SCENARIOS = [
     sign_in("login_refused_with_a_reason", refused(400, "InvalidRequest", "key_id is malformed")),
     sign_in("login_refused_without_a_reason", {"status": 400, "body": {"x": 1}}),
     sign_in("login_ok_without_a_token", {"body": {"token_type": "Bearer"}}),
+    sign_in("login_forbidden_status_with_another_code", refused(403, "Other")),
+    sign_in("login_forbidden_code_on_another_status", refused(400, "Forbidden")),
+    sign_in("login_server_error_500", {"status": 500, "body": {"x": 1}}),
+    sign_in("login_created_status_with_a_token_is_refused", {"status": 201, "body": {"access_token": "t"}}),
     sign_in("login_locked_on_any_status", refused(400, "Locked")),
 ]
