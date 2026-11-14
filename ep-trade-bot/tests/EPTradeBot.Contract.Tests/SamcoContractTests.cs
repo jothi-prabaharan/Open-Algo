@@ -72,3 +72,80 @@ public sealed class SamcoContractTests(SamcoHost host, ITestOutputHelper output)
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class SamcoDataHost : BrokerContractHost
+{
+    public override string BrokerName => "samco";
+    public override string FixtureFile => "samco_data.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "samco-api-key", ["ApiSecret"] = "samco-api-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["Brokers:RetryBackoffMs:samco"] = "0", ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>Samco quotes, depth and several quotes (tools/contract-fixtures/samco_data.fixtures.json).</summary>
+public sealed class SamcoDataContractTests(SamcoDataHost host, ITestOutputHelper output) : IClassFixture<SamcoDataHost>
+{
+    private const string Words = "Same status. OpenAlgo words the failure for a developer (a library error, a call name). EP Trade bot says what Samco did and what to do.";
+
+    private static Deviation Says(string message) => new(Words, f => Expect(f, 500, Error(message)));
+
+    private const string Busy = "Samco is limiting how often it can be asked. Wait a moment, then try again.";
+    private const string Down = "Samco could not answer just now. Try again in a few minutes.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["quotes_refused"] = Says("Samco could not give the quote: Symbol not found"),
+        ["quotes_refused_without_a_message"] = Says("Samco could not give the quote: no reason was given."),
+        ["quotes_without_details"] = Says("Samco sent no quote for SBIN."),
+        ["quotes_session_refused"] = Says("Samco did not accept the session. Sign in to Samco again, then try again."),
+        ["quotes_rate_limited_every_time"] = Says(Busy),
+        ["quotes_server_error_every_time"] = Says(Down),
+        ["quotes_index_without_details"] = Says("Samco sent no index data for NIFTY."),
+        ["quotes_index_refused"] = Says("Samco could not give the index quote: Index not found"),
+        ["depth_refused"] = Says("Samco could not give the market depth: No depth"),
+        ["depth_without_details"] = Says("Samco sent no market depth for SBIN."),
+        ["multiquotes_refused"] = Says("Samco could not give the quotes: Bad request"),
+        ["multiquotes_server_error_every_time"] = Says(Down),
+        ["multiquotes_an_index_that_fails"] = new(Words, f => f["expected"]!["body"]!["results"]![1]!["error"] = "Samco could not give the index quote: Index not found"),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("samco_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class SamcoHistoryHost : BrokerContractHost
+{
+    public override string BrokerName => "samco";
+    public override string FixtureFile => "history_samco.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "samco-api-key", ["ApiSecret"] = "samco-api-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["Brokers:RetryBackoffMs:samco"] = "0", ["OpenAlgoApi:HistorySpacingMs"] = "0" };
+}
+
+/// <summary>Samco history (tools/contract-fixtures/history_samco.fixtures.json).</summary>
+public sealed class SamcoHistoryContractTests(SamcoHistoryHost host, ITestOutputHelper output) : IClassFixture<SamcoHistoryHost>
+{
+    private const string Words = "Same status. OpenAlgo words the failure for a developer (a library error, a call name). EP Trade bot says what Samco did and what to do.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_session_refused"] = new(Words, f => Expect(f, 500, Error("Samco did not accept the session. Sign in to Samco again, then try again."))),
+        ["history_rate_limited_every_time"] = new(Words, f => Expect(f, 500, Error("Samco is limiting how often it can be asked. Wait a moment, then try again."))),
+        ["history_server_error_every_time"] = new(Words, f => Expect(f, 500, Error("Samco could not answer just now. Try again in a few minutes."))),
+        ["history_interval_samco_lacks"] = new("OpenAlgo asks Samco for one-minute candles when the interval is one it does not offer, and answers with those. EP Trade bot answers 400 and names the intervals Samco offers, so a trader is never handed candles of a different size.",
+            f => { Expect(f, 400, Error("Interval 3m is not supported by Samco. Use one of: 1m, 5m, 10m, 15m, 30m, 1h, D.")); f["sent"]!.AsArray().Clear(); }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_samco.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}

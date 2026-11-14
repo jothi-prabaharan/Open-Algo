@@ -31,16 +31,16 @@ public sealed partial class SamcoPlugin
         for (var attempt = 0; ; attempt++)
         {
             var (status, answer) = await SendAsync(session, method, path, body, cancellationToken);
-            if (status == 403) throw new BrokerException($"{DisplayName} did not accept the session. Sign in to {DisplayName} again, then try again.", 403);
+            if (status == 403) throw new BrokerException($"{DisplayName} did not accept the session. Sign in to {DisplayName} again, then try again.", 500);
             if ((status == 429 || status >= 500) && attempt < 3)
             {
                 await Task.Delay(sessions.RetryBackoff(Name, TimeSpan.FromSeconds(1 << attempt)), cancellationToken);
                 continue;
             }
 
-            if (status == 429) throw new BrokerException($"{DisplayName} is limiting how often it can be asked. Wait a moment, then try again.", 429);
-            if (status >= 500) throw new BrokerException($"{DisplayName} could not answer just now. Try again in a few minutes.", 502);
-            if (answer.Count == 0) throw new BrokerException($"{DisplayName} sent an answer that could not be read. Try again in a moment.", 502);
+            if (status == 429) throw new BrokerException($"{DisplayName} is limiting how often it can be asked. Wait a moment, then try again.", 500);
+            if (status >= 500) throw new BrokerException($"{DisplayName} could not answer just now. Try again in a few minutes.", 500);
+            if (answer.Count == 0) throw new BrokerException($"{DisplayName} sent an answer that could not be read. Try again in a moment.", 500);
             return answer;
         }
     }
@@ -50,8 +50,8 @@ public sealed partial class SamcoPlugin
     private async Task<Quote> IndexQuoteAsync(BrokerSession session, SymbolRecord record, CancellationToken cancellationToken)
     {
         var answer = await DataAsync(session, HttpMethod.Get, $"/quote/indexQuote?indexName={Escape(IndexName(record))}", null, cancellationToken);
-        if (!Succeeded(answer)) throw new BrokerException($"{DisplayName} could not give the index quote: {Reason(answer, "no reason was given.")}", 400);
-        if ((answer["indexDetails"] as JsonArray)?.FirstOrDefault() is not JsonObject quote) throw new BrokerException($"{DisplayName} sent no index data for {record.Symbol}.", 400);
+        if (!Succeeded(answer)) throw new BrokerException($"{DisplayName} could not give the index quote: {Reason(answer, "no reason was given.")}", 500);
+        if ((answer["indexDetails"] as JsonArray)?.FirstOrDefault() is not JsonObject quote) throw new BrokerException($"{DisplayName} sent no index data for {record.Symbol}.", 500);
         return new Quote(0, 0, SafeFloat(quote["openValue"]), SafeFloat(quote["highValue"]), SafeFloat(quote["lowValue"]), SafeFloat(quote["spotPrice"]), SafeFloat(quote["closeValue"]), SafeInt(quote["totalTradedVolume"]), 0);
     }
 
@@ -61,8 +61,8 @@ public sealed partial class SamcoPlugin
         var exchange = ApiExchange(record);
         var path = $"/quote/getQuote?symbolName={Escape(record.BrokerSymbol)}" + (exchange is not ("" or "NSE") ? $"&exchange={exchange}" : "");
         var answer = await DataAsync(session, HttpMethod.Get, path, null, cancellationToken);
-        if (!Succeeded(answer)) throw new BrokerException($"{DisplayName} could not give the quote: {Reason(answer, "no reason was given.")}", 400);
-        if (answer["quoteDetails"] is not JsonObject { Count: > 0 } quote) throw new BrokerException($"{DisplayName} sent no quote for {record.Symbol}.", 400);
+        if (!Succeeded(answer)) throw new BrokerException($"{DisplayName} could not give the quote: {Reason(answer, "no reason was given.")}", 500);
+        if (answer["quoteDetails"] is not JsonObject { Count: > 0 } quote) throw new BrokerException($"{DisplayName} sent no quote for {record.Symbol}.", 500);
         var bid = (quote["bestBids"] as JsonArray)?.FirstOrDefault() as JsonObject;
         var ask = (quote["bestAsks"] as JsonArray)?.FirstOrDefault() as JsonObject;
         return new Quote(bid is null ? 0 : SafeFloat(bid["price"]), ask is null ? 0 : SafeFloat(ask["price"]), SafeFloat(quote["openValue"]), SafeFloat(quote["highValue"]), SafeFloat(quote["lowValue"]),
@@ -105,8 +105,8 @@ public sealed partial class SamcoPlugin
         var payload = new JsonObject { ["symbolName"] = record.BrokerSymbol };
         if (ApiExchange(record) is { Length: > 0 } and not "NSE") payload["exchange"] = ApiExchange(record);
         var answer = await DataAsync(session, HttpMethod.Post, "/marketDepth", payload, cancellationToken);
-        if (!Succeeded(answer)) throw new BrokerException($"{DisplayName} could not give the market depth: {Reason(answer, "no reason was given.")}", 400);
-        if ((answer["MarketDepthDetails"] as JsonObject)?["marketDepth"] is not JsonObject { Count: > 0 } depth) throw new BrokerException($"{DisplayName} sent no market depth for {symbol}.", 400);
+        if (!Succeeded(answer)) throw new BrokerException($"{DisplayName} could not give the market depth: {Reason(answer, "no reason was given.")}", 500);
+        if ((answer["MarketDepthDetails"] as JsonObject)?["marketDepth"] is not JsonObject { Count: > 0 } depth) throw new BrokerException($"{DisplayName} sent no market depth for {symbol}.", 500);
 
         Quote quote;
         try
@@ -163,7 +163,7 @@ public sealed partial class SamcoPlugin
         }
 
         var answer = await DataAsync(session, HttpMethod.Post, "/quote/multiQuote", payload, cancellationToken);
-        if (!Succeeded(answer)) throw new BrokerException($"{DisplayName} could not give the quotes: {Reason(answer, "no reason was given.")}", 400);
+        if (!Succeeded(answer)) throw new BrokerException($"{DisplayName} could not give the quotes: {Reason(answer, "no reason was given.")}", 500);
 
         var byToken = new Dictionary<string, JsonObject>();
         var byName = new Dictionary<string, JsonObject>();
