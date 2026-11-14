@@ -22,6 +22,7 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | TradeSmart (Noren v2) | yes | yes | yes | yes | yes | no | yes | yes |
 | Rupeezy (Vortex) | yes | yes | yes | yes | n/a | yes | yes | yes |
 | Sahi | yes | yes | yes | yes | yes | n/a | yes | yes |
+| Arrow | yes | yes | no | no | no | no | no | no |
 
 The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
@@ -308,6 +309,12 @@ The other 20 brokers in the task list are not started (Shoonya, Zebu and Flattra
 - Feed (`feed_sahi.fixtures.json`, 49 cases; `SahiFeedCodec`): protobuf, one message per binary frame, hand-read (varints and length-delimited fields; unknown fields skipped, a malformed frame dropped, the last payload in a frame wins). Sahi holds one mode per instrument id: the highest wanted is asked for and its tick is fanned out to every lower mode; changes are grouped (Unsubscribe first, then a ModeChange and a Subscribe per mode, at most 500 ids a frame, 1000 instruments a connection); six exchanges stream (NSE, BSE, NFO, BFO and their indices). The stream carries no open, high, low, close, last quantity, average price or total quantities, so those are zero rather than derived. Sent as hex of the bytes. No difference from OpenAlgo was needed.
 - Mutation sets: `tg7-sahi.json` (orders, books, funds; 4 equivalent survivors, above) and `tg7-sahi2.json` (feed codec, quotes, depth, history, margin and sign-in; 99 mutants). Every mutant but four turned a test red after 18 recorded cases were added for the first run's survivors. The four left are equivalent or unobservable here: an unsubscribe of a mode never subscribed (the grouped flush finds nothing to send either way), the option-chain leg filter (the answer lists only requested symbols), the single-position basket branch (zero positions are refused earlier), and the trimming of spaces around the key id and secret (the test host holds fixed keys).
 - Not yet done for Sahi: a live-broker run.
+
+## Arrow: orders, books and funds
+
+- `ArrowPlugin`, held to `broker/arrow` by 48 recorded cases (`arrow.fixtures.json`): every call carries the application id and the access token in two headers of their own (appID and token), prices and quantities travel as text, a market order is MKT with market price protection (mpp), a stop order carries triggerPrice, the remark is the strategy cut to 16 characters; B and S are BUY and SELL, C, M and I are CNC, NRML and MIS. The books show Arrow's own text values unchanged (a price is "800.5", not 800.5); an unlisted symbol shows as no symbol; a fill's quantity and price come from its own fields, else the order-style ones; the profit of a position is the realised part plus the unrealised mark to market; a holding takes its symbol and exchange from the first listing; funds are the margin allocated less used, with the collateral summed over the allocations.
+- Recorded differences from OpenAlgo: a refusal of a book call is worded for the trader (OpenAlgo shows the HTTP library's sentence with the address in it); an order Arrow refuses with an OK status, or accepts without an order number, is a refusal here where OpenAlgo reports success with no order id; an empty balance there when Arrow refuses the funds call or answers with an error status, a refusal here; an unlisted symbol is refused by the platform where OpenAlgo sends the order with no symbol.
+- Not yet ported for Arrow: quotes and depth, history, margin, sign-in, the feed; no mutation set; no live-broker run.
 
 ## Remaining brokers: size of the work (for planning)
 

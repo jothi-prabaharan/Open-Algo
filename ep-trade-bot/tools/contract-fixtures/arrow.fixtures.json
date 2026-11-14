@@ -1,0 +1,3187 @@
+{
+  "broker": "arrow",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "arrow-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN-EQ",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY-EQ",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1002",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY25NOV26FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "50001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "GOLDM25NOV26FUT",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 10,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "Nifty 50",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE_INDEX",
+      "token": "26000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "10",
+            "transactionType": "B",
+            "order": "LMT",
+            "product": "I",
+            "price": "800.5",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_uses_market_price_protection",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "10",
+            "transactionType": "B",
+            "order": "MKT",
+            "product": "I",
+            "price": "0.0",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "t",
+            "mpp": true
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_cnc_with_disclosed_quantity",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "2",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "10",
+            "transactionType": "B",
+            "order": "LMT",
+            "product": "C",
+            "price": "800.5",
+            "validity": "DAY",
+            "disclosedQty": "2",
+            "remarks": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL",
+        "product": "MIS",
+        "price": "800",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "10",
+            "transactionType": "B",
+            "order": "SL-LMT",
+            "product": "I",
+            "price": "800.0",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "t",
+            "triggerPrice": "801.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "10",
+            "transactionType": "B",
+            "order": "SL-MKT",
+            "product": "I",
+            "price": "0.0",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "t",
+            "triggerPrice": "801.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit_carries_no_trigger",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "799",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "10",
+            "transactionType": "B",
+            "order": "LMT",
+            "product": "I",
+            "price": "800.5",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_futures_nrml",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "24005",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NFO",
+            "symbol": "NIFTY25NOV26FUT",
+            "quantity": "75",
+            "transactionType": "B",
+            "order": "LMT",
+            "product": "M",
+            "price": "24005.0",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_mcx",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "GOLDM25NOV26FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "75000",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "MCX",
+            "symbol": "GOLDM25NOV26FUT",
+            "quantity": "10",
+            "transactionType": "B",
+            "order": "LMT",
+            "product": "M",
+            "price": "75000.0",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_strategy_name_is_cut_to_sixteen",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "ssssssssssssssssssssssssssssss",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "10",
+            "transactionType": "B",
+            "order": "LMT",
+            "product": "I",
+            "price": "800.5",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "ssssssssssssssss"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_broker_refuses",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/regular": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "message": "Insufficient funds"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Insufficient funds",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "10",
+            "transactionType": "B",
+            "order": "LMT",
+            "product": "I",
+            "price": "800.5",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_with_an_ok_status",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/regular": {
+          "body": {
+            "status": "error",
+            "message": "Rejected"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "10",
+            "transactionType": "B",
+            "order": "LMT",
+            "product": "I",
+            "price": "800.5",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_success_without_an_order_number",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/regular": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "10",
+            "transactionType": "B",
+            "order": "LMT",
+            "product": "I",
+            "price": "800.5",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /order/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": null,
+            "quantity": "10",
+            "transactionType": "B",
+            "order": "LMT",
+            "product": "I",
+            "price": "800.5",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "t"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "A1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PATCH /order/regular/A1": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PATCH",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular/A1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "12",
+            "order": "LMT",
+            "product": "I",
+            "price": "801.0",
+            "validity": "DAY",
+            "disclosedQty": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "A1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "SL",
+        "product": "MIS",
+        "price": "800",
+        "disclosed_quantity": "5",
+        "trigger_price": "801.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PATCH /order/regular/A1": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PATCH",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular/A1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "12",
+            "order": "SL-LMT",
+            "product": "I",
+            "price": "800.0",
+            "validity": "DAY",
+            "disclosedQty": "5",
+            "triggerPrice": "801.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_to_market",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "A1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PATCH /order/regular/A1": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PATCH",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular/A1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "12",
+            "order": "MKT",
+            "product": "I",
+            "price": "801.0",
+            "validity": "DAY",
+            "disclosedQty": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_answer_without_an_order_number_keeps_the_given_one",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "A1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PATCH /order/regular/A1": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PATCH",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular/A1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "12",
+            "order": "LMT",
+            "product": "I",
+            "price": "801.0",
+            "validity": "DAY",
+            "disclosedQty": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "A1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PATCH /order/regular/A1": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "message": "Order is not open"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Order is not open",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PATCH",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular/A1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "12",
+            "order": "LMT",
+            "product": "I",
+            "price": "801.0",
+            "validity": "DAY",
+            "disclosedQty": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "A1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PATCH /order/regular/A1": {
+          "status": 400,
+          "body": {
+            "status": "error"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to modify order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PATCH",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular/A1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "12",
+            "order": "LMT",
+            "product": "I",
+            "price": "801.0",
+            "validity": "DAY",
+            "disclosedQty": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "A1",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /order/regular/A1": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular/A1",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "A2",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /order/regular/A2": {
+          "status": 400,
+          "body": {
+            "status": "error",
+            "message": "Order already completed"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to cancel order: Order already completed",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular/A2",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "A2",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /order/regular/A2": {
+          "status": 500,
+          "body": {
+            "x": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to cancel order: Server error '500 Internal Server Error' for url 'https://edge.arrow.trade/order/regular/A2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular/A2",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "orderNo": "A1",
+                "exchange": "NSE",
+                "symbol": "SBIN-EQ",
+                "transactionType": "B",
+                "quantity": "10",
+                "price": "800.5",
+                "triggerPrice": "0",
+                "order": "LMT",
+                "product": "I",
+                "orderStatus": "OPEN",
+                "orderTime": "2026-11-03 10:20:01"
+              },
+              {
+                "orderNo": "A2",
+                "exchange": "NSE",
+                "symbol": "INFY-EQ",
+                "transactionType": "S",
+                "quantity": "5",
+                "price": "0",
+                "triggerPrice": "0",
+                "order": "MKT",
+                "product": "C",
+                "orderStatus": "COMPLETE",
+                "orderTime": "2026-11-03 10:21:11"
+              },
+              {
+                "orderNo": "A3",
+                "exchange": "NFO",
+                "symbol": "NIFTY25NOV26FUT",
+                "transactionType": "B",
+                "quantity": "75",
+                "price": "24010",
+                "triggerPrice": "24000",
+                "order": "SL-LMT",
+                "product": "M",
+                "orderStatus": "TRIGGER_PENDING",
+                "orderTime": "2026-11-03 10:22:00"
+              },
+              {
+                "orderNo": "A4",
+                "exchange": "NSE",
+                "symbol": "SBIN-EQ",
+                "transactionType": "S",
+                "quantity": "1",
+                "price": "0",
+                "triggerPrice": "790.5",
+                "order": "SL-MKT",
+                "product": "I",
+                "orderStatus": "REJECTED",
+                "orderTime": "2026-11-03 10:23:00"
+              },
+              {
+                "orderNo": "A5",
+                "exchange": "NSE",
+                "symbol": "SBIN-EQ",
+                "transactionType": "B",
+                "quantity": "2",
+                "price": "700",
+                "triggerPrice": "0",
+                "order": "LMT",
+                "product": "I",
+                "orderStatus": "CANCELLED",
+                "orderTime": "2026-11-03 10:24:00"
+              },
+              {
+                "orderNo": "A6",
+                "exchange": "NSE",
+                "symbol": "SBIN-EQ",
+                "transactionType": "B",
+                "quantity": "3",
+                "price": "700",
+                "triggerPrice": "0",
+                "order": "LMT",
+                "product": "I",
+                "orderStatus": "PENDING",
+                "orderTime": "2026-11-03 10:25:00"
+              },
+              {
+                "orderNo": "A7",
+                "exchange": "NSE",
+                "symbol": "UNKNOWN",
+                "transactionType": "B",
+                "quantity": "1",
+                "price": "5",
+                "triggerPrice": "0",
+                "order": "XX",
+                "product": "Z",
+                "orderStatus": "SOMETHING",
+                "orderTime": "2026-11-03 10:26:00"
+              },
+              {
+                "id": "A8",
+                "exchange": "NSE",
+                "symbol": "SBIN-EQ",
+                "transactionType": "B",
+                "quantity": "1",
+                "price": "1",
+                "order": "LMT",
+                "product": "I",
+                "orderStatus": "OPEN",
+                "requestTime": "2026-11-03 10:27:00"
+              }
+            ]
+          }
+        },
+        "DELETE /order/regular/A1": {
+          "body": {
+            "status": "success"
+          }
+        },
+        "DELETE /order/regular/A3": {
+          "status": 400,
+          "body": {
+            "message": "no"
+          }
+        },
+        "DELETE /order/regular/A6": {
+          "body": {
+            "status": "success"
+          }
+        },
+        "DELETE /order/regular/A8": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "A1",
+            "A6",
+            "A8"
+          ],
+          "failed_cancellations": [
+            "A3"
+          ],
+          "message": "Canceled 3 orders. Failed to cancel 1 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular/A1",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular/A3",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular/A6",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "DELETE",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular/A8",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_book_empty",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/orders": {
+          "body": {
+            "status": "success",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_book_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/orders": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "bad token"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to cancel all orders due to internal error",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/orders": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "orderNo": "A1",
+                "exchange": "NSE",
+                "symbol": "SBIN-EQ",
+                "transactionType": "B",
+                "quantity": "10",
+                "price": "800.5",
+                "triggerPrice": "0",
+                "order": "LMT",
+                "product": "I",
+                "orderStatus": "OPEN",
+                "orderTime": "2026-11-03 10:20:01"
+              },
+              {
+                "orderNo": "A2",
+                "exchange": "NSE",
+                "symbol": "INFY-EQ",
+                "transactionType": "S",
+                "quantity": "5",
+                "price": "0",
+                "triggerPrice": "0",
+                "order": "MKT",
+                "product": "C",
+                "orderStatus": "COMPLETE",
+                "orderTime": "2026-11-03 10:21:11"
+              },
+              {
+                "orderNo": "A3",
+                "exchange": "NFO",
+                "symbol": "NIFTY25NOV26FUT",
+                "transactionType": "B",
+                "quantity": "75",
+                "price": "24010",
+                "triggerPrice": "24000",
+                "order": "SL-LMT",
+                "product": "M",
+                "orderStatus": "TRIGGER_PENDING",
+                "orderTime": "2026-11-03 10:22:00"
+              },
+              {
+                "orderNo": "A4",
+                "exchange": "NSE",
+                "symbol": "SBIN-EQ",
+                "transactionType": "S",
+                "quantity": "1",
+                "price": "0",
+                "triggerPrice": "790.5",
+                "order": "SL-MKT",
+                "product": "I",
+                "orderStatus": "REJECTED",
+                "orderTime": "2026-11-03 10:23:00"
+              },
+              {
+                "orderNo": "A5",
+                "exchange": "NSE",
+                "symbol": "SBIN-EQ",
+                "transactionType": "B",
+                "quantity": "2",
+                "price": "700",
+                "triggerPrice": "0",
+                "order": "LMT",
+                "product": "I",
+                "orderStatus": "CANCELLED",
+                "orderTime": "2026-11-03 10:24:00"
+              },
+              {
+                "orderNo": "A6",
+                "exchange": "NSE",
+                "symbol": "SBIN-EQ",
+                "transactionType": "B",
+                "quantity": "3",
+                "price": "700",
+                "triggerPrice": "0",
+                "order": "LMT",
+                "product": "I",
+                "orderStatus": "PENDING",
+                "orderTime": "2026-11-03 10:25:00"
+              },
+              {
+                "orderNo": "A7",
+                "exchange": "NSE",
+                "symbol": "UNKNOWN",
+                "transactionType": "B",
+                "quantity": "1",
+                "price": "5",
+                "triggerPrice": "0",
+                "order": "XX",
+                "product": "Z",
+                "orderStatus": "SOMETHING",
+                "orderTime": "2026-11-03 10:26:00"
+              },
+              {
+                "id": "A8",
+                "exchange": "NSE",
+                "symbol": "SBIN-EQ",
+                "transactionType": "B",
+                "quantity": "1",
+                "price": "1",
+                "order": "LMT",
+                "product": "I",
+                "orderStatus": "OPEN",
+                "requestTime": "2026-11-03 10:27:00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "A1",
+                "price": "800.5",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": "0"
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "A2",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": "5",
+                "symbol": "INFY",
+                "timestamp": "2026-11-03 10:21:11",
+                "trigger_price": "0"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NFO",
+                "order_status": "trigger pending",
+                "orderid": "A3",
+                "price": "24010",
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": "75",
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "2026-11-03 10:22:00",
+                "trigger_price": "24000"
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "rejected",
+                "orderid": "A4",
+                "price": "0",
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": "1",
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:23:00",
+                "trigger_price": "790.5"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "cancelled",
+                "orderid": "A5",
+                "price": "700",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "2",
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:24:00",
+                "trigger_price": "0"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "A6",
+                "price": "700",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "3",
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:25:00",
+                "trigger_price": "0"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "SOMETHING",
+                "orderid": "A7",
+                "price": "5",
+                "pricetype": "XX",
+                "product": "Z",
+                "quantity": "1",
+                "symbol": null,
+                "timestamp": "2026-11-03 10:26:00",
+                "trigger_price": "0"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "A8",
+                "price": "1",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "1",
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:27:00",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 6,
+              "total_completed_orders": 1,
+              "total_open_orders": 4,
+              "total_rejected_orders": 1,
+              "total_sell_orders": 2
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_empty",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/orders": {
+          "body": {
+            "status": "success",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_data_is_null",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/orders": {
+          "body": {
+            "status": "success",
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_refused",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/orders": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "bad token"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Client error '401 Unauthorized' for url 'https://edge.arrow.trade/user/orders'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/trades": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "orderNo": "A2",
+                "exchange": "NSE",
+                "symbol": "INFY-EQ",
+                "transactionType": "S",
+                "fillQuantity": "5",
+                "fillPrice": "1499.95",
+                "product": "C",
+                "fillTime": "2026-11-03 10:21:12"
+              },
+              {
+                "orderNo": "A3",
+                "exchange": "NFO",
+                "symbol": "NIFTY25NOV26FUT",
+                "transactionType": "B",
+                "fillQuantity": "75",
+                "fillPrice": "24005.5",
+                "product": "M",
+                "fillTime": "2026-11-03 10:21:12"
+              },
+              {
+                "id": "A9",
+                "exchange": "NSE",
+                "symbol": "SBIN-EQ",
+                "transactionType": "B",
+                "quantity": "2",
+                "averagePrice": "801",
+                "product": "I",
+                "orderTime": "2026-11-03 10:30:00"
+              },
+              {
+                "orderNo": "A5",
+                "exchange": "NSE",
+                "symbol": "SBIN-EQ",
+                "transactionType": "B",
+                "fillQuantity": null,
+                "fillPrice": null,
+                "product": "I",
+                "fillTime": "2026-11-03 10:21:12"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "SELL",
+              "average_price": "1499.95",
+              "exchange": "NSE",
+              "orderid": "A2",
+              "product": "CNC",
+              "quantity": "5",
+              "symbol": "INFY",
+              "timestamp": "2026-11-03 10:21:12",
+              "trade_value": 7499.75
+            },
+            {
+              "action": "BUY",
+              "average_price": "24005.5",
+              "exchange": "NFO",
+              "orderid": "A3",
+              "product": "NRML",
+              "quantity": "75",
+              "symbol": "NIFTY25NOV26FUT",
+              "timestamp": "2026-11-03 10:21:12",
+              "trade_value": 1800412.5
+            },
+            {
+              "action": "BUY",
+              "average_price": "801",
+              "exchange": "NSE",
+              "orderid": "A9",
+              "product": "MIS",
+              "quantity": "2",
+              "symbol": "SBIN",
+              "timestamp": "2026-11-03 10:30:00",
+              "trade_value": 1602.0
+            },
+            {
+              "action": "BUY",
+              "average_price": 0.0,
+              "exchange": "NSE",
+              "orderid": "A5",
+              "product": "MIS",
+              "quantity": 0,
+              "symbol": "SBIN",
+              "timestamp": "2026-11-03 10:21:12",
+              "trade_value": 0.0
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/trades",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_empty",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/trades": {
+          "body": {
+            "status": "success",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/trades",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_refused",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/trades": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "bad token"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Client error '401 Unauthorized' for url 'https://edge.arrow.trade/user/trades'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/trades",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/positions": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "symbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "product": "I",
+                "qty": "10",
+                "avgPrice": "801.1234",
+                "ltp": "805.45",
+                "realisedPnL": "0",
+                "unrealisedMarkToMarket": "43.1"
+              },
+              {
+                "symbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "product": "M",
+                "qty": "-75",
+                "avgPrice": "24005.5",
+                "ltp": "24000",
+                "realisedPnL": "1200.555",
+                "unrealisedMarkToMarket": "412.5"
+              },
+              {
+                "symbol": "INFY-EQ",
+                "exchange": "NSE",
+                "product": "C",
+                "qty": "0",
+                "avgPrice": "0",
+                "ltp": "0",
+                "realisedPnL": "-5",
+                "unrealisedMarkToMarket": "0"
+              },
+              {
+                "symbol": "UNKNOWN",
+                "exchange": "NSE",
+                "product": "Q",
+                "qty": "3",
+                "avgPrice": null,
+                "ltp": null,
+                "realisedPnL": null,
+                "unrealisedMarkToMarket": null
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "801.12",
+              "exchange": "NSE",
+              "ltp": 805.45,
+              "pnl": 43.1,
+              "product": "MIS",
+              "quantity": "10",
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": "24005.50",
+              "exchange": "NFO",
+              "ltp": 24000.0,
+              "pnl": 1613.06,
+              "product": "NRML",
+              "quantity": "-75",
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": "0.00",
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": -5.0,
+              "product": "CNC",
+              "quantity": "0",
+              "symbol": "INFY"
+            },
+            {
+              "average_price": "0.00",
+              "exchange": "NSE",
+              "ltp": 0.0,
+              "pnl": 0.0,
+              "product": "Q",
+              "quantity": "3",
+              "symbol": null
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_empty",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/positions": {
+          "body": {
+            "status": "success",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_refused",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/positions": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "bad token"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Client error '401 Unauthorized' for url 'https://edge.arrow.trade/user/positions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/holdings": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "qty": "40",
+                "avgPrice": "1400",
+                "ltp": "1499",
+                "pnl": "3960",
+                "symbols": [
+                  {
+                    "tradingSymbol": "INFY-EQ",
+                    "exchange": "NSE"
+                  }
+                ]
+              },
+              {
+                "qty": "10",
+                "avgPrice": "0",
+                "ltp": "12.5",
+                "pnl": "0",
+                "symbols": [
+                  {
+                    "tradingSymbol": "OLD-EQ",
+                    "exchange": "NSE"
+                  }
+                ]
+              },
+              {
+                "qty": "7",
+                "avgPrice": "50",
+                "ltp": "55",
+                "pnl": "35",
+                "symbols": []
+              },
+              {
+                "qty": 3,
+                "avgPrice": null,
+                "ltp": null,
+                "pnl": null,
+                "symbols": [
+                  {
+                    "symbol": "SBIN-EQ",
+                    "exchange": "NSE"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "average_price": 1400.0,
+                "exchange": "NSE",
+                "pnl": 3960.0,
+                "pnlpercent": 7.07,
+                "product": "CNC",
+                "quantity": "40",
+                "symbol": "INFY"
+              },
+              {
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": "10",
+                "symbol": null
+              },
+              {
+                "average_price": 50.0,
+                "exchange": "",
+                "pnl": 35.0,
+                "pnlpercent": 10.0,
+                "product": "CNC",
+                "quantity": "7",
+                "symbol": ""
+              },
+              {
+                "average_price": 0.0,
+                "exchange": "NSE",
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 3,
+                "symbol": "SBIN"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 60470.0,
+              "totalinvvalue": 56350.0,
+              "totalpnlpercentage": 7.09,
+              "totalprofitandloss": 3995.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_empty",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/holdings": {
+          "body": {
+            "status": "success",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_refused",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/holdings": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "bad token"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Client error '401 Unauthorized' for url 'https://edge.arrow.trade/user/holdings'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/limits": {
+          "body": {
+            "status": "success",
+            "data": {
+              "margin": {
+                "allocated": "100000.5",
+                "utilized": "1234.75",
+                "unrealizedPnl": "55.5",
+                "realizedPnl": "-12.25"
+              },
+              "allocations": [
+                {
+                  "nonCashCurrent": "1500"
+                },
+                {
+                  "nonCashCurrent": "250.5"
+                },
+                {}
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "98765.75",
+            "collateral": "1750.50",
+            "m2mrealized": "-12.25",
+            "m2munrealized": "55.50",
+            "utiliseddebits": "1234.75"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_bare_answer",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/limits": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "0.00",
+            "collateral": "0.00",
+            "m2mrealized": "0.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "0.00"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_answer_without_a_status",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/limits": {
+          "body": {
+            "data": {
+              "margin": {
+                "allocated": "10",
+                "utilized": "4"
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "6.00",
+            "collateral": "0.00",
+            "m2mrealized": "0.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "4.00"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_error_status_in_an_ok_answer",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/limits": {
+          "body": {
+            "status": "error",
+            "message": "x"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_refused",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/limits": {
+          "status": 401,
+          "body": {
+            "status": "error",
+            "message": "bad token"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_long",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/positions": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "symbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "product": "I",
+                "qty": "10",
+                "avgPrice": "801.1234",
+                "ltp": "805.45",
+                "realisedPnL": "0",
+                "unrealisedMarkToMarket": "43.1"
+              },
+              {
+                "symbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "product": "M",
+                "qty": "-75",
+                "avgPrice": "24005.5",
+                "ltp": "24000",
+                "realisedPnL": "1200.555",
+                "unrealisedMarkToMarket": "412.5"
+              },
+              {
+                "symbol": "INFY-EQ",
+                "exchange": "NSE",
+                "product": "C",
+                "qty": "0",
+                "avgPrice": "0",
+                "ltp": "0",
+                "realisedPnL": "-5",
+                "unrealisedMarkToMarket": "0"
+              },
+              {
+                "symbol": "UNKNOWN",
+                "exchange": "NSE",
+                "product": "Q",
+                "qty": "3",
+                "avgPrice": null,
+                "ltp": null,
+                "realisedPnL": null,
+                "unrealisedMarkToMarket": null
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": "10",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/positions": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "symbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "product": "I",
+                "qty": "10",
+                "avgPrice": "801.1234",
+                "ltp": "805.45",
+                "realisedPnL": "0",
+                "unrealisedMarkToMarket": "43.1"
+              },
+              {
+                "symbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "product": "M",
+                "qty": "-75",
+                "avgPrice": "24005.5",
+                "ltp": "24000",
+                "realisedPnL": "1200.555",
+                "unrealisedMarkToMarket": "412.5"
+              },
+              {
+                "symbol": "INFY-EQ",
+                "exchange": "NSE",
+                "product": "C",
+                "qty": "0",
+                "avgPrice": "0",
+                "ltp": "0",
+                "realisedPnL": "-5",
+                "unrealisedMarkToMarket": "0"
+              }
+            ]
+          }
+        },
+        "POST /order/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "10",
+            "transactionType": "S",
+            "order": "MKT",
+            "product": "I",
+            "price": "0",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "Squareoff",
+            "mpp": true
+          }
+        },
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NFO",
+            "symbol": "NIFTY25NOV26FUT",
+            "quantity": "75",
+            "transactionType": "B",
+            "order": "MKT",
+            "product": "M",
+            "price": "0",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "Squareoff",
+            "mpp": true
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_nothing_open",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/positions": {
+          "body": {
+            "status": "success",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_reduce",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /user/positions": {
+          "body": {
+            "status": "success",
+            "data": [
+              {
+                "symbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "product": "I",
+                "qty": "10",
+                "avgPrice": "801.1234",
+                "ltp": "805.45",
+                "realisedPnL": "0",
+                "unrealisedMarkToMarket": "43.1"
+              },
+              {
+                "symbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "product": "M",
+                "qty": "-75",
+                "avgPrice": "24005.5",
+                "ltp": "24000",
+                "realisedPnL": "1200.555",
+                "unrealisedMarkToMarket": "412.5"
+              },
+              {
+                "symbol": "INFY-EQ",
+                "exchange": "NSE",
+                "product": "C",
+                "qty": "0",
+                "avgPrice": "0",
+                "ltp": "0",
+                "realisedPnL": "-5",
+                "unrealisedMarkToMarket": "0"
+              },
+              {
+                "symbol": "UNKNOWN",
+                "exchange": "NSE",
+                "product": "Q",
+                "qty": "3",
+                "avgPrice": null,
+                "ltp": null,
+                "realisedPnL": null,
+                "unrealisedMarkToMarket": null
+              }
+            ]
+          }
+        },
+        "POST /order/regular": {
+          "body": {
+            "status": "success",
+            "data": {
+              "orderNo": "A0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "A0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "edge.arrow.trade",
+          "path": "/user/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "edge.arrow.trade",
+          "path": "/order/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "exchange": "NSE",
+            "symbol": "SBIN-EQ",
+            "quantity": "6",
+            "transactionType": "S",
+            "order": "LMT",
+            "product": "I",
+            "price": "800.5",
+            "validity": "DAY",
+            "disclosedQty": "0",
+            "remarks": "t"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
