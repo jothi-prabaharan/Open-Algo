@@ -1485,6 +1485,72 @@
       "ignore": []
     },
     {
+      "name": "quotes_a_bare_list_with_no_status_is_an_answer",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/marketdata/marketquotes": {
+          "body": [
+            {
+              "exchange": "NSEEQ",
+              "instrumentId": "3045",
+              "ltp": 805.45,
+              "open": 801.0,
+              "high": 809.5,
+              "low": 799.0,
+              "close": 800.0,
+              "volume": 1234567,
+              "bestBidPrice": 805.4,
+              "bestAskPrice": 805.5
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 805.5,
+            "bid": 805.4,
+            "high": 809.5,
+            "low": 799.0,
+            "ltp": 805.45,
+            "oi": 0,
+            "open": 801.0,
+            "prev_close": 800.0,
+            "volume": 1234567
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/marketdata/marketquotes",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer iifl-user-session",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": [
+            {
+              "exchange": "NSEEQ",
+              "instrumentId": "3045"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "quotes_one_row_directly_in_the_result",
       "method": "POST",
       "path": "/api/v1/quotes",

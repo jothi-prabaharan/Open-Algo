@@ -64,6 +64,7 @@ SCENARIOS = [
     q("quotes_touchline_style_row", "SBIN", "NSE", {QEP: ok({"instrumentId": "3045", "touchline": {"LastTradedPrice": 805.45, "Open": 801, "High": 809.5, "Low": 799, "Close": 800, "TotalTradedQuantity": 1000, "BidInfo": {"Price": 805.4}, "AskInfo": {"Price": 805.5}}})}),
     q("quotes_best_prices_from_the_first_depth_level", "SBIN", "NSE", {QEP: ok({"instrumentId": "3045", "ltp": 805.45, "depth": {"buy": [{"price": 805.4}], "sell": [{"price": 805.5}]}})}),
     q("quotes_rows_in_a_data_container", "SBIN", "NSE", {QEP: {"body": {"status": "Ok", "data": {"quotes": [row(3045)]}}}}),
+    q("quotes_a_bare_list_with_no_status_is_an_answer", "SBIN", "NSE", {QEP: {"body": [row(3045)]}}),
     q("quotes_one_row_directly_in_the_result", "SBIN", "NSE", {QEP: {"body": {"status": "Ok", "result": row(3045)}}}),
     q("quotes_the_row_carries_an_error", "SBIN", "NSE", {QEP: ok({"instrumentId": "3045", "status": "failed", "message": "Instrument not found"})}),
     q("quotes_the_row_error_without_a_message", "SBIN", "NSE", {QEP: ok({"instrumentId": "3045", "status": "error"})}),

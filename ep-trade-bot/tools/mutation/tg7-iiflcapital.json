@@ -1,0 +1,394 @@
+[
+ {
+  "name": "IP1 nfo exchange",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "\"NFO\" => \"NSEFO\"",
+  "new": "\"NFO\" => \"NSEEQ\"",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP3 slm",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "\"SL-M\" => \"SLM\", _ => \"MARKET\" };",
+  "new": "\"SL-M\" => \"SL\", _ => \"MARKET\" };",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP4 reverse slm",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "\"SL\" => \"SL\", \"SLM\" => \"SL-M\", _ => \"MARKET\" };",
+  "new": "\"SL\" => \"SL\", \"SLM\" => \"SL\", _ => \"MARKET\" };",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP5 cnc",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "\"CNC\" => \"DELIVERY\"",
+  "new": "\"CNC\" => \"NORMAL\"",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP6 bnpl",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "\"BNPL\" => \"CNC\"",
+  "new": "\"BNPL\" => \"MIS\"",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP7 trigger pending",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "\"TRIGGER_PENDING\" => \"trigger pending\"",
+  "new": "\"TRIGGER_PENDING\" => \"open\"",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP10 read retries",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "if (RateLimited(status, message) && attempt < 3)\n            {\n                await Task.Delay(sessions.RetryBackoff(Name, wait ?? TimeSpan.FromSeconds(1 << attempt)), cancellationToken);\n                continue;\n            }\n\n            return (status, body, text);",
+  "new": "if (RateLimited(status, message) && attempt < 2)\n            {\n                await Task.Delay(sessions.RetryBackoff(Name, wait ?? TimeSpan.FromSeconds(1 << attempt)), cancellationToken);\n                continue;\n            }\n\n            return (status, body, text);",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP12 tag cut",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "order.Strategy.Length > 50 ? order.Strategy[..50]",
+  "new": "order.Strategy.Length > 50 ? order.Strategy[..49]",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP13 disclosed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "if (order.DisclosedQuantity > 0)",
+  "new": "if (order.DisclosedQuantity >= 0)",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP14 sell stop",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "Math.Min(trigger * (1 - pct), trigger - tick)",
+  "new": "Math.Max(trigger * (1 - pct), trigger - tick)",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP15 buy stop",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "Math.Max(trigger * (1 + pct), trigger + tick)",
+  "new": "Math.Min(trigger * (1 + pct), trigger + tick)",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP16 sell snaps down",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "SnapToTick(raw, tick, true)",
+  "new": "SnapToTick(raw, tick, false)",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP17 tick decimals",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "text.Length - dot - 1",
+  "new": "text.Length - dot - 2",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP21 modify price",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "if (orderType is \"LIMIT\" or \"SL\") payload[\"price\"] = (double)change.Price;",
+  "new": "if (orderType is \"LIMIT\") payload[\"price\"] = (double)change.Price;",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP24 quantity from parts",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "+ Num(r[\"pendingQuantity\"]) + Num(r[\"cancelledQuantity\"])",
+  "new": "+ Num(r[\"pendingQuantity\"])",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP25 trigger pending counted",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "else if (status is \"open\" or \"trigger pending\") open++;",
+  "new": "else if (status is \"open\") open++;",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP27 position pnl",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "(ltp - average) * quantity : 0.0);",
+  "new": "ltp * quantity : 0.0);",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP28 position price needed",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "quantity != 0 && ltp > 0 ?",
+  "new": "quantity != 0 ?",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP29 settled holdings first",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "new[] { \"dpQuantity\", \"dpQty\", \"availableQuantity\" }",
+  "new": "new[] { \"dpQty\", \"availableQuantity\" }",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP30 empty holding",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "if (whole <= 0) continue;",
+  "new": "if (whole < 0) continue;",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP31 pooled first",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "if (HasNonzeroLimits(pooled)) return FormatLimits(pooled);",
+  "new": "if (HasNonzeroLimits(pooled) && pooled.Count < 0) return FormatLimits(pooled);",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP33 available",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "l.ContainsKey(\"tradingLimit\") ? Limit(l[\"tradingLimit\"]) : Limit(l[\"openingCashLimit\"])",
+  "new": "l.ContainsKey(\"tradingLimit\") ? Limit(l[\"openingCashLimit\"]) : Limit(l[\"tradingLimit\"])",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IP34 sum fallback",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.cs",
+  "old": "if ((node is null || Str(node) is \"\" or \"-\") && fallbackField is not null) node = row[fallbackField];",
+  "new": "if ((node is null) && fallbackField is not null) node = row[fallbackField];",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ID1 currency open interest",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.Data.cs",
+  "old": "[\"NFO\", \"BFO\", \"CDS\", \"BCD\", \"MCX\"]",
+  "new": "[\"NFO\", \"BFO\", \"BCD\", \"MCX\"]",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ID3 index segment",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.Data.cs",
+  "old": "\"NSE_INDEX\" => \"NSEEQ\", \"BSE_INDEX\"",
+  "new": "\"NSE_INDEX\" => \"NSEFO\", \"BSE_INDEX\"",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ID4 success by status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.Data.cs",
+  "old": "return status == 200;\n    }\n\n    /// <summary>One data call",
+  "new": "return false;\n    }\n\n    /// <summary>One data call",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ID5 data retries",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.Data.cs",
+  "old": "if (RateLimited(status, message) && attempt < 3)",
+  "new": "if (RateLimited(status, message) && attempt < 2)",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ID9 depth totals",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.Data.cs",
+  "old": "buy.Sum(l => Lng(l[\"quantity\"]))",
+  "new": "sell.Sum(l => Lng(l[\"quantity\"]))",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ID10 five levels",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.Data.cs",
+  "old": "DepthLevels(levels).Take(5).ToList()",
+  "new": "DepthLevels(levels).Take(6).ToList()",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "ID15 failed status",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.Data.cs",
+  "old": "[\"error\", \"failed\", \"failure\", \"false\", \"ko\"]",
+  "new": "[\"error\", \"failure\", \"false\", \"ko\"]",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IH1 interval text",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.History.cs",
+  "old": "[\"5m\"] = \"5 minutes\"",
+  "new": "[\"5m\"] = \"5 minute\"",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IH2 milliseconds",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.History.cs",
+  "old": "seconds > 1_000_000_000_000L",
+  "new": "seconds > 10_000_000_000_000L",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IH3 date format",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.History.cs",
+  "old": "start.ToString(\"dd-MMM-yyyy\"",
+  "new": "start.ToString(\"dd-MM-yyyy\"",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IH5 open interest column",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.History.cs",
+  "old": "a.Count > 6 ? Lng(a[6])",
+  "new": "a.Count > 7 ? Lng(a[6])",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IH6 short row",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.History.cs",
+  "old": "row is JsonArray { Count: >= 6 } a",
+  "new": "row is JsonArray { Count: >= 7 } a",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IM1 margin total",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.Margin.cs",
+  "old": "result.ContainsKey(\"totalMargin\") ? Safe(result[\"totalMargin\"]) : span + exposure",
+  "new": "span + exposure",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IL1 checksum order",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IiflCapital/IiflCapitalPlugin.Login.cs",
+  "old": "$\"{clientId}{authCode}{secret.Trim()}\"",
+  "new": "$\"{authCode}{clientId}{secret.Trim()}\"",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IF1 batch size",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IiflCapitalFeedCodec.cs",
+  "old": "private const int PerCall = 100;",
+  "new": "private const int PerCall = 101;",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IF3 open interest mode",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IiflCapitalFeedCodec.cs",
+  "old": "effective != 1 && OiExchanges",
+  "new": "effective == 1 && OiExchanges",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IF4 index open interest",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IiflCapitalFeedCodec.cs",
+  "old": "OiExchanges.Contains(r.Exchange) && !isIndex;",
+  "new": "OiExchanges.Contains(r.Exchange);",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IF6 open interest cache kept",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IiflCapitalFeedCodec.cs",
+  "old": "            oiCache.Remove(suffix);\n",
+  "new": "",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IF7 divisor",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IiflCapitalFeedCodec.cs",
+  "old": "if (divisor == 0) divisor = 100;",
+  "new": "if (divisor == 1) divisor = 100;",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IF8 packet size",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IiflCapitalFeedCodec.cs",
+  "old": "if (p.Length < PacketSize) return [];",
+  "new": "if (p.Length < 100) return [];",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IF9 level offset",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IiflCapitalFeedCodec.cs",
+  "old": "var at = 66 + (i * 12);",
+  "new": "var at = 64 + (i * 12);",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IF10 sell levels",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IiflCapitalFeedCodec.cs",
+  "old": "Levels(p, 5, inv)",
+  "new": "Levels(p, 4, inv)",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IF11 ltp only",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IiflCapitalFeedCodec.cs",
+  "old": "if (modes.Count == 1 && modes.Contains(1)) return output;",
+  "new": "",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IF12 open interest merge",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IiflCapitalFeedCodec.cs",
+  "old": "if (stream.Oi && oiCache.TryGetValue(key, out var cached))",
+  "new": "if (oiCache.TryGetValue(key, out var cached))",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IF13 short interest packet",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IiflCapitalFeedCodec.cs",
+  "old": "if (payload.Length < 16) return;",
+  "new": "if (payload.Length < 12) return;",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "IF14 first mode check",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IiflCapitalFeedCodec.cs",
+  "old": "if (mode is { } m && h.Modes.Any(x => x != (int)m))",
+  "new": "if (mode is { } m && h.Modes.Count > 5)",
+  "filter": "FullyQualifiedName~IiflCapital",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

@@ -1343,6 +1343,76 @@
       "ignore": []
     },
     {
+      "name": "placeorder_with_a_long_tag_and_a_short_one",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/orders": {
+          "body": {
+            "status": "Ok",
+            "message": "Order placed",
+            "result": [
+              {
+                "status": "Ok",
+                "brokerOrderId": "I0001",
+                "message": "ok"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "I0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/orders",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer iifl-user-session",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": [
+            {
+              "instrumentId": "3045",
+              "exchange": "NSEEQ",
+              "transactionType": "BUY",
+              "quantity": "10",
+              "orderComplexity": "REGULAR",
+              "product": "INTRADAY",
+              "orderType": "LIMIT",
+              "validity": "DAY",
+              "apiOrderSource": "openalgo",
+              "price": 800.5,
+              "orderTag": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "placeorder_a_rate_limited_write_is_sent_again",
       "method": "POST",
       "path": "/api/v1/placeorder",
@@ -3277,6 +3347,619 @@
         }
       },
       "sent": [
+        {
+          "method": "GET",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/orders",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer iifl-user-session",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/orders",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer iifl-user-session",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_answers_on_the_fourth_try",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v1/orders": [
+          {
+            "status": 429,
+            "body": {
+              "status": "error",
+              "message": "Too many requests"
+            }
+          },
+          {
+            "status": 429,
+            "body": {
+              "status": "error",
+              "message": "Too many requests"
+            }
+          },
+          {
+            "status": 429,
+            "body": {
+              "status": "error",
+              "message": "Too many requests"
+            }
+          },
+          {
+            "body": [
+              {
+                "brokerOrderId": "I1",
+                "exchangeOrderId": "EI1",
+                "tradingSymbol": "SBIN-EQ",
+                "exchange": "NSEEQ",
+                "transactionType": "BUY",
+                "quantity": 10,
+                "price": 800.5,
+                "slTriggerPrice": 0,
+                "orderType": "LIMIT",
+                "product": "INTRADAY",
+                "orderStatus": "OPEN",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "3045"
+              },
+              {
+                "brokerOrderId": "I2",
+                "exchangeOrderId": "EI2",
+                "tradingSymbol": "NIFTY25NOV26FUT",
+                "exchange": "NSEFO",
+                "transactionType": "BUY",
+                "quantity": 75,
+                "price": 24010,
+                "slTriggerPrice": 24000,
+                "orderType": "SL",
+                "product": "NORMAL",
+                "orderStatus": "TRIGGER_PENDING",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "49500"
+              },
+              {
+                "brokerOrderId": "I3",
+                "exchangeOrderId": "EI3",
+                "tradingSymbol": "INFY-EQ",
+                "exchange": "NSEEQ",
+                "transactionType": "SELL",
+                "quantity": 5,
+                "price": 0,
+                "slTriggerPrice": 0,
+                "orderType": "MARKET",
+                "product": "DELIVERY",
+                "orderStatus": "COMPLETE",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "1594"
+              },
+              {
+                "brokerOrderId": "I4",
+                "exchangeOrderId": "EI4",
+                "tradingSymbol": "SBIN-EQ",
+                "exchange": "NSEEQ",
+                "transactionType": "SELL",
+                "quantity": 1,
+                "price": 0,
+                "slTriggerPrice": 790.5,
+                "orderType": "SLM",
+                "product": "INTRADAY",
+                "orderStatus": "REJECTED",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "3045",
+                "rejectionReason": "Blocked"
+              },
+              {
+                "brokerOrderId": "I5",
+                "exchangeOrderId": "EI5",
+                "tradingSymbol": "TATAMOTORS-EQ",
+                "exchange": "BSEEQ",
+                "transactionType": "BUY",
+                "quantity": 2,
+                "price": 500,
+                "slTriggerPrice": 0,
+                "orderType": "LIMIT",
+                "product": "BNPL",
+                "orderStatus": "CANCELLED",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "500570"
+              },
+              {
+                "brokerOrderId": "I6",
+                "exchangeOrderId": "EI6",
+                "tradingSymbol": "USDINR25NOV26FUT",
+                "exchange": "NSECURR",
+                "transactionType": "BUY",
+                "quantity": 1000,
+                "price": 83.5,
+                "slTriggerPrice": 0,
+                "orderType": "LIMIT",
+                "product": "NORMAL",
+                "orderStatus": "PARTIALLY_FILLED",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "90001"
+              },
+              {
+                "brokerOrderId": "I7",
+                "exchangeOrderId": "EI7",
+                "tradingSymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCXCOMM",
+                "transactionType": "SELL",
+                "quantity": 10,
+                "price": 75000,
+                "slTriggerPrice": 0,
+                "orderType": "LIMIT",
+                "product": "NORMAL",
+                "orderStatus": "PUT ORDER REQ RECEIVED",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "80001"
+              },
+              {
+                "brokerOrderId": "I8",
+                "exchangeOrderId": "EI8",
+                "tradingSymbol": "X",
+                "exchange": "WEIRD",
+                "transactionType": "buy",
+                "quantity": null,
+                "price": null,
+                "slTriggerPrice": null,
+                "orderType": "XX",
+                "product": "ODD",
+                "orderStatus": "Something else",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "",
+                "filledQuantity": 3,
+                "pendingQuantity": 2,
+                "cancelledQuantity": 1
+              },
+              {
+                "brokerOrderId": "I9",
+                "exchangeOrderId": "EI9",
+                "tradingSymbol": "SBIN-EQ",
+                "exchange": "NSEEQ",
+                "transactionType": "BUY",
+                "quantity": 4,
+                "price": 800,
+                "slTriggerPrice": 0,
+                "orderType": "LIMIT",
+                "product": "INTRADAY",
+                "orderStatus": "NEW",
+                "exchangeTimestamp": null,
+                "instrumentId": "3045",
+                "exchangeUpdateTime": "2026-11-03 10:40:00"
+              },
+              {
+                "status": "Ok"
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "I1",
+                "price": 800.5,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 10,
+                "rejection_reason": "",
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NFO",
+                "order_status": "trigger pending",
+                "orderid": "I2",
+                "price": 24010.0,
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": 75,
+                "rejection_reason": "",
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 24000.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "I3",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": 5,
+                "rejection_reason": "",
+                "symbol": "INFY",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "rejected",
+                "orderid": "I4",
+                "price": 0.0,
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": 1,
+                "rejection_reason": "Blocked",
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 790.5
+              },
+              {
+                "action": "BUY",
+                "exchange": "BSE",
+                "order_status": "cancelled",
+                "orderid": "I5",
+                "price": 500.0,
+                "pricetype": "LIMIT",
+                "product": "CNC",
+                "quantity": 2,
+                "rejection_reason": "",
+                "symbol": "TATAMOTORS",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "CDS",
+                "order_status": "open",
+                "orderid": "I6",
+                "price": 83.5,
+                "pricetype": "LIMIT",
+                "product": "NRML",
+                "quantity": 1000,
+                "rejection_reason": "",
+                "symbol": "USDINR25NOV26FUT",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "MCX",
+                "order_status": "open",
+                "orderid": "I7",
+                "price": 75000.0,
+                "pricetype": "LIMIT",
+                "product": "NRML",
+                "quantity": 10,
+                "rejection_reason": "",
+                "symbol": "GOLDM25NOV26FUT",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "WEIRD",
+                "order_status": "open",
+                "orderid": "I8",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "MIS",
+                "quantity": 6,
+                "rejection_reason": "",
+                "symbol": "X",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "I9",
+                "price": 800.0,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 4,
+                "rejection_reason": "",
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:40:00",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 6,
+              "total_completed_orders": 1,
+              "total_open_orders": 6,
+              "total_rejected_orders": 1,
+              "total_sell_orders": 3
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/orders",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer iifl-user-session",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/orders",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer iifl-user-session",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/orders",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer iifl-user-session",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/orders",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer iifl-user-session",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_rate_limited_every_time",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v1/orders": [
+          {
+            "status": 429,
+            "body": {
+              "status": "error",
+              "message": "Too many requests"
+            }
+          },
+          {
+            "status": 429,
+            "body": {
+              "status": "error",
+              "message": "Too many requests"
+            }
+          },
+          {
+            "status": 429,
+            "body": {
+              "status": "error",
+              "message": "Too many requests"
+            }
+          },
+          {
+            "status": 429,
+            "body": {
+              "status": "error",
+              "message": "Too many requests"
+            }
+          },
+          {
+            "body": [
+              {
+                "brokerOrderId": "I1",
+                "exchangeOrderId": "EI1",
+                "tradingSymbol": "SBIN-EQ",
+                "exchange": "NSEEQ",
+                "transactionType": "BUY",
+                "quantity": 10,
+                "price": 800.5,
+                "slTriggerPrice": 0,
+                "orderType": "LIMIT",
+                "product": "INTRADAY",
+                "orderStatus": "OPEN",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "3045"
+              },
+              {
+                "brokerOrderId": "I2",
+                "exchangeOrderId": "EI2",
+                "tradingSymbol": "NIFTY25NOV26FUT",
+                "exchange": "NSEFO",
+                "transactionType": "BUY",
+                "quantity": 75,
+                "price": 24010,
+                "slTriggerPrice": 24000,
+                "orderType": "SL",
+                "product": "NORMAL",
+                "orderStatus": "TRIGGER_PENDING",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "49500"
+              },
+              {
+                "brokerOrderId": "I3",
+                "exchangeOrderId": "EI3",
+                "tradingSymbol": "INFY-EQ",
+                "exchange": "NSEEQ",
+                "transactionType": "SELL",
+                "quantity": 5,
+                "price": 0,
+                "slTriggerPrice": 0,
+                "orderType": "MARKET",
+                "product": "DELIVERY",
+                "orderStatus": "COMPLETE",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "1594"
+              },
+              {
+                "brokerOrderId": "I4",
+                "exchangeOrderId": "EI4",
+                "tradingSymbol": "SBIN-EQ",
+                "exchange": "NSEEQ",
+                "transactionType": "SELL",
+                "quantity": 1,
+                "price": 0,
+                "slTriggerPrice": 790.5,
+                "orderType": "SLM",
+                "product": "INTRADAY",
+                "orderStatus": "REJECTED",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "3045",
+                "rejectionReason": "Blocked"
+              },
+              {
+                "brokerOrderId": "I5",
+                "exchangeOrderId": "EI5",
+                "tradingSymbol": "TATAMOTORS-EQ",
+                "exchange": "BSEEQ",
+                "transactionType": "BUY",
+                "quantity": 2,
+                "price": 500,
+                "slTriggerPrice": 0,
+                "orderType": "LIMIT",
+                "product": "BNPL",
+                "orderStatus": "CANCELLED",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "500570"
+              },
+              {
+                "brokerOrderId": "I6",
+                "exchangeOrderId": "EI6",
+                "tradingSymbol": "USDINR25NOV26FUT",
+                "exchange": "NSECURR",
+                "transactionType": "BUY",
+                "quantity": 1000,
+                "price": 83.5,
+                "slTriggerPrice": 0,
+                "orderType": "LIMIT",
+                "product": "NORMAL",
+                "orderStatus": "PARTIALLY_FILLED",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "90001"
+              },
+              {
+                "brokerOrderId": "I7",
+                "exchangeOrderId": "EI7",
+                "tradingSymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCXCOMM",
+                "transactionType": "SELL",
+                "quantity": 10,
+                "price": 75000,
+                "slTriggerPrice": 0,
+                "orderType": "LIMIT",
+                "product": "NORMAL",
+                "orderStatus": "PUT ORDER REQ RECEIVED",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "80001"
+              },
+              {
+                "brokerOrderId": "I8",
+                "exchangeOrderId": "EI8",
+                "tradingSymbol": "X",
+                "exchange": "WEIRD",
+                "transactionType": "buy",
+                "quantity": null,
+                "price": null,
+                "slTriggerPrice": null,
+                "orderType": "XX",
+                "product": "ODD",
+                "orderStatus": "Something else",
+                "exchangeTimestamp": "2026-11-03 10:20:01",
+                "instrumentId": "",
+                "filledQuantity": 3,
+                "pendingQuantity": 2,
+                "cancelledQuantity": 1
+              },
+              {
+                "brokerOrderId": "I9",
+                "exchangeOrderId": "EI9",
+                "tradingSymbol": "SBIN-EQ",
+                "exchange": "NSEEQ",
+                "transactionType": "BUY",
+                "quantity": 4,
+                "price": 800,
+                "slTriggerPrice": 0,
+                "orderType": "LIMIT",
+                "product": "INTRADAY",
+                "orderStatus": "NEW",
+                "exchangeTimestamp": null,
+                "instrumentId": "3045",
+                "exchangeUpdateTime": "2026-11-03 10:40:00"
+              },
+              {
+                "status": "Ok"
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Too many requests",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/orders",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer iifl-user-session",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.iiflcapital.com",
+          "path": "/v1/orders",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer iifl-user-session",
+            "content-type": "application/json",
+            "accept": "application/json"
+          }
+        },
         {
           "method": "GET",
           "host": "api.iiflcapital.com",
