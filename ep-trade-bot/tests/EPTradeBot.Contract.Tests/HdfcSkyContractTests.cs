@@ -61,3 +61,26 @@ public sealed class HdfcSkyContractTests(HdfcSkyHost host, ITestOutputHelper out
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class HdfcSkyDataHost : BrokerContractHost
+{
+    public override string BrokerName => "hdfcsky";
+    public override string FixtureFile => "hdfcsky_data.fixtures.json";
+    public override bool NumbersMayBeText => true;
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "sky-api-key", ["ApiSecret"] = "sky-api-secret" };
+    public override IReadOnlyDictionary<(string, string), decimal> Prices { get; } = new Dictionary<(string, string), decimal>();
+    public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["Brokers:RetryBackoffMs:hdfcsky"] = "0" };
+}
+
+/// <summary>HDFC Sky quotes, depth and several quotes (tools/contract-fixtures/hdfcsky_data.fixtures.json), with the clock stopped at the recording. Both sides leave the feed-only fields at zero.</summary>
+public sealed class HdfcSkyDataContractTests(HdfcSkyDataHost host, ITestOutputHelper output) : IClassFixture<HdfcSkyDataHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new();
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("hdfcsky_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
