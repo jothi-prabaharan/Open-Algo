@@ -17,7 +17,7 @@ public sealed partial class TradejiniPlugin(IHttpClientFactory http, BrokerSessi
 
     public string Name => "tradejini";
     public string DisplayName => "Tradejini";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey"];
 
     private HttpClient Client() => http.CreateClient(Name);
@@ -35,7 +35,7 @@ public sealed partial class TradejiniPlugin(IHttpClientFactory http, BrokerSessi
     private const string KeyMissing = "The Tradejini API key is not set on this server. Add the API key of your app from the Tradejini developer portal to the server's settings, then try again.";
 
     /// <summary>One call: the status and the body as read (null when it was not JSON). An error status still carries its body.</summary>
-    private async Task<(int Status, JsonNode? Body, string Text)> SendAsync(BrokerSession session, HttpMethod method, string path, IEnumerable<KeyValuePair<string, string>>? query, IEnumerable<KeyValuePair<string, string>>? form, CancellationToken cancellationToken, string contentType = "application/x-www-form-urlencoded")
+    private async Task<(int Status, JsonNode? Body, string Text)> SendAsync(BrokerSession session, HttpMethod method, string path, IEnumerable<KeyValuePair<string, string>>? query, IEnumerable<KeyValuePair<string, string>>? form, CancellationToken cancellationToken, string contentType = "application/x-www-form-urlencoded", bool accept = false)
     {
         var key = ApiKey(session) ?? throw new BrokerException(KeyMissing, 409);
         var url = sessions.BaseUrl(Name, DefaultBaseUrl) + path;
@@ -47,6 +47,7 @@ public sealed partial class TradejiniPlugin(IHttpClientFactory http, BrokerSessi
 
         using var request = new HttpRequestMessage(method, url);
         request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {key}:{session.AuthToken}");
+        if (accept) request.Headers.TryAddWithoutValidation("Accept", "application/json");
         // The broker is sent a content type on every call, a body or not, and the type depends on the call.
         request.Content = form is not null ? new FormUrlEncodedContent(form) : new StringContent("", System.Text.Encoding.UTF8, contentType);
         try

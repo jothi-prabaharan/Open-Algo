@@ -152,3 +152,34 @@ public sealed class LoginTradejiniContractTests(LoginTradejiniHost host, ITestOu
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
+
+public sealed class HistoryTradejiniHost() : TradejiniFileHost("history_tradejini.fixtures.json");
+
+/// <summary>Tradejini history (tools/contract-fixtures/history_tradejini.fixtures.json).</summary>
+public sealed class HistoryTradejiniContractTests(HistoryTradejiniHost host, ITestOutputHelper output) : IClassFixture<HistoryTradejiniHost>
+{
+    private const string Words = "OpenAlgo answers no candles when the history call fails. EP Trade bot says what Tradejini did and what to do.";
+
+    private const string Failed = "Tradejini could not give candles for NSE:SBIN right now. Try again in a moment.";
+
+    private static Deviation Says(int status, string message) => new(Words, f => Expect(f, status, Error(message)));
+
+    private static Deviation Unsupported(string interval) => new("OpenAlgo sends any interval it is given to Tradejini, which answers no candles for one it does not serve. EP Trade bot names the intervals Tradejini serves and sends nothing.",
+        f => { Expect(f, 400, Error($"Interval {interval} is not supported by Tradejini. Use one of: 1m, 5m, 15m, 30m.")); f["sent"]!.AsArray().Clear(); });
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_an_interval_with_no_translation_is_sent_as_it_is"] = Unsupported("1h"),
+        ["history_daily"] = Unsupported("D"),
+        ["history_error_with_a_message"] = Says(500, Failed),
+        ["history_http_error"] = Says(500, Failed),
+        ["history_http_401"] = Says(500, Failed),
+        ["history_not_json"] = Says(500, Failed),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_tradejini.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
