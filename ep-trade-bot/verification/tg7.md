@@ -40,7 +40,7 @@ The other brokers in the task list are not started (Shoonya, Zebu and Flattrade 
 - Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **The 3 brokers not started** (groww, motilal, nubra), and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **Nubra is partly done** (orders, books, funds, margin, sign-in by a code to the phone and history are ported with recorded fixtures and pass; its quotes, depth and several quotes over the websocket (protobuf frames, with REST fallbacks at `/orderbooks/<ref id>`) and its feed are not yet, and neither are its unit tests, mutation set and section here). **The 2 brokers not started** (groww, motilal), and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
 ## Upstox sign-in
 
