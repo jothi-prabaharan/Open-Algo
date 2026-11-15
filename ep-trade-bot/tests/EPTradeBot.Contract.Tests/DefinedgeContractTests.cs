@@ -101,6 +101,30 @@ public sealed class LoginDefinedgeContractTests(LoginDefinedgeHost host, ITestOu
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
 }
 
+public sealed class DefinedgeHistoryHost() : DefinedgeFileHost("history_definedge.fixtures.json");
+
+/// <summary>Definedge history (tools/contract-fixtures/history_definedge.fixtures.json), with the clock stopped at the recording.</summary>
+public sealed class DefinedgeHistoryContractTests(DefinedgeHistoryHost host, ITestOutputHelper output) : IClassFixture<DefinedgeHistoryHost>
+{
+    private const string NoCode = "OpenAlgo answers an empty list when every chunk fails, which a trader reads as no data. EP Trade bot says to try again in a moment.";
+
+    private static Deviation Down() => new(NoCode, f => Expect(f, 500, Error("Definedge could not return candles for NSE:SBIN right now. Try again in a moment.")));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_a_server_error_every_time_is_no_candles"] = Down(),
+        ["history_a_client_error_is_not_retried"] = Down(),
+        ["history_an_interval_definedge_lacks"] = new("OpenAlgo answers an empty list for an interval Definedge does not offer. EP Trade bot answers 400 and names the intervals Definedge offers, so a trader is never handed an empty series that looks like no data.",
+            f => { Expect(f, 400, Error("Interval 3m is not supported by Definedge. Use one of: 1m, 5m, 15m, 30m, 1h, D.")); f["sent"]!.AsArray().Clear(); }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_definedge.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
 /// <summary>Definedge against the Python implementation (tools/contract-fixtures/definedge.fixtures.json).</summary>
 public sealed class DefinedgeContractTests(DefinedgeHost host, ITestOutputHelper output) : IClassFixture<DefinedgeHost>
 {
