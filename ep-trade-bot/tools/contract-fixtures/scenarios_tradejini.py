@@ -218,6 +218,13 @@ SCENARIOS = [
     req("positionbook_not_json", "/api/v1/positionbook", {}, {PB: NOT_JSON}),
     req("positionbook_http_error", "/api/v1/positionbook", {}, {PB: {"status": 500, "body": {"s": "error"}}}),
     req("holdings", "/api/v1/holdings", {}, {HB: HOLDINGS}),
+    req("holdings_with_fractions", "/api/v1/holdings", {}, {HB: {"body": {"s": "ok", "d": {"holdings": [
+        holding(sym(INFY["id"], "NSE", "INFY", "INFY-EQ", lastPrice=1510.337), 3, 1450.567, realizedPnl=1.235),
+        holding(sym("EQT_TATAMOTORS_EQ_BSE", "BSE", "TATAMOTORS", "TATAMOTORS", ltp=509.995), 7, 500.125),
+        holding(sym("EQT_RELIANCE_EQ_NSE", "NSE", "RELIANCE", "RELIANCE-EQ"), 2, 2890.5, product="intraday"),
+        holding(sym("FUT_GOLDM_25NOV26_MCX", "MCX", "GOLDM", "GOLDM25NOV26FUT", lastPrice=0), 1, 75000.555),
+        holding(sym("EQT_SBIN_EQ_BSE", "", "SBIN", "SBIN"), 4, 800.25),
+    ]}}}}),
     req("holdings_empty", "/api/v1/holdings", {}, {HB: NO_DATA}),
     req("holdings_no_holdings_text", "/api/v1/holdings", {}, {HB: {"body": {"s": "ok", "d": "No Holdings"}}}),
     req("holdings_failed", "/api/v1/holdings", {}, {HB: FAILED}),

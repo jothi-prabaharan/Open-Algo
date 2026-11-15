@@ -5042,6 +5042,190 @@
       "ignore": []
     },
     {
+      "name": "holdings_with_fractions",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/holdings": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "holdings": [
+                {
+                  "sym": {
+                    "id": "EQT_INFY_EQ_NSE",
+                    "exchange": "NSE",
+                    "symbol": "INFY",
+                    "tradSymbol": "INFY-EQ",
+                    "lastPrice": 1510.337
+                  },
+                  "symId": "EQT_INFY_EQ_NSE",
+                  "qty": 3,
+                  "avgPrice": 1450.567,
+                  "realizedPnl": 1.235,
+                  "product": "delivery"
+                },
+                {
+                  "sym": {
+                    "id": "EQT_TATAMOTORS_EQ_BSE",
+                    "exchange": "BSE",
+                    "symbol": "TATAMOTORS",
+                    "tradSymbol": "TATAMOTORS",
+                    "ltp": 509.995
+                  },
+                  "symId": "EQT_TATAMOTORS_EQ_BSE",
+                  "qty": 7,
+                  "avgPrice": 500.125,
+                  "realizedPnl": 0,
+                  "product": "delivery"
+                },
+                {
+                  "sym": {
+                    "id": "EQT_RELIANCE_EQ_NSE",
+                    "exchange": "NSE",
+                    "symbol": "RELIANCE",
+                    "tradSymbol": "RELIANCE-EQ"
+                  },
+                  "symId": "EQT_RELIANCE_EQ_NSE",
+                  "qty": 2,
+                  "avgPrice": 2890.5,
+                  "realizedPnl": 0,
+                  "product": "intraday"
+                },
+                {
+                  "sym": {
+                    "id": "FUT_GOLDM_25NOV26_MCX",
+                    "exchange": "MCX",
+                    "symbol": "GOLDM",
+                    "tradSymbol": "GOLDM25NOV26FUT",
+                    "lastPrice": 0
+                  },
+                  "symId": "FUT_GOLDM_25NOV26_MCX",
+                  "qty": 1,
+                  "avgPrice": 75000.555,
+                  "realizedPnl": 0,
+                  "product": "delivery"
+                },
+                {
+                  "sym": {
+                    "id": "EQT_SBIN_EQ_BSE",
+                    "exchange": "",
+                    "symbol": "SBIN",
+                    "tradSymbol": "SBIN"
+                  },
+                  "symId": "EQT_SBIN_EQ_BSE",
+                  "qty": 4,
+                  "avgPrice": 800.25,
+                  "realizedPnl": 0,
+                  "product": "delivery"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "avgprice": 1450.57,
+                "current_value": 4531.01,
+                "exchange": "NSE",
+                "investment": 4351.7,
+                "ltp": 1510.34,
+                "pnl": 180.55,
+                "pnlpercent": 4.15,
+                "product": "CNC",
+                "quantity": 3,
+                "symbol": "INFY"
+              },
+              {
+                "avgprice": 500.12,
+                "current_value": 3569.97,
+                "exchange": "BSE",
+                "investment": 3500.88,
+                "ltp": 510.0,
+                "pnl": 69.09,
+                "pnlpercent": 1.97,
+                "product": "CNC",
+                "quantity": 7,
+                "symbol": "TATAMOTORS"
+              },
+              {
+                "avgprice": 2890.5,
+                "current_value": 5781.0,
+                "exchange": "NSE",
+                "investment": 5781.0,
+                "ltp": 2890.5,
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "MIS",
+                "quantity": 2,
+                "symbol": "RELIANCE-EQ"
+              },
+              {
+                "avgprice": 75000.55,
+                "current_value": 75000.55,
+                "exchange": "MCX",
+                "investment": 75000.55,
+                "ltp": 75000.55,
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 1,
+                "symbol": "GOLDM25NOV26FUT"
+              },
+              {
+                "avgprice": 800.25,
+                "current_value": 3201.0,
+                "exchange": "NSE",
+                "investment": 3201.0,
+                "ltp": 800.25,
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 4,
+                "symbol": "SBIN"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 92083.53,
+              "totalinvvalue": 91835.13,
+              "totalpnlpercentage": 0.27,
+              "totalprofitandloss": 249.64
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/holdings",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "holdings_empty",
       "method": "POST",
       "path": "/api/v1/holdings",
