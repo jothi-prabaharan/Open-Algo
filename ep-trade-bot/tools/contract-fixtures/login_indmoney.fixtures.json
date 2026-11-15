@@ -683,6 +683,48 @@
       "ignore": []
     },
     {
+      "name": "login_totp_status_500_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 500,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "INDstocks is temporarily unavailable. Try again shortly."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "login_totp_server_error_without_a_message",
       "method": "POST",
       "path": "/api/v1/accounts/{account}/broker-login/complete",

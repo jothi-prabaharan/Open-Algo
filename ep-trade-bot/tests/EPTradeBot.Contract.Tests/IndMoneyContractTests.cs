@@ -204,6 +204,7 @@ public sealed class LoginIndMoneyContractTests(LoginIndMoneyHost host, ITestOutp
         ["login_totp_throttled_with_a_message"] = LoginDeviations.Refused("Too many requests" + Slow),
         ["login_totp_throttled_without_a_message"] = LoginDeviations.Refused("IndMoney is limiting token requests." + Slow),
         ["login_totp_server_error_with_a_message"] = LoginDeviations.Refused("Internal error"),
+        ["login_totp_status_500_without_a_message"] = LoginDeviations.Refused("IndMoney is not available right now. Try again shortly."),
         ["login_totp_server_error_without_a_message"] = LoginDeviations.Refused("IndMoney is not available right now. Try again shortly."),
         ["login_totp_bad_request_without_a_message"] = LoginDeviations.Refused("IndMoney did not give a token. Check the details and try again."),
         ["login_totp_answer_is_not_json_with_status_200"] = LoginDeviations.Refused(Unreadable, 502),

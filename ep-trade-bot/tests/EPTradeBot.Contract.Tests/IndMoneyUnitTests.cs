@@ -23,7 +23,7 @@ public sealed class IndMoneyUnitTests
 
     private sealed class Master : ISymbolMaster
     {
-        public Task<SymbolRecord?> FindAsync(string broker, string symbol, string exchange, CancellationToken cancellationToken) => Task.FromResult<SymbolRecord?>(null);
+        public Task<SymbolRecord?> FindAsync(string broker, string symbol, string exchange, CancellationToken cancellationToken) => Task.FromResult<SymbolRecord?>(new(symbol, symbol, exchange, exchange, "3045", null, null, null, 1, "EQ", 0.05));
 
         public Task<SymbolRecord?> FindByBrokerSymbolAsync(string broker, string brokerSymbol, string exchange, CancellationToken cancellationToken) => Task.FromResult<SymbolRecord?>(null);
 
@@ -115,5 +115,56 @@ public sealed class IndMoneyUnitTests
         Assert.Equal("tok", endpoint.Headers["Authorization"]);
         Assert.Null(plugin.FeedEndpoint(new BrokerSession(Guid.NewGuid(), "indmoney", " ", null, null, new Dictionary<string, string>()), null));
         Assert.Equal("wss://other/feed", plugin.FeedEndpoint(new BrokerSession(Guid.NewGuid(), "indmoney", "tok", null, null, new Dictionary<string, string>()), "wss://other/feed")!.Url.AbsoluteUri);
+    }
+
+    [Fact]
+    public void The_feed_is_kept_alive_every_thirty_seconds()
+    {
+        Assert.Equal(TimeSpan.FromSeconds(30), Plugin(new Capture(_ => Json("{}"))).FeedKeepAliveEvery);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("none")]
+    [InlineData("None")]
+    public async Task A_leg_with_no_token_is_not_priced(string token)
+    {
+        var http = new Capture(_ => Json("{}"));
+        var error = await Assert.ThrowsAsync<BrokerException>(() => Plugin(http).CalculateMarginAsync(new BrokerSession(Guid.NewGuid(), "indmoney", "tok", null, null, new Dictionary<string, string>()), [Leg(token)], CancellationToken.None));
+        Assert.Equal(400, error.HttpStatus);
+        Assert.Empty(http.Seen);
+    }
+
+    [Fact]
+    public async Task A_throttled_read_is_tried_four_times_and_an_order_once()
+    {
+        var reads = new Capture(_ => Json("{}", 429));
+        await Plugin(reads).LoginAsync(new Dictionary<string, string> { ["ApiSecret"] = "t" }, NoInput, CancellationToken.None);
+        Assert.Equal(4, reads.Seen.Count);
+
+        var writes = new Capture(_ => Json("{}", 429));
+        var result = await Plugin(writes).PlaceAsync(new BrokerSession(Guid.NewGuid(), "indmoney", "tok", null, null, new Dictionary<string, string>()), new BrokerOrder("SBIN", "NSE", "BUY", 1, "MARKET", "MIS", 0m, 0m, 0, "s"), CancellationToken.None);
+        Assert.False(result.Ok);
+        Assert.Single(writes.Seen);
+    }
+
+    [Fact]
+    public async Task An_order_whose_call_fails_after_it_was_sent_says_it_may_have_been_placed()
+    {
+        var plugin = Plugin(new Failing());
+        var result = await plugin.PlaceAsync(new BrokerSession(Guid.NewGuid(), "indmoney", "tok", null, null, new Dictionary<string, string>()), new BrokerOrder("SBIN", "NSE", "BUY", 1, "MARKET", "MIS", 0m, 0m, 0, "s"), CancellationToken.None);
+        Assert.False(result.Ok);
+        Assert.Equal(502, result.HttpStatus);
+        Assert.True(result.MayHaveBeenSent);
+    }
+
+    private sealed class Failing : IHttpClientFactory
+    {
+        public HttpClient CreateClient(string name) => new(new Thrower());
+
+        private sealed class Thrower : HttpMessageHandler
+        {
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) => throw new HttpRequestException("down");
+        }
     }
 }

@@ -1,0 +1,162 @@
+[
+ {
+  "name": "M11 IndMoneyPlugin.cs:69",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        var retries = bucket == \"order\" ? 0 : 3;",
+  "new": "        var retries = bucket == \"order\" ? 0 : 4;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M51 IndMoneyPlugin.cs:212",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        catch (BrokerException ex) when (ex.HttpStatus == 502)",
+  "new": "        catch (BrokerException ex) when (ex.HttpStatus != 502)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M52 IndMoneyPlugin.cs:212",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        catch (BrokerException ex) when (ex.HttpStatus == 502)",
+  "new": "        catch (BrokerException ex) when (ex.HttpStatus == 503)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M53 IndMoneyPlugin.cs:214",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M54 IndMoneyPlugin.cs:214",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(true, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M55 IndMoneyPlugin.cs:214",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 503, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M220 IndMoneyPlugin.Margin.cs:22",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Margin.cs",
+  "old": "            if (token.Length == 0 || token.Equals(\"none\", StringComparison.OrdinalIgnoreCase) || !token.Replace(\".\", \"\", StringComparison.Ordinal).Replace(\"-\", \"\", StringComparison.Ordinal).All(char.IsAsciiDigit)) continue;",
+  "new": "            if (token.Length == 0 && token.Equals(\"none\", StringComparison.OrdinalIgnoreCase) || !token.Replace(\".\", \"\", StringComparison.Ordinal).Replace(\"-\", \"\", StringComparison.Ordinal).All(char.IsAsciiDigit)) continue;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M241 IndMoneyPlugin.Login.cs:71",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "            return BrokerLoginResult.Refused($\"Could not reach {Display} to sign in. Check your internet connection and try again.\", 502);",
+  "new": "            return BrokerLoginResult.Refused($\"Could not reach {Display} to sign in. Check your internet connection and try again.\", 503);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M247 IndMoneyPlugin.Login.cs:87",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "            case >= 500:",
+  "new": "            case > 500:",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M252 IndMoneyPlugin.Feed.cs:21",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Feed.cs",
+  "old": "    public TimeSpan FeedKeepAliveEvery => TimeSpan.FromSeconds(30);",
+  "new": "    public TimeSpan FeedKeepAliveEvery => TimeSpan.FromSeconds(31);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M264 IndMoneyFeedCodec.cs:90",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            var modes = mode is { } given ? [(int)given] : new[] { 1, 2 }.Where(m => subs.ContainsKey((target.Symbol, target.Exchange, m))).ToArray();",
+  "new": "            var modes = mode is { } given ? [(int)given] : new[] { 2, 2 }.Where(m => subs.ContainsKey((target.Symbol, target.Exchange, m))).ToArray();",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M265 IndMoneyFeedCodec.cs:90",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            var modes = mode is { } given ? [(int)given] : new[] { 1, 2 }.Where(m => subs.ContainsKey((target.Symbol, target.Exchange, m))).ToArray();",
+  "new": "            var modes = mode is { } given ? [(int)given] : new[] { 1, 3 }.Where(m => subs.ContainsKey((target.Symbol, target.Exchange, m))).ToArray();",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M268 IndMoneyFeedCodec.cs:128",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                    if (held.Count > 0) frames.AddRange(Chunks(held, mode));",
+  "new": "                    if (held.Count >= 0) frames.AddRange(Chunks(held, mode));",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M270 IndMoneyFeedCodec.cs:156",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "        JsonArray a => a.Count > 0,",
+  "new": "        JsonArray a => a.Count >= 0,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M271 IndMoneyFeedCodec.cs:157",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "        JsonObject o => o.Count > 0,",
+  "new": "        JsonObject o => o.Count >= 0,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M272 IndMoneyFeedCodec.cs:160",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            JsonValueKind.True => true,",
+  "new": "            JsonValueKind.True => false,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M273 IndMoneyFeedCodec.cs:161",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            JsonValueKind.False => false,",
+  "new": "            JsonValueKind.False => true,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M274 IndMoneyFeedCodec.cs:162",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            JsonValueKind.Number => NumberOf(v) != 0,",
+  "new": "            JsonValueKind.Number => NumberOf(v) == 0,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M276 IndMoneyFeedCodec.cs:164",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            _ => false,",
+  "new": "            _ => true,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M277 IndMoneyFeedCodec.cs:166",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "        _ => true,",
+  "new": "        _ => false,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

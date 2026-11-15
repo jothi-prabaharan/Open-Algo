@@ -52,6 +52,7 @@ SCENARIOS = [
     totp("login_totp_throttled_with_a_message", {"status": 429, "body": {"message": "Too many requests"}}),
     totp("login_totp_throttled_without_a_message", {"status": 429, "body": {}}),
     totp("login_totp_server_error_with_a_message", {"status": 500, "body": {"message": "Internal error"}}),
+    totp("login_totp_status_500_without_a_message", {"status": 500, "body": {}}),
     totp("login_totp_server_error_without_a_message", {"status": 503, "body": {}}),
     totp("login_totp_bad_request_without_a_message", {"status": 400, "body": {}}),
     totp("login_totp_bad_request_with_a_message", {"status": 400, "body": {"message": "Invalid MPIN"}}),
