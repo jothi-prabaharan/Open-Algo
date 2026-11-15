@@ -236,6 +236,9 @@ public static class ContractRunner
         }
 
         var expected = f["expected"]!;
+        // CONTRACT_DUMP=<file> appends what EP Trade bot answered to each case, to write a deviation against.
+        if (Environment.GetEnvironmentVariable("CONTRACT_DUMP") is { Length: > 0 } dump)
+            File.AppendAllText(dump, $"{f["name"]}\t{(int)response.StatusCode}\t{answerText.ReplaceLineEndings(" ")}\n");
         Assert.Equal(expected["status"]!.GetValue<int>(), (int)response.StatusCode);
         if (f.ContainsKey("stored")) await AssertStoredSessionAsync(host, f, expected["status"]!.GetValue<int>() == 200, recordedToken);
         if (expected["text"] is JsonValue expectedText)
