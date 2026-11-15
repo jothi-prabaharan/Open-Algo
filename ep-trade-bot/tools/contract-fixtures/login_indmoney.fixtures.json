@@ -1,0 +1,1130 @@
+{
+  "broker": "indmoney",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_totp",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "body": {
+            "status": "success",
+            "data": {
+              "token": "ind-token-777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "ind-token-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_token_at_the_top",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "body": {
+            "token": "top-token"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "top-token",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_access_token_in_data",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "body": {
+            "data": {
+              "access_token": "data-access"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "data-access",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_access_token_at_the_top",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "body": {
+            "access_token": "top-access"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "top-access",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_status_201",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 201,
+          "body": {
+            "data": {
+              "token": "created-token"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "created-token",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_with_a_code_that_has_leading_zeros",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "004321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "body": {
+            "status": "success",
+            "data": {
+              "token": "ind-token-777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "ind-token-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "004321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_with_spaces_around_the_mpin_and_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": " 123456 ",
+        "totp": " 654321 "
+      },
+      "broker": {
+        "POST /generate/token": {
+          "body": {
+            "status": "success",
+            "data": {
+              "token": "ind-token-777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "ind-token-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_no_token_in_the_answer",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Token generation succeeded but no token was returned."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_an_empty_answer",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Token generation succeeded but no token was returned."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_wrong_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 401,
+          "body": {
+            "message": "Invalid TOTP"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid TOTP Check the Client ID in BROKER_API_KEY and your MPIN, and wait for a fresh TOTP code -- never resubmit a code you already used. 5 wrong codes in 15 minutes locks token generation for 15 minutes; if codes keep failing, sync your server clock via NTP (clock drift is the most common cause)."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_forbidden_with_an_error_field",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 403,
+          "body": {
+            "error": "Account blocked"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Account blocked Check the Client ID in BROKER_API_KEY and your MPIN, and wait for a fresh TOTP code -- never resubmit a code you already used. 5 wrong codes in 15 minutes locks token generation for 15 minutes; if codes keep failing, sync your server clock via NTP (clock drift is the most common cause)."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_unauthorized_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 401,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid Client ID, MPIN, or TOTP code. Check the Client ID in BROKER_API_KEY and your MPIN, and wait for a fresh TOTP code -- never resubmit a code you already used. 5 wrong codes in 15 minutes locks token generation for 15 minutes; if codes keep failing, sync your server clock via NTP (clock drift is the most common cause)."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_throttled_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 429,
+          "body": {
+            "message": "Too many requests"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Too many requests Token generation is limited to 1 request per 60 seconds. Wait a minute before trying again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_throttled_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 429,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Token generation is throttled. Token generation is limited to 1 request per 60 seconds. Wait a minute before trying again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_server_error_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 500,
+          "body": {
+            "message": "Internal error"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Internal error"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_server_error_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 503,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "INDstocks is temporarily unavailable. Try again shortly."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_bad_request_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 400,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Token generation failed with HTTP 400."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_bad_request_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 400,
+          "body": {
+            "message": "Invalid MPIN"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid MPIN"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_answer_is_not_json_with_status_200",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "An exception occurred: 'str' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_answer_is_not_json_with_status_401",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 401,
+          "body": "denied"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "An exception occurred: 'str' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_answer_is_not_json_with_status_429",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 429,
+          "body": "slow down"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "An exception occurred: 'str' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_answer_is_not_json_with_status_502",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 502,
+          "body": "Bad gateway"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "An exception occurred: 'str' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_answer_is_not_json_with_status_400",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "status": 400,
+          "body": "bad"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "An exception occurred: 'str' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.indstocks.com",
+          "path": "/generate/token",
+          "query": [],
+          "headers": {
+            "x-api-key": "ind-client-id",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "mpin": "123456",
+            "totp": "654321"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_no_mpin",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "body": {
+            "status": "success",
+            "data": {
+              "token": "ind-token-777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Please provide both MPIN and TOTP code"
+        }
+      },
+      "stored": null,
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_no_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "123456"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "body": {
+            "status": "success",
+            "data": {
+              "token": "ind-token-777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Please provide both MPIN and TOTP code"
+        }
+      },
+      "stored": null,
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "login_totp_empty_mpin",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "mpin": "",
+        "totp": "654321"
+      },
+      "broker": {
+        "POST /generate/token": {
+          "body": {
+            "status": "success",
+            "data": {
+              "token": "ind-token-777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Please provide both MPIN and TOTP code"
+        }
+      },
+      "stored": null,
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "login_manual_no_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "No access token found in BROKER_API_SECRET. Either paste an access token generated from https://indstocks.com/app/api-trading/access-tokens, or leave BROKER_API_SECRET blank and set BROKER_API_KEY to your Client ID to log in with MPIN + TOTP."
+        }
+      },
+      "stored": null,
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}

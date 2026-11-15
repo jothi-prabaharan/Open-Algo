@@ -182,3 +182,70 @@ public sealed class IndMoneyMarginContractTests(IndMoneyMarginHost host, ITestOu
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginIndMoneyHost() : IndMoneyFileHost("login_indmoney.fixtures.json");
+
+/// <summary>IndMoney sign-in with the MPIN and a one-time code (tools/contract-fixtures/login_indmoney.fixtures.json).</summary>
+public sealed class LoginIndMoneyContractTests(LoginIndMoneyHost host, ITestOutputHelper output) : IClassFixture<LoginIndMoneyHost>
+{
+    private const string Unreadable = "IndMoney sent an answer that could not be read. Try again in a moment.";
+    private const string Enter = "Enter the MPIN and the one-time code from your authenticator to sign in to IndMoney.";
+    private const string NoToken = "IndMoney accepted the sign-in but sent no token. Start the sign-in again.";
+    private const string Hint = " Check the Client ID saved on this server and your MPIN, then wait for a fresh code and never send one you already used. Five wrong codes in 15 minutes lock token requests for 15 minutes. If codes keep failing, check that this server's clock is right.";
+    private const string Slow = " IndMoney allows one token request a minute. Wait a minute, then try again.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_totp_no_token_in_the_answer"] = LoginDeviations.Refused(NoToken, 502),
+        ["login_totp_an_empty_answer"] = LoginDeviations.Refused(NoToken, 502),
+        ["login_totp_wrong_code"] = LoginDeviations.Refused("Invalid TOTP" + Hint),
+        ["login_totp_forbidden_with_an_error_field"] = LoginDeviations.Refused("Account blocked" + Hint),
+        ["login_totp_unauthorized_without_a_message"] = LoginDeviations.Refused("IndMoney did not accept the Client ID, the MPIN or the one-time code." + Hint),
+        ["login_totp_throttled_with_a_message"] = LoginDeviations.Refused("Too many requests" + Slow),
+        ["login_totp_throttled_without_a_message"] = LoginDeviations.Refused("IndMoney is limiting token requests." + Slow),
+        ["login_totp_server_error_with_a_message"] = LoginDeviations.Refused("Internal error"),
+        ["login_totp_server_error_without_a_message"] = LoginDeviations.Refused("IndMoney is not available right now. Try again shortly."),
+        ["login_totp_bad_request_without_a_message"] = LoginDeviations.Refused("IndMoney did not give a token. Check the details and try again."),
+        ["login_totp_answer_is_not_json_with_status_200"] = LoginDeviations.Refused(Unreadable, 502),
+        ["login_totp_answer_is_not_json_with_status_401"] = LoginDeviations.Refused(Unreadable, 502),
+        ["login_totp_answer_is_not_json_with_status_429"] = LoginDeviations.Refused(Unreadable, 502),
+        ["login_totp_answer_is_not_json_with_status_502"] = LoginDeviations.Refused(Unreadable, 502),
+        ["login_totp_answer_is_not_json_with_status_400"] = LoginDeviations.Refused(Unreadable, 502),
+        ["login_totp_no_mpin"] = LoginDeviations.Refused(Enter),
+        ["login_totp_no_code"] = LoginDeviations.Refused(Enter),
+        ["login_totp_empty_mpin"] = LoginDeviations.Refused(Enter),
+        ["login_manual_no_token"] = LoginDeviations.Refused(Enter),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_indmoney.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
+
+public sealed class LoginManualIndMoneyHost() : IndMoneyFileHost("login_manual_indmoney.fixtures.json")
+{
+    public override IReadOnlyDictionary<string, string> Keys { get; } = new Dictionary<string, string> { ["ApiKey"] = "ind-client-id", ["ApiSecret"] = "pasted-token-1" };
+}
+
+/// <summary>IndMoney sign-in with a token pasted as the API secret (tools/contract-fixtures/login_manual_indmoney.fixtures.json).</summary>
+public sealed class LoginManualIndMoneyContractTests(LoginManualIndMoneyHost host, ITestOutputHelper output) : IClassFixture<LoginManualIndMoneyHost>
+{
+    private static Deviation Rejected(string why) => LoginDeviations.Refused($"IndMoney did not accept the access token saved as the API secret ({why}). IndMoney tokens last 24 hours. Save a fresh token from the IndMoney access tokens page, or clear the API secret and sign in with your MPIN and a one-time code.");
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_manual_token_rejected_with_401"] = Rejected("Token expired"),
+        ["login_manual_token_rejected_with_403_and_an_error_type"] = Rejected("TokenException"),
+        ["login_manual_token_rejected_without_a_message"] = Rejected("it was refused"),
+        ["login_manual_token_rejected_with_a_body_that_is_a_list"] = Rejected("it was refused"),
+        ["login_manual_token_rejected_with_a_body_that_is_not_json"] = Rejected("it was refused"),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_manual_indmoney.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

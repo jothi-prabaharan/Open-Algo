@@ -1,0 +1,402 @@
+{
+  "broker": "indmoney",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_manual_token_accepted",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /user/profile": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "pasted-token-1",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/user/profile",
+          "query": [],
+          "headers": {
+            "authorization": "pasted-token-1",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_manual_token_accepted_with_201",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /user/profile": {
+          "status": 201,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "pasted-token-1",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/user/profile",
+          "query": [],
+          "headers": {
+            "authorization": "pasted-token-1",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_manual_token_rejected_with_401",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /user/profile": {
+          "status": 401,
+          "body": {
+            "message": "Token expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "The access token in BROKER_API_SECRET is not usable (Token expired). INDstocks tokens expire after 24 hours. Either paste a fresh token from https://indstocks.com/app/api-trading/access-tokens, or clear BROKER_API_SECRET to log in with MPIN + TOTP instead."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/user/profile",
+          "query": [],
+          "headers": {
+            "authorization": "pasted-token-1",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_manual_token_rejected_with_403_and_an_error_type",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /user/profile": {
+          "status": 403,
+          "body": {
+            "error_type": "TokenException"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "The access token in BROKER_API_SECRET is not usable (TokenException). INDstocks tokens expire after 24 hours. Either paste a fresh token from https://indstocks.com/app/api-trading/access-tokens, or clear BROKER_API_SECRET to log in with MPIN + TOTP instead."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/user/profile",
+          "query": [],
+          "headers": {
+            "authorization": "pasted-token-1",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_manual_token_rejected_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /user/profile": {
+          "status": 401,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "The access token in BROKER_API_SECRET is not usable (HTTP 401). INDstocks tokens expire after 24 hours. Either paste a fresh token from https://indstocks.com/app/api-trading/access-tokens, or clear BROKER_API_SECRET to log in with MPIN + TOTP instead."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/user/profile",
+          "query": [],
+          "headers": {
+            "authorization": "pasted-token-1",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_manual_token_rejected_with_a_body_that_is_a_list",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /user/profile": {
+          "status": 401,
+          "body": [
+            "x"
+          ]
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "The access token in BROKER_API_SECRET is not usable (HTTP 401). INDstocks tokens expire after 24 hours. Either paste a fresh token from https://indstocks.com/app/api-trading/access-tokens, or clear BROKER_API_SECRET to log in with MPIN + TOTP instead."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/user/profile",
+          "query": [],
+          "headers": {
+            "authorization": "pasted-token-1",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_manual_token_rejected_with_a_body_that_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /user/profile": {
+          "status": 403,
+          "body": "no"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "The access token in BROKER_API_SECRET is not usable (HTTP 403). INDstocks tokens expire after 24 hours. Either paste a fresh token from https://indstocks.com/app/api-trading/access-tokens, or clear BROKER_API_SECRET to log in with MPIN + TOTP instead."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/user/profile",
+          "query": [],
+          "headers": {
+            "authorization": "pasted-token-1",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_manual_token_unverified_after_a_server_error",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /user/profile": {
+          "status": 500,
+          "body": {
+            "message": "down"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "pasted-token-1",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/user/profile",
+          "query": [],
+          "headers": {
+            "authorization": "pasted-token-1",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_manual_token_unverified_after_a_throttle",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /user/profile": {
+          "status": 429,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "pasted-token-1",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/user/profile",
+          "query": [],
+          "headers": {
+            "authorization": "pasted-token-1",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/user/profile",
+          "query": [],
+          "headers": {
+            "authorization": "pasted-token-1",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/user/profile",
+          "query": [],
+          "headers": {
+            "authorization": "pasted-token-1",
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/user/profile",
+          "query": [],
+          "headers": {
+            "authorization": "pasted-token-1",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_manual_token_unverified_after_a_not_found",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {},
+      "broker": {
+        "GET /user/profile": {
+          "status": 404,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "pasted-token-1",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/user/profile",
+          "query": [],
+          "headers": {
+            "authorization": "pasted-token-1",
+            "accept": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
