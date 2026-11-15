@@ -24,7 +24,7 @@ public interface INubraSockets
 /// The real connection (broker/nubra/api/nubrawebsocket.py). OpenAlgo opens one for the read, waits up to ten seconds for it and closes it when the reader is let go; here a read has a connection of its own, opened for it and always closed after it. Text
 /// answers from Nubra are not read.
 /// </summary>
-internal sealed class NubraSnapshotSocket : INubraSockets
+public sealed class NubraSnapshotSocket : INubraSockets
 {
     private static readonly TimeSpan Connect = TimeSpan.FromSeconds(10);
 
