@@ -83,3 +83,31 @@ public sealed class NubraContractTests(NubraHost host, ITestOutputHelper output)
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class MarginNubraHost() : NubraFileHost("margin_nubra.fixtures.json");
+
+/// <summary>Nubra margin (tools/contract-fixtures/margin_nubra.fixtures.json).</summary>
+public sealed class MarginNubraContractTests(MarginNubraHost host, ITestOutputHelper output) : IClassFixture<MarginNubraHost>
+{
+    private const string Words = "OpenAlgo answers a margin Nubra refused with Nubra's words alone, or with a parse error of its own, and an expired session as an unreadable answer. EP Trade bot says what Nubra did and what to do.";
+
+    private static Deviation Says(int status, string message) => new(Words, f => Expect(f, status, Error(message)));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["margin_session_expired"] = Says(401, "Nubra session expired or invalid (HTTP 440). Log in to Nubra again."),
+        ["margin_unknown_symbol"] = Says(400, "NOPE on NFO is not in the Nubra master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again."),
+        ["margin_refused_with_an_error"] = Says(400, "Nubra could not work out the margin: Invalid order"),
+        ["margin_refused_with_a_message"] = Says(400, "Nubra could not work out the margin: Bad leg"),
+        ["margin_refused_with_no_reason"] = Says(400, "Nubra could not work out the margin: no reason was given."),
+        ["margin_answer_is_not_json"] = Says(502, "Nubra sent an answer that could not be read. Try again in a moment."),
+        ["margin_with_numbers_that_are_not_numbers"] = Says(502, "Nubra sent margin figures that could not be read. Try again in a moment."),
+        ["margin_every_leg_left_out"] = Says(400, "None of the positions could be priced for margin. Check that the symbols are valid."),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin_nubra.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}

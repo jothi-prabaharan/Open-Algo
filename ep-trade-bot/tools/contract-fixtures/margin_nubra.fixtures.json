@@ -1,0 +1,1782 @@
+{
+  "broker": "nubra",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "nubra-session-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [
+    "/sentinel/orders/funds_required"
+  ],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "TATAMOTORS",
+      "brsymbol": "TATAMOTORS",
+      "name": "TATA MOTORS",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500570",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY26NOVFUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE",
+      "token": "49500",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY26NOV24000CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE",
+      "token": "49599",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "CE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "SENSEX26NOVFUT",
+      "brsymbol": "SENSEX26NOVFUT",
+      "name": "SENSEX",
+      "exchange": "BFO",
+      "brexchange": "BSE",
+      "token": "60001",
+      "expiry": "26-NOV-26",
+      "strike": -1.0,
+      "lotsize": 20,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "GOLDM26NOVFUT",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 10,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "NIFTY",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE",
+      "token": "26000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "BADTOKEN",
+      "brsymbol": "BADTOKEN",
+      "name": "BAD",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "ab12",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "DECIMALTOKEN",
+      "brsymbol": "DECIMALTOKEN",
+      "name": "DEC",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "12.5",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "margin_one_future",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "code": 1,
+            "marginInfo": {
+              "totalMargin": 100000.5,
+              "message": null
+            },
+            "brokerageInfo": {
+              "totalChargesFloat": 13.5
+            },
+            "totalFundsRequired": 100500.75,
+            "willBeAutoSliced": false
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 100000.5,
+            "total_charges": 13.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_buy_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "BUY",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "code": 1,
+            "marginInfo": {
+              "totalMargin": 100000.5,
+              "message": null
+            },
+            "brokerageInfo": {
+              "totalChargesFloat": 13.5
+            },
+            "totalFundsRequired": 100500.75,
+            "willBeAutoSliced": false
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 100000.5,
+            "total_charges": 13.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "BUY",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_limit_leg_with_a_price",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV2624000CE",
+            "exchange": "NFO",
+            "action": "BUY",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "100.55"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "code": 1,
+            "marginInfo": {
+              "totalMargin": 100000.5,
+              "message": null
+            },
+            "brokerageInfo": {
+              "totalChargesFloat": 13.5
+            },
+            "totalFundsRequired": 100500.75,
+            "willBeAutoSliced": false
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 100000.5,
+            "total_charges": 13.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49599,
+                "qty": 75,
+                "side": "BUY",
+                "deliveryType": "CNC",
+                "priceType": "LIMIT",
+                "validityType": "DAY",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ],
+                "entryPrice": 10055
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_stop_limit_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "SL",
+            "price": "24000",
+            "trigger_price": "23990.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "code": 1,
+            "marginInfo": {
+              "totalMargin": 100000.5,
+              "message": null
+            },
+            "brokerageInfo": {
+              "totalChargesFloat": 13.5
+            },
+            "totalFundsRequired": 100500.75,
+            "willBeAutoSliced": false
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 100000.5,
+            "total_charges": 13.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "LIMIT",
+                "validityType": "DAY",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ],
+                "entryPrice": 2400000,
+                "entryConfig": {
+                  "triggers": {
+                    "ltp": {
+                      "atOrBelow": {
+                        "value": 2399050
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_stop_market_sell_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "SL-M",
+            "trigger_price": "23990.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "code": 1,
+            "marginInfo": {
+              "totalMargin": 100000.5,
+              "message": null
+            },
+            "brokerageInfo": {
+              "totalChargesFloat": 13.5
+            },
+            "totalFundsRequired": 100500.75,
+            "willBeAutoSliced": false
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 100000.5,
+            "total_charges": 13.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ],
+                "entryConfig": {
+                  "triggers": {
+                    "ltp": {
+                      "atOrBelow": {
+                        "value": 2399050
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_stop_leg_without_a_trigger",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "SL",
+            "price": "24000"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "code": 1,
+            "marginInfo": {
+              "totalMargin": 100000.5,
+              "message": null
+            },
+            "brokerageInfo": {
+              "totalChargesFloat": 13.5
+            },
+            "totalFundsRequired": 100500.75,
+            "willBeAutoSliced": false
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 100000.5,
+            "total_charges": 13.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "LIMIT",
+                "validityType": "DAY",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ],
+                "entryPrice": 2400000
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_an_equity_leg_in_each_product",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "5",
+            "product": "CNC",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "code": 1,
+            "marginInfo": {
+              "totalMargin": 100000.5,
+              "message": null
+            },
+            "brokerageInfo": {
+              "totalChargesFloat": 13.5
+            },
+            "totalFundsRequired": 100500.75,
+            "willBeAutoSliced": false
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 100000.5,
+            "total_charges": 13.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 3045,
+                "qty": 10,
+                "side": "BUY",
+                "deliveryType": "IDAY",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              },
+              {
+                "refId": 1594,
+                "qty": 5,
+                "side": "BUY",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_several_legs_are_one_request",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "NIFTY25NOV2624000CE",
+            "exchange": "NFO",
+            "action": "BUY",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "code": 1,
+            "marginInfo": {
+              "totalMargin": 100000.5,
+              "message": null
+            },
+            "brokerageInfo": {
+              "totalChargesFloat": 13.5
+            },
+            "totalFundsRequired": 100500.75,
+            "willBeAutoSliced": false
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 100000.5,
+            "total_charges": 13.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              },
+              {
+                "refId": 49599,
+                "qty": 75,
+                "side": "BUY",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              },
+              {
+                "refId": 3045,
+                "qty": 10,
+                "side": "BUY",
+                "deliveryType": "IDAY",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_without_funds_required_uses_the_margin",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "code": 1,
+            "marginInfo": {
+              "totalMargin": 100000.5,
+              "message": null
+            },
+            "brokerageInfo": {
+              "totalChargesFloat": 13.5
+            },
+            "totalFundsRequired": 0,
+            "willBeAutoSliced": false
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 100000.5,
+            "total_charges": 13.5,
+            "total_margin_required": 100000.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_with_text_numbers",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "marginInfo": {
+              "totalMargin": "1200.5"
+            },
+            "totalFundsRequired": "1300"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 1200.5,
+            "total_charges": 0.0,
+            "total_margin_required": 1300.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_with_no_numbers",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "marginInfo": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 0.0,
+            "total_charges": 0.0,
+            "total_margin_required": 0.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_with_numbers_that_are_not_numbers",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "marginInfo": {
+              "totalMargin": "x"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "Failed to parse margin response: could not convert string to float: 'x'",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_refused_with_an_error",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "status": 400,
+          "body": {
+            "error": "Invalid order"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Invalid order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "status": 400,
+          "body": {
+            "message": "Bad leg"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Bad leg",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_refused_with_no_reason",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "status": 400,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Invalid response from broker",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_session_expired",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "status": 440,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 440,
+        "body": {
+          "message": "Invalid response from broker",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_answer_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "Invalid response from broker",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_token_with_a_decimal_point_is_priced",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "DECIMALTOKEN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "1",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "code": 1,
+            "marginInfo": {
+              "totalMargin": 100000.5,
+              "message": null
+            },
+            "brokerageInfo": {
+              "totalChargesFloat": 13.5
+            },
+            "totalFundsRequired": 100500.75,
+            "willBeAutoSliced": false
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 100000.5,
+            "total_charges": 13.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 12,
+                "qty": 1,
+                "side": "BUY",
+                "deliveryType": "IDAY",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_token_that_is_not_digits_is_left_out",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "BADTOKEN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "1",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "code": 1,
+            "marginInfo": {
+              "totalMargin": 100000.5,
+              "message": null
+            },
+            "brokerageInfo": {
+              "totalChargesFloat": 13.5
+            },
+            "totalFundsRequired": 100500.75,
+            "willBeAutoSliced": false
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 100000.5,
+            "total_charges": 13.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 49500,
+                "qty": 75,
+                "side": "SELL",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_every_leg_left_out",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "BADTOKEN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "1",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "No valid positions to calculate margin. Check if symbols are valid.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOPE",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "No valid positions to calculate margin. Check if symbols are valid.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_mcx_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "GOLDM25NOV26FUT",
+            "exchange": "MCX",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /sentinel/orders/funds_required": {
+          "body": {
+            "code": 1,
+            "marginInfo": {
+              "totalMargin": 100000.5,
+              "message": null
+            },
+            "brokerageInfo": {
+              "totalChargesFloat": 13.5
+            },
+            "totalFundsRequired": 100500.75,
+            "willBeAutoSliced": false
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 100000.5,
+            "total_charges": 13.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sentinel/orders/funds_required",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer nubra-session-token",
+            "accept": "application/json",
+            "content-type": "application/json"
+          },
+          "json": {
+            "requestType": "NEW",
+            "orders": [
+              {
+                "refId": 80001,
+                "qty": 10,
+                "side": "BUY",
+                "deliveryType": "CNC",
+                "priceType": "MARKET",
+                "validityType": "IOC",
+                "isMultiLeg": false,
+                "executionMode": "ENTRY",
+                "stratTags": [
+                  "openalgo-margin"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

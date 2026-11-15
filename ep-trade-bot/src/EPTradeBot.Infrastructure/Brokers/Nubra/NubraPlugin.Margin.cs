@@ -34,9 +34,11 @@ public sealed partial class NubraPlugin : IBrokerMargin
         if (status == SessionExpired) throw new BrokerException(ExpiredMessage, 401);
         if (body is not JsonObject answer) throw new BrokerException($"{Display} sent an answer that could not be read. Try again in a moment.", 502);
         if (answer["marginInfo"] is not JsonObject info) throw new BrokerException($"{Display} could not work out the margin: {MessageOrErrorFirst(answer) ?? "no reason was given."}", 400);
-        var margin = Truthy(info["totalMargin"]) ? Float(info["totalMargin"]) : 0;
-        var required = Truthy(answer["totalFundsRequired"]) ? Float(answer["totalFundsRequired"]) : 0;
-        return new JsonObject { ["total_margin_required"] = required != 0 ? required : margin, ["span_margin"] = margin, ["exposure_margin"] = 0.0 };
+        double Number(JsonNode? node) => !Truthy(node) ? 0 : BookFormatting.Number(node) ?? (double.TryParse(Str(node), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) ? parsed : throw new BrokerException($"{Display} sent margin figures that could not be read. Try again in a moment.", 502));
+        var margin = Number(info["totalMargin"]);
+        var required = Number(answer["totalFundsRequired"]);
+        var charges = answer["brokerageInfo"] is JsonObject brokerage ? Number(brokerage["totalChargesFloat"]) : 0;
+        return new JsonObject { ["total_margin_required"] = required != 0 ? required : margin, ["span_margin"] = margin, ["exposure_margin"] = 0.0, ["total_charges"] = BookFormatting.RoundPy(charges, 2) };
     }
 
     private static string? MessageOrErrorFirst(JsonObject answer) => Truthy(answer["error"]) ? Str(answer["error"]) : Truthy(answer["message"]) ? Str(answer["message"]) : null;
