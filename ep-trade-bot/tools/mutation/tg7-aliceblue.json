@@ -42,32 +42,32 @@
  {
   "name": "A6 AliceBluePlugin.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.cs",
-  "old": "            while (QuotaTimes.Count > 0 && QuotaTimes.Peek() <= now.AddSeconds(-Window)) QuotaTimes.Dequeue();",
-  "new": "            while (QuotaTimes.Count > 0 || QuotaTimes.Peek() <= now.AddSeconds(-Window)) QuotaTimes.Dequeue();",
+  "old": "            while (times.Count > 0 && times.Peek() <= now.AddSeconds(-Window)) times.Dequeue();",
+  "new": "            while (times.Count > 0 || times.Peek() <= now.AddSeconds(-Window)) times.Dequeue();",
   "filter": "FullyQualifiedName~AliceBlue",
   "project": "EPTradeBot.Contract.Tests"
  },
  {
   "name": "A7 AliceBluePlugin.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.cs",
-  "old": "            while (QuotaTimes.Count > 0 && QuotaTimes.Peek() <= now.AddSeconds(-Window)) QuotaTimes.Dequeue();",
-  "new": "            while (QuotaTimes.Count > 0 && QuotaTimes.Peek() < now.AddSeconds(-Window)) QuotaTimes.Dequeue();",
+  "old": "            while (times.Count > 0 && times.Peek() <= now.AddSeconds(-Window)) times.Dequeue();",
+  "new": "            while (times.Count > 0 && times.Peek() < now.AddSeconds(-Window)) times.Dequeue();",
   "filter": "FullyQualifiedName~AliceBlue",
   "project": "EPTradeBot.Contract.Tests"
  },
  {
   "name": "A8 AliceBluePlugin.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.cs",
-  "old": "            while (QuotaTimes.Count > 0 && QuotaTimes.Peek() <= now.AddSeconds(-Window)) QuotaTimes.Dequeue();",
-  "new": "            while (QuotaTimes.Count >= 0 && QuotaTimes.Peek() <= now.AddSeconds(-Window)) QuotaTimes.Dequeue();",
+  "old": "            while (times.Count > 0 && times.Peek() <= now.AddSeconds(-Window)) times.Dequeue();",
+  "new": "            while (times.Count >= 0 && times.Peek() <= now.AddSeconds(-Window)) times.Dequeue();",
   "filter": "FullyQualifiedName~AliceBlue",
   "project": "EPTradeBot.Contract.Tests"
  },
  {
   "name": "A9 AliceBluePlugin.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.cs",
-  "old": "            if (QuotaTimes.Count < Budget)",
-  "new": "            if (QuotaTimes.Count <= Budget)",
+  "old": "            if (times.Count < Budget)",
+  "new": "            if (times.Count <= Budget)",
   "filter": "FullyQualifiedName~AliceBlue",
   "project": "EPTradeBot.Contract.Tests"
  },
@@ -1240,39 +1240,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A156 AliceBluePlugin.Feed.cs op",
-  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Feed.cs",
-  "old": "            await SendAsync(session, HttpMethod.Post, \"/open-api/od/v1/profile/invalidateWsSess\", body, read: false, cancellationToken);",
-  "new": "            await SendAsync(session, HttpMethod.Post, \"/open-api/od/v1/profile/invalidateWsSess\", body, read: true, cancellationToken);",
-  "filter": "FullyQualifiedName~AliceBlue",
-  "project": "EPTradeBot.Contract.Tests"
- },
- {
-  "name": "A157 AliceBluePlugin.Feed.cs op",
-  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Feed.cs",
-  "old": "            var (_, reply) = await SendAsync(session, HttpMethod.Post, \"/open-api/od/v1/profile/createWsSess\", body.DeepClone(), read: false, cancellationToken);",
-  "new": "            var (_, reply) = await SendAsync(session, HttpMethod.Post, \"/open-api/od/v1/profile/createWsSess\", body.DeepClone(), read: true, cancellationToken);",
-  "filter": "FullyQualifiedName~AliceBlue",
-  "project": "EPTradeBot.Contract.Tests"
- },
- {
-  "name": "A158 AliceBluePlugin.Feed.cs op",
-  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Feed.cs",
-  "old": "            return reply is JsonObject answer && Str(answer[\"status\"]) == \"Ok\" ? endpoint : null;",
-  "new": "            return reply is JsonObject answer && Str(answer[\"status\"]) != \"Ok\" ? endpoint : null;",
-  "filter": "FullyQualifiedName~AliceBlue",
-  "project": "EPTradeBot.Contract.Tests"
- },
- {
-  "name": "A159 AliceBluePlugin.Feed.cs op",
-  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Feed.cs",
-  "old": "            return reply is JsonObject answer && Str(answer[\"status\"]) == \"Ok\" ? endpoint : null;",
-  "new": "            return reply is JsonObject answer || Str(answer[\"status\"]) == \"Ok\" ? endpoint : null;",
-  "filter": "FullyQualifiedName~AliceBlue",
-  "project": "EPTradeBot.Contract.Tests"
- },
- {
-  "name": "A160 AliceBluePlugin.Feed.cs num",
+  "name": "A156 AliceBluePlugin.Feed.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Feed.cs",
   "old": "    public TimeSpan FeedKeepAliveEvery => TimeSpan.FromSeconds(30);",
   "new": "    public TimeSpan FeedKeepAliveEvery => TimeSpan.FromSeconds(31);",
@@ -1280,7 +1248,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A161 AliceBluePlugin.Data.cs num",
+  "name": "A157 AliceBluePlugin.Data.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "    private const int QuoteBatch = 100;",
   "new": "    private const int QuoteBatch = 101;",
@@ -1288,7 +1256,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A162 AliceBluePlugin.Data.cs op",
+  "name": "A158 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            await SendAsync(session, HttpMethod.Post, \"/open-api/od/v1/profile/invalidateWsSess\", body, read: false, cancellationToken);",
   "new": "            await SendAsync(session, HttpMethod.Post, \"/open-api/od/v1/profile/invalidateWsSess\", body, read: true, cancellationToken);",
@@ -1296,7 +1264,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A163 AliceBluePlugin.Data.cs op",
+  "name": "A159 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            var (_, reply) = await SendAsync(session, HttpMethod.Post, \"/open-api/od/v1/profile/createWsSess\", body.DeepClone(), read: false, cancellationToken);",
   "new": "            var (_, reply) = await SendAsync(session, HttpMethod.Post, \"/open-api/od/v1/profile/createWsSess\", body.DeepClone(), read: true, cancellationToken);",
@@ -1304,7 +1272,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A164 AliceBluePlugin.Data.cs op",
+  "name": "A160 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            return reply is JsonObject answer && Str(answer[\"status\"]) == \"Ok\";",
   "new": "            return reply is JsonObject answer && Str(answer[\"status\"]) != \"Ok\";",
@@ -1312,7 +1280,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A165 AliceBluePlugin.Data.cs op",
+  "name": "A161 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            return reply is JsonObject answer && Str(answer[\"status\"]) == \"Ok\";",
   "new": "            return reply is JsonObject answer || Str(answer[\"status\"]) == \"Ok\";",
@@ -1320,7 +1288,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A166 AliceBluePlugin.Data.cs op",
+  "name": "A162 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            return false;",
   "new": "            return true;",
@@ -1328,7 +1296,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A167 AliceBluePlugin.Data.cs lit",
+  "name": "A163 AliceBluePlugin.Data.cs lit",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "    private static string ApiExchange(string exchange) => exchange switch { \"NSE_INDEX\" => \"NSE\", \"BSE_INDEX\" => \"BSE\", \"MCX_INDEX\" => \"MCX\", _ => exchange };",
   "new": "    private static string ApiExchange(string exchange) => exchange switch { \"NSE_INDEX\" => \"NSEX\", \"BSE_INDEX\" => \"BSE\", \"MCX_INDEX\" => \"MCX\", _ => exchange };",
@@ -1336,7 +1304,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A168 AliceBluePlugin.Data.cs lit",
+  "name": "A164 AliceBluePlugin.Data.cs lit",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "    private static string ApiExchange(string exchange) => exchange switch { \"NSE_INDEX\" => \"NSE\", \"BSE_INDEX\" => \"BSE\", \"MCX_INDEX\" => \"MCX\", _ => exchange };",
   "new": "    private static string ApiExchange(string exchange) => exchange switch { \"NSE_INDEX\" => \"NSE\", \"BSE_INDEX\" => \"BSEX\", \"MCX_INDEX\" => \"MCX\", _ => exchange };",
@@ -1344,7 +1312,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A169 AliceBluePlugin.Data.cs lit",
+  "name": "A165 AliceBluePlugin.Data.cs lit",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "    private static string ApiExchange(string exchange) => exchange switch { \"NSE_INDEX\" => \"NSE\", \"BSE_INDEX\" => \"BSE\", \"MCX_INDEX\" => \"MCX\", _ => exchange };",
   "new": "    private static string ApiExchange(string exchange) => exchange switch { \"NSE_INDEX\" => \"NSE\", \"BSE_INDEX\" => \"BSE\", \"MCX_INDEX\" => \"MCXX\", _ => exchange };",
@@ -1352,7 +1320,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A170 AliceBluePlugin.Data.cs op",
+  "name": "A166 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        while (!ready() && DateTime.UtcNow - started < limit) await Task.Delay(50, cancellationToken);",
   "new": "        while (!ready() || DateTime.UtcNow - started < limit) await Task.Delay(50, cancellationToken);",
@@ -1360,7 +1328,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A171 AliceBluePlugin.Data.cs op",
+  "name": "A167 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        while (!ready() && DateTime.UtcNow - started < limit) await Task.Delay(50, cancellationToken);",
   "new": "        while (!ready() && DateTime.UtcNow - started <= limit) await Task.Delay(50, cancellationToken);",
@@ -1368,7 +1336,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A172 AliceBluePlugin.Data.cs num",
+  "name": "A168 AliceBluePlugin.Data.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        while (!ready() && DateTime.UtcNow - started < limit) await Task.Delay(50, cancellationToken);",
   "new": "        while (!ready() && DateTime.UtcNow - started < limit) await Task.Delay(51, cancellationToken);",
@@ -1376,7 +1344,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A173 AliceBluePlugin.Data.cs op",
+  "name": "A169 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        var socket = await Sockets.GetAsync(session, false, cancellationToken);",
   "new": "        var socket = await Sockets.GetAsync(session, true, cancellationToken);",
@@ -1384,7 +1352,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A174 AliceBluePlugin.Data.cs op",
+  "name": "A170 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        if (socket is null || !socket.Connected) socket = await Sockets.GetAsync(session, true, cancellationToken);",
   "new": "        if (socket is null && !socket.Connected) socket = await Sockets.GetAsync(session, true, cancellationToken);",
@@ -1392,7 +1360,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A175 AliceBluePlugin.Data.cs op",
+  "name": "A171 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        if (socket is null || !socket.Connected) socket = await Sockets.GetAsync(session, true, cancellationToken);",
   "new": "        if (socket is null || !socket.Connected) socket = await Sockets.GetAsync(session, false, cancellationToken);",
@@ -1400,7 +1368,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A176 AliceBluePlugin.Data.cs op",
+  "name": "A172 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        return socket is { Connected: true } ? socket : null;",
   "new": "        return socket is { Connected: false } ? socket : null;",
@@ -1408,7 +1376,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A177 AliceBluePlugin.Data.cs num",
+  "name": "A173 AliceBluePlugin.Data.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        ?? throw new BrokerException($\"{symbol} on {exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\", 400);",
   "new": "        ?? throw new BrokerException($\"{symbol} on {exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\", 401);",
@@ -1416,7 +1384,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A178 AliceBluePlugin.Data.cs op",
+  "name": "A174 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        for (var attempt = 1; attempt <= 2; attempt++)",
   "new": "        for (var attempt = 1; attempt < 2; attempt++)",
@@ -1424,7 +1392,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A179 AliceBluePlugin.Data.cs op",
+  "name": "A175 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        for (var attempt = 1; attempt <= 2; attempt++)",
   "new": "        for (var attempt = 1; attempt <= 2; attempt += 2)",
@@ -1432,7 +1400,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A180 AliceBluePlugin.Data.cs num",
+  "name": "A176 AliceBluePlugin.Data.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        for (var attempt = 1; attempt <= 2; attempt++)",
   "new": "        for (var attempt = 1; attempt <= 3; attempt++)",
@@ -1440,7 +1408,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A181 AliceBluePlugin.Data.cs op",
+  "name": "A177 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            if (attempt < 2)",
   "new": "            if (attempt <= 2)",
@@ -1448,7 +1416,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A182 AliceBluePlugin.Data.cs num",
+  "name": "A178 AliceBluePlugin.Data.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            if (attempt < 2)",
   "new": "            if (attempt < 3)",
@@ -1456,7 +1424,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A183 AliceBluePlugin.Data.cs op",
+  "name": "A179 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "                await Sockets.GetAsync(session, true, cancellationToken);",
   "new": "                await Sockets.GetAsync(session, false, cancellationToken);",
@@ -1464,7 +1432,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A184 AliceBluePlugin.Data.cs num",
+  "name": "A180 AliceBluePlugin.Data.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        if (quote is null) throw new BrokerException($\"{Display} did not send a quote for {symbol} on {exchange}. Try again in a moment.\", 500);",
   "new": "        if (quote is null) throw new BrokerException($\"{Display} did not send a quote for {symbol} on {exchange}. Try again in a moment.\", 501);",
@@ -1472,7 +1440,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A185 AliceBluePlugin.Data.cs op",
+  "name": "A181 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        if (!socket.Subscribe([instrument], depth: false)) return null;",
   "new": "        if (!socket.Subscribe([instrument], depth: true)) return null;",
@@ -1480,7 +1448,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A186 AliceBluePlugin.Data.cs num",
+  "name": "A182 AliceBluePlugin.Data.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            await UntilAsync(() => socket.GetQuote(instrument.Exchange, instrument.Token) is not null, TimeSpan.FromSeconds(2), cancellationToken);",
   "new": "            await UntilAsync(() => socket.GetQuote(instrument.Exchange, instrument.Token) is not null, TimeSpan.FromSeconds(3), cancellationToken);",
@@ -1488,7 +1456,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A187 AliceBluePlugin.Data.cs op",
+  "name": "A183 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "    private static double Number(JsonObject quote, string name) => quote.TryGetPropertyValue(name, out var node) && node is not null ? Float(node) : 0;",
   "new": "    private static double Number(JsonObject quote, string name) => quote.TryGetPropertyValue(name, out var node) || node is not null ? Float(node) : 0;",
@@ -1496,7 +1464,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A188 AliceBluePlugin.Data.cs op",
+  "name": "A184 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        if (!socket.Subscribe([instrument], depth: true)) throw new BrokerException($\"{Display} would not take the market depth request for {symbol} on {exchange}. Try again in a moment.\", 502);",
   "new": "        if (!socket.Subscribe([instrument], depth: false)) throw new BrokerException($\"{Display} would not take the market depth request for {symbol} on {exchange}. Try again in a moment.\", 502);",
@@ -1504,7 +1472,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A189 AliceBluePlugin.Data.cs num",
+  "name": "A185 AliceBluePlugin.Data.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        if (!socket.Subscribe([instrument], depth: true)) throw new BrokerException($\"{Display} would not take the market depth request for {symbol} on {exchange}. Try again in a moment.\", 502);",
   "new": "        if (!socket.Subscribe([instrument], depth: true)) throw new BrokerException($\"{Display} would not take the market depth request for {symbol} on {exchange}. Try again in a moment.\", 503);",
@@ -1512,7 +1480,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A190 AliceBluePlugin.Data.cs num",
+  "name": "A186 AliceBluePlugin.Data.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            await UntilAsync(() => socket.GetDepth(instrument.Exchange, instrument.Token) is not null, TimeSpan.FromSeconds(2), cancellationToken);",
   "new": "            await UntilAsync(() => socket.GetDepth(instrument.Exchange, instrument.Token) is not null, TimeSpan.FromSeconds(3), cancellationToken);",
@@ -1520,7 +1488,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A191 AliceBluePlugin.Data.cs num",
+  "name": "A187 AliceBluePlugin.Data.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        if (depth is null) throw new BrokerException($\"{Display} did not send the market depth for {symbol} on {exchange}. Try again in a moment.\", 500);",
   "new": "        if (depth is null) throw new BrokerException($\"{Display} did not send the market depth for {symbol} on {exchange}. Try again in a moment.\", 501);",
@@ -1528,7 +1496,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A192 AliceBluePlugin.Data.cs op",
+  "name": "A188 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            for (var i = 0; i < 5; i++) side.Add(i < levels.Count ? new JsonObject { [\"price\"] = levels[i][\"price\"]?.DeepClone() ?? 0, [\"quantity\"] = levels[i][\"quantity\"]?.DeepClone() ?? 0 } : new JsonObject { [\"price\"] = 0, [\"quantity\"] = 0 });",
   "new": "            for (var i = 0; i < 5; i += 2) side.Add(i < levels.Count ? new JsonObject { [\"price\"] = levels[i][\"price\"]?.DeepClone() ?? 0, [\"quantity\"] = levels[i][\"quantity\"]?.DeepClone() ?? 0 } : new JsonObject { [\"price\"] = 0, [\"quantity\"] = 0 });",
@@ -1536,7 +1504,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A193 AliceBluePlugin.Data.cs num",
+  "name": "A189 AliceBluePlugin.Data.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            for (var i = 0; i < 5; i++) side.Add(i < levels.Count ? new JsonObject { [\"price\"] = levels[i][\"price\"]?.DeepClone() ?? 0, [\"quantity\"] = levels[i][\"quantity\"]?.DeepClone() ?? 0 } : new JsonObject { [\"price\"] = 0, [\"quantity\"] = 0 });",
   "new": "            for (var i = 0; i < 6; i++) side.Add(i < levels.Count ? new JsonObject { [\"price\"] = levels[i][\"price\"]?.DeepClone() ?? 0, [\"quantity\"] = levels[i][\"quantity\"]?.DeepClone() ?? 0 } : new JsonObject { [\"price\"] = 0, [\"quantity\"] = 0 });",
@@ -1544,7 +1512,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A194 AliceBluePlugin.Data.cs op",
+  "name": "A190 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        for (var start = 0; start < instruments.Count; start += QuoteBatch)",
   "new": "        for (var start = 0; start <= instruments.Count; start += QuoteBatch)",
@@ -1552,7 +1520,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A195 AliceBluePlugin.Data.cs op",
+  "name": "A191 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "        var subscribed = socket.Subscribe(wanted, depth: false);",
   "new": "        var subscribed = socket.Subscribe(wanted, depth: true);",
@@ -1560,7 +1528,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A196 AliceBluePlugin.Data.cs op",
+  "name": "A192 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            socket = await Sockets.GetAsync(session, true, cancellationToken);",
   "new": "            socket = await Sockets.GetAsync(session, false, cancellationToken);",
@@ -1568,7 +1536,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A197 AliceBluePlugin.Data.cs op",
+  "name": "A193 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            subscribed = socket is { Connected: true } && socket.Subscribe(wanted, depth: false);",
   "new": "            subscribed = socket is { Connected: true } || socket.Subscribe(wanted, depth: false);",
@@ -1576,7 +1544,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A198 AliceBluePlugin.Data.cs op",
+  "name": "A194 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            subscribed = socket is { Connected: true } && socket.Subscribe(wanted, depth: false);",
   "new": "            subscribed = socket is { Connected: false } && socket.Subscribe(wanted, depth: false);",
@@ -1584,7 +1552,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A199 AliceBluePlugin.Data.cs op",
+  "name": "A195 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            subscribed = socket is { Connected: true } && socket.Subscribe(wanted, depth: false);",
   "new": "            subscribed = socket is { Connected: true } && socket.Subscribe(wanted, depth: true);",
@@ -1592,7 +1560,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A200 AliceBluePlugin.Data.cs num",
+  "name": "A196 AliceBluePlugin.Data.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            await UntilAsync(() => names.Keys.All(Has), TimeSpan.FromSeconds(Math.Min(Math.Max(wanted.Count * 0.08, 2), 20)), cancellationToken);",
   "new": "            await UntilAsync(() => names.Keys.All(Has), TimeSpan.FromSeconds(Math.Min(Math.Max(wanted.Count * 0.08, 3), 20)), cancellationToken);",
@@ -1600,7 +1568,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A201 AliceBluePlugin.Data.cs num",
+  "name": "A197 AliceBluePlugin.Data.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            await UntilAsync(() => names.Keys.All(Has), TimeSpan.FromSeconds(Math.Min(Math.Max(wanted.Count * 0.08, 2), 20)), cancellationToken);",
   "new": "            await UntilAsync(() => names.Keys.All(Has), TimeSpan.FromSeconds(Math.Min(Math.Max(wanted.Count * 0.08, 2), 21)), cancellationToken);",
@@ -1608,7 +1576,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A202 AliceBluePlugin.Data.cs op",
+  "name": "A198 AliceBluePlugin.Data.cs op",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "            if (missing.Count > 0)",
   "new": "            if (missing.Count >= 0)",
@@ -1616,7 +1584,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A203 AliceBluePlugin.Data.cs num",
+  "name": "A199 AliceBluePlugin.Data.cs num",
   "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
   "old": "                await UntilAsync(() => missing.All(Has), TimeSpan.FromSeconds(3), cancellationToken);",
   "new": "                await UntilAsync(() => missing.All(Has), TimeSpan.FromSeconds(4), cancellationToken);",
@@ -1624,7 +1592,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A204 AliceBlueFeedCodec.cs lit",
+  "name": "A200 AliceBlueFeedCodec.cs lit",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "    public string Broker => \"aliceblue\";",
   "new": "    public string Broker => \"aliceblueX\";",
@@ -1632,7 +1600,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A205 AliceBlueFeedCodec.cs lit",
+  "name": "A201 AliceBlueFeedCodec.cs lit",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "    private static string Mapped(string exchange) => exchange switch { \"NSE_INDEX\" => \"NSE\", \"BSE_INDEX\" => \"BSE\", \"MCX_INDEX\" => \"MCX\", _ => exchange };",
   "new": "    private static string Mapped(string exchange) => exchange switch { \"NSE_INDEX\" => \"NSEX\", \"BSE_INDEX\" => \"BSE\", \"MCX_INDEX\" => \"MCX\", _ => exchange };",
@@ -1640,7 +1608,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A206 AliceBlueFeedCodec.cs lit",
+  "name": "A202 AliceBlueFeedCodec.cs lit",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "    private static string Mapped(string exchange) => exchange switch { \"NSE_INDEX\" => \"NSE\", \"BSE_INDEX\" => \"BSE\", \"MCX_INDEX\" => \"MCX\", _ => exchange };",
   "new": "    private static string Mapped(string exchange) => exchange switch { \"NSE_INDEX\" => \"NSE\", \"BSE_INDEX\" => \"BSEX\", \"MCX_INDEX\" => \"MCX\", _ => exchange };",
@@ -1648,7 +1616,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A207 AliceBlueFeedCodec.cs lit",
+  "name": "A203 AliceBlueFeedCodec.cs lit",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "    private static string Mapped(string exchange) => exchange switch { \"NSE_INDEX\" => \"NSE\", \"BSE_INDEX\" => \"BSE\", \"MCX_INDEX\" => \"MCX\", _ => exchange };",
   "new": "    private static string Mapped(string exchange) => exchange switch { \"NSE_INDEX\" => \"NSE\", \"BSE_INDEX\" => \"BSE\", \"MCX_INDEX\" => \"MCXX\", _ => exchange };",
@@ -1656,7 +1624,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A208 AliceBlueFeedCodec.cs op",
+  "name": "A204 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "                if (IsIndex(r.Exchange) && token.StartsWith(\"999\", StringComparison.Ordinal)) token = token[3..];",
   "new": "                if (IsIndex(r.Exchange) || token.StartsWith(\"999\", StringComparison.Ordinal)) token = token[3..];",
@@ -1664,7 +1632,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A209 AliceBlueFeedCodec.cs op",
+  "name": "A205 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "                else if (mode > existing.Mode)",
   "new": "                else if (mode >= existing.Mode)",
@@ -1672,7 +1640,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A210 AliceBlueFeedCodec.cs op",
+  "name": "A206 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "                queue.Add((ab, token, mode == 3 ? \"d\" : \"t\"));",
   "new": "                queue.Add((ab, token, mode != 3 ? \"d\" : \"t\"));",
@@ -1680,7 +1648,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A211 AliceBlueFeedCodec.cs num",
+  "name": "A207 AliceBlueFeedCodec.cs num",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "                queue.Add((ab, token, mode == 3 ? \"d\" : \"t\"));",
   "new": "                queue.Add((ab, token, mode == 4 ? \"d\" : \"t\"));",
@@ -1688,23 +1656,15 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A212 AliceBlueFeedCodec.cs num",
+  "name": "A208 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
-  "old": "            var modes = mode is { } one ? [(int)one] : subs.TryGetValue(key, out var held) ? held.Modes.OrderBy(m => m).ToList() : [2];",
-  "new": "            var modes = mode is { } one ? [(int)one] : subs.TryGetValue(key, out var held) ? held.Modes.OrderBy(m => m).ToList() : [3];",
+  "old": "            if (sub.Modes.Count == 0)",
+  "new": "            if (sub.Modes.Count != 0)",
   "filter": "FullyQualifiedName~AliceBlue",
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A213 AliceBlueFeedCodec.cs op",
-  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
-  "old": "                if (sub.Modes.Count == 0)",
-  "new": "                if (sub.Modes.Count != 0)",
-  "filter": "FullyQualifiedName~AliceBlue",
-  "project": "EPTradeBot.Contract.Tests"
- },
- {
-  "name": "A214 AliceBlueFeedCodec.cs op",
+  "name": "A209 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (session.Length == 0) return [];",
   "new": "            if (session.Length != 0) return [];",
@@ -1712,7 +1672,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A215 AliceBlueFeedCodec.cs op",
+  "name": "A210 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "                        if (Text(data, \"s\") == \"OK\") RepeatAll();",
   "new": "                        if (Text(data, \"s\") != \"OK\") RepeatAll();",
@@ -1720,7 +1680,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A216 AliceBlueFeedCodec.cs op",
+  "name": "A211 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            var feed = sub.Mode == 3 ? \"d\" : \"t\";",
   "new": "            var feed = sub.Mode != 3 ? \"d\" : \"t\";",
@@ -1728,7 +1688,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A217 AliceBlueFeedCodec.cs num",
+  "name": "A212 AliceBlueFeedCodec.cs num",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            var feed = sub.Mode == 3 ? \"d\" : \"t\";",
   "new": "            var feed = sub.Mode == 4 ? \"d\" : \"t\";",
@@ -1736,7 +1696,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A218 AliceBlueFeedCodec.cs op",
+  "name": "A213 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        if (node is null) return false;",
   "new": "        if (node is null) return true;",
@@ -1744,7 +1704,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A219 AliceBlueFeedCodec.cs op",
+  "name": "A214 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        if (node is JsonArray a) return a.Count > 0;",
   "new": "        if (node is JsonArray a) return a.Count >= 0;",
@@ -1752,7 +1712,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A220 AliceBlueFeedCodec.cs op",
+  "name": "A215 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        if (node is JsonObject o) return o.Count > 0;",
   "new": "        if (node is JsonObject o) return o.Count >= 0;",
@@ -1760,7 +1720,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A221 AliceBlueFeedCodec.cs op",
+  "name": "A216 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (v.TryGetValue<string>(out var text)) return text.Length > 0;",
   "new": "            if (v.TryGetValue<string>(out var text)) return text.Length >= 0;",
@@ -1768,7 +1728,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A222 AliceBlueFeedCodec.cs op",
+  "name": "A217 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (v.TryGetValue<double>(out var d)) return d != 0;",
   "new": "            if (v.TryGetValue<double>(out var d)) return d == 0;",
@@ -1776,7 +1736,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A223 AliceBlueFeedCodec.cs op",
+  "name": "A218 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (v.TryGetValue<string>(out var text) && double.TryParse(text.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
   "new": "            if (v.TryGetValue<string>(out var text) || double.TryParse(text.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
@@ -1784,7 +1744,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A224 AliceBlueFeedCodec.cs op",
+  "name": "A219 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (v.TryGetValue<string>(out var text) && double.TryParse(text.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
   "new": "            if (v.TryGetValue<string>(out var text) && double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
@@ -1792,7 +1752,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A225 AliceBlueFeedCodec.cs op",
+  "name": "A220 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "                if (double.IsNaN(d) || double.IsInfinity(d)) throw new FormatException(\"Not an integer.\");",
   "new": "                if (double.IsNaN(d) && double.IsInfinity(d)) throw new FormatException(\"Not an integer.\");",
@@ -1800,7 +1760,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A226 AliceBlueFeedCodec.cs op",
+  "name": "A221 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (v.TryGetValue<string>(out var text) && long.TryParse(text.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
   "new": "            if (v.TryGetValue<string>(out var text) || long.TryParse(text.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
@@ -1808,7 +1768,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A227 AliceBlueFeedCodec.cs op",
+  "name": "A222 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (v.TryGetValue<string>(out var text) && long.TryParse(text.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
   "new": "            if (v.TryGetValue<string>(out var text) && long.TryParse(text, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
@@ -1816,7 +1776,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A228 AliceBlueFeedCodec.cs op",
+  "name": "A223 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        if (Text(data, \"t\") == \"tk\")",
   "new": "        if (Text(data, \"t\") != \"tk\")",
@@ -1824,7 +1784,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A229 AliceBlueFeedCodec.cs op",
+  "name": "A224 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        for (var i = 1; i <= 5; i++)",
   "new": "        for (var i = 1; i < 5; i++)",
@@ -1832,7 +1792,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A230 AliceBlueFeedCodec.cs op",
+  "name": "A225 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        for (var i = 1; i <= 5; i++)",
   "new": "        for (var i = 1; i <= 5; i += 2)",
@@ -1840,7 +1800,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A231 AliceBlueFeedCodec.cs num",
+  "name": "A226 AliceBlueFeedCodec.cs num",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        for (var i = 1; i <= 5; i++)",
   "new": "        for (var i = 1; i <= 6; i++)",
@@ -1848,7 +1808,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A232 AliceBlueFeedCodec.cs op",
+  "name": "A227 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (price > 0) side.Add(new JsonObject { [\"price\"] = price, [\"quantity\"] = quantity });",
   "new": "            if (price >= 0) side.Add(new JsonObject { [\"price\"] = price, [\"quantity\"] = quantity });",
@@ -1856,7 +1816,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A233 AliceBlueFeedCodec.cs op",
+  "name": "A228 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        if (node is not JsonValue v || v.TryGetValue<string>(out _) || v.TryGetValue<bool>(out _)) return false;",
   "new": "        if (node is not JsonValue v || v.TryGetValue<string>(out _) || v.TryGetValue<bool>(out _)) return true;",
@@ -1864,7 +1824,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A234 AliceBlueFeedCodec.cs op",
+  "name": "A229 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        if (v.TryGetValue<double>(out value)) return true;",
   "new": "        if (v.TryGetValue<double>(out value)) return false;",
@@ -1872,7 +1832,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A235 AliceBlueFeedCodec.cs op",
+  "name": "A230 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        if (!v.TryGetValue<long>(out var whole)) return false;",
   "new": "        if (!v.TryGetValue<long>(out var whole)) return true;",
@@ -1880,7 +1840,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A236 AliceBlueFeedCodec.cs op",
+  "name": "A231 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (IsNumber(parsed[field], out var d) && d != 0) snapshot[field] = parsed[field]!.DeepClone();",
   "new": "            if (IsNumber(parsed[field], out var d) && d == 0) snapshot[field] = parsed[field]!.DeepClone();",
@@ -1888,7 +1848,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A237 AliceBlueFeedCodec.cs op",
+  "name": "A232 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (IsNumber(parsed[field], out var d) && d != 0) snapshot[field] = parsed[field]!.DeepClone();",
   "new": "            if (IsNumber(parsed[field], out var d) || d != 0) snapshot[field] = parsed[field]!.DeepClone();",
@@ -1896,7 +1856,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A238 AliceBlueFeedCodec.cs op",
+  "name": "A233 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (IsNumber(parsed[field], out var d) && d >= 0) snapshot[field] = parsed[field]!.DeepClone();",
   "new": "            if (IsNumber(parsed[field], out var d) || d >= 0) snapshot[field] = parsed[field]!.DeepClone();",
@@ -1904,7 +1864,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A239 AliceBlueFeedCodec.cs op",
+  "name": "A234 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (IsNumber(parsed[field], out var d) && d >= 0) snapshot[field] = parsed[field]!.DeepClone();",
   "new": "            if (IsNumber(parsed[field], out var d) && d > 0) snapshot[field] = parsed[field]!.DeepClone();",
@@ -1912,7 +1872,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A240 AliceBlueFeedCodec.cs op",
+  "name": "A235 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (parsed.ContainsKey(field) && parsed[field] is not null) snapshot[field] = parsed[field]!.DeepClone();",
   "new": "            if (parsed.ContainsKey(field) || parsed[field] is not null) snapshot[field] = parsed[field]!.DeepClone();",
@@ -1920,7 +1880,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A241 AliceBlueFeedCodec.cs op",
+  "name": "A236 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (!parsed.ContainsKey(side) || parsed[side] is not JsonArray levels) continue;",
   "new": "            if (!parsed.ContainsKey(side) && parsed[side] is not JsonArray levels) continue;",
@@ -1928,7 +1888,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A242 AliceBlueFeedCodec.cs op",
+  "name": "A237 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            var valid = new JsonArray(levels.OfType<JsonObject>().Where(l => !IsNumber(l[\"price\"], out var p) || p != 0).Select(l => (JsonNode)l.DeepClone()).ToArray());",
   "new": "            var valid = new JsonArray(levels.OfType<JsonObject>().Where(l => !IsNumber(l[\"price\"], out var p) || p == 0).Select(l => (JsonNode)l.DeepClone()).ToArray());",
@@ -1936,7 +1896,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A243 AliceBlueFeedCodec.cs op",
+  "name": "A238 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            var valid = new JsonArray(levels.OfType<JsonObject>().Where(l => !IsNumber(l[\"price\"], out var p) || p != 0).Select(l => (JsonNode)l.DeepClone()).ToArray());",
   "new": "            var valid = new JsonArray(levels.OfType<JsonObject>().Where(l => !IsNumber(l[\"price\"], out var p) && p != 0).Select(l => (JsonNode)l.DeepClone()).ToArray());",
@@ -1944,7 +1904,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A244 AliceBlueFeedCodec.cs op",
+  "name": "A239 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (valid.Count > 0) snapshot[side] = valid;",
   "new": "            if (valid.Count >= 0) snapshot[side] = valid;",
@@ -1952,7 +1912,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A245 AliceBlueFeedCodec.cs op",
+  "name": "A240 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        var hasQuote = new[] { \"open\", \"high\", \"low\", \"close\", \"volume\" }.Any(data.ContainsKey);",
   "new": "        var hasQuote = new[] { \"open\", \"high\", \"low\", \"close\", \"volume\" }.All(data.ContainsKey);",
@@ -1960,7 +1920,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A246 AliceBlueFeedCodec.cs op",
+  "name": "A241 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        if (type is \"df\" or \"dk\" && modes.Contains(3))",
   "new": "        if (type is \"df\" or \"dk\" || modes.Contains(3))",
@@ -1968,7 +1928,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A247 AliceBlueFeedCodec.cs num",
+  "name": "A242 AliceBlueFeedCodec.cs num",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        if (type is \"df\" or \"dk\" && modes.Contains(3))",
   "new": "        if (type is \"df\" or \"dk\" && modes.Contains(4))",
@@ -1976,7 +1936,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A248 AliceBlueFeedCodec.cs num",
+  "name": "A243 AliceBlueFeedCodec.cs num",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            topics.Add(3);",
   "new": "            topics.Add(4);",
@@ -1984,7 +1944,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A249 AliceBlueFeedCodec.cs op",
+  "name": "A244 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (hasLtp && modes.Contains(1)) topics.Add(1);",
   "new": "            if (hasLtp || modes.Contains(1)) topics.Add(1);",
@@ -1992,7 +1952,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A250 AliceBlueFeedCodec.cs op",
+  "name": "A245 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (hasQuote && modes.Contains(2)) topics.Add(2);",
   "new": "            if (hasQuote || modes.Contains(2)) topics.Add(2);",
@@ -2000,7 +1960,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A251 AliceBlueFeedCodec.cs op",
+  "name": "A246 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "            if (hasDepth && modes.Contains(3)) topics.Add(3);",
   "new": "            if (hasDepth || modes.Contains(3)) topics.Add(3);",
@@ -2008,7 +1968,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A252 AliceBlueFeedCodec.cs op",
+  "name": "A247 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        if (topics.Count == 0 && modes.Count > 0) topics.Add(modes.Max());",
   "new": "        if (topics.Count != 0 && modes.Count > 0) topics.Add(modes.Max());",
@@ -2016,7 +1976,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A253 AliceBlueFeedCodec.cs op",
+  "name": "A248 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        if (topics.Count == 0 && modes.Count > 0) topics.Add(modes.Max());",
   "new": "        if (topics.Count == 0 || modes.Count > 0) topics.Add(modes.Max());",
@@ -2024,7 +1984,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A254 AliceBlueFeedCodec.cs op",
+  "name": "A249 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        if (topics.Count == 0 && modes.Count > 0) topics.Add(modes.Max());",
   "new": "        if (topics.Count == 0 && modes.Count >= 0) topics.Add(modes.Max());",
@@ -2032,7 +1992,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A255 AliceBlueFeedCodec.cs num",
+  "name": "A250 AliceBlueFeedCodec.cs num",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "                2 => new JsonObject",
   "new": "                3 => new JsonObject",
@@ -2040,7 +2000,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A256 AliceBlueFeedCodec.cs op",
+  "name": "A251 AliceBlueFeedCodec.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
   "old": "        if (Text(data, \"type\") == \"market_depth\" || data.ContainsKey(\"bids\") || data.ContainsKey(\"asks\"))",
   "new": "        if (Text(data, \"type\") != \"market_depth\" || data.ContainsKey(\"bids\") || data.ContainsKey(\"asks\"))",
@@ -2048,7 +2008,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A257 AliceBlueMarketSocket.cs op",
+  "name": "A252 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (!Connected || instruments.Count == 0) return false;",
   "new": "            if (!Connected || instruments.Count != 0) return false;",
@@ -2056,7 +2016,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A258 AliceBlueMarketSocket.cs op",
+  "name": "A253 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (!Connected || instruments.Count == 0) return false;",
   "new": "            if (!Connected && instruments.Count == 0) return false;",
@@ -2064,7 +2024,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A259 AliceBlueMarketSocket.cs op",
+  "name": "A254 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (!Connected || instruments.Count == 0) return false;",
   "new": "            if (!Connected || instruments.Count == 0) return true;",
@@ -2072,7 +2032,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A260 AliceBlueMarketSocket.cs op",
+  "name": "A255 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "                references[i.Key] = references.GetValueOrDefault(i.Key) + 1;",
   "new": "                references[i.Key] = references.GetValueOrDefault(i.Key) - 1;",
@@ -2080,7 +2040,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A261 AliceBlueMarketSocket.cs op",
+  "name": "A256 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (remaining > 0)",
   "new": "            if (remaining >= 0)",
@@ -2088,7 +2048,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A262 AliceBlueMarketSocket.cs op",
+  "name": "A257 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (instruments.Count == 0) return false;",
   "new": "            if (instruments.Count != 0) return false;",
@@ -2096,7 +2056,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A263 AliceBlueMarketSocket.cs op",
+  "name": "A258 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (instruments.Count == 0) return false;",
   "new": "            if (instruments.Count == 0) return true;",
@@ -2104,7 +2064,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A264 AliceBlueMarketSocket.cs op",
+  "name": "A259 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (!Connected) return false;",
   "new": "            if (!Connected) return true;",
@@ -2112,7 +2072,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A265 AliceBlueMarketSocket.cs op",
+  "name": "A260 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (released.Count == 0) return true;",
   "new": "            if (released.Count != 0) return true;",
@@ -2120,7 +2080,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A266 AliceBlueMarketSocket.cs op",
+  "name": "A261 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (released.Count == 0) return true;",
   "new": "            if (released.Count == 0) return false;",
@@ -2128,7 +2088,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A267 AliceBlueMarketSocket.cs op",
+  "name": "A262 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "                if (Text(data, \"s\") == \"OK\")",
   "new": "                if (Text(data, \"s\") != \"OK\")",
@@ -2136,7 +2096,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A268 AliceBlueMarketSocket.cs op",
+  "name": "A263 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "                    Connected = true;",
   "new": "                    Connected = false;",
@@ -2144,7 +2104,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A269 AliceBlueMarketSocket.cs op",
+  "name": "A264 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "                else if (Text(data, \"t\") == \"cf\")",
   "new": "                else if (Text(data, \"t\") != \"cf\")",
@@ -2152,7 +2112,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A270 AliceBlueMarketSocket.cs op",
+  "name": "A265 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "                    if (Text(data, \"k\") == \"OK\") Connected = true;",
   "new": "                    if (Text(data, \"k\") != \"OK\") Connected = true;",
@@ -2160,7 +2120,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A271 AliceBlueMarketSocket.cs op",
+  "name": "A266 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "                    if (Text(data, \"k\") == \"OK\") Connected = true;",
   "new": "                    if (Text(data, \"k\") == \"OK\") Connected = false;",
@@ -2168,7 +2128,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A272 AliceBlueMarketSocket.cs op",
+  "name": "A267 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "        if (subscribed.Count == 0) return;",
   "new": "        if (subscribed.Count != 0) return;",
@@ -2176,7 +2136,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A273 AliceBlueMarketSocket.cs op",
+  "name": "A268 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "        if (node is null) return false;",
   "new": "        if (node is null) return true;",
@@ -2184,7 +2144,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A274 AliceBlueMarketSocket.cs op",
+  "name": "A269 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "        if (node is JsonArray a) return a.Count > 0;",
   "new": "        if (node is JsonArray a) return a.Count >= 0;",
@@ -2192,7 +2152,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A275 AliceBlueMarketSocket.cs op",
+  "name": "A270 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "        if (node is JsonObject o) return o.Count > 0;",
   "new": "        if (node is JsonObject o) return o.Count >= 0;",
@@ -2200,7 +2160,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A276 AliceBlueMarketSocket.cs op",
+  "name": "A271 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (v.TryGetValue<string>(out var text)) return text.Length > 0;",
   "new": "            if (v.TryGetValue<string>(out var text)) return text.Length >= 0;",
@@ -2208,7 +2168,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A277 AliceBlueMarketSocket.cs op",
+  "name": "A272 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (v.TryGetValue<double>(out var d)) return d != 0;",
   "new": "            if (v.TryGetValue<double>(out var d)) return d == 0;",
@@ -2216,7 +2176,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A278 AliceBlueMarketSocket.cs op",
+  "name": "A273 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (v.TryGetValue<string>(out var text) && double.TryParse(text.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
   "new": "            if (v.TryGetValue<string>(out var text) || double.TryParse(text.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
@@ -2224,7 +2184,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A279 AliceBlueMarketSocket.cs op",
+  "name": "A274 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (v.TryGetValue<string>(out var text) && double.TryParse(text.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
   "new": "            if (v.TryGetValue<string>(out var text) && double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
@@ -2232,7 +2192,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A280 AliceBlueMarketSocket.cs op",
+  "name": "A275 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "                if (double.IsNaN(d) || double.IsInfinity(d)) throw new FormatException(\"Not an integer.\");",
   "new": "                if (double.IsNaN(d) && double.IsInfinity(d)) throw new FormatException(\"Not an integer.\");",
@@ -2240,7 +2200,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A281 AliceBlueMarketSocket.cs op",
+  "name": "A276 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (v.TryGetValue<string>(out var text) && long.TryParse(text.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
   "new": "            if (v.TryGetValue<string>(out var text) || long.TryParse(text.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
@@ -2248,7 +2208,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A282 AliceBlueMarketSocket.cs op",
+  "name": "A277 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            if (v.TryGetValue<string>(out var text) && long.TryParse(text.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
   "new": "            if (v.TryGetValue<string>(out var text) && long.TryParse(text, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
@@ -2256,7 +2216,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A283 AliceBlueMarketSocket.cs op",
+  "name": "A278 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "        if (Text(data, \"t\") == \"tk\")",
   "new": "        if (Text(data, \"t\") != \"tk\")",
@@ -2264,7 +2224,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A284 AliceBlueMarketSocket.cs op",
+  "name": "A279 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "        if (Text(data, \"t\") == \"dk\")",
   "new": "        if (Text(data, \"t\") != \"dk\")",
@@ -2272,7 +2232,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A285 AliceBlueMarketSocket.cs op",
+  "name": "A280 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            for (var i = 1; i <= 5; i++)",
   "new": "            for (var i = 1; i < 5; i++)",
@@ -2280,7 +2240,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A286 AliceBlueMarketSocket.cs op",
+  "name": "A281 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            for (var i = 1; i <= 5; i++)",
   "new": "            for (var i = 1; i <= 5; i += 2)",
@@ -2288,7 +2248,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A287 AliceBlueMarketSocket.cs num",
+  "name": "A282 AliceBlueMarketSocket.cs num",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            for (var i = 1; i <= 5; i++)",
   "new": "            for (var i = 1; i <= 6; i++)",
@@ -2296,7 +2256,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A288 AliceBlueMarketSocket.cs op",
+  "name": "A283 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "                if (bidPrice > 0) bids.Add(new Level { Price = bidPrice, Quantity = bidQuantity, Orders = bidOrders });",
   "new": "                if (bidPrice >= 0) bids.Add(new Level { Price = bidPrice, Quantity = bidQuantity, Orders = bidOrders });",
@@ -2304,7 +2264,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A289 AliceBlueMarketSocket.cs op",
+  "name": "A284 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "                if (askPrice > 0) asks.Add(new Level { Price = askPrice, Quantity = askQuantity, Orders = askOrders });",
   "new": "                if (askPrice >= 0) asks.Add(new Level { Price = askPrice, Quantity = askQuantity, Orders = askOrders });",
@@ -2312,7 +2272,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A290 AliceBlueMarketSocket.cs op",
+  "name": "A285 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "                if (source != \"pc\") depth.Numbers[name] = whole ? I(data, source) : F(data, source);",
   "new": "                if (source == \"pc\") depth.Numbers[name] = whole ? I(data, source) : F(data, source);",
@@ -2320,7 +2280,7 @@
   "project": "EPTradeBot.Contract.Tests"
  },
  {
-  "name": "A291 AliceBlueMarketSocket.cs op",
+  "name": "A286 AliceBlueMarketSocket.cs op",
   "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
   "old": "            while (side.Count < i) side.Add(new Level());",
   "new": "            while (side.Count <= i) side.Add(new Level());",
