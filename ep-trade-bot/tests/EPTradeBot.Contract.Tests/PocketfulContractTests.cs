@@ -75,7 +75,7 @@ public sealed class PocketfulContractTests(PocketfulHost host, ITestOutputHelper
             Expect(f, 500, Error("1 position(s) could not be squared off and are still open: NOSUCH-EQ (NSE): NOSUCH-EQ on NSE is not in the Pocketful master contract. Check the symbol, or download the master contract again."));
             // The order OpenAlgo sent with no instrument is not sent.
             var sent = f["sent"]!.AsArray();
-            sent.RemoveAt(sent.Count - 1);
+            sent.Remove(sent.OfType<JsonObject>().Single(w => w["json"] is JsonObject body && body["instrument_token"] is null));
         }),
         ["placesmartorder_book_failed_is_refused"] = new("OpenAlgo answers a position it could not read with a 500; EP Trade bot answers 503 and says to try again.", f => Expect(f, 503, Error("Your open position in SBIN could not be read from pocketful, so no order was placed. Try again in a moment."))),
         ["placesmartorder_already_matched"] = new("OpenAlgo answers an already-matched smart order with a 500 whose message reads as a failure. EP Trade bot answers success and says the position already matches.", f => Expect(f, 200, new JsonObject { ["status"] = "success", ["message"] = "Positions Already Matched. No Action needed." })),

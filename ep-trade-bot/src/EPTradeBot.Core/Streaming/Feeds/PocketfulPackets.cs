@@ -12,7 +12,7 @@ public static class PocketfulPackets
 {
     public const int Detailed = 1, Compact = 2, Snapquote = 4;
 
-    private static JsonArray Five(ReadOnlySpan<byte> frame, int at, bool wide = false)
+    private static JsonArray Five(ReadOnlySpan<byte> frame, int at)
     {
         var values = new JsonArray();
         for (var i = 0; i < 5; i++) values.Add((long)BinaryPrimitives.ReadUInt32BigEndian(frame[(at + 4 * i)..]));

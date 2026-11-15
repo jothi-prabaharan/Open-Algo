@@ -93,7 +93,7 @@ def trade(num, oms, symbol, side, qty, price, exchange="NSE", product="MIS", **e
     return t
 
 
-TRADES_OK = ok({"trades": [trade("T1", "C1", "INFY-EQ", "SELL", 5, 1499.95, product="CNC"), trade("T2", "P1", "SBIN-EQ", "BUY", 10, 800.25), trade("T3", "P2", "NIFTY26NOVFUT", "BUY", 75, 24005.5, "NFO", "NRML"), trade("T4", "X9", "NOSUCH-EQ", "SELL", 2, 7.5)]})
+TRADES_OK = ok({"trades": [trade("T0", "C9", "SBIN-EQ", "SELL", 3, 801.0, fill_quantity=2, avg_price=802.5, trade_id="TID", order_id="OID", fill_timestamp="2026-11-03 10:22:00", transaction_type="sell"), trade("T1", "C1", "INFY-EQ", "SELL", 5, 1499.95, product="CNC"), trade("T2", "P1", "SBIN-EQ", "BUY", 10, 800.25), trade("T3", "P2", "NIFTY26NOVFUT", "BUY", 75, 24005.5, "NFO", "NRML"), trade("T4", "X9", "NOSUCH-EQ", "SELL", 2, 7.5)]})
 
 
 def pos(symbol, exchange, product, net, buy_avg=0.0, sell_avg=0.0, ltp=None, **extra):
@@ -110,6 +110,9 @@ POSITIONS = ok([
     pos("INFY-EQ", "NSE", "CNC", 0, 1500.0, 1500.0, 1500.0),
     pos("TATAMOTORS", "BSE", "CNC", 3, 500.0, 0.0, 510.0),
     pos("NOSUCH-EQ", "NSE", "MIS", 4, 10.0, 0.0, 11.0),
+    pos("SBIN-EQ", "NSE", "CNC", -2, 0.0, 812.5, 810.0),
+    pos("INFY-EQ", "NSE", "MIS", -1, 0.0, 0.0, 1500.0, average_price=1499.0),
+    pos("INFY-EQ", "NSE", "NRML", 1, 1490.0, 1500.0, 1500.0),
 ])
 FLAT = ok([])
 HOLDINGS = ok({"holdings": [
@@ -118,6 +121,18 @@ HOLDINGS = ok({"holdings": [
     {"trading_symbol": "NOSUCH-EQ", "exchange": "NSE", "quantity": 3, "average_price": 12.25, "ltp": 11.0},
     {"symbol": "SBIN", "quantity": "7", "buy_avg": "800.5", "current_price": "805.25", "pnl": "33.25", "pnl_percent": "0.59"},
     {"trading_symbol": "ZEROQ", "quantity": 0, "average_price": 0, "ltp": 0},
+    {"trading_symbol": "NOAVG", "exchange": "NSE", "quantity": 5, "average_price": 0, "ltp": 10},
+    {"trading_symbol": "NULLPNL", "exchange": "NSE", "quantity": 2, "average_price": 10, "ltp": 12.5, "pnl": None, "pnl_percent": None},
+    {"trading_symbol": "TEXTPNL", "exchange": "NSE", "quantity": 2, "average_price": 10, "ltp": 12.5, "pnl": "x", "pnl_percent": "y"},
+    {"trading_symbol": "ONLYPCT", "exchange": "NSE", "quantity": 3, "average_price": 10, "ltp": 11, "pnl_percentage": "2.3456"},
+    {"trading_symbol": "ODDPCT", "exchange": "NSE", "quantity": 3, "average_price": 10.123, "ltp": 11.987, "pnl_percent": 1.23456, "pnl": 3.456},
+    {"trading_symbol": "ZEROPCT", "exchange": "NSE", "quantity": 3, "average_price": 10, "ltp": 11, "pnl_percent": 0, "pnl_percentage": 4.5},
+    {"trading_symbol": "ZEROQTY", "exchange": "NSE", "quantity": 0, "average_price": 10, "ltp": 12},
+    {"trading_symbol": "NEGQTY", "exchange": "NSE", "quantity": -3, "average_price": 10, "ltp": 12},
+    {"trading_symbol": "BIGONE", "exchange": "NSE", "quantity": 7, "average_price": 333.337, "ltp": 345.678, "close_price": 340.1, "day_change": 5.5555, "day_change_percentage": 1.6666},
+    {"trading_symbol": "EMPTYID", "symbol": "", "exchange": "NSE", "quantity": 1, "average_price": 5, "ltp": 6},
+    {"instrument_details": {"trading_symbol": "NESTED-EQ"}, "exchange": "NSE", "quantity": 1, "average_price": 5, "ltp": 6},
+    {"instrument_details": {"symbol": "NESTED2"}, "exchange": "NSE", "quantity": 1, "average_price": 5, "ltp": 6},
 ]})
 FUNDS = ok({"values": [["Available Margin", "95000.75"], ["Margin Used", "5000.25"], ["Total Pledge Collateral", "2500.5"], ["unrealized_mtm", "-120.5"], ["realized_mtm", "340.25"], ["DP Collateral Benefit", "1"]]})
 

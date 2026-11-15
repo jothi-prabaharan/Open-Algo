@@ -211,6 +211,8 @@ SCENARIOS = [
                                                                       "open": 80100, "high": 80950, "low": 79900, "close": 80000, "totalBuyQty": 45000, "totalSellQty": 52000, "volume": 99}}),
     scenario("a_snapquote_packet_in_text_without_a_ladder", {"subscribe": [D]}, {"text": {"mode": 4, "instrument_token": 3045, "exchange_code": 1, "averageTradePrice": 80410}}),
     scenario("a_snapquote_packet_in_text_as_the_first_of_a_list", {"subscribe": [D]}, {"text": {"mode": 4, "data": [1]}}),
+    scenario("a_snapquote_packet_in_text_with_seven_levels_keeps_five", {"subscribe": [D]}, {"text": {"mode": 4, "instrument_token": 3045, "exchange_code": 1, "bidPrices": [1, 2, 3, 4, 5, 6, 7], "bidQtys": [1, 2, 3, 4, 5, 6, 7], "buyers": [1, 2, 3, 4, 5, 6, 7], "askPrices": [1, 2, 3, 4, 5, 6, 7], "askQtys": [1, 2, 3, 4, 5, 6, 7], "sellers": [1, 2, 3, 4, 5, 6, 7]}}),
+    scenario("a_snapquote_packet_in_text_with_fewer_quantities_than_prices", {"subscribe": [D]}, {"text": {"mode": 4, "instrument_token": 3045, "exchange_code": 1, "bidPrices": [100, 200, 300], "bidQtys": [1], "buyers": [], "askPrices": [100], "askQtys": [], "sellers": [5]}}),
     scenario("a_detailed_packet_in_text_is_dropped", {"subscribe": [S]}, {"text": {"mode": 1, "instrument_token": 3045, "exchange_code": 1, "last_traded_price": 80545}}),
     scenario("a_text_frame_without_a_mode_is_dropped", {"subscribe": [S]}, {"text": {"instrument_token": 3045, "exchange_code": 1}}),
     scenario("a_text_frame_that_is_not_json", {"subscribe": [S]}, {"text": "hello"}),

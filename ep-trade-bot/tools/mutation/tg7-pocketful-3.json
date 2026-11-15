@@ -1,0 +1,170 @@
+[
+ {
+  "name": "M76 PocketfulPlugin.Books.cs:154",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                [\"trade_id\"] = Pick(\"trade_id\", \"trade_number\") ?? \"\", [\"orderid\"] = Pick(\"order_id\", \"oms_order_id\") ?? \"\", [\"timestamp\"] = Pick(\"fill_timestamp\", \"trade_time\") ?? \"\", [\"trade_value\"] = quantity > 0 && price > 0 ? quantity * price : 0.0,",
+  "new": "                [\"trade_id\"] = Pick(\"trade_id\", \"trade_number\") ?? \"\", [\"orderid\"] = Pick(\"order_id\", \"oms_order_id\") ?? \"\", [\"timestamp\"] = Pick(\"fill_timestamp\", \"trade_time\") ?? \"\", [\"trade_value\"] = quantity >= 0 && price > 0 ? quantity * price : 0.0,",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M77 PocketfulPlugin.Books.cs:154",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                [\"trade_id\"] = Pick(\"trade_id\", \"trade_number\") ?? \"\", [\"orderid\"] = Pick(\"order_id\", \"oms_order_id\") ?? \"\", [\"timestamp\"] = Pick(\"fill_timestamp\", \"trade_time\") ?? \"\", [\"trade_value\"] = quantity > 0 && price > 0 ? quantity * price : 0.0,",
+  "new": "                [\"trade_id\"] = Pick(\"trade_id\", \"trade_number\") ?? \"\", [\"orderid\"] = Pick(\"order_id\", \"oms_order_id\") ?? \"\", [\"timestamp\"] = Pick(\"fill_timestamp\", \"trade_time\") ?? \"\", [\"trade_value\"] = quantity > 0 || price > 0 ? quantity * price : 0.0,",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M84 PocketfulPlugin.Books.cs:177",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                : position.ContainsKey(\"average_sell_price\") && Float(position[\"average_sell_price\"]) > 0 ? Float(position[\"average_sell_price\"])",
+  "new": "                : position.ContainsKey(\"average_sell_price\") && Float(position[\"average_sell_price\"]) >= 0 ? Float(position[\"average_sell_price\"])",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M85 PocketfulPlugin.Books.cs:177",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                : position.ContainsKey(\"average_sell_price\") && Float(position[\"average_sell_price\"]) > 0 ? Float(position[\"average_sell_price\"])",
+  "new": "                : position.ContainsKey(\"average_sell_price\") || Float(position[\"average_sell_price\"]) > 0 ? Float(position[\"average_sell_price\"])",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M95 PocketfulPlugin.Books.cs:235",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                if (holding.ContainsKey(field) && Truthy(holding[field])) { name = Str(holding[field]); break; }",
+  "new": "                if (holding.ContainsKey(field) || Truthy(holding[field])) { name = Str(holding[field]); break; }",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M97 PocketfulPlugin.Books.cs:243",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                if (await OaSymbolAsync(name, exchange, cancellationToken) is { } oa && Str(oa) is { Length: > 0 } mapped) name = mapped;",
+  "new": "                if (await OaSymbolAsync(name, exchange, cancellationToken) is { } oa && Str(oa) is { Length: >= 0 } mapped) name = mapped;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M100 PocketfulPlugin.Books.cs:251",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            var computed = quantity > 0 && average > 0 ? (last - average) * quantity : 0.0;",
+  "new": "            var computed = quantity >= 0 && average > 0 ? (last - average) * quantity : 0.0;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M101 PocketfulPlugin.Books.cs:251",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            var computed = quantity > 0 && average > 0 ? (last - average) * quantity : 0.0;",
+  "new": "            var computed = quantity > 0 || average > 0 ? (last - average) * quantity : 0.0;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M102 PocketfulPlugin.Books.cs:252",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            var pnl = holding.ContainsKey(\"pnl\") && holding[\"pnl\"] is not null ? Parsed(holding[\"pnl\"]) ?? computed : computed;",
+  "new": "            var pnl = holding.ContainsKey(\"pnl\") || holding[\"pnl\"] is not null ? Parsed(holding[\"pnl\"]) ?? computed : computed;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M105 PocketfulPlugin.Books.cs:255",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            if (holding.ContainsKey(\"pnl_percent\") || holding.ContainsKey(\"pnl_percentage\"))",
+  "new": "            if (holding.ContainsKey(\"pnl_percent\") && holding.ContainsKey(\"pnl_percentage\"))",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M106 PocketfulPlugin.Books.cs:264",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                [\"symbol\"] = name, [\"exchange\"] = exchange, [\"quantity\"] = quantity, [\"average_price\"] = BookFormatting.RoundPy(average, 2), [\"last_price\"] = BookFormatting.RoundPy(last, 2), [\"product\"] = \"CNC\", [\"pnl\"] = BookFormatting.RoundPy(pnl, 2),",
+  "new": "                [\"symbol\"] = name, [\"exchange\"] = exchange, [\"quantity\"] = quantity, [\"average_price\"] = BookFormatting.RoundPy(average, 3), [\"last_price\"] = BookFormatting.RoundPy(last, 2), [\"product\"] = \"CNC\", [\"pnl\"] = BookFormatting.RoundPy(pnl, 2),",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M107 PocketfulPlugin.Books.cs:264",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                [\"symbol\"] = name, [\"exchange\"] = exchange, [\"quantity\"] = quantity, [\"average_price\"] = BookFormatting.RoundPy(average, 2), [\"last_price\"] = BookFormatting.RoundPy(last, 2), [\"product\"] = \"CNC\", [\"pnl\"] = BookFormatting.RoundPy(pnl, 2),",
+  "new": "                [\"symbol\"] = name, [\"exchange\"] = exchange, [\"quantity\"] = quantity, [\"average_price\"] = BookFormatting.RoundPy(average, 2), [\"last_price\"] = BookFormatting.RoundPy(last, 3), [\"product\"] = \"CNC\", [\"pnl\"] = BookFormatting.RoundPy(pnl, 2),",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M108 PocketfulPlugin.Books.cs:264",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                [\"symbol\"] = name, [\"exchange\"] = exchange, [\"quantity\"] = quantity, [\"average_price\"] = BookFormatting.RoundPy(average, 2), [\"last_price\"] = BookFormatting.RoundPy(last, 2), [\"product\"] = \"CNC\", [\"pnl\"] = BookFormatting.RoundPy(pnl, 2),",
+  "new": "                [\"symbol\"] = name, [\"exchange\"] = exchange, [\"quantity\"] = quantity, [\"average_price\"] = BookFormatting.RoundPy(average, 2), [\"last_price\"] = BookFormatting.RoundPy(last, 2), [\"product\"] = \"CNC\", [\"pnl\"] = BookFormatting.RoundPy(pnl, 3),",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M109 PocketfulPlugin.Books.cs:265",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                [\"pnlpercent\"] = BookFormatting.RoundPy(percent, 2), [\"close_price\"] = Float(Truthy(holding[\"close_price\"]) ? holding[\"close_price\"] : holding[\"previous_close\"]), [\"isin\"] = Raw(holding, \"isin\", \"\"), [\"day_change\"] = Float(holding[\"day_change\"]),",
+  "new": "                [\"pnlpercent\"] = BookFormatting.RoundPy(percent, 3), [\"close_price\"] = Float(Truthy(holding[\"close_price\"]) ? holding[\"close_price\"] : holding[\"previous_close\"]), [\"isin\"] = Raw(holding, \"isin\", \"\"), [\"day_change\"] = Float(holding[\"day_change\"]),",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M111 PocketfulPlugin.Books.cs:285",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "new": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested >= 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M112 PocketfulPlugin.Books.cs:285",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "new": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 3), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M113 PocketfulPlugin.Books.cs:285",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "new": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 3), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M114 PocketfulPlugin.Books.cs:285",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "new": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 3), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M116 PocketfulPlugin.Books.cs:285",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "new": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 3) };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M234 PocketfulFeedCodec.cs:158",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "        for (var i = 0; i < Math.Min(5, p.Count); i++)",
+  "new": "        for (var i = 0; i < Math.Min(6, p.Count); i++)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M235 PocketfulFeedCodec.cs:159",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "            rows.Add(new JsonObject { [\"price\"] = Number(p[i]) / 100, [\"quantity\"] = i < q.Count ? q[i]?.DeepClone() : 0, [\"orders\"] = i < o.Count ? o[i]?.DeepClone() : 0 });",
+  "new": "            rows.Add(new JsonObject { [\"price\"] = Number(p[i]) / 100, [\"quantity\"] = i <= q.Count ? q[i]?.DeepClone() : 0, [\"orders\"] = i < o.Count ? o[i]?.DeepClone() : 0 });",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]
