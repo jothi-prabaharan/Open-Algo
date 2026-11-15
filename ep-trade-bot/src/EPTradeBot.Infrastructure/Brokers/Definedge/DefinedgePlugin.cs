@@ -50,7 +50,7 @@ public sealed partial class DefinedgePlugin(IHttpClientFactory http, BrokerSessi
     }
 
     /// <summary>One call, paced, a 429 retried up to three times; the status and the body as read (null when it was not JSON).</summary>
-    private Task<(int Status, JsonNode? Body)> SendAsync(BrokerSession session, HttpMethod method, string path, JsonObject? body, bool order, CancellationToken cancellationToken) =>
+    private Task<(int Status, JsonNode? Body)> SendAsync(BrokerSession session, HttpMethod method, string path, JsonObject? body, CancellationToken cancellationToken) =>
         SendUrlAsync(session, method, sessions.BaseUrl(Name, DefaultBaseUrl) + path, body, cancellationToken);
 
     /// <summary>The same call to a full address (the data host's history is on another host).</summary>
@@ -175,7 +175,7 @@ public sealed partial class DefinedgePlugin(IHttpClientFactory http, BrokerSessi
         (int Status, JsonNode? Body) reply;
         try
         {
-            reply = await SendAsync(session, HttpMethod.Post, "/placeorder", body, order: true, cancellationToken);
+            reply = await SendAsync(session, HttpMethod.Post, "/placeorder", body, cancellationToken);
         }
         catch (BrokerException ex) when (ex.HttpStatus == 502)
         {
@@ -207,7 +207,7 @@ public sealed partial class DefinedgePlugin(IHttpClientFactory http, BrokerSessi
         if (change.DisclosedQuantity != 0) body["disclosed_quantity"] = change.DisclosedQuantity.ToString(CultureInfo.InvariantCulture);
         body["validity"] = "DAY";
 
-        var reply = await SendAsync(session, HttpMethod.Post, "/modify", body, order: true, cancellationToken);
+        var reply = await SendAsync(session, HttpMethod.Post, "/modify", body, cancellationToken);
         if (Succeeded(reply.Body))
         {
             var d = (JsonObject)reply.Body!;
@@ -219,7 +219,7 @@ public sealed partial class DefinedgePlugin(IHttpClientFactory http, BrokerSessi
 
     public async Task<BrokerCallResult> CancelAsync(BrokerSession session, string orderId, CancellationToken cancellationToken)
     {
-        var reply = await SendAsync(session, HttpMethod.Get, $"/cancel/{orderId}", null, order: true, cancellationToken);
+        var reply = await SendAsync(session, HttpMethod.Get, $"/cancel/{orderId}", null, cancellationToken);
         if (reply.Body is JsonObject d && Str(d["status"]) == "SUCCESS") return BrokerCallResult.Success(Truthy(d["order_id"]) ? Str(d["order_id"])! : orderId);
         return BrokerCallResult.Refused(reply.Status is >= 400 ? reply.Status : 400, reply.Body is JsonObject m && Truthy(m["message"]) ? Str(m["message"])! : "Failed to cancel order");
     }
@@ -228,7 +228,7 @@ public sealed partial class DefinedgePlugin(IHttpClientFactory http, BrokerSessi
 
     private async Task<List<JsonObject>> ReadBookAsync(BrokerSession session, string path, string listKey, string what, CancellationToken cancellationToken)
     {
-        var (_, body) = await SendAsync(session, HttpMethod.Get, path, null, order: false, cancellationToken);
+        var (_, body) = await SendAsync(session, HttpMethod.Get, path, null, cancellationToken);
         if (body is not JsonObject o || !Succeeded(o)) throw new BrokerException($"{Display} could not send the {what}: {Reason(body, "no reason was given.")}", 500);
         return (o[listKey] as JsonArray)?.OfType<JsonObject>().ToList() ?? [];
     }
@@ -344,7 +344,7 @@ public sealed partial class DefinedgePlugin(IHttpClientFactory http, BrokerSessi
 
     public async Task<JsonObject> GetFundsAsync(BrokerSession session, CancellationToken cancellationToken)
     {
-        var (_, body) = await SendAsync(session, HttpMethod.Get, "/limits", null, order: false, cancellationToken);
+        var (_, body) = await SendAsync(session, HttpMethod.Get, "/limits", null, cancellationToken);
         if (body is not JsonObject d || !(Str(d["status"]) is "SUCCESS" or "200" || d.ContainsKey("cash"))) throw new BrokerException($"{Display} could not send the funds: {Reason(body, "no reason was given.")}", 500);
         var unrealized = Float(d["currentUnrealizedMtom"]);
         if (unrealized == 0)

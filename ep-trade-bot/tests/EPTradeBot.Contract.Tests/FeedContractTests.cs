@@ -1416,5 +1416,16 @@ public sealed class DefinedgeFeedEndpointTests
     }
 
     [Fact]
+    public void The_codec_names_its_broker() => Assert.Equal("definedge", new DefinedgeFeedCodec().Broker);
+
+    [Fact]
+    public void A_session_that_is_only_a_key_has_no_token_to_sign_in_with()
+    {
+        var codec = new DefinedgeFeedCodec();
+        codec.Begin(Session("key"));
+        Assert.Empty(codec.Resubscribe(0));
+    }
+
+    [Fact]
     public void The_codec_is_a_new_one_for_each_connection() => Assert.NotSame(Plugin().CreateFeedCodec(), Plugin().CreateFeedCodec());
 }

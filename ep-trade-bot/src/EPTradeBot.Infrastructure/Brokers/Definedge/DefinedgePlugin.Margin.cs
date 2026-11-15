@@ -37,7 +37,7 @@ public sealed partial class DefinedgePlugin
     public async Task<JsonObject> CalculateMarginAsync(BrokerSession session, IReadOnlyList<MarginLeg> legs, CancellationToken cancellationToken)
     {
         var body = new JsonObject { ["positions"] = new JsonArray(legs.Select(l => (JsonNode?)Leg(l)).ToArray()) };
-        var (_, answer) = await SendAsync(session, HttpMethod.Post, "/spancalculator", body, order: false, cancellationToken);
+        var (_, answer) = await SendAsync(session, HttpMethod.Post, "/spancalculator", body, cancellationToken);
         if (answer is not JsonObject reply) throw new BrokerException($"{Display} sent a margin answer EP Trade bot could not read. Try again in a moment.", 500);
         var status = Str(reply["status"]);
         if (status != "SUCCESS") throw new BrokerException(Truthy(reply["message"]) ? Str(reply["message"])! : status is "FAILURE" or "ERROR" ? "Failed to calculate margin" : "Unknown error from broker", 400);

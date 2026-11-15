@@ -166,3 +166,129 @@ public sealed class DefinedgeContractTests(DefinedgeHost host, ITestOutputHelper
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+/// <summary>What the recorded cases cannot show: a call that leaves and gets no answer, a reply that is not an answer, and when a trigger price goes with an order.</summary>
+public sealed class DefinedgePluginUnitTests
+{
+    private sealed class Options(EPTradeBot.Core.Configuration.BrokerOptions value) : Microsoft.Extensions.Options.IOptionsMonitor<EPTradeBot.Core.Configuration.BrokerOptions>
+    {
+        public EPTradeBot.Core.Configuration.BrokerOptions CurrentValue => value;
+
+        public EPTradeBot.Core.Configuration.BrokerOptions Get(string? name) => value;
+
+        public IDisposable? OnChange(Action<EPTradeBot.Core.Configuration.BrokerOptions, string?> listener) => null;
+    }
+
+    private sealed class Master : EPTradeBot.Core.Brokers.ISymbolMaster
+    {
+        public Task<EPTradeBot.Core.Brokers.SymbolRecord?> FindAsync(string broker, string symbol, string exchange, CancellationToken cancellationToken) =>
+            Task.FromResult<EPTradeBot.Core.Brokers.SymbolRecord?>(new(symbol, symbol, exchange, exchange, "1", null, null, null, 1, "EQ", 0.05));
+
+        public Task<EPTradeBot.Core.Brokers.SymbolRecord?> FindByBrokerSymbolAsync(string broker, string brokerSymbol, string exchange, CancellationToken cancellationToken) => Task.FromResult<EPTradeBot.Core.Brokers.SymbolRecord?>(null);
+
+        public Task<EPTradeBot.Core.Brokers.SymbolRecord?> FindByTokenAsync(string broker, string token, string exchange, CancellationToken cancellationToken) => Task.FromResult<EPTradeBot.Core.Brokers.SymbolRecord?>(null);
+    }
+
+    private sealed class Capture(Func<HttpRequestMessage, HttpResponseMessage> answer) : IHttpClientFactory
+    {
+        public List<string> Bodies { get; } = [];
+
+        public HttpClient CreateClient(string name) => new(new Handler(this, answer));
+
+        private sealed class Handler(Capture owner, Func<HttpRequestMessage, HttpResponseMessage> answer) : HttpMessageHandler
+        {
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                owner.Bodies.Add(request.Content is null ? "" : await request.Content.ReadAsStringAsync(cancellationToken));
+                return answer(request);
+            }
+        }
+    }
+
+    private static EPTradeBot.Infrastructure.Brokers.Definedge.DefinedgePlugin Plugin(IHttpClientFactory http)
+    {
+        var options = new EPTradeBot.Core.Configuration.BrokerOptions();
+        options.HistoryGapMs["definedge"] = 0;
+        options.RetryBackoffMs["definedge"] = 0;
+        return new(http, new EPTradeBot.Infrastructure.Brokers.BrokerSessionFactory(null!, new Options(options)), new Master(), TimeProvider.System);
+    }
+
+    private static readonly EPTradeBot.Core.Brokers.BrokerSession Session = new(Guid.NewGuid(), "definedge", "key:::user:::api", null, "U1", new Dictionary<string, string>());
+
+    private static HttpResponseMessage Json(string body, System.Net.HttpStatusCode status = System.Net.HttpStatusCode.OK) => new(status) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") };
+
+    private static EPTradeBot.Core.Brokers.BrokerOrder Order(string type, decimal trigger) => new("SBIN", "NSE", "BUY", 1, type, "MIS", 800m, trigger, 0, "s");
+
+    private static EPTradeBot.Core.Brokers.BrokerOrderChange Change(string type, decimal trigger) => new("O1", "SBIN", "NSE", "BUY", 1, type, "MIS", 800m, trigger, 0);
+
+    [Fact]
+    public async Task A_call_that_cannot_reach_the_broker_may_have_been_sent()
+    {
+        var plugin = Plugin(new Capture(_ => throw new HttpRequestException("down")));
+        var result = await plugin.PlaceAsync(Session, Order("MARKET", 0), CancellationToken.None);
+        Assert.False(result.Ok);
+        Assert.Equal(502, result.HttpStatus);
+        Assert.True(result.MayHaveBeenSent);
+        Assert.Contains("may have been placed", result.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task A_reply_that_is_not_json_may_have_been_sent()
+    {
+        var result = await Plugin(new Capture(_ => Json("<html>busy</html>"))).PlaceAsync(Session, Order("MARKET", 0), CancellationToken.None);
+        Assert.False(result.Ok);
+        Assert.Equal(502, result.HttpStatus);
+        Assert.True(result.MayHaveBeenSent);
+        Assert.Contains("could not confirm the order", result.Message, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("""{"status":"SUCCESS","order_id":""}""")]
+    [InlineData("""{"status":"SUCCESS"}""")]
+    [InlineData("""{"stat":"Ok","norenordno":""}""")]
+    public async Task An_accepted_order_with_no_number_may_have_been_sent(string reply)
+    {
+        var result = await Plugin(new Capture(_ => Json(reply))).PlaceAsync(Session, Order("MARKET", 0), CancellationToken.None);
+        Assert.False(result.Ok);
+        Assert.Equal(502, result.HttpStatus);
+        Assert.True(result.MayHaveBeenSent);
+        Assert.Contains("no order number", result.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task An_accepted_order_gives_its_number()
+    {
+        var result = await Plugin(new Capture(_ => Json("""{"status":"SUCCESS","order_id":"123"}"""))).PlaceAsync(Session, Order("MARKET", 0), CancellationToken.None);
+        Assert.True(result.Ok);
+        Assert.Equal("123", result.OrderId);
+    }
+
+    [Theory]
+    [InlineData("SL", 5, true)]
+    [InlineData("SL-M", 5, true)]
+    [InlineData("SL", 0, false)]
+    [InlineData("LIMIT", 5, false)]
+    [InlineData("MARKET", 5, false)]
+    public async Task A_trigger_price_goes_with_a_stop_order_that_has_one(string type, decimal trigger, bool sent)
+    {
+        var http = new Capture(_ => Json("""{"status":"SUCCESS","order_id":"1"}"""));
+        await Plugin(http).PlaceAsync(Session, Order(type, trigger), CancellationToken.None);
+        Assert.Equal(sent, System.Text.Json.Nodes.JsonNode.Parse(http.Bodies.Single())!.AsObject().ContainsKey("trigger_price"));
+        var changed = new Capture(_ => Json("""{"status":"SUCCESS","order_id":"1"}"""));
+        await Plugin(changed).ModifyAsync(Session, Change(type, trigger), CancellationToken.None);
+        Assert.Equal(sent, System.Text.Json.Nodes.JsonNode.Parse(changed.Bodies.Single())!.AsObject().ContainsKey("trigger_price"));
+    }
+
+    [Theory]
+    [InlineData(200, 400)]
+    [InlineData(401, 401)]
+    [InlineData(500, 500)]
+    public async Task A_refusal_carries_the_status_the_broker_gave_or_a_400(int status, int expected)
+    {
+        var result = await Plugin(new Capture(_ => Json("""{"status":"ERROR","message":"no"}""", (System.Net.HttpStatusCode)status))).PlaceAsync(Session, Order("MARKET", 0), CancellationToken.None);
+        Assert.False(result.Ok);
+        Assert.Equal(expected, result.HttpStatus);
+        Assert.False(result.MayHaveBeenSent);
+        Assert.Equal("no", result.Message);
+    }
+}
