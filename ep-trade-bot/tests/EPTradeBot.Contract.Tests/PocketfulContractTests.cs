@@ -87,3 +87,71 @@ public sealed class PocketfulContractTests(PocketfulHost host, ITestOutputHelper
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class MarginPocketfulHost() : PocketfulFileHost("margin_pocketful.fixtures.json");
+
+/// <summary>Pocketful has no margin calculator (tools/contract-fixtures/margin_pocketful.fixtures.json).</summary>
+public sealed class MarginPocketfulContractTests(MarginPocketfulHost host, ITestOutputHelper output) : IClassFixture<MarginPocketfulHost>
+{
+    private static Deviation NoMargin => new("Pocketful has no margin calculator; OpenAlgo answers 501 in its own words. EP Trade bot answers 501 in the platform's.", f => Expect(f, 501, Error("pocketful does not support margin calculation in EP Trade bot yet.")));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["margin_one_future"] = NoMargin, ["margin_several_legs"] = NoMargin, ["margin_unknown_symbol"] = NoMargin,
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin_pocketful.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class HistoryPocketfulHost() : PocketfulFileHost("history_pocketful.fixtures.json");
+
+/// <summary>Pocketful has no history (tools/contract-fixtures/history_pocketful.fixtures.json).</summary>
+public sealed class HistoryPocketfulContractTests(HistoryPocketfulHost host, ITestOutputHelper output) : IClassFixture<HistoryPocketfulHost>
+{
+    private static Deviation NoHistory => new("Pocketful has no history; OpenAlgo answers one row that says so as if it were a candle. EP Trade bot answers that history is not available.", f => Expect(f, 501, Error("pocketful does not support historical candles in EP Trade bot yet.")));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_one_minute"] = NoHistory, ["history_daily"] = NoHistory, ["history_unknown_symbol"] = NoHistory,
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_pocketful.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class LoginPocketfulHost() : PocketfulFileHost("login_pocketful.fixtures.json");
+
+/// <summary>Pocketful sign-in (tools/contract-fixtures/login_pocketful.fixtures.json).</summary>
+public sealed class LoginPocketfulContractTests(LoginPocketfulHost host, ITestOutputHelper output) : IClassFixture<LoginPocketfulHost>
+{
+    private const string NoClient = "Pocketful signed you in but would not say which client you are";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_with_a_message"] = LoginDeviations.Refused("Pocketful did not accept the sign-in: Invalid authorization code"),
+        ["login_refused_without_a_message"] = LoginDeviations.Refused("Pocketful did not accept the sign-in. Start it again from the beginning."),
+        ["login_refused_with_an_answer_that_is_not_json"] = LoginDeviations.Refused("Pocketful did not accept the sign-in. Start it again from the beginning."),
+        ["login_refused_with_a_server_error"] = LoginDeviations.Refused("Pocketful did not accept the sign-in: boom"),
+        ["login_no_access_token_in_the_answer"] = LoginDeviations.Refused("Pocketful accepted the sign-in but sent no access token. Start the sign-in again.", 502),
+        ["login_empty_access_token"] = LoginDeviations.Refused("Pocketful accepted the sign-in but sent no access token. Start the sign-in again.", 502),
+        ["login_the_client_id_is_refused"] = LoginDeviations.Refused(NoClient + " (Session expired). Start the sign-in again.", 502),
+        ["login_the_client_id_is_refused_without_a_message"] = LoginDeviations.Refused(NoClient + " (no reason was given). Start the sign-in again.", 502),
+        ["login_the_client_id_is_missing"] = LoginDeviations.Refused("Pocketful signed you in but sent no client id. Start the sign-in again.", 502),
+        ["login_the_client_id_answer_has_no_data"] = LoginDeviations.Refused("Pocketful signed you in but sent no client id. Start the sign-in again.", 502),
+        ["login_the_client_id_read_fails_with_http_401"] = LoginDeviations.Refused(NoClient + " (Unauthorized). Start the sign-in again.", 502),
+        ["login_the_client_id_read_fails_with_http_500"] = LoginDeviations.Refused(NoClient + " (no reason was given). Start the sign-in again.", 502),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_pocketful.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

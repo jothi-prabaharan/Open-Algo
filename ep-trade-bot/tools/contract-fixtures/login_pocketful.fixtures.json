@@ -1,0 +1,714 @@
+{
+  "broker": "pocketful",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oauth2/token": {
+          "body": {
+            "access_token": "pf-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        },
+        "GET /api/v1/user/trading_info": {
+          "body": {
+            "status": "success",
+            "data": {
+              "client_id": "PF100"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "pf-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "trade.pocketful.in",
+          "path": "/oauth2/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Basic cGYtY2xpZW50LWtleTpwZi1jbGllbnQtc2VjcmV0",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "grant_type": "authorization_code",
+            "code": "auth-code-abc",
+            "redirect_uri": "http://127.0.0.1:5000/pocketful/callback"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "trade.pocketful.in",
+          "path": "/api/v1/user/trading_info",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer pf-access-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oauth2/token": {
+          "status": 400,
+          "body": {
+            "message": "Invalid authorization code"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Invalid authorization code"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "trade.pocketful.in",
+          "path": "/oauth2/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Basic cGYtY2xpZW50LWtleTpwZi1jbGllbnQtc2VjcmV0",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "grant_type": "authorization_code",
+            "code": "auth-code-abc",
+            "redirect_uri": "http://127.0.0.1:5000/pocketful/callback"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oauth2/token": {
+          "status": 400,
+          "body": {
+            "error": "invalid_grant"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Authentication failed. Please check your authorization code."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "trade.pocketful.in",
+          "path": "/oauth2/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Basic cGYtY2xpZW50LWtleTpwZi1jbGllbnQtc2VjcmV0",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "grant_type": "authorization_code",
+            "code": "auth-code-abc",
+            "redirect_uri": "http://127.0.0.1:5000/pocketful/callback"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_an_answer_that_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oauth2/token": {
+          "status": 502,
+          "body": "Bad gateway"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: Authentication failed with status code: 502"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "trade.pocketful.in",
+          "path": "/oauth2/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Basic cGYtY2xpZW50LWtleTpwZi1jbGllbnQtc2VjcmV0",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "grant_type": "authorization_code",
+            "code": "auth-code-abc",
+            "redirect_uri": "http://127.0.0.1:5000/pocketful/callback"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_server_error",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oauth2/token": {
+          "status": 500,
+          "body": {
+            "message": "boom"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "API error: boom"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "trade.pocketful.in",
+          "path": "/oauth2/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Basic cGYtY2xpZW50LWtleTpwZi1jbGllbnQtc2VjcmV0",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "grant_type": "authorization_code",
+            "code": "auth-code-abc",
+            "redirect_uri": "http://127.0.0.1:5000/pocketful/callback"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_no_access_token_in_the_answer",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oauth2/token": {
+          "body": {
+            "token_type": "bearer"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Access token not found in response"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "trade.pocketful.in",
+          "path": "/oauth2/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Basic cGYtY2xpZW50LWtleTpwZi1jbGllbnQtc2VjcmV0",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "grant_type": "authorization_code",
+            "code": "auth-code-abc",
+            "redirect_uri": "http://127.0.0.1:5000/pocketful/callback"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_empty_access_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oauth2/token": {
+          "body": {
+            "access_token": ""
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Access token not found in response"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "trade.pocketful.in",
+          "path": "/oauth2/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Basic cGYtY2xpZW50LWtleTpwZi1jbGllbnQtc2VjcmV0",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "grant_type": "authorization_code",
+            "code": "auth-code-abc",
+            "redirect_uri": "http://127.0.0.1:5000/pocketful/callback"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_client_id_is_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oauth2/token": {
+          "body": {
+            "access_token": "pf-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        },
+        "GET /api/v1/user/trading_info": {
+          "body": {
+            "status": "error",
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Failed to fetch client ID: Session expired"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "trade.pocketful.in",
+          "path": "/oauth2/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Basic cGYtY2xpZW50LWtleTpwZi1jbGllbnQtc2VjcmV0",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "grant_type": "authorization_code",
+            "code": "auth-code-abc",
+            "redirect_uri": "http://127.0.0.1:5000/pocketful/callback"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "trade.pocketful.in",
+          "path": "/api/v1/user/trading_info",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer pf-access-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_client_id_is_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oauth2/token": {
+          "body": {
+            "access_token": "pf-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        },
+        "GET /api/v1/user/trading_info": {
+          "body": {
+            "status": "error"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Failed to fetch client ID: Unknown error"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "trade.pocketful.in",
+          "path": "/oauth2/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Basic cGYtY2xpZW50LWtleTpwZi1jbGllbnQtc2VjcmV0",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "grant_type": "authorization_code",
+            "code": "auth-code-abc",
+            "redirect_uri": "http://127.0.0.1:5000/pocketful/callback"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "trade.pocketful.in",
+          "path": "/api/v1/user/trading_info",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer pf-access-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_client_id_is_missing",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oauth2/token": {
+          "body": {
+            "access_token": "pf-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        },
+        "GET /api/v1/user/trading_info": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Client ID not found in response"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "trade.pocketful.in",
+          "path": "/oauth2/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Basic cGYtY2xpZW50LWtleTpwZi1jbGllbnQtc2VjcmV0",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "grant_type": "authorization_code",
+            "code": "auth-code-abc",
+            "redirect_uri": "http://127.0.0.1:5000/pocketful/callback"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "trade.pocketful.in",
+          "path": "/api/v1/user/trading_info",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer pf-access-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_client_id_answer_has_no_data",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oauth2/token": {
+          "body": {
+            "access_token": "pf-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        },
+        "GET /api/v1/user/trading_info": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Client ID not found in response"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "trade.pocketful.in",
+          "path": "/oauth2/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Basic cGYtY2xpZW50LWtleTpwZi1jbGllbnQtc2VjcmV0",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "grant_type": "authorization_code",
+            "code": "auth-code-abc",
+            "redirect_uri": "http://127.0.0.1:5000/pocketful/callback"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "trade.pocketful.in",
+          "path": "/api/v1/user/trading_info",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer pf-access-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_client_id_read_fails_with_http_401",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oauth2/token": {
+          "body": {
+            "access_token": "pf-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        },
+        "GET /api/v1/user/trading_info": {
+          "status": 401,
+          "body": {
+            "message": "Unauthorized"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Error fetching client ID: Client error '401 Unauthorized' for url 'https://trade.pocketful.in/api/v1/user/trading_info'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "trade.pocketful.in",
+          "path": "/oauth2/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Basic cGYtY2xpZW50LWtleTpwZi1jbGllbnQtc2VjcmV0",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "grant_type": "authorization_code",
+            "code": "auth-code-abc",
+            "redirect_uri": "http://127.0.0.1:5000/pocketful/callback"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "trade.pocketful.in",
+          "path": "/api/v1/user/trading_info",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer pf-access-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_client_id_read_fails_with_http_500",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "code": "auth-code-abc",
+        "state": "<issued>"
+      },
+      "broker": {
+        "POST /oauth2/token": {
+          "body": {
+            "access_token": "pf-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        },
+        "GET /api/v1/user/trading_info": {
+          "status": 500,
+          "body": {
+            "x": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Error fetching client ID: Server error '500 Internal Server Error' for url 'https://trade.pocketful.in/api/v1/user/trading_info'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "trade.pocketful.in",
+          "path": "/oauth2/token",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Basic cGYtY2xpZW50LWtleTpwZi1jbGllbnQtc2VjcmV0",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "grant_type": "authorization_code",
+            "code": "auth-code-abc",
+            "redirect_uri": "http://127.0.0.1:5000/pocketful/callback"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "trade.pocketful.in",
+          "path": "/api/v1/user/trading_info",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer pf-access-777"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

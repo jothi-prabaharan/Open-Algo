@@ -1,0 +1,175 @@
+{
+  "broker": "pocketful",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "pocketful-access-token",
+  "client_id": "PF100",
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN-EQ",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": 0.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY-EQ",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": 0.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "TATAMOTORS",
+      "brsymbol": "TATAMOTORS",
+      "name": "TATA MOTORS",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500570",
+      "expiry": "",
+      "strike": 0.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY26NOVFUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "49500",
+      "expiry": "25-NOV-26",
+      "strike": 0.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "SENSEX26NOVFUT",
+      "brsymbol": "SENSEX26NOVFUT",
+      "name": "SENSEX",
+      "exchange": "BFO",
+      "brexchange": "BFO",
+      "token": "60001",
+      "expiry": "26-NOV-26",
+      "strike": 0.0,
+      "lotsize": 20,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "GOLDM26NOVFUT",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": 0.0,
+      "lotsize": 10,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "history_one_minute",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "1m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-03",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "message": "Pocketful does not support historical data API",
+              "oi": 0,
+              "status": "success"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "history_daily",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "interval": "D",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-03",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "message": "Pocketful does not support historical data API",
+              "oi": 0,
+              "status": "success"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "history_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/history",
+      "auth": "body",
+      "request": {
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "interval": "1m",
+        "start_date": "2026-11-02",
+        "end_date": "2026-11-03",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Symbol 'NOPE' not found for exchange 'NSE'. Please verify the symbol name and ensure master contracts are downloaded.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}
