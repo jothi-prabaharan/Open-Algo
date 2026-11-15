@@ -18,6 +18,7 @@ public abstract class GrowwFileHost(string file) : BrokerContractHost
     public override IReadOnlyDictionary<string, string> VolatileFields { get; } = new Dictionary<string, string> { ["json.order_reference_id"] = @"^\d{8}-[0-9a-f]{8}$" };
     public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>
     {
+        ["GET /v1/live-data/quote"] = """{"status":"SUCCESS","payload":{}}""",
         ["GET /v1/live-data/ltp"] = """{"status":"SUCCESS","payload":{}}""",
         ["GET /v1/positions/user"] = """{"status":"SUCCESS","payload":{"positions":[]}}""",
         ["GET /v1/order/list"] = """{"status":"SUCCESS","payload":{"order_list":[]}}""",
@@ -125,6 +126,23 @@ public sealed class DataGrowwContractTests(DataGrowwHost host, ITestOutputHelper
     };
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("data_groww.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class HistoryGrowwHost() : GrowwFileHost("history_groww.fixtures.json");
+
+/// <summary>Groww history (tools/contract-fixtures/history_groww.fixtures.json).</summary>
+public sealed class HistoryGrowwContractTests(HistoryGrowwHost host, ITestOutputHelper output) : IClassFixture<HistoryGrowwHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_answer_is_not_json"] = new("OpenAlgo names the status of an answer it could not read; EP Trade bot says the answer could not be read.", f => Expect(f, 500, Error("Groww did not return history for SBIN: the answer could not be read"))),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_groww.fixtures.json");
 
     [PostgresTheory]
     [MemberData(nameof(Names))]
