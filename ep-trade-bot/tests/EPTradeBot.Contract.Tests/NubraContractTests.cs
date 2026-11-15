@@ -22,7 +22,7 @@ public abstract class NubraFileHost(string file) : BrokerContractHost
         ["POST /sentinel/orders/cancel"] = "{}",
     };
     public override bool NumbersMayBeText => true;
-    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["Brokers:RetryBackoffMs:nubra"] = "0" };
+    public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["Brokers:RetryBackoffMs:nubra"] = "0", ["OpenAlgoApi:HistorySpacingMs"] = "0", ["Brokers:HistoryGapMs:nubra"] = "0" };
 }
 
 public sealed class NubraHost() : NubraFileHost("nubra.fixtures.json");
@@ -137,4 +137,28 @@ public sealed class LoginNubraContractTests(LoginNubraHost host, ITestOutputHelp
     [PostgresTheory]
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
+
+public sealed class HistoryNubraHost() : NubraFileHost("history_nubra.fixtures.json");
+
+/// <summary>Nubra history (tools/contract-fixtures/history_nubra.fixtures.json).</summary>
+public sealed class HistoryNubraContractTests(HistoryNubraHost host, ITestOutputHelper output) : IClassFixture<HistoryNubraHost>
+{
+    private const string Words = "OpenAlgo wraps a failed history read in its own words and a 500. EP Trade bot says what Nubra did and what to do.";
+
+    private static Deviation Says(int status, string message) => new(Words, f => Expect(f, status, Error(message)));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_an_interval_nubra_does_not_have"] = Says(400, "Timeframe '10m' is not supported by Nubra. Supported timeframes are: 1s, 1m, 2m, 3m, 5m, 15m, 30m, 1h, D, W, M"),
+        ["history_not_json"] = Says(502, "Nubra could not give candles for SBIN on NSE (1m): the answer could not be read"),
+        ["history_session_expired"] = Says(401, "Nubra session expired or invalid (HTTP 440). Log in to Nubra again."),
+        ["history_rejected_with_an_error"] = Says(502, "Nubra rejected the history request for SBIN on NSE (1m): Invalid range"),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_nubra.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }

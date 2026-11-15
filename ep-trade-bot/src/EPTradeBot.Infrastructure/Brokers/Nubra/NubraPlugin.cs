@@ -23,7 +23,7 @@ public sealed partial class NubraPlugin(IHttpClientFactory http, BrokerSessionFa
 
     public string Name => "nubra";
     public string DisplayName => "Nubra";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Margin;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Margin | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     private HttpClient Client() => http.CreateClient(Name);
