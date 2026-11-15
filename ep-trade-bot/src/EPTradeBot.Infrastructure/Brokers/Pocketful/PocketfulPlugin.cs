@@ -11,7 +11,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Pocketful;
 /// (GET /api/v1/user/trading_info) at the start of the call, as OpenAlgo does. A market order is a native market order: OpenAlgo's market price protection is only applied when an auth token is passed to its transform, and the order path does not pass one.
 /// </summary>
 [BrokerPlugin]
-public sealed partial class PocketfulPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
+public sealed partial class PocketfulPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, IPocketfulSockets? sockets = null) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
 {
     private const string DefaultBaseUrl = "https://trade.pocketful.in";
     private const string Display = "Pocketful";
@@ -20,6 +20,10 @@ public sealed partial class PocketfulPlugin(IHttpClientFactory http, BrokerSessi
     public string DisplayName => "Pocketful";
     public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
+
+    private static IPocketfulSockets? defaultSockets;
+
+    private IPocketfulSockets Sockets => sockets ?? (defaultSockets ??= new PocketfulSnapshotSocket());
 
     private HttpClient Client() => http.CreateClient(Name);
 
