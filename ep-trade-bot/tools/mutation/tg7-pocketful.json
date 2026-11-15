@@ -1,0 +1,2394 @@
+[
+ {
+  "name": "M1 PocketfulPlugin.cs:39",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            if (parts.Length > 0) url += \"?\" + parts;",
+  "new": "            if (parts.Length >= 0) url += \"?\" + parts;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M2 PocketfulPlugin.cs:63",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            throw new BrokerException($\"{Display} did not answer. Check your connection, then try again.\", 502, ex);",
+  "new": "            throw new BrokerException($\"{Display} did not answer. Check your connection, then try again.\", 503, ex);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M3 PocketfulPlugin.cs:68",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "    private static string? Reason(JsonNode? body) => body is JsonObject o && Truthy(o[\"message\"]) ? Str(o[\"message\"]) : null;",
+  "new": "    private static string? Reason(JsonNode? body) => body is JsonObject o || Truthy(o[\"message\"]) ? Str(o[\"message\"]) : null;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M4 PocketfulPlugin.cs:70",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "    private static bool Succeeded(JsonNode? body) => body is JsonObject o && Str(o[\"status\"]) == \"success\";",
+  "new": "    private static bool Succeeded(JsonNode? body) => body is JsonObject o && Str(o[\"status\"]) != \"success\";",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M5 PocketfulPlugin.cs:70",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "    private static bool Succeeded(JsonNode? body) => body is JsonObject o && Str(o[\"status\"]) == \"success\";",
+  "new": "    private static bool Succeeded(JsonNode? body) => body is JsonObject o || Str(o[\"status\"]) == \"success\";",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M6 PocketfulPlugin.cs:77",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "        if (Succeeded(body) && (body as JsonObject)?[\"data\"] is JsonObject data && Truthy(data[\"client_id\"])) return Str(data[\"client_id\"])!;",
+  "new": "        if (Succeeded(body) || (body as JsonObject)?[\"data\"] is JsonObject data && Truthy(data[\"client_id\"])) return Str(data[\"client_id\"])!;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M7 PocketfulPlugin.cs:78",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "        throw new BrokerException($\"{Display} did not say which client this session belongs to ({Reason(body) ?? \"no reason was given\"}). Sign in to {Display} again, then try again.\", 502);",
+  "new": "        throw new BrokerException($\"{Display} did not say which client this session belongs to ({Reason(body) ?? \"no reason was given\"}). Sign in to {Display} again, then try again.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M8 PocketfulPlugin.cs:90",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "        if (info is null) return BrokerCallResult.Refused(400, $\"{order.Symbol} on {order.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\");",
+  "new": "        if (info is null) return BrokerCallResult.Refused(401, $\"{order.Symbol} on {order.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M9 PocketfulPlugin.cs:103",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            [\"exchange\"] = order.Exchange, [\"instrument_token\"] = info.Token, [\"client_id\"] = clientId, [\"order_type\"] = OrderType(order.PriceType), [\"amo\"] = false, [\"price\"] = (double)order.Price, [\"quantity\"] = order.Quantity,",
+  "new": "            [\"exchange\"] = order.Exchange, [\"instrument_token\"] = info.Token, [\"client_id\"] = clientId, [\"order_type\"] = OrderType(order.PriceType), [\"amo\"] = true, [\"price\"] = (double)order.Price, [\"quantity\"] = order.Quantity,",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M10 PocketfulPlugin.cs:104",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            [\"disclosed_quantity\"] = order.DisclosedQuantity, [\"validity\"] = \"DAY\", [\"product\"] = Product(order.Product), [\"order_side\"] = order.Action.ToUpperInvariant(), [\"device\"] = \"WEB\", [\"user_order_id\"] = 1,",
+  "new": "            [\"disclosed_quantity\"] = order.DisclosedQuantity, [\"validity\"] = \"DAY\", [\"product\"] = Product(order.Product), [\"order_side\"] = order.Action.ToUpperInvariant(), [\"device\"] = \"WEB\", [\"user_order_id\"] = 2,",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M11 PocketfulPlugin.cs:114",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M12 PocketfulPlugin.cs:114",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(true, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M13 PocketfulPlugin.cs:114",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 503, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M14 PocketfulPlugin.cs:117",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "        if (reply.Status >= 400) return BrokerCallResult.Refused(reply.Status, Reason(reply.Body) ?? $\"{Display} refused the order.\");",
+  "new": "        if (reply.Status > 400) return BrokerCallResult.Refused(reply.Status, Reason(reply.Body) ?? $\"{Display} refused the order.\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M15 PocketfulPlugin.cs:117",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "        if (reply.Status >= 400) return BrokerCallResult.Refused(reply.Status, Reason(reply.Body) ?? $\"{Display} refused the order.\");",
+  "new": "        if (reply.Status >= 401) return BrokerCallResult.Refused(reply.Status, Reason(reply.Body) ?? $\"{Display} refused the order.\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M16 PocketfulPlugin.cs:118",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M17 PocketfulPlugin.cs:118",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(true, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M18 PocketfulPlugin.cs:118",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 503, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M19 PocketfulPlugin.cs:119",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "        if (!Succeeded(answer)) return BrokerCallResult.Refused(400, Reason(answer) ?? $\"{Display} refused the order.\");",
+  "new": "        if (!Succeeded(answer)) return BrokerCallResult.Refused(401, Reason(answer) ?? $\"{Display} refused the order.\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M20 PocketfulPlugin.cs:120",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "        if (answer[\"data\"] is JsonObject data && Truthy(data[\"oms_order_id\"])) return BrokerCallResult.Success(Str(data[\"oms_order_id\"])!);",
+  "new": "        if (answer[\"data\"] is JsonObject data || Truthy(data[\"oms_order_id\"])) return BrokerCallResult.Success(Str(data[\"oms_order_id\"])!);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M21 PocketfulPlugin.cs:121",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "        return new BrokerCallResult(false, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        return new BrokerCallResult(false, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M22 PocketfulPlugin.cs:121",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "        return new BrokerCallResult(false, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        return new BrokerCallResult(true, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M23 PocketfulPlugin.cs:121",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "        return new BrokerCallResult(false, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        return new BrokerCallResult(false, 503, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M24 PocketfulPlugin.cs:127",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "        if (info is null) return BrokerCallResult.Refused(400, $\"{change.Symbol} on {change.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\");",
+  "new": "        if (info is null) return BrokerCallResult.Refused(401, $\"{change.Symbol} on {change.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M25 PocketfulPlugin.cs:141",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            [\"disclosed_quantity\"] = change.DisclosedQuantity, [\"validity\"] = \"DAY\", [\"product\"] = Product(change.Product), [\"order_side\"] = change.Action.ToUpperInvariant(), [\"device\"] = \"WEB\", [\"user_order_id\"] = 1,",
+  "new": "            [\"disclosed_quantity\"] = change.DisclosedQuantity, [\"validity\"] = \"DAY\", [\"product\"] = Product(change.Product), [\"order_side\"] = change.Action.ToUpperInvariant(), [\"device\"] = \"WEB\", [\"user_order_id\"] = 2,",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M26 PocketfulPlugin.cs:147",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            if (status >= 400) return BrokerCallResult.Refused(status, Reason(body) ?? $\"{Display} refused the change.\");",
+  "new": "            if (status > 400) return BrokerCallResult.Refused(status, Reason(body) ?? $\"{Display} refused the change.\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M27 PocketfulPlugin.cs:147",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            if (status >= 400) return BrokerCallResult.Refused(status, Reason(body) ?? $\"{Display} refused the change.\");",
+  "new": "            if (status >= 401) return BrokerCallResult.Refused(status, Reason(body) ?? $\"{Display} refused the change.\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M28 PocketfulPlugin.cs:148",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the change may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the change may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M29 PocketfulPlugin.cs:148",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the change may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            if (body is not JsonObject answer) return new BrokerCallResult(true, 502, $\"{Display} sent an answer that could not be read, so the change may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M30 PocketfulPlugin.cs:148",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the change may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 503, $\"{Display} sent an answer that could not be read, so the change may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M31 PocketfulPlugin.cs:149",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            if (!Succeeded(answer)) return BrokerCallResult.Refused(400, Reason(answer) ?? \"Failed to modify order\");",
+  "new": "            if (!Succeeded(answer)) return BrokerCallResult.Refused(401, Reason(answer) ?? \"Failed to modify order\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M32 PocketfulPlugin.cs:150",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            return BrokerCallResult.Success(answer[\"data\"] is JsonObject data && Truthy(data[\"oms_order_id\"]) ? Str(data[\"oms_order_id\"])! : change.OrderId);",
+  "new": "            return BrokerCallResult.Success(answer[\"data\"] is JsonObject data || Truthy(data[\"oms_order_id\"]) ? Str(data[\"oms_order_id\"])! : change.OrderId);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M33 PocketfulPlugin.cs:154",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The change was sent to {Display} but no reply came back, so it may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 502, $\"The change was sent to {Display} but no reply came back, so it may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M34 PocketfulPlugin.cs:154",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The change was sent to {Display} but no reply came back, so it may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(true, 502, $\"The change was sent to {Display} but no reply came back, so it may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M35 PocketfulPlugin.cs:154",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The change was sent to {Display} but no reply came back, so it may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 503, $\"The change was sent to {Display} but no reply came back, so it may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M36 PocketfulPlugin.cs:173",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            if (status >= 400) return BrokerCallResult.Refused(status, Reason(body) ?? $\"{Display} refused to cancel the order.\");",
+  "new": "            if (status > 400) return BrokerCallResult.Refused(status, Reason(body) ?? $\"{Display} refused to cancel the order.\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M37 PocketfulPlugin.cs:173",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            if (status >= 400) return BrokerCallResult.Refused(status, Reason(body) ?? $\"{Display} refused to cancel the order.\");",
+  "new": "            if (status >= 401) return BrokerCallResult.Refused(status, Reason(body) ?? $\"{Display} refused to cancel the order.\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M38 PocketfulPlugin.cs:174",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "new": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M39 PocketfulPlugin.cs:174",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "new": "            if (body is not JsonObject answer) return new BrokerCallResult(true, 502, $\"{Display} sent an answer that could not be read, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M40 PocketfulPlugin.cs:174",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "new": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 503, $\"{Display} sent an answer that could not be read, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M41 PocketfulPlugin.cs:175",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            if (!Succeeded(answer)) return BrokerCallResult.Refused(400, Reason(answer) ?? \"Failed to cancel order\");",
+  "new": "            if (!Succeeded(answer)) return BrokerCallResult.Refused(401, Reason(answer) ?? \"Failed to cancel order\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M42 PocketfulPlugin.cs:176",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            return BrokerCallResult.Success(answer[\"data\"] is JsonObject data && Truthy(data[\"oms_order_id\"]) ? Str(data[\"oms_order_id\"])! : orderId);",
+  "new": "            return BrokerCallResult.Success(answer[\"data\"] is JsonObject data || Truthy(data[\"oms_order_id\"]) ? Str(data[\"oms_order_id\"])! : orderId);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M43 PocketfulPlugin.cs:180",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The cancel was sent to {Display} but no reply came back, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 502, $\"The cancel was sent to {Display} but no reply came back, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M44 PocketfulPlugin.cs:180",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The cancel was sent to {Display} but no reply came back, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(true, 502, $\"The cancel was sent to {Display} but no reply came back, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M45 PocketfulPlugin.cs:180",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The cancel was sent to {Display} but no reply came back, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 503, $\"The cancel was sent to {Display} but no reply came back, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M46 PocketfulPlugin.Books.cs:20",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        string.IsNullOrEmpty(brokerSymbol) || string.IsNullOrEmpty(exchange) ? null : (await symbols.FindByBrokerSymbolAsync(Name, brokerSymbol, exchange, cancellationToken))?.Symbol;",
+  "new": "        string.IsNullOrEmpty(brokerSymbol) && string.IsNullOrEmpty(exchange) ? null : (await symbols.FindByBrokerSymbolAsync(Name, brokerSymbol, exchange, cancellationToken))?.Symbol;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M47 PocketfulPlugin.Books.cs:26",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status != 200) throw new BrokerException($\"{Display} did not give the {what} ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "new": "        if (status != 200) throw new BrokerException($\"{Display} did not give the {what} ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status > 400 ? status : 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M48 PocketfulPlugin.Books.cs:26",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status != 200) throw new BrokerException($\"{Display} did not give the {what} ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "new": "        if (status == 200) throw new BrokerException($\"{Display} did not give the {what} ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M49 PocketfulPlugin.Books.cs:26",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status != 200) throw new BrokerException($\"{Display} did not give the {what} ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "new": "        if (status != 201) throw new BrokerException($\"{Display} did not give the {what} ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M50 PocketfulPlugin.Books.cs:26",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status != 200) throw new BrokerException($\"{Display} did not give the {what} ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "new": "        if (status != 200) throw new BrokerException($\"{Display} did not give the {what} ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 401 ? status : 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M51 PocketfulPlugin.Books.cs:26",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status != 200) throw new BrokerException($\"{Display} did not give the {what} ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "new": "        if (status != 200) throw new BrokerException($\"{Display} did not give the {what} ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M52 PocketfulPlugin.Books.cs:27",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        return body as JsonObject ?? throw new BrokerException($\"{Display} sent the {what} in a form that could not be read. Try again in a moment.\", 502);",
+  "new": "        return body as JsonObject ?? throw new BrokerException($\"{Display} sent the {what} in a form that could not be read. Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M53 PocketfulPlugin.Books.cs:33",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        body is JsonObject o && o[\"data\"] is JsonObject data && data[\"orders\"] is JsonArray orders ? orders.OfType<JsonObject>().ToList() : [];",
+  "new": "        body is JsonObject o || o[\"data\"] is JsonObject data && data[\"orders\"] is JsonArray orders ? orders.OfType<JsonObject>().ToList() : [];",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M54 PocketfulPlugin.Books.cs:38",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status >= 400 || body is not JsonObject answer || Str(answer[\"status\"]) == \"error\")",
+  "new": "        if (status > 400 || body is not JsonObject answer || Str(answer[\"status\"]) == \"error\")",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M55 PocketfulPlugin.Books.cs:38",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status >= 400 || body is not JsonObject answer || Str(answer[\"status\"]) == \"error\")",
+  "new": "        if (status >= 400 || body is not JsonObject answer || Str(answer[\"status\"]) != \"error\")",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M56 PocketfulPlugin.Books.cs:38",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status >= 400 || body is not JsonObject answer || Str(answer[\"status\"]) == \"error\")",
+  "new": "        if (status >= 400 && body is not JsonObject answer || Str(answer[\"status\"]) == \"error\")",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M57 PocketfulPlugin.Books.cs:38",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status >= 400 || body is not JsonObject answer || Str(answer[\"status\"]) == \"error\")",
+  "new": "        if (status >= 401 || body is not JsonObject answer || Str(answer[\"status\"]) == \"error\")",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M58 PocketfulPlugin.Books.cs:39",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            throw new BrokerException($\"{Display} did not give the {type} orders ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "new": "            throw new BrokerException($\"{Display} did not give the {type} orders ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status > 400 ? status : 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M59 PocketfulPlugin.Books.cs:39",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            throw new BrokerException($\"{Display} did not give the {type} orders ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "new": "            throw new BrokerException($\"{Display} did not give the {type} orders ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 401 ? status : 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M60 PocketfulPlugin.Books.cs:39",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            throw new BrokerException($\"{Display} did not give the {type} orders ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "new": "            throw new BrokerException($\"{Display} did not give the {type} orders ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M61 PocketfulPlugin.Books.cs:49",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status.Contains(\"OPEN\", StringComparison.Ordinal) || status.Contains(\"PENDING\", StringComparison.Ordinal) || status.Contains(\"AMO_SUBMIT\", StringComparison.Ordinal) || status.Contains(\"MODIFY\", StringComparison.Ordinal) || mode == \"NEW\") return \"open\";",
+  "new": "        if (status.Contains(\"OPEN\", StringComparison.Ordinal) || status.Contains(\"PENDING\", StringComparison.Ordinal) || status.Contains(\"AMO_SUBMIT\", StringComparison.Ordinal) || status.Contains(\"MODIFY\", StringComparison.Ordinal) || mode != \"NEW\") return \"open\";",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M62 PocketfulPlugin.Books.cs:49",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status.Contains(\"OPEN\", StringComparison.Ordinal) || status.Contains(\"PENDING\", StringComparison.Ordinal) || status.Contains(\"AMO_SUBMIT\", StringComparison.Ordinal) || status.Contains(\"MODIFY\", StringComparison.Ordinal) || mode == \"NEW\") return \"open\";",
+  "new": "        if (status.Contains(\"OPEN\", StringComparison.Ordinal) && status.Contains(\"PENDING\", StringComparison.Ordinal) || status.Contains(\"AMO_SUBMIT\", StringComparison.Ordinal) || status.Contains(\"MODIFY\", StringComparison.Ordinal) || mode == \"NEW\") return \"open\";",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M63 PocketfulPlugin.Books.cs:82",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                if (key is not null && Truthy(order[key]))",
+  "new": "                if (key is not null || Truthy(order[key]))",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M64 PocketfulPlugin.Books.cs:100",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            var done = false;",
+  "new": "            var done = true;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M65 PocketfulPlugin.Books.cs:101",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            if (counted.Length > 0)",
+  "new": "            if (counted.Length >= 0)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M66 PocketfulPlugin.Books.cs:103",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                if (counted.Contains(\"CANCEL_CONFIRMED\", StringComparison.Ordinal)) { cancelled++; done = true; }",
+  "new": "                if (counted.Contains(\"CANCEL_CONFIRMED\", StringComparison.Ordinal)) { cancelled++; done = false; }",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M67 PocketfulPlugin.Books.cs:104",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                else if (counted.Contains(\"COMPLETE\", StringComparison.Ordinal)) { completed++; done = true; }",
+  "new": "                else if (counted.Contains(\"COMPLETE\", StringComparison.Ordinal)) { completed++; done = false; }",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M68 PocketfulPlugin.Books.cs:105",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                else if (counted.Contains(\"REJECTED\", StringComparison.Ordinal)) { rejected++; done = true; }",
+  "new": "                else if (counted.Contains(\"REJECTED\", StringComparison.Ordinal)) { rejected++; done = false; }",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M69 PocketfulPlugin.Books.cs:108",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            if (!done && (counted.Contains(\"OPEN\", StringComparison.Ordinal) || counted.Contains(\"NEW\", StringComparison.Ordinal) || counted.Contains(\"PENDING\", StringComparison.Ordinal) || counted.Contains(\"SUBMIT\", StringComparison.Ordinal) || counted.Contains(\"MODIFY\", StringComparison.Ordinal) || mode == \"NEW\"))",
+  "new": "            if (!done && (counted.Contains(\"OPEN\", StringComparison.Ordinal) || counted.Contains(\"NEW\", StringComparison.Ordinal) || counted.Contains(\"PENDING\", StringComparison.Ordinal) || counted.Contains(\"SUBMIT\", StringComparison.Ordinal) || counted.Contains(\"MODIFY\", StringComparison.Ordinal) || mode != \"NEW\"))",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M70 PocketfulPlugin.Books.cs:108",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            if (!done && (counted.Contains(\"OPEN\", StringComparison.Ordinal) || counted.Contains(\"NEW\", StringComparison.Ordinal) || counted.Contains(\"PENDING\", StringComparison.Ordinal) || counted.Contains(\"SUBMIT\", StringComparison.Ordinal) || counted.Contains(\"MODIFY\", StringComparison.Ordinal) || mode == \"NEW\"))",
+  "new": "            if (!done || (counted.Contains(\"OPEN\", StringComparison.Ordinal) || counted.Contains(\"NEW\", StringComparison.Ordinal) || counted.Contains(\"PENDING\", StringComparison.Ordinal) || counted.Contains(\"SUBMIT\", StringComparison.Ordinal) || counted.Contains(\"MODIFY\", StringComparison.Ordinal) || mode == \"NEW\"))",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M71 PocketfulPlugin.Books.cs:108",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            if (!done && (counted.Contains(\"OPEN\", StringComparison.Ordinal) || counted.Contains(\"NEW\", StringComparison.Ordinal) || counted.Contains(\"PENDING\", StringComparison.Ordinal) || counted.Contains(\"SUBMIT\", StringComparison.Ordinal) || counted.Contains(\"MODIFY\", StringComparison.Ordinal) || mode == \"NEW\"))",
+  "new": "            if (!done && (counted.Contains(\"OPEN\", StringComparison.Ordinal) && counted.Contains(\"NEW\", StringComparison.Ordinal) || counted.Contains(\"PENDING\", StringComparison.Ordinal) || counted.Contains(\"SUBMIT\", StringComparison.Ordinal) || counted.Contains(\"MODIFY\", StringComparison.Ordinal) || mode == \"NEW\"))",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M72 PocketfulPlugin.Books.cs:115",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            var average = Truthy(order[\"average_price\"]) && order.ContainsKey(\"average_price\") ? Raw(order, \"average_price\", 0.0) : Raw(order, \"average_trade_price\", 0.0);",
+  "new": "            var average = Truthy(order[\"average_price\"]) || order.ContainsKey(\"average_price\") ? Raw(order, \"average_price\", 0.0) : Raw(order, \"average_trade_price\", 0.0);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M73 PocketfulPlugin.Books.cs:134",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        var trades = answer[\"data\"] is JsonObject data && data[\"trades\"] is JsonArray list ? list.OfType<JsonObject>().ToList() : [];",
+  "new": "        var trades = answer[\"data\"] is JsonObject data || data[\"trades\"] is JsonArray list ? list.OfType<JsonObject>().ToList() : [];",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M74 PocketfulPlugin.Books.cs:141",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            if (symbol.Length > 0)",
+  "new": "            if (symbol.Length >= 0)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M75 PocketfulPlugin.Books.cs:144",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                if (exchange.Length > 0) name = await OaSymbolAsync(symbol, exchange, cancellationToken);",
+  "new": "                if (exchange.Length >= 0) name = await OaSymbolAsync(symbol, exchange, cancellationToken);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M76 PocketfulPlugin.Books.cs:154",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                [\"trade_id\"] = Pick(\"trade_id\", \"trade_number\") ?? \"\", [\"orderid\"] = Pick(\"order_id\", \"oms_order_id\") ?? \"\", [\"timestamp\"] = Pick(\"fill_timestamp\", \"trade_time\") ?? \"\", [\"trade_value\"] = quantity > 0 && price > 0 ? quantity * price : 0.0,",
+  "new": "                [\"trade_id\"] = Pick(\"trade_id\", \"trade_number\") ?? \"\", [\"orderid\"] = Pick(\"order_id\", \"oms_order_id\") ?? \"\", [\"timestamp\"] = Pick(\"fill_timestamp\", \"trade_time\") ?? \"\", [\"trade_value\"] = quantity >= 0 && price > 0 ? quantity * price : 0.0,",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M77 PocketfulPlugin.Books.cs:154",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                [\"trade_id\"] = Pick(\"trade_id\", \"trade_number\") ?? \"\", [\"orderid\"] = Pick(\"order_id\", \"oms_order_id\") ?? \"\", [\"timestamp\"] = Pick(\"fill_timestamp\", \"trade_time\") ?? \"\", [\"trade_value\"] = quantity > 0 && price > 0 ? quantity * price : 0.0,",
+  "new": "                [\"trade_id\"] = Pick(\"trade_id\", \"trade_number\") ?? \"\", [\"orderid\"] = Pick(\"order_id\", \"oms_order_id\") ?? \"\", [\"timestamp\"] = Pick(\"fill_timestamp\", \"trade_time\") ?? \"\", [\"trade_value\"] = quantity > 0 || price > 0 ? quantity * price : 0.0,",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M78 PocketfulPlugin.Books.cs:167",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (Str(answer[\"status\"]) != \"success\") throw new BrokerException($\"{Display} did not give the position book ({Reason(answer) ?? \"no reason was given\"}). Try again in a moment.\", 502);",
+  "new": "        if (Str(answer[\"status\"]) == \"success\") throw new BrokerException($\"{Display} did not give the position book ({Reason(answer) ?? \"no reason was given\"}). Try again in a moment.\", 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M79 PocketfulPlugin.Books.cs:167",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (Str(answer[\"status\"]) != \"success\") throw new BrokerException($\"{Display} did not give the position book ({Reason(answer) ?? \"no reason was given\"}). Try again in a moment.\", 502);",
+  "new": "        if (Str(answer[\"status\"]) != \"success\") throw new BrokerException($\"{Display} did not give the position book ({Reason(answer) ?? \"no reason was given\"}). Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M80 PocketfulPlugin.Books.cs:175",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            if (symbol.Length > 0 && exchange.Length > 0 && await OaSymbolAsync(symbol, exchange, cancellationToken) is { } oa) name = oa;",
+  "new": "            if (symbol.Length >= 0 && exchange.Length > 0 && await OaSymbolAsync(symbol, exchange, cancellationToken) is { } oa) name = oa;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M81 PocketfulPlugin.Books.cs:175",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            if (symbol.Length > 0 && exchange.Length > 0 && await OaSymbolAsync(symbol, exchange, cancellationToken) is { } oa) name = oa;",
+  "new": "            if (symbol.Length > 0 || exchange.Length > 0 && await OaSymbolAsync(symbol, exchange, cancellationToken) is { } oa) name = oa;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M82 PocketfulPlugin.Books.cs:176",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            var average = position.ContainsKey(\"average_buy_price\") && Float(position[\"average_buy_price\"]) > 0 ? Float(position[\"average_buy_price\"])",
+  "new": "            var average = position.ContainsKey(\"average_buy_price\") && Float(position[\"average_buy_price\"]) >= 0 ? Float(position[\"average_buy_price\"])",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M83 PocketfulPlugin.Books.cs:176",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            var average = position.ContainsKey(\"average_buy_price\") && Float(position[\"average_buy_price\"]) > 0 ? Float(position[\"average_buy_price\"])",
+  "new": "            var average = position.ContainsKey(\"average_buy_price\") || Float(position[\"average_buy_price\"]) > 0 ? Float(position[\"average_buy_price\"])",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M84 PocketfulPlugin.Books.cs:177",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                : position.ContainsKey(\"average_sell_price\") && Float(position[\"average_sell_price\"]) > 0 ? Float(position[\"average_sell_price\"])",
+  "new": "                : position.ContainsKey(\"average_sell_price\") && Float(position[\"average_sell_price\"]) >= 0 ? Float(position[\"average_sell_price\"])",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M85 PocketfulPlugin.Books.cs:177",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                : position.ContainsKey(\"average_sell_price\") && Float(position[\"average_sell_price\"]) > 0 ? Float(position[\"average_sell_price\"])",
+  "new": "                : position.ContainsKey(\"average_sell_price\") || Float(position[\"average_sell_price\"]) > 0 ? Float(position[\"average_sell_price\"])",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M86 PocketfulPlugin.Books.cs:181",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                [\"symbol\"] = name?.DeepClone() ?? (symbol.Length > 0 ? symbol : \"\"), [\"exchange\"] = exchange, [\"product\"] = Raw(position, \"product\", \"\"),",
+  "new": "                [\"symbol\"] = name?.DeepClone() ?? (symbol.Length >= 0 ? symbol : \"\"), [\"exchange\"] = exchange, [\"product\"] = Raw(position, \"product\", \"\"),",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M87 PocketfulPlugin.Books.cs:193",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (answer[\"data\"] is JsonObject data && data[\"holdings\"] is JsonArray nested) return nested.OfType<JsonObject>().ToList();",
+  "new": "        if (answer[\"data\"] is JsonObject data || data[\"holdings\"] is JsonArray nested) return nested.OfType<JsonObject>().ToList();",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M88 PocketfulPlugin.Books.cs:212",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            if (holding.ContainsKey(field) && holding[field] is not null && Parsed(holding[field]) is { } n) return n;",
+  "new": "            if (holding.ContainsKey(field) || holding[field] is not null && Parsed(holding[field]) is { } n) return n;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M89 PocketfulPlugin.Books.cs:220",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status >= 400) throw new BrokerException($\"{Display} did not give the holdings ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status);",
+  "new": "        if (status > 400) throw new BrokerException($\"{Display} did not give the holdings ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M90 PocketfulPlugin.Books.cs:220",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status >= 400) throw new BrokerException($\"{Display} did not give the holdings ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status);",
+  "new": "        if (status >= 401) throw new BrokerException($\"{Display} did not give the holdings ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M91 PocketfulPlugin.Books.cs:223",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            if (text.Contains(\"<!doctype html>\", StringComparison.Ordinal)) throw new BrokerException($\"{Display} sent a web page instead of the holdings. Sign in to {Display} again, then try again.\", 502);",
+  "new": "            if (text.Contains(\"<!doctype html>\", StringComparison.Ordinal)) throw new BrokerException($\"{Display} sent a web page instead of the holdings. Sign in to {Display} again, then try again.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M92 PocketfulPlugin.Books.cs:227",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (body is not JsonObject answer) throw new BrokerException($\"{Display} sent the holdings in a form that could not be read. Try again in a moment.\", 502);",
+  "new": "        if (body is not JsonObject answer) throw new BrokerException($\"{Display} sent the holdings in a form that could not be read. Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M93 PocketfulPlugin.Books.cs:228",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (Str(answer[\"status\"]) == \"error\") throw new BrokerException($\"{Display} did not give the holdings ({Reason(answer) ?? \"no reason was given\"}). Try again in a moment.\", 502);",
+  "new": "        if (Str(answer[\"status\"]) != \"error\") throw new BrokerException($\"{Display} did not give the holdings ({Reason(answer) ?? \"no reason was given\"}). Try again in a moment.\", 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M94 PocketfulPlugin.Books.cs:228",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (Str(answer[\"status\"]) == \"error\") throw new BrokerException($\"{Display} did not give the holdings ({Reason(answer) ?? \"no reason was given\"}). Try again in a moment.\", 502);",
+  "new": "        if (Str(answer[\"status\"]) == \"error\") throw new BrokerException($\"{Display} did not give the holdings ({Reason(answer) ?? \"no reason was given\"}). Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M95 PocketfulPlugin.Books.cs:235",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                if (holding.ContainsKey(field) && Truthy(holding[field])) { name = Str(holding[field]); break; }",
+  "new": "                if (holding.ContainsKey(field) || Truthy(holding[field])) { name = Str(holding[field]); break; }",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M96 PocketfulPlugin.Books.cs:236",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            if (name is null && holding[\"instrument_details\"] is JsonObject details)",
+  "new": "            if (name is null || holding[\"instrument_details\"] is JsonObject details)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M97 PocketfulPlugin.Books.cs:243",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                if (await OaSymbolAsync(name, exchange, cancellationToken) is { } oa && Str(oa) is { Length: > 0 } mapped) name = mapped;",
+  "new": "                if (await OaSymbolAsync(name, exchange, cancellationToken) is { } oa && Str(oa) is { Length: >= 0 } mapped) name = mapped;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M98 PocketfulPlugin.Books.cs:243",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                if (await OaSymbolAsync(name, exchange, cancellationToken) is { } oa && Str(oa) is { Length: > 0 } mapped) name = mapped;",
+  "new": "                if (await OaSymbolAsync(name, exchange, cancellationToken) is { } oa || Str(oa) is { Length: > 0 } mapped) name = mapped;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M99 PocketfulPlugin.Books.cs:248",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                if (holding.ContainsKey(field) && holding[field] is not null && Parsed(holding[field]) is { } q) { quantity = (long)Math.Truncate(q); break; }",
+  "new": "                if (holding.ContainsKey(field) || holding[field] is not null && Parsed(holding[field]) is { } q) { quantity = (long)Math.Truncate(q); break; }",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M100 PocketfulPlugin.Books.cs:251",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            var computed = quantity > 0 && average > 0 ? (last - average) * quantity : 0.0;",
+  "new": "            var computed = quantity >= 0 && average > 0 ? (last - average) * quantity : 0.0;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M101 PocketfulPlugin.Books.cs:251",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            var computed = quantity > 0 && average > 0 ? (last - average) * quantity : 0.0;",
+  "new": "            var computed = quantity > 0 || average > 0 ? (last - average) * quantity : 0.0;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M102 PocketfulPlugin.Books.cs:252",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            var pnl = holding.ContainsKey(\"pnl\") && holding[\"pnl\"] is not null ? Parsed(holding[\"pnl\"]) ?? computed : computed;",
+  "new": "            var pnl = holding.ContainsKey(\"pnl\") || holding[\"pnl\"] is not null ? Parsed(holding[\"pnl\"]) ?? computed : computed;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M103 PocketfulPlugin.Books.cs:253",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            var computedPercent = average > 0 ? (last - average) / average * 100 : 0.0;",
+  "new": "            var computedPercent = average >= 0 ? (last - average) / average * 100 : 0.0;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M104 PocketfulPlugin.Books.cs:253",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            var computedPercent = average > 0 ? (last - average) / average * 100 : 0.0;",
+  "new": "            var computedPercent = average > 0 ? (last - average) / average * 101 : 0.0;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M105 PocketfulPlugin.Books.cs:255",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "            if (holding.ContainsKey(\"pnl_percent\") || holding.ContainsKey(\"pnl_percentage\"))",
+  "new": "            if (holding.ContainsKey(\"pnl_percent\") && holding.ContainsKey(\"pnl_percentage\"))",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M106 PocketfulPlugin.Books.cs:264",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                [\"symbol\"] = name, [\"exchange\"] = exchange, [\"quantity\"] = quantity, [\"average_price\"] = BookFormatting.RoundPy(average, 2), [\"last_price\"] = BookFormatting.RoundPy(last, 2), [\"product\"] = \"CNC\", [\"pnl\"] = BookFormatting.RoundPy(pnl, 2),",
+  "new": "                [\"symbol\"] = name, [\"exchange\"] = exchange, [\"quantity\"] = quantity, [\"average_price\"] = BookFormatting.RoundPy(average, 3), [\"last_price\"] = BookFormatting.RoundPy(last, 2), [\"product\"] = \"CNC\", [\"pnl\"] = BookFormatting.RoundPy(pnl, 2),",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M107 PocketfulPlugin.Books.cs:264",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                [\"symbol\"] = name, [\"exchange\"] = exchange, [\"quantity\"] = quantity, [\"average_price\"] = BookFormatting.RoundPy(average, 2), [\"last_price\"] = BookFormatting.RoundPy(last, 2), [\"product\"] = \"CNC\", [\"pnl\"] = BookFormatting.RoundPy(pnl, 2),",
+  "new": "                [\"symbol\"] = name, [\"exchange\"] = exchange, [\"quantity\"] = quantity, [\"average_price\"] = BookFormatting.RoundPy(average, 2), [\"last_price\"] = BookFormatting.RoundPy(last, 3), [\"product\"] = \"CNC\", [\"pnl\"] = BookFormatting.RoundPy(pnl, 2),",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M108 PocketfulPlugin.Books.cs:264",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                [\"symbol\"] = name, [\"exchange\"] = exchange, [\"quantity\"] = quantity, [\"average_price\"] = BookFormatting.RoundPy(average, 2), [\"last_price\"] = BookFormatting.RoundPy(last, 2), [\"product\"] = \"CNC\", [\"pnl\"] = BookFormatting.RoundPy(pnl, 2),",
+  "new": "                [\"symbol\"] = name, [\"exchange\"] = exchange, [\"quantity\"] = quantity, [\"average_price\"] = BookFormatting.RoundPy(average, 2), [\"last_price\"] = BookFormatting.RoundPy(last, 2), [\"product\"] = \"CNC\", [\"pnl\"] = BookFormatting.RoundPy(pnl, 3),",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M109 PocketfulPlugin.Books.cs:265",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                [\"pnlpercent\"] = BookFormatting.RoundPy(percent, 2), [\"close_price\"] = Float(Truthy(holding[\"close_price\"]) ? holding[\"close_price\"] : holding[\"previous_close\"]), [\"isin\"] = Raw(holding, \"isin\", \"\"), [\"day_change\"] = Float(holding[\"day_change\"]),",
+  "new": "                [\"pnlpercent\"] = BookFormatting.RoundPy(percent, 3), [\"close_price\"] = Float(Truthy(holding[\"close_price\"]) ? holding[\"close_price\"] : holding[\"previous_close\"]), [\"isin\"] = Raw(holding, \"isin\", \"\"), [\"day_change\"] = Float(holding[\"day_change\"]),",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M110 PocketfulPlugin.Books.cs:275",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (rows.Count == 0) return new JsonObject { [\"totalholdingvalue\"] = 0.0, [\"totalinvvalue\"] = 0.0, [\"totalprofitandloss\"] = 0.0, [\"totalpnlpercentage\"] = 0.0 };",
+  "new": "        if (rows.Count != 0) return new JsonObject { [\"totalholdingvalue\"] = 0.0, [\"totalinvvalue\"] = 0.0, [\"totalprofitandloss\"] = 0.0, [\"totalpnlpercentage\"] = 0.0 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M111 PocketfulPlugin.Books.cs:285",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "new": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested >= 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M112 PocketfulPlugin.Books.cs:285",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "new": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 3), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M113 PocketfulPlugin.Books.cs:285",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "new": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 3), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M114 PocketfulPlugin.Books.cs:285",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "new": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 3), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M115 PocketfulPlugin.Books.cs:285",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "new": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 101 : 0.0, 2) };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M116 PocketfulPlugin.Books.cs:285",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 2) };",
+  "new": "        return new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(invested, 2), [\"totalprofitandloss\"] = BookFormatting.RoundPy(pnl, 2), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(invested > 0 ? pnl / invested * 100 : 0.0, 3) };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M117 PocketfulPlugin.Books.cs:294",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status >= 400 || !Succeeded(body)) throw new BrokerException($\"{Display} did not give the funds ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "new": "        if (status > 400 || !Succeeded(body)) throw new BrokerException($\"{Display} did not give the funds ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M118 PocketfulPlugin.Books.cs:294",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status >= 400 || !Succeeded(body)) throw new BrokerException($\"{Display} did not give the funds ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "new": "        if (status >= 400 && !Succeeded(body)) throw new BrokerException($\"{Display} did not give the funds ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M119 PocketfulPlugin.Books.cs:294",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status >= 400 || !Succeeded(body)) throw new BrokerException($\"{Display} did not give the funds ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "new": "        if (status >= 401 || !Succeeded(body)) throw new BrokerException($\"{Display} did not give the funds ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M120 PocketfulPlugin.Books.cs:294",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status >= 400 || !Succeeded(body)) throw new BrokerException($\"{Display} did not give the funds ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "new": "        if (status >= 400 || !Succeeded(body)) throw new BrokerException($\"{Display} did not give the funds ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 401 ? status : 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M121 PocketfulPlugin.Books.cs:294",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if (status >= 400 || !Succeeded(body)) throw new BrokerException($\"{Display} did not give the funds ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 502);",
+  "new": "        if (status >= 400 || !Succeeded(body)) throw new BrokerException($\"{Display} did not give the funds ({Reason(body) ?? \"no reason was given\"}). Try again in a moment.\", status >= 400 ? status : 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M122 PocketfulPlugin.Books.cs:296",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "        if ((body as JsonObject)?[\"data\"] is JsonObject data && data[\"values\"] is JsonArray values)",
+  "new": "        if ((body as JsonObject)?[\"data\"] is JsonObject data || data[\"values\"] is JsonArray values)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M123 PocketfulPlugin.Books.cs:300",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                if (item is not JsonArray pair || pair.Count < 2 || Parsed(pair[1]) is not { } number || Str(pair[0]) is not { } key)",
+  "new": "                if (item is not JsonArray pair || pair.Count <= 2 || Parsed(pair[1]) is not { } number || Str(pair[0]) is not { } key)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M124 PocketfulPlugin.Books.cs:300",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                if (item is not JsonArray pair || pair.Count < 2 || Parsed(pair[1]) is not { } number || Str(pair[0]) is not { } key)",
+  "new": "                if (item is not JsonArray pair && pair.Count < 2 || Parsed(pair[1]) is not { } number || Str(pair[0]) is not { } key)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M125 PocketfulPlugin.Books.cs:300",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                if (item is not JsonArray pair || pair.Count < 2 || Parsed(pair[1]) is not { } number || Str(pair[0]) is not { } key)",
+  "new": "                if (item is not JsonArray pair || pair.Count < 3 || Parsed(pair[1]) is not { } number || Str(pair[0]) is not { } key)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M126 PocketfulPlugin.Books.cs:301",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Books.cs",
+  "old": "                    throw new BrokerException($\"{Display} sent funds that could not be read. Try again in a moment.\", 502);",
+  "new": "                    throw new BrokerException($\"{Display} sent funds that could not be read. Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M127 PocketfulPlugin.Data.cs:17",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "    private const int BatchSize = 50;",
+  "new": "    private const int BatchSize = 51;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M128 PocketfulPlugin.Data.cs:19",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "    private static int ExchangeCode(string exchange) => exchange switch { \"NSE\" or \"NSE_INDEX\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" or \"BSE_INDEX\" => 6, \"BFO\" => 7, _ => 1 };",
+  "new": "    private static int ExchangeCode(string exchange) => exchange switch { \"NSE\" or \"NSE_INDEX\" => 2, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" or \"BSE_INDEX\" => 6, \"BFO\" => 7, _ => 1 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M129 PocketfulPlugin.Data.cs:19",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "    private static int ExchangeCode(string exchange) => exchange switch { \"NSE\" or \"NSE_INDEX\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" or \"BSE_INDEX\" => 6, \"BFO\" => 7, _ => 1 };",
+  "new": "    private static int ExchangeCode(string exchange) => exchange switch { \"NSE\" or \"NSE_INDEX\" => 1, \"NFO\" => 3, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" or \"BSE_INDEX\" => 6, \"BFO\" => 7, _ => 1 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M130 PocketfulPlugin.Data.cs:19",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "    private static int ExchangeCode(string exchange) => exchange switch { \"NSE\" or \"NSE_INDEX\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" or \"BSE_INDEX\" => 6, \"BFO\" => 7, _ => 1 };",
+  "new": "    private static int ExchangeCode(string exchange) => exchange switch { \"NSE\" or \"NSE_INDEX\" => 1, \"NFO\" => 2, \"CDS\" => 4, \"MCX\" => 4, \"BSE\" or \"BSE_INDEX\" => 6, \"BFO\" => 7, _ => 1 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M131 PocketfulPlugin.Data.cs:19",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "    private static int ExchangeCode(string exchange) => exchange switch { \"NSE\" or \"NSE_INDEX\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" or \"BSE_INDEX\" => 6, \"BFO\" => 7, _ => 1 };",
+  "new": "    private static int ExchangeCode(string exchange) => exchange switch { \"NSE\" or \"NSE_INDEX\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 5, \"BSE\" or \"BSE_INDEX\" => 6, \"BFO\" => 7, _ => 1 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M132 PocketfulPlugin.Data.cs:19",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "    private static int ExchangeCode(string exchange) => exchange switch { \"NSE\" or \"NSE_INDEX\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" or \"BSE_INDEX\" => 6, \"BFO\" => 7, _ => 1 };",
+  "new": "    private static int ExchangeCode(string exchange) => exchange switch { \"NSE\" or \"NSE_INDEX\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" or \"BSE_INDEX\" => 7, \"BFO\" => 7, _ => 1 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M133 PocketfulPlugin.Data.cs:19",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "    private static int ExchangeCode(string exchange) => exchange switch { \"NSE\" or \"NSE_INDEX\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" or \"BSE_INDEX\" => 6, \"BFO\" => 7, _ => 1 };",
+  "new": "    private static int ExchangeCode(string exchange) => exchange switch { \"NSE\" or \"NSE_INDEX\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" or \"BSE_INDEX\" => 6, \"BFO\" => 8, _ => 1 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M134 PocketfulPlugin.Data.cs:19",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "    private static int ExchangeCode(string exchange) => exchange switch { \"NSE\" or \"NSE_INDEX\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" or \"BSE_INDEX\" => 6, \"BFO\" => 7, _ => 1 };",
+  "new": "    private static int ExchangeCode(string exchange) => exchange switch { \"NSE\" or \"NSE_INDEX\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" or \"BSE_INDEX\" => 6, \"BFO\" => 7, _ => 2 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M135 PocketfulPlugin.Data.cs:28",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        var info = await symbols.FindAsync(Name, symbol, exchange, cancellationToken) ?? throw new BrokerException($\"{symbol} on {exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\", 400);",
+  "new": "        var info = await symbols.FindAsync(Name, symbol, exchange, cancellationToken) ?? throw new BrokerException($\"{symbol} on {exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\", 401);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M136 PocketfulPlugin.Data.cs:29",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        return long.TryParse(info.Token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var token) ? (ExchangeCode(exchange), token) : throw new BrokerException($\"{symbol} on {exchange} has no token {Display} could ask for. Download the master contract again.\", 400);",
+  "new": "        return long.TryParse(info.Token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var token) ? (ExchangeCode(exchange), token) : throw new BrokerException($\"{symbol} on {exchange} has no token {Display} could ask for. Download the master contract again.\", 401);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M137 PocketfulPlugin.Data.cs:33",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "    private static string? Text(JsonNode? node) => node is JsonValue v && v.TryGetValue<long>(out var whole) ? whole.ToString(CultureInfo.InvariantCulture) : Str(node);",
+  "new": "    private static string? Text(JsonNode? node) => node is JsonValue v || v.TryGetValue<long>(out var whole) ? whole.ToString(CultureInfo.InvariantCulture) : Str(node);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M138 PocketfulPlugin.Data.cs:38",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        if (packet.Count == 0) return false;",
+  "new": "        if (packet.Count != 0) return false;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M139 PocketfulPlugin.Data.cs:38",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        if (packet.Count == 0) return false;",
+  "new": "        if (packet.Count == 0) return true;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M140 PocketfulPlugin.Data.cs:40",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        return Truthy(named) && Text(named) == token.ToString(CultureInfo.InvariantCulture);",
+  "new": "        return Truthy(named) && Text(named) != token.ToString(CultureInfo.InvariantCulture);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M141 PocketfulPlugin.Data.cs:40",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        return Truthy(named) && Text(named) == token.ToString(CultureInfo.InvariantCulture);",
+  "new": "        return Truthy(named) || Text(named) == token.ToString(CultureInfo.InvariantCulture);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M142 PocketfulPlugin.Data.cs:47",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        return PocketfulPackets.ModeOfText(frame.Text) is JsonValue v && v.GetValueKind() == System.Text.Json.JsonValueKind.Number && v.TryGetValue<double>(out var d) && d == Math.Floor(d) ? (int)d : null;",
+  "new": "        return PocketfulPackets.ModeOfText(frame.Text) is JsonValue v && v.GetValueKind() != System.Text.Json.JsonValueKind.Number && v.TryGetValue<double>(out var d) && d == Math.Floor(d) ? (int)d : null;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M143 PocketfulPlugin.Data.cs:47",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        return PocketfulPackets.ModeOfText(frame.Text) is JsonValue v && v.GetValueKind() == System.Text.Json.JsonValueKind.Number && v.TryGetValue<double>(out var d) && d == Math.Floor(d) ? (int)d : null;",
+  "new": "        return PocketfulPackets.ModeOfText(frame.Text) is JsonValue v || v.GetValueKind() == System.Text.Json.JsonValueKind.Number && v.TryGetValue<double>(out var d) && d == Math.Floor(d) ? (int)d : null;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M144 PocketfulPlugin.Data.cs:50",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "    private static double Price(JsonObject packet, string key) => Truthy(packet[key]) ? Float(packet[key]) / 100 : 0;",
+  "new": "    private static double Price(JsonObject packet, string key) => Truthy(packet[key]) ? Float(packet[key]) / 101 : 0;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M145 PocketfulPlugin.Data.cs:62",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        foreach (var i in instruments) holders[i] = holders.GetValueOrDefault(i) + 1;",
+  "new": "        foreach (var i in instruments) holders[i] = holders.GetValueOrDefault(i) + 2;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M146 PocketfulPlugin.Data.cs:66",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "            if (holders[i] <= 1) unsubscribes.Add(Frame(\"unsubscribe\", \"marketdata\", [i]));",
+  "new": "            if (holders[i] < 1) unsubscribes.Add(Frame(\"unsubscribe\", \"marketdata\", [i]));",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M147 PocketfulPlugin.Data.cs:66",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "            if (holders[i] <= 1) unsubscribes.Add(Frame(\"unsubscribe\", \"marketdata\", [i]));",
+  "new": "            if (holders[i] <= 2) unsubscribes.Add(Frame(\"unsubscribe\", \"marketdata\", [i]));",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M148 PocketfulPlugin.Data.cs:72",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "            if (ModeOf(frame) != PocketfulPackets.Detailed) return false;",
+  "new": "            if (ModeOf(frame) == PocketfulPackets.Detailed) return false;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M149 PocketfulPlugin.Data.cs:72",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "            if (ModeOf(frame) != PocketfulPackets.Detailed) return false;",
+  "new": "            if (ModeOf(frame) != PocketfulPackets.Detailed) return true;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M150 PocketfulPlugin.Data.cs:82",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        var (packet, connected) = await ReadDetailedAsync(session, [instrument], p => IsPacketFor(p, instrument.Token), TimeSpan.FromSeconds(10), cancellationToken);",
+  "new": "        var (packet, connected) = await ReadDetailedAsync(session, [instrument], p => IsPacketFor(p, instrument.Token), TimeSpan.FromSeconds(11), cancellationToken);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M151 PocketfulPlugin.Data.cs:83",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        if (!connected) throw new BrokerException($\"{Display} did not open its market data connection, so there is no quote for {symbol} on {exchange}. Try again in a moment.\", 502);",
+  "new": "        if (!connected) throw new BrokerException($\"{Display} did not open its market data connection, so there is no quote for {symbol} on {exchange}. Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M152 PocketfulPlugin.Data.cs:84",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        if (packet.Count == 0) throw new BrokerException($\"{Display} did not give a quote for {symbol} on {exchange}. Try again in a moment.\", 502);",
+  "new": "        if (packet.Count != 0) throw new BrokerException($\"{Display} did not give a quote for {symbol} on {exchange}. Try again in a moment.\", 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M153 PocketfulPlugin.Data.cs:84",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        if (packet.Count == 0) throw new BrokerException($\"{Display} did not give a quote for {symbol} on {exchange}. Try again in a moment.\", 502);",
+  "new": "        if (packet.Count == 0) throw new BrokerException($\"{Display} did not give a quote for {symbol} on {exchange}. Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M154 PocketfulPlugin.Data.cs:90",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "            [\"prev_close\"] = close, [\"volume\"] = Plain(packet, \"trade_volume\", 0), [\"oi\"] = Plain(packet, \"currentOpenInterest\", 0), [\"change\"] = close != 0 ? ltp - close : 0,",
+  "new": "            [\"prev_close\"] = close, [\"volume\"] = Plain(packet, \"trade_volume\", 0), [\"oi\"] = Plain(packet, \"currentOpenInterest\", 0), [\"change\"] = close == 0 ? ltp - close : 0,",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M155 PocketfulPlugin.Data.cs:102",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        for (var i = 0; i < Math.Min(5, p.Count); i++)",
+  "new": "        for (var i = 0; i <= Math.Min(5, p.Count); i++)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M156 PocketfulPlugin.Data.cs:102",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        for (var i = 0; i < Math.Min(5, p.Count); i++)",
+  "new": "        for (var i = 0; i < Math.Min(6, p.Count); i++)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M157 PocketfulPlugin.Data.cs:103",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "            rows.Add(new JsonObject { [\"price\"] = Truthy(p[i]) ? Float(p[i]) / 100 : 0, [\"quantity\"] = i < q.Count ? q[i]?.DeepClone() : 0, [\"orders\"] = i < o.Count ? o[i]?.DeepClone() : 0 });",
+  "new": "            rows.Add(new JsonObject { [\"price\"] = Truthy(p[i]) ? Float(p[i]) / 100 : 0, [\"quantity\"] = i <= q.Count ? q[i]?.DeepClone() : 0, [\"orders\"] = i < o.Count ? o[i]?.DeepClone() : 0 });",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M158 PocketfulPlugin.Data.cs:103",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "            rows.Add(new JsonObject { [\"price\"] = Truthy(p[i]) ? Float(p[i]) / 100 : 0, [\"quantity\"] = i < q.Count ? q[i]?.DeepClone() : 0, [\"orders\"] = i < o.Count ? o[i]?.DeepClone() : 0 });",
+  "new": "            rows.Add(new JsonObject { [\"price\"] = Truthy(p[i]) ? Float(p[i]) / 101 : 0, [\"quantity\"] = i < q.Count ? q[i]?.DeepClone() : 0, [\"orders\"] = i < o.Count ? o[i]?.DeepClone() : 0 });",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M159 PocketfulPlugin.Data.cs:104",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        while (rows.Count < 5) rows.Add(new JsonObject { [\"price\"] = 0, [\"quantity\"] = 0, [\"orders\"] = 0 });",
+  "new": "        while (rows.Count <= 5) rows.Add(new JsonObject { [\"price\"] = 0, [\"quantity\"] = 0, [\"orders\"] = 0 });",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M160 PocketfulPlugin.Data.cs:104",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        while (rows.Count < 5) rows.Add(new JsonObject { [\"price\"] = 0, [\"quantity\"] = 0, [\"orders\"] = 0 });",
+  "new": "        while (rows.Count < 6) rows.Add(new JsonObject { [\"price\"] = 0, [\"quantity\"] = 0, [\"orders\"] = 0 });",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M161 PocketfulPlugin.Data.cs:115",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "            if (ModeOf(frame) != PocketfulPackets.Snapquote) return false;",
+  "new": "            if (ModeOf(frame) == PocketfulPackets.Snapquote) return false;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M162 PocketfulPlugin.Data.cs:115",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "            if (ModeOf(frame) != PocketfulPackets.Snapquote) return false;",
+  "new": "            if (ModeOf(frame) != PocketfulPackets.Snapquote) return true;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M163 PocketfulPlugin.Data.cs:118",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        }, TimeSpan.FromSeconds(15), cancellationToken);",
+  "new": "        }, TimeSpan.FromSeconds(16), cancellationToken);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M164 PocketfulPlugin.Data.cs:119",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        if (!connected) throw new BrokerException($\"{Display} did not open its market data connection, so there is no depth for {symbol} on {exchange}. Try again in a moment.\", 502);",
+  "new": "        if (!connected) throw new BrokerException($\"{Display} did not open its market data connection, so there is no depth for {symbol} on {exchange}. Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M165 PocketfulPlugin.Data.cs:120",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        if (!latest.ContainsKey(\"instrument_token\")) throw new BrokerException($\"{Display} did not give the market depth for {symbol} on {exchange}. Try again in a moment.\", 502);",
+  "new": "        if (!latest.ContainsKey(\"instrument_token\")) throw new BrokerException($\"{Display} did not give the market depth for {symbol} on {exchange}. Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M166 PocketfulPlugin.Data.cs:133",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        for (var start = 0; start < instruments.Count; start += BatchSize)",
+  "new": "        for (var start = 0; start <= instruments.Count; start += BatchSize)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M167 PocketfulPlugin.Data.cs:155",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        if (asked.Count == 0) return skipped;",
+  "new": "        if (asked.Count != 0) return skipped;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M168 PocketfulPlugin.Data.cs:157",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        var wait = TimeSpan.FromSeconds(Math.Min(Math.Max(asked.Count * 0.5, 3), 15));",
+  "new": "        var wait = TimeSpan.FromSeconds(Math.Min(Math.Max(asked.Count * 0.5, 4), 15));",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M169 PocketfulPlugin.Data.cs:157",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "        var wait = TimeSpan.FromSeconds(Math.Min(Math.Max(asked.Count * 0.5, 3), 15));",
+  "new": "        var wait = TimeSpan.FromSeconds(Math.Min(Math.Max(asked.Count * 0.5, 3), 16));",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M170 PocketfulPlugin.Data.cs:160",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "            if (packet.Count > 0)",
+  "new": "            if (packet.Count >= 0)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M171 PocketfulPlugin.Data.cs:163",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "                if (Truthy(named) && long.TryParse(Text(named), NumberStyles.Integer, CultureInfo.InvariantCulture, out var token) && byToken.ContainsKey(token)) received[token] = packet;",
+  "new": "                if (Truthy(named) || long.TryParse(Text(named), NumberStyles.Integer, CultureInfo.InvariantCulture, out var token) && byToken.ContainsKey(token)) received[token] = packet;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M172 PocketfulPlugin.Data.cs:166",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Data.cs",
+  "old": "            return received.Count >= asked.Count;",
+  "new": "            return received.Count > asked.Count;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M173 PocketfulPlugin.Login.cs:19",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Login.cs",
+  "old": "        keys.TryGetValue(\"ApiKey\", out var key) && !string.IsNullOrWhiteSpace(key) && keys.TryGetValue(\"RedirectUrl\", out var redirect) && !string.IsNullOrWhiteSpace(redirect)",
+  "new": "        keys.TryGetValue(\"ApiKey\", out var key) || !string.IsNullOrWhiteSpace(key) && keys.TryGetValue(\"RedirectUrl\", out var redirect) && !string.IsNullOrWhiteSpace(redirect)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M174 PocketfulPlugin.Login.cs:25",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Login.cs",
+  "old": "        if (!keys.TryGetValue(\"ApiKey\", out var apiKey) || string.IsNullOrWhiteSpace(apiKey) || !keys.TryGetValue(\"ApiSecret\", out var secret) || string.IsNullOrWhiteSpace(secret) || !keys.TryGetValue(\"RedirectUrl\", out var redirect) || string.IsNullOrWhiteSpace(redirect))",
+  "new": "        if (!keys.TryGetValue(\"ApiKey\", out var apiKey) && string.IsNullOrWhiteSpace(apiKey) || !keys.TryGetValue(\"ApiSecret\", out var secret) || string.IsNullOrWhiteSpace(secret) || !keys.TryGetValue(\"RedirectUrl\", out var redirect) || string.IsNullOrWhiteSpace(redirect))",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M175 PocketfulPlugin.Login.cs:26",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Login.cs",
+  "old": "            return BrokerLoginResult.Refused($\"The {Display} API key, secret and redirect address are not all set on this server. Add them to the server's settings, then sign in again.\", 409);",
+  "new": "            return BrokerLoginResult.Refused($\"The {Display} API key, secret and redirect address are not all set on this server. Add them to the server's settings, then sign in again.\", 410);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M176 PocketfulPlugin.Login.cs:27",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Login.cs",
+  "old": "        if (!input.TryGetValue(\"code\", out var code) || string.IsNullOrWhiteSpace(code)) return BrokerLoginResult.Refused($\"{Display} did not send the sign-in back. Start the sign-in again.\");",
+  "new": "        if (!input.TryGetValue(\"code\", out var code) && string.IsNullOrWhiteSpace(code)) return BrokerLoginResult.Refused($\"{Display} did not send the sign-in back. Start the sign-in again.\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M177 PocketfulPlugin.Login.cs:45",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Login.cs",
+  "old": "            if (body is not JsonObject answer) return BrokerLoginResult.Refused($\"{Display} sent an answer that could not be read. Try again in a moment.\", 502);",
+  "new": "            if (body is not JsonObject answer) return BrokerLoginResult.Refused($\"{Display} sent an answer that could not be read. Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M178 PocketfulPlugin.Login.cs:46",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Login.cs",
+  "old": "            if (!Truthy(answer[\"access_token\"])) return BrokerLoginResult.Refused($\"{Display} accepted the sign-in but sent no access token. Start the sign-in again.\", 502);",
+  "new": "            if (!Truthy(answer[\"access_token\"])) return BrokerLoginResult.Refused($\"{Display} accepted the sign-in but sent no access token. Start the sign-in again.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M179 PocketfulPlugin.Login.cs:52",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Login.cs",
+  "old": "            if (status >= 400) return BrokerLoginResult.Refused($\"{Display} signed you in but would not say which client you are ({Reason(info) ?? \"no reason was given\"}). Start the sign-in again.\", 502);",
+  "new": "            if (status > 400) return BrokerLoginResult.Refused($\"{Display} signed you in but would not say which client you are ({Reason(info) ?? \"no reason was given\"}). Start the sign-in again.\", 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M180 PocketfulPlugin.Login.cs:52",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Login.cs",
+  "old": "            if (status >= 400) return BrokerLoginResult.Refused($\"{Display} signed you in but would not say which client you are ({Reason(info) ?? \"no reason was given\"}). Start the sign-in again.\", 502);",
+  "new": "            if (status >= 401) return BrokerLoginResult.Refused($\"{Display} signed you in but would not say which client you are ({Reason(info) ?? \"no reason was given\"}). Start the sign-in again.\", 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M181 PocketfulPlugin.Login.cs:52",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Login.cs",
+  "old": "            if (status >= 400) return BrokerLoginResult.Refused($\"{Display} signed you in but would not say which client you are ({Reason(info) ?? \"no reason was given\"}). Start the sign-in again.\", 502);",
+  "new": "            if (status >= 400) return BrokerLoginResult.Refused($\"{Display} signed you in but would not say which client you are ({Reason(info) ?? \"no reason was given\"}). Start the sign-in again.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M182 PocketfulPlugin.Login.cs:53",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Login.cs",
+  "old": "            if (!Succeeded(info)) return BrokerLoginResult.Refused($\"{Display} signed you in but would not say which client you are ({Reason(info) ?? \"no reason was given\"}). Start the sign-in again.\", 502);",
+  "new": "            if (!Succeeded(info)) return BrokerLoginResult.Refused($\"{Display} signed you in but would not say which client you are ({Reason(info) ?? \"no reason was given\"}). Start the sign-in again.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M183 PocketfulPlugin.Login.cs:54",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Login.cs",
+  "old": "            if ((info as JsonObject)?[\"data\"] is not JsonObject data || !Truthy(data[\"client_id\"])) return BrokerLoginResult.Refused($\"{Display} signed you in but sent no client id. Start the sign-in again.\", 502);",
+  "new": "            if ((info as JsonObject)?[\"data\"] is not JsonObject data && !Truthy(data[\"client_id\"])) return BrokerLoginResult.Refused($\"{Display} signed you in but sent no client id. Start the sign-in again.\", 502);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M184 PocketfulPlugin.Login.cs:54",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Login.cs",
+  "old": "            if ((info as JsonObject)?[\"data\"] is not JsonObject data || !Truthy(data[\"client_id\"])) return BrokerLoginResult.Refused($\"{Display} signed you in but sent no client id. Start the sign-in again.\", 502);",
+  "new": "            if ((info as JsonObject)?[\"data\"] is not JsonObject data || !Truthy(data[\"client_id\"])) return BrokerLoginResult.Refused($\"{Display} signed you in but sent no client id. Start the sign-in again.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M185 PocketfulPlugin.Login.cs:59",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Login.cs",
+  "old": "            return BrokerLoginResult.Refused($\"Could not reach {Display} to sign in. Check your internet connection and try again.\", 502);",
+  "new": "            return BrokerLoginResult.Refused($\"Could not reach {Display} to sign in. Check your internet connection and try again.\", 503);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M186 PocketfulPlugin.Feed.cs:15",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Feed.cs",
+  "old": "        string.IsNullOrWhiteSpace(session.AuthToken) || string.IsNullOrWhiteSpace(session.ClientId) ? null",
+  "new": "        string.IsNullOrWhiteSpace(session.AuthToken) && string.IsNullOrWhiteSpace(session.ClientId) ? null",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M187 PocketfulPlugin.Feed.cs:20",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Pocketful/PocketfulPlugin.Feed.cs",
+  "old": "    public TimeSpan FeedKeepAliveEvery => TimeSpan.FromSeconds(15);",
+  "new": "    public TimeSpan FeedKeepAliveEvery => TimeSpan.FromSeconds(16);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M188 PocketfulFeedCodec.cs:20",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "new": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 2, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M189 PocketfulFeedCodec.cs:20",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "new": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 3, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M190 PocketfulFeedCodec.cs:20",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "new": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 4, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M191 PocketfulFeedCodec.cs:20",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "new": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 5, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M192 PocketfulFeedCodec.cs:20",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "new": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 7, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M193 PocketfulFeedCodec.cs:20",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "new": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 8, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M194 PocketfulFeedCodec.cs:20",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "new": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 2, \"BSE_INDEX\" => 6, _ => 1 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M195 PocketfulFeedCodec.cs:20",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "new": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 7, _ => 1 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M196 PocketfulFeedCodec.cs:20",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 1 };",
+  "new": "    private static int ExchangeCode(string brokerExchange) => brokerExchange switch { \"NSE\" => 1, \"NFO\" => 2, \"CDS\" => 3, \"MCX\" => 4, \"BSE\" => 6, \"BFO\" => 7, \"NSE_INDEX\" => 1, \"BSE_INDEX\" => 6, _ => 2 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M197 PocketfulFeedCodec.cs:22",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static int StreamOf(int mode) => mode switch { 1 => 2, 2 => 1, _ => 4 };",
+  "new": "    private static int StreamOf(int mode) => mode switch { 2 => 2, 2 => 1, _ => 4 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M198 PocketfulFeedCodec.cs:22",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static int StreamOf(int mode) => mode switch { 1 => 2, 2 => 1, _ => 4 };",
+  "new": "    private static int StreamOf(int mode) => mode switch { 1 => 3, 2 => 1, _ => 4 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M199 PocketfulFeedCodec.cs:22",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static int StreamOf(int mode) => mode switch { 1 => 2, 2 => 1, _ => 4 };",
+  "new": "    private static int StreamOf(int mode) => mode switch { 1 => 2, 3 => 1, _ => 4 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M200 PocketfulFeedCodec.cs:22",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static int StreamOf(int mode) => mode switch { 1 => 2, 2 => 1, _ => 4 };",
+  "new": "    private static int StreamOf(int mode) => mode switch { 1 => 2, 2 => 2, _ => 4 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M201 PocketfulFeedCodec.cs:22",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static int StreamOf(int mode) => mode switch { 1 => 2, 2 => 1, _ => 4 };",
+  "new": "    private static int StreamOf(int mode) => mode switch { 1 => 2, 2 => 1, _ => 5 };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M202 PocketfulFeedCodec.cs:24",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static string StreamName(int stream) => stream switch { 1 => \"marketdata\", 2 => \"compact_marketdata\", _ => \"full_snapquote\" };",
+  "new": "    private static string StreamName(int stream) => stream switch { 2 => \"marketdata\", 2 => \"compact_marketdata\", _ => \"full_snapquote\" };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M203 PocketfulFeedCodec.cs:24",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static string StreamName(int stream) => stream switch { 1 => \"marketdata\", 2 => \"compact_marketdata\", _ => \"full_snapquote\" };",
+  "new": "    private static string StreamName(int stream) => stream switch { 1 => \"marketdata\", 3 => \"compact_marketdata\", _ => \"full_snapquote\" };",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M204 PocketfulFeedCodec.cs:29",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static string KeyOf(string symbol, string exchange, int mode) => mode == 3 ? $\"{symbol}_{exchange}_{mode}_5\" : $\"{symbol}_{exchange}_{mode}\";",
+  "new": "    private static string KeyOf(string symbol, string exchange, int mode) => mode != 3 ? $\"{symbol}_{exchange}_{mode}_5\" : $\"{symbol}_{exchange}_{mode}\";",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M205 PocketfulFeedCodec.cs:29",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static string KeyOf(string symbol, string exchange, int mode) => mode == 3 ? $\"{symbol}_{exchange}_{mode}_5\" : $\"{symbol}_{exchange}_{mode}\";",
+  "new": "    private static string KeyOf(string symbol, string exchange, int mode) => mode == 4 ? $\"{symbol}_{exchange}_{mode}_5\" : $\"{symbol}_{exchange}_{mode}\";",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M206 PocketfulFeedCodec.cs:52",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "                if (mode is < 1 or > 3 || string.IsNullOrEmpty(r.Token)) continue;",
+  "new": "                if (mode is <= 1 or > 3 || string.IsNullOrEmpty(r.Token)) continue;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M207 PocketfulFeedCodec.cs:52",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "                if (mode is < 1 or > 3 || string.IsNullOrEmpty(r.Token)) continue;",
+  "new": "                if (mode is < 1 or >= 3 || string.IsNullOrEmpty(r.Token)) continue;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M208 PocketfulFeedCodec.cs:52",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "                if (mode is < 1 or > 3 || string.IsNullOrEmpty(r.Token)) continue;",
+  "new": "                if (mode is < 1 or > 3 && string.IsNullOrEmpty(r.Token)) continue;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M209 PocketfulFeedCodec.cs:52",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "                if (mode is < 1 or > 3 || string.IsNullOrEmpty(r.Token)) continue;",
+  "new": "                if (mode is < 2 or > 3 || string.IsNullOrEmpty(r.Token)) continue;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M210 PocketfulFeedCodec.cs:52",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "                if (mode is < 1 or > 3 || string.IsNullOrEmpty(r.Token)) continue;",
+  "new": "                if (mode is < 1 or > 4 || string.IsNullOrEmpty(r.Token)) continue;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M211 PocketfulFeedCodec.cs:68",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "            foreach (var m in mode is { } given ? [(int)given] : new[] { 1, 2, 3 })",
+  "new": "            foreach (var m in mode is { } given ? [(int)given] : new[] { 2, 2, 3 })",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M212 PocketfulFeedCodec.cs:68",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "            foreach (var m in mode is { } given ? [(int)given] : new[] { 1, 2, 3 })",
+  "new": "            foreach (var m in mode is { } given ? [(int)given] : new[] { 1, 3, 3 })",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M213 PocketfulFeedCodec.cs:68",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "            foreach (var m in mode is { } given ? [(int)given] : new[] { 1, 2, 3 })",
+  "new": "            foreach (var m in mode is { } given ? [(int)given] : new[] { 1, 2, 4 })",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M214 PocketfulFeedCodec.cs:71",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "                var key = subs.Keys.FirstOrDefault(k => (k == prefix || k.StartsWith(prefix + \"_\", StringComparison.Ordinal)) && subs[k].Symbol == target.Symbol && subs[k].Exchange == target.Exchange && subs[k].Mode == m);",
+  "new": "                var key = subs.Keys.FirstOrDefault(k => (k != prefix || k.StartsWith(prefix + \"_\", StringComparison.Ordinal)) && subs[k].Symbol == target.Symbol && subs[k].Exchange == target.Exchange && subs[k].Mode == m);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M215 PocketfulFeedCodec.cs:71",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "                var key = subs.Keys.FirstOrDefault(k => (k == prefix || k.StartsWith(prefix + \"_\", StringComparison.Ordinal)) && subs[k].Symbol == target.Symbol && subs[k].Exchange == target.Exchange && subs[k].Mode == m);",
+  "new": "                var key = subs.Keys.FirstOrDefault(k => (k == prefix || k.StartsWith(prefix + \"_\", StringComparison.Ordinal)) || subs[k].Symbol == target.Symbol && subs[k].Exchange == target.Exchange && subs[k].Mode == m);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M216 PocketfulFeedCodec.cs:71",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "                var key = subs.Keys.FirstOrDefault(k => (k == prefix || k.StartsWith(prefix + \"_\", StringComparison.Ordinal)) && subs[k].Symbol == target.Symbol && subs[k].Exchange == target.Exchange && subs[k].Mode == m);",
+  "new": "                var key = subs.Keys.FirstOrDefault(k => (k == prefix && k.StartsWith(prefix + \"_\", StringComparison.Ordinal)) && subs[k].Symbol == target.Symbol && subs[k].Exchange == target.Exchange && subs[k].Mode == m);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M217 PocketfulFeedCodec.cs:72",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "                if (key is null || !subs.Remove(key, out var removed)) continue;",
+  "new": "                if (key is null && !subs.Remove(key, out var removed)) continue;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M218 PocketfulFeedCodec.cs:92",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static bool Is(JsonNode? mode, int value) => mode is JsonValue v && v.TryGetValue<double>(out var d) ? d == value : mode is JsonValue w && w.TryGetValue<long>(out var l) && l == value;",
+  "new": "    private static bool Is(JsonNode? mode, int value) => mode is JsonValue v && v.TryGetValue<double>(out var d) ? d != value : mode is JsonValue w && w.TryGetValue<long>(out var l) && l == value;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M219 PocketfulFeedCodec.cs:92",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static bool Is(JsonNode? mode, int value) => mode is JsonValue v && v.TryGetValue<double>(out var d) ? d == value : mode is JsonValue w && w.TryGetValue<long>(out var l) && l == value;",
+  "new": "    private static bool Is(JsonNode? mode, int value) => mode is JsonValue v || v.TryGetValue<double>(out var d) ? d == value : mode is JsonValue w && w.TryGetValue<long>(out var l) && l == value;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M220 PocketfulFeedCodec.cs:94",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static string? Text(JsonNode? node) => node is JsonValue v && v.TryGetValue<long>(out var whole) ? whole.ToString(CultureInfo.InvariantCulture) : node is JsonValue s && s.TryGetValue<string>(out var str) ? str",
+  "new": "    private static string? Text(JsonNode? node) => node is JsonValue v || v.TryGetValue<long>(out var whole) ? whole.ToString(CultureInfo.InvariantCulture) : node is JsonValue s && s.TryGetValue<string>(out var str) ? str",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M221 PocketfulFeedCodec.cs:95",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "        : node is JsonValue e && e.TryGetValue<System.Text.Json.JsonElement>(out var el) ? el.ValueKind switch { System.Text.Json.JsonValueKind.Number => el.GetRawText(), System.Text.Json.JsonValueKind.String => el.GetString(), _ => null } : null;",
+  "new": "        : node is JsonValue e || e.TryGetValue<System.Text.Json.JsonElement>(out var el) ? el.ValueKind switch { System.Text.Json.JsonValueKind.Number => el.GetRawText(), System.Text.Json.JsonValueKind.String => el.GetString(), _ => null } : null;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M222 PocketfulFeedCodec.cs:101",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "        return Number(v) / 100;",
+  "new": "        return Number(v) / 101;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M223 PocketfulFeedCodec.cs:104",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "    private static double Number(JsonNode? v) => v is JsonValue value && value.TryGetValue<double>(out var d) ? d : v is JsonValue l && l.TryGetValue<long>(out var n) ? n",
+  "new": "    private static double Number(JsonNode? v) => v is JsonValue value || value.TryGetValue<double>(out var d) ? d : v is JsonValue l && l.TryGetValue<long>(out var n) ? n",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M224 PocketfulFeedCodec.cs:105",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "        : v is JsonValue e && e.TryGetValue<System.Text.Json.JsonElement>(out var el) && el.ValueKind == System.Text.Json.JsonValueKind.Number ? el.GetDouble() : throw new FormatException(\"not a number\");",
+  "new": "        : v is JsonValue e && e.TryGetValue<System.Text.Json.JsonElement>(out var el) && el.ValueKind != System.Text.Json.JsonValueKind.Number ? el.GetDouble() : throw new FormatException(\"not a number\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M225 PocketfulFeedCodec.cs:105",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "        : v is JsonValue e && e.TryGetValue<System.Text.Json.JsonElement>(out var el) && el.ValueKind == System.Text.Json.JsonValueKind.Number ? el.GetDouble() : throw new FormatException(\"not a number\");",
+  "new": "        : v is JsonValue e || e.TryGetValue<System.Text.Json.JsonElement>(out var el) && el.ValueKind == System.Text.Json.JsonValueKind.Number ? el.GetDouble() : throw new FormatException(\"not a number\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M226 PocketfulFeedCodec.cs:111",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "        if (packet.Count == 0) return [];",
+  "new": "        if (packet.Count != 0) return [];",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M227 PocketfulFeedCodec.cs:118",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "                sub = subs.Values.FirstOrDefault(s => s.Token == token && code is JsonValue c && (c.TryGetValue<long>(out var n) ? n == s.Code : c.TryGetValue<double>(out var d) && d == s.Code));",
+  "new": "                sub = subs.Values.FirstOrDefault(s => s.Token != token && code is JsonValue c && (c.TryGetValue<long>(out var n) ? n == s.Code : c.TryGetValue<double>(out var d) && d == s.Code));",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M228 PocketfulFeedCodec.cs:118",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "                sub = subs.Values.FirstOrDefault(s => s.Token == token && code is JsonValue c && (c.TryGetValue<long>(out var n) ? n == s.Code : c.TryGetValue<double>(out var d) && d == s.Code));",
+  "new": "                sub = subs.Values.FirstOrDefault(s => s.Token == token || code is JsonValue c && (c.TryGetValue<long>(out var n) ? n == s.Code : c.TryGetValue<double>(out var d) && d == s.Code));",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M229 PocketfulFeedCodec.cs:120",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "            var topic = $\"{sub.Exchange}_{sub.Symbol}_{sub.Mode switch { 1 => \"LTP\", 2 => \"QUOTE\", _ => \"DEPTH\" }}\";",
+  "new": "            var topic = $\"{sub.Exchange}_{sub.Symbol}_{sub.Mode switch { 2 => \"LTP\", 2 => \"QUOTE\", _ => \"DEPTH\" }}\";",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M230 PocketfulFeedCodec.cs:120",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "            var topic = $\"{sub.Exchange}_{sub.Symbol}_{sub.Mode switch { 1 => \"LTP\", 2 => \"QUOTE\", _ => \"DEPTH\" }}\";",
+  "new": "            var topic = $\"{sub.Exchange}_{sub.Symbol}_{sub.Mode switch { 1 => \"LTP\", 3 => \"QUOTE\", _ => \"DEPTH\" }}\";",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M231 PocketfulFeedCodec.cs:141",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "            if (kind == PocketfulPackets.Snapquote && packet.ContainsKey(\"bidPrices\") && packet.ContainsKey(\"askPrices\"))",
+  "new": "            if (kind != PocketfulPackets.Snapquote && packet.ContainsKey(\"bidPrices\") && packet.ContainsKey(\"askPrices\"))",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M232 PocketfulFeedCodec.cs:141",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "            if (kind == PocketfulPackets.Snapquote && packet.ContainsKey(\"bidPrices\") && packet.ContainsKey(\"askPrices\"))",
+  "new": "            if (kind == PocketfulPackets.Snapquote || packet.ContainsKey(\"bidPrices\") && packet.ContainsKey(\"askPrices\"))",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M233 PocketfulFeedCodec.cs:158",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "        for (var i = 0; i < Math.Min(5, p.Count); i++)",
+  "new": "        for (var i = 0; i <= Math.Min(5, p.Count); i++)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M234 PocketfulFeedCodec.cs:158",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "        for (var i = 0; i < Math.Min(5, p.Count); i++)",
+  "new": "        for (var i = 0; i < Math.Min(6, p.Count); i++)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M235 PocketfulFeedCodec.cs:159",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "            rows.Add(new JsonObject { [\"price\"] = Number(p[i]) / 100, [\"quantity\"] = i < q.Count ? q[i]?.DeepClone() : 0, [\"orders\"] = i < o.Count ? o[i]?.DeepClone() : 0 });",
+  "new": "            rows.Add(new JsonObject { [\"price\"] = Number(p[i]) / 100, [\"quantity\"] = i <= q.Count ? q[i]?.DeepClone() : 0, [\"orders\"] = i < o.Count ? o[i]?.DeepClone() : 0 });",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M236 PocketfulFeedCodec.cs:159",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulFeedCodec.cs",
+  "old": "            rows.Add(new JsonObject { [\"price\"] = Number(p[i]) / 100, [\"quantity\"] = i < q.Count ? q[i]?.DeepClone() : 0, [\"orders\"] = i < o.Count ? o[i]?.DeepClone() : 0 });",
+  "new": "            rows.Add(new JsonObject { [\"price\"] = Number(p[i]) / 101, [\"quantity\"] = i < q.Count ? q[i]?.DeepClone() : 0, [\"orders\"] = i < o.Count ? o[i]?.DeepClone() : 0 });",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M237 PocketfulPackets.cs:13",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "    public const int Detailed = 1, Compact = 2, Snapquote = 4;",
+  "new": "    public const int Detailed = 2, Compact = 2, Snapquote = 4;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M238 PocketfulPackets.cs:13",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "    public const int Detailed = 1, Compact = 2, Snapquote = 4;",
+  "new": "    public const int Detailed = 1, Compact = 3, Snapquote = 4;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M239 PocketfulPackets.cs:13",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "    public const int Detailed = 1, Compact = 2, Snapquote = 4;",
+  "new": "    public const int Detailed = 1, Compact = 2, Snapquote = 5;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M240 PocketfulPackets.cs:15",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "    private static JsonArray Five(ReadOnlySpan<byte> frame, int at, bool wide = false)",
+  "new": "    private static JsonArray Five(ReadOnlySpan<byte> frame, int at, bool wide = true)",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M241 PocketfulPackets.cs:18",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        for (var i = 0; i < 5; i++) values.Add((long)BinaryPrimitives.ReadUInt32BigEndian(frame[(at + 4 * i)..]));",
+  "new": "        for (var i = 0; i <= 5; i++) values.Add((long)BinaryPrimitives.ReadUInt32BigEndian(frame[(at + 4 * i)..]));",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M242 PocketfulPackets.cs:18",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        for (var i = 0; i < 5; i++) values.Add((long)BinaryPrimitives.ReadUInt32BigEndian(frame[(at + 4 * i)..]));",
+  "new": "        for (var i = 0; i < 6; i++) values.Add((long)BinaryPrimitives.ReadUInt32BigEndian(frame[(at + 4 * i)..]));",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M243 PocketfulPackets.cs:18",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        for (var i = 0; i < 5; i++) values.Add((long)BinaryPrimitives.ReadUInt32BigEndian(frame[(at + 4 * i)..]));",
+  "new": "        for (var i = 0; i < 5; i++) values.Add((long)BinaryPrimitives.ReadUInt32BigEndian(frame[(at + 5 * i)..]));",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M244 PocketfulPackets.cs:23",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "    public static int? ModeOf(ReadOnlySpan<byte> binary) => binary.Length == 0 ? null : (sbyte)binary[0];",
+  "new": "    public static int? ModeOf(ReadOnlySpan<byte> binary) => binary.Length != 0 ? null : (sbyte)binary[0];",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M245 PocketfulPackets.cs:29",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "            return JsonNode.Parse(text) is JsonObject o && o.TryGetPropertyValue(\"mode\", out var mode) ? mode : null;",
+  "new": "            return JsonNode.Parse(text) is JsonObject o || o.TryGetPropertyValue(\"mode\", out var mode) ? mode : null;",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M246 PocketfulPackets.cs:46",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        if (o.ContainsKey(\"instrumentToken\") && !o.ContainsKey(\"instrument_token\")) o[\"instrument_token\"] = o[\"instrumentToken\"]?.DeepClone();",
+  "new": "        if (o.ContainsKey(\"instrumentToken\") || !o.ContainsKey(\"instrument_token\")) o[\"instrument_token\"] = o[\"instrumentToken\"]?.DeepClone();",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M247 PocketfulPackets.cs:47",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        if (o.ContainsKey(\"exchangeCode\") && !o.ContainsKey(\"exchange_code\")) o[\"exchange_code\"] = o[\"exchangeCode\"]?.DeepClone();",
+  "new": "        if (o.ContainsKey(\"exchangeCode\") || !o.ContainsKey(\"exchange_code\")) o[\"exchange_code\"] = o[\"exchangeCode\"]?.DeepClone();",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M248 PocketfulPackets.cs:51",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "    private static bool HasToken(JsonObject o) => o.ContainsKey(\"instrument_token\") || o.ContainsKey(\"instrumentToken\");",
+  "new": "    private static bool HasToken(JsonObject o) => o.ContainsKey(\"instrument_token\") && o.ContainsKey(\"instrumentToken\");",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M249 PocketfulPackets.cs:72",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        else if (allowList && node is JsonArray { Count: > 0 } list && list[0] is JsonObject first && HasToken(first)) return Aliased(first);",
+  "new": "        else if (allowList && node is JsonArray { Count: >= 0 } list && list[0] is JsonObject first && HasToken(first)) return Aliased(first);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M250 PocketfulPackets.cs:72",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        else if (allowList && node is JsonArray { Count: > 0 } list && list[0] is JsonObject first && HasToken(first)) return Aliased(first);",
+  "new": "        else if (allowList || node is JsonArray { Count: > 0 } list && list[0] is JsonObject first && HasToken(first)) return Aliased(first);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M251 PocketfulPackets.cs:78",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        if (f.Length < 102) return [];",
+  "new": "        if (f.Length <= 102) return [];",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M252 PocketfulPackets.cs:78",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        if (f.Length < 102) return [];",
+  "new": "        if (f.Length < 103) return [];",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M253 PocketfulPackets.cs:80",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"last_traded_price\"] = U32(f, 6); r[\"last_traded_time\"] = U32(f, 10); r[\"last_traded_quantity\"] = U32(f, 14); r[\"trade_volume\"] = U32(f, 18);",
+  "new": "        r[\"last_traded_price\"] = U32(f, 7); r[\"last_traded_time\"] = U32(f, 10); r[\"last_traded_quantity\"] = U32(f, 14); r[\"trade_volume\"] = U32(f, 18);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M254 PocketfulPackets.cs:80",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"last_traded_price\"] = U32(f, 6); r[\"last_traded_time\"] = U32(f, 10); r[\"last_traded_quantity\"] = U32(f, 14); r[\"trade_volume\"] = U32(f, 18);",
+  "new": "        r[\"last_traded_price\"] = U32(f, 6); r[\"last_traded_time\"] = U32(f, 11); r[\"last_traded_quantity\"] = U32(f, 14); r[\"trade_volume\"] = U32(f, 18);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M255 PocketfulPackets.cs:80",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"last_traded_price\"] = U32(f, 6); r[\"last_traded_time\"] = U32(f, 10); r[\"last_traded_quantity\"] = U32(f, 14); r[\"trade_volume\"] = U32(f, 18);",
+  "new": "        r[\"last_traded_price\"] = U32(f, 6); r[\"last_traded_time\"] = U32(f, 10); r[\"last_traded_quantity\"] = U32(f, 15); r[\"trade_volume\"] = U32(f, 18);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M256 PocketfulPackets.cs:80",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"last_traded_price\"] = U32(f, 6); r[\"last_traded_time\"] = U32(f, 10); r[\"last_traded_quantity\"] = U32(f, 14); r[\"trade_volume\"] = U32(f, 18);",
+  "new": "        r[\"last_traded_price\"] = U32(f, 6); r[\"last_traded_time\"] = U32(f, 10); r[\"last_traded_quantity\"] = U32(f, 14); r[\"trade_volume\"] = U32(f, 19);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M257 PocketfulPackets.cs:81",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"best_bid_price\"] = U32(f, 22); r[\"best_bid_quantity\"] = U32(f, 26); r[\"best_ask_price\"] = U32(f, 30); r[\"best_ask_quantity\"] = U32(f, 34);",
+  "new": "        r[\"best_bid_price\"] = U32(f, 23); r[\"best_bid_quantity\"] = U32(f, 26); r[\"best_ask_price\"] = U32(f, 30); r[\"best_ask_quantity\"] = U32(f, 34);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M258 PocketfulPackets.cs:81",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"best_bid_price\"] = U32(f, 22); r[\"best_bid_quantity\"] = U32(f, 26); r[\"best_ask_price\"] = U32(f, 30); r[\"best_ask_quantity\"] = U32(f, 34);",
+  "new": "        r[\"best_bid_price\"] = U32(f, 22); r[\"best_bid_quantity\"] = U32(f, 27); r[\"best_ask_price\"] = U32(f, 30); r[\"best_ask_quantity\"] = U32(f, 34);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M259 PocketfulPackets.cs:81",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"best_bid_price\"] = U32(f, 22); r[\"best_bid_quantity\"] = U32(f, 26); r[\"best_ask_price\"] = U32(f, 30); r[\"best_ask_quantity\"] = U32(f, 34);",
+  "new": "        r[\"best_bid_price\"] = U32(f, 22); r[\"best_bid_quantity\"] = U32(f, 26); r[\"best_ask_price\"] = U32(f, 31); r[\"best_ask_quantity\"] = U32(f, 34);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M260 PocketfulPackets.cs:81",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"best_bid_price\"] = U32(f, 22); r[\"best_bid_quantity\"] = U32(f, 26); r[\"best_ask_price\"] = U32(f, 30); r[\"best_ask_quantity\"] = U32(f, 34);",
+  "new": "        r[\"best_bid_price\"] = U32(f, 22); r[\"best_bid_quantity\"] = U32(f, 26); r[\"best_ask_price\"] = U32(f, 30); r[\"best_ask_quantity\"] = U32(f, 35);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M261 PocketfulPackets.cs:84",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"average_trade_price\"] = U32(f, 54); r[\"exchange_timestamp\"] = U32(f, 58); r[\"open_price\"] = U32(f, 62); r[\"high_price\"] = U32(f, 66); r[\"low_price\"] = U32(f, 70); r[\"close_price\"] = U32(f, 74);",
+  "new": "        r[\"average_trade_price\"] = U32(f, 55); r[\"exchange_timestamp\"] = U32(f, 58); r[\"open_price\"] = U32(f, 62); r[\"high_price\"] = U32(f, 66); r[\"low_price\"] = U32(f, 70); r[\"close_price\"] = U32(f, 74);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M262 PocketfulPackets.cs:84",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"average_trade_price\"] = U32(f, 54); r[\"exchange_timestamp\"] = U32(f, 58); r[\"open_price\"] = U32(f, 62); r[\"high_price\"] = U32(f, 66); r[\"low_price\"] = U32(f, 70); r[\"close_price\"] = U32(f, 74);",
+  "new": "        r[\"average_trade_price\"] = U32(f, 54); r[\"exchange_timestamp\"] = U32(f, 59); r[\"open_price\"] = U32(f, 62); r[\"high_price\"] = U32(f, 66); r[\"low_price\"] = U32(f, 70); r[\"close_price\"] = U32(f, 74);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M263 PocketfulPackets.cs:84",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"average_trade_price\"] = U32(f, 54); r[\"exchange_timestamp\"] = U32(f, 58); r[\"open_price\"] = U32(f, 62); r[\"high_price\"] = U32(f, 66); r[\"low_price\"] = U32(f, 70); r[\"close_price\"] = U32(f, 74);",
+  "new": "        r[\"average_trade_price\"] = U32(f, 54); r[\"exchange_timestamp\"] = U32(f, 58); r[\"open_price\"] = U32(f, 63); r[\"high_price\"] = U32(f, 66); r[\"low_price\"] = U32(f, 70); r[\"close_price\"] = U32(f, 74);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M264 PocketfulPackets.cs:84",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"average_trade_price\"] = U32(f, 54); r[\"exchange_timestamp\"] = U32(f, 58); r[\"open_price\"] = U32(f, 62); r[\"high_price\"] = U32(f, 66); r[\"low_price\"] = U32(f, 70); r[\"close_price\"] = U32(f, 74);",
+  "new": "        r[\"average_trade_price\"] = U32(f, 54); r[\"exchange_timestamp\"] = U32(f, 58); r[\"open_price\"] = U32(f, 62); r[\"high_price\"] = U32(f, 67); r[\"low_price\"] = U32(f, 70); r[\"close_price\"] = U32(f, 74);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M265 PocketfulPackets.cs:84",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"average_trade_price\"] = U32(f, 54); r[\"exchange_timestamp\"] = U32(f, 58); r[\"open_price\"] = U32(f, 62); r[\"high_price\"] = U32(f, 66); r[\"low_price\"] = U32(f, 70); r[\"close_price\"] = U32(f, 74);",
+  "new": "        r[\"average_trade_price\"] = U32(f, 54); r[\"exchange_timestamp\"] = U32(f, 58); r[\"open_price\"] = U32(f, 62); r[\"high_price\"] = U32(f, 66); r[\"low_price\"] = U32(f, 71); r[\"close_price\"] = U32(f, 74);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M266 PocketfulPackets.cs:84",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"average_trade_price\"] = U32(f, 54); r[\"exchange_timestamp\"] = U32(f, 58); r[\"open_price\"] = U32(f, 62); r[\"high_price\"] = U32(f, 66); r[\"low_price\"] = U32(f, 70); r[\"close_price\"] = U32(f, 74);",
+  "new": "        r[\"average_trade_price\"] = U32(f, 54); r[\"exchange_timestamp\"] = U32(f, 58); r[\"open_price\"] = U32(f, 62); r[\"high_price\"] = U32(f, 66); r[\"low_price\"] = U32(f, 70); r[\"close_price\"] = U32(f, 75);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M267 PocketfulPackets.cs:85",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"yearly_high_price\"] = U32(f, 78); r[\"yearly_low_price\"] = U32(f, 82); r[\"lowDPR\"] = U32(f, 86); r[\"highDPR\"] = U32(f, 90); r[\"currentOpenInterest\"] = U32(f, 94); r[\"initialOpenInterest\"] = U32(f, 98);",
+  "new": "        r[\"yearly_high_price\"] = U32(f, 79); r[\"yearly_low_price\"] = U32(f, 82); r[\"lowDPR\"] = U32(f, 86); r[\"highDPR\"] = U32(f, 90); r[\"currentOpenInterest\"] = U32(f, 94); r[\"initialOpenInterest\"] = U32(f, 98);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M268 PocketfulPackets.cs:85",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"yearly_high_price\"] = U32(f, 78); r[\"yearly_low_price\"] = U32(f, 82); r[\"lowDPR\"] = U32(f, 86); r[\"highDPR\"] = U32(f, 90); r[\"currentOpenInterest\"] = U32(f, 94); r[\"initialOpenInterest\"] = U32(f, 98);",
+  "new": "        r[\"yearly_high_price\"] = U32(f, 78); r[\"yearly_low_price\"] = U32(f, 83); r[\"lowDPR\"] = U32(f, 86); r[\"highDPR\"] = U32(f, 90); r[\"currentOpenInterest\"] = U32(f, 94); r[\"initialOpenInterest\"] = U32(f, 98);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M269 PocketfulPackets.cs:85",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"yearly_high_price\"] = U32(f, 78); r[\"yearly_low_price\"] = U32(f, 82); r[\"lowDPR\"] = U32(f, 86); r[\"highDPR\"] = U32(f, 90); r[\"currentOpenInterest\"] = U32(f, 94); r[\"initialOpenInterest\"] = U32(f, 98);",
+  "new": "        r[\"yearly_high_price\"] = U32(f, 78); r[\"yearly_low_price\"] = U32(f, 82); r[\"lowDPR\"] = U32(f, 87); r[\"highDPR\"] = U32(f, 90); r[\"currentOpenInterest\"] = U32(f, 94); r[\"initialOpenInterest\"] = U32(f, 98);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M270 PocketfulPackets.cs:85",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"yearly_high_price\"] = U32(f, 78); r[\"yearly_low_price\"] = U32(f, 82); r[\"lowDPR\"] = U32(f, 86); r[\"highDPR\"] = U32(f, 90); r[\"currentOpenInterest\"] = U32(f, 94); r[\"initialOpenInterest\"] = U32(f, 98);",
+  "new": "        r[\"yearly_high_price\"] = U32(f, 78); r[\"yearly_low_price\"] = U32(f, 82); r[\"lowDPR\"] = U32(f, 86); r[\"highDPR\"] = U32(f, 91); r[\"currentOpenInterest\"] = U32(f, 94); r[\"initialOpenInterest\"] = U32(f, 98);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M271 PocketfulPackets.cs:85",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"yearly_high_price\"] = U32(f, 78); r[\"yearly_low_price\"] = U32(f, 82); r[\"lowDPR\"] = U32(f, 86); r[\"highDPR\"] = U32(f, 90); r[\"currentOpenInterest\"] = U32(f, 94); r[\"initialOpenInterest\"] = U32(f, 98);",
+  "new": "        r[\"yearly_high_price\"] = U32(f, 78); r[\"yearly_low_price\"] = U32(f, 82); r[\"lowDPR\"] = U32(f, 86); r[\"highDPR\"] = U32(f, 90); r[\"currentOpenInterest\"] = U32(f, 95); r[\"initialOpenInterest\"] = U32(f, 98);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M272 PocketfulPackets.cs:85",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"yearly_high_price\"] = U32(f, 78); r[\"yearly_low_price\"] = U32(f, 82); r[\"lowDPR\"] = U32(f, 86); r[\"highDPR\"] = U32(f, 90); r[\"currentOpenInterest\"] = U32(f, 94); r[\"initialOpenInterest\"] = U32(f, 98);",
+  "new": "        r[\"yearly_high_price\"] = U32(f, 78); r[\"yearly_low_price\"] = U32(f, 82); r[\"lowDPR\"] = U32(f, 86); r[\"highDPR\"] = U32(f, 90); r[\"currentOpenInterest\"] = U32(f, 94); r[\"initialOpenInterest\"] = U32(f, 99);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M273 PocketfulPackets.cs:91",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        if (f.Length < 42) return [];",
+  "new": "        if (f.Length <= 42) return [];",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M274 PocketfulPackets.cs:91",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        if (f.Length < 42) return [];",
+  "new": "        if (f.Length < 43) return [];",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M275 PocketfulPackets.cs:93",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"last_traded_price\"] = U32(f, 6); r[\"change\"] = U32(f, 10); r[\"last_traded_time\"] = U32(f, 14); r[\"lowDPR\"] = U32(f, 18); r[\"highDPR\"] = U32(f, 22);",
+  "new": "        r[\"last_traded_price\"] = U32(f, 7); r[\"change\"] = U32(f, 10); r[\"last_traded_time\"] = U32(f, 14); r[\"lowDPR\"] = U32(f, 18); r[\"highDPR\"] = U32(f, 22);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M276 PocketfulPackets.cs:93",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"last_traded_price\"] = U32(f, 6); r[\"change\"] = U32(f, 10); r[\"last_traded_time\"] = U32(f, 14); r[\"lowDPR\"] = U32(f, 18); r[\"highDPR\"] = U32(f, 22);",
+  "new": "        r[\"last_traded_price\"] = U32(f, 6); r[\"change\"] = U32(f, 11); r[\"last_traded_time\"] = U32(f, 14); r[\"lowDPR\"] = U32(f, 18); r[\"highDPR\"] = U32(f, 22);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M277 PocketfulPackets.cs:93",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"last_traded_price\"] = U32(f, 6); r[\"change\"] = U32(f, 10); r[\"last_traded_time\"] = U32(f, 14); r[\"lowDPR\"] = U32(f, 18); r[\"highDPR\"] = U32(f, 22);",
+  "new": "        r[\"last_traded_price\"] = U32(f, 6); r[\"change\"] = U32(f, 10); r[\"last_traded_time\"] = U32(f, 15); r[\"lowDPR\"] = U32(f, 18); r[\"highDPR\"] = U32(f, 22);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M278 PocketfulPackets.cs:93",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"last_traded_price\"] = U32(f, 6); r[\"change\"] = U32(f, 10); r[\"last_traded_time\"] = U32(f, 14); r[\"lowDPR\"] = U32(f, 18); r[\"highDPR\"] = U32(f, 22);",
+  "new": "        r[\"last_traded_price\"] = U32(f, 6); r[\"change\"] = U32(f, 10); r[\"last_traded_time\"] = U32(f, 14); r[\"lowDPR\"] = U32(f, 19); r[\"highDPR\"] = U32(f, 22);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M279 PocketfulPackets.cs:93",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"last_traded_price\"] = U32(f, 6); r[\"change\"] = U32(f, 10); r[\"last_traded_time\"] = U32(f, 14); r[\"lowDPR\"] = U32(f, 18); r[\"highDPR\"] = U32(f, 22);",
+  "new": "        r[\"last_traded_price\"] = U32(f, 6); r[\"change\"] = U32(f, 10); r[\"last_traded_time\"] = U32(f, 14); r[\"lowDPR\"] = U32(f, 18); r[\"highDPR\"] = U32(f, 23);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M280 PocketfulPackets.cs:94",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"currentOpenInterest\"] = U32(f, 26); r[\"initialOpenInterest\"] = U32(f, 30); r[\"bidPrice\"] = U32(f, 34); r[\"askPrice\"] = U32(f, 38);",
+  "new": "        r[\"currentOpenInterest\"] = U32(f, 27); r[\"initialOpenInterest\"] = U32(f, 30); r[\"bidPrice\"] = U32(f, 34); r[\"askPrice\"] = U32(f, 38);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M281 PocketfulPackets.cs:94",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"currentOpenInterest\"] = U32(f, 26); r[\"initialOpenInterest\"] = U32(f, 30); r[\"bidPrice\"] = U32(f, 34); r[\"askPrice\"] = U32(f, 38);",
+  "new": "        r[\"currentOpenInterest\"] = U32(f, 26); r[\"initialOpenInterest\"] = U32(f, 31); r[\"bidPrice\"] = U32(f, 34); r[\"askPrice\"] = U32(f, 38);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M282 PocketfulPackets.cs:94",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"currentOpenInterest\"] = U32(f, 26); r[\"initialOpenInterest\"] = U32(f, 30); r[\"bidPrice\"] = U32(f, 34); r[\"askPrice\"] = U32(f, 38);",
+  "new": "        r[\"currentOpenInterest\"] = U32(f, 26); r[\"initialOpenInterest\"] = U32(f, 30); r[\"bidPrice\"] = U32(f, 35); r[\"askPrice\"] = U32(f, 38);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M283 PocketfulPackets.cs:94",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"currentOpenInterest\"] = U32(f, 26); r[\"initialOpenInterest\"] = U32(f, 30); r[\"bidPrice\"] = U32(f, 34); r[\"askPrice\"] = U32(f, 38);",
+  "new": "        r[\"currentOpenInterest\"] = U32(f, 26); r[\"initialOpenInterest\"] = U32(f, 30); r[\"bidPrice\"] = U32(f, 34); r[\"askPrice\"] = U32(f, 39);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M284 PocketfulPackets.cs:98",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "    public static JsonObject DecodeCompact(string text) => FromText(text, false) ?? [];",
+  "new": "    public static JsonObject DecodeCompact(string text) => FromText(text, true) ?? [];",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M285 PocketfulPackets.cs:102",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        if (f.Length < 166) return [];",
+  "new": "        if (f.Length <= 166) return [];",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M286 PocketfulPackets.cs:102",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        if (f.Length < 166) return [];",
+  "new": "        if (f.Length < 167) return [];",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M287 PocketfulPackets.cs:104",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"buyers\"] = Five(f, 6); r[\"bidPrices\"] = Five(f, 26); r[\"bidQtys\"] = Five(f, 46); r[\"sellers\"] = Five(f, 66); r[\"askPrices\"] = Five(f, 86); r[\"askQtys\"] = Five(f, 106);",
+  "new": "        r[\"buyers\"] = Five(f, 7); r[\"bidPrices\"] = Five(f, 26); r[\"bidQtys\"] = Five(f, 46); r[\"sellers\"] = Five(f, 66); r[\"askPrices\"] = Five(f, 86); r[\"askQtys\"] = Five(f, 106);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M288 PocketfulPackets.cs:104",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"buyers\"] = Five(f, 6); r[\"bidPrices\"] = Five(f, 26); r[\"bidQtys\"] = Five(f, 46); r[\"sellers\"] = Five(f, 66); r[\"askPrices\"] = Five(f, 86); r[\"askQtys\"] = Five(f, 106);",
+  "new": "        r[\"buyers\"] = Five(f, 6); r[\"bidPrices\"] = Five(f, 27); r[\"bidQtys\"] = Five(f, 46); r[\"sellers\"] = Five(f, 66); r[\"askPrices\"] = Five(f, 86); r[\"askQtys\"] = Five(f, 106);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M289 PocketfulPackets.cs:104",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"buyers\"] = Five(f, 6); r[\"bidPrices\"] = Five(f, 26); r[\"bidQtys\"] = Five(f, 46); r[\"sellers\"] = Five(f, 66); r[\"askPrices\"] = Five(f, 86); r[\"askQtys\"] = Five(f, 106);",
+  "new": "        r[\"buyers\"] = Five(f, 6); r[\"bidPrices\"] = Five(f, 26); r[\"bidQtys\"] = Five(f, 47); r[\"sellers\"] = Five(f, 66); r[\"askPrices\"] = Five(f, 86); r[\"askQtys\"] = Five(f, 106);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M290 PocketfulPackets.cs:104",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"buyers\"] = Five(f, 6); r[\"bidPrices\"] = Five(f, 26); r[\"bidQtys\"] = Five(f, 46); r[\"sellers\"] = Five(f, 66); r[\"askPrices\"] = Five(f, 86); r[\"askQtys\"] = Five(f, 106);",
+  "new": "        r[\"buyers\"] = Five(f, 6); r[\"bidPrices\"] = Five(f, 26); r[\"bidQtys\"] = Five(f, 46); r[\"sellers\"] = Five(f, 67); r[\"askPrices\"] = Five(f, 86); r[\"askQtys\"] = Five(f, 106);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M291 PocketfulPackets.cs:104",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"buyers\"] = Five(f, 6); r[\"bidPrices\"] = Five(f, 26); r[\"bidQtys\"] = Five(f, 46); r[\"sellers\"] = Five(f, 66); r[\"askPrices\"] = Five(f, 86); r[\"askQtys\"] = Five(f, 106);",
+  "new": "        r[\"buyers\"] = Five(f, 6); r[\"bidPrices\"] = Five(f, 26); r[\"bidQtys\"] = Five(f, 46); r[\"sellers\"] = Five(f, 66); r[\"askPrices\"] = Five(f, 87); r[\"askQtys\"] = Five(f, 106);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M292 PocketfulPackets.cs:104",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"buyers\"] = Five(f, 6); r[\"bidPrices\"] = Five(f, 26); r[\"bidQtys\"] = Five(f, 46); r[\"sellers\"] = Five(f, 66); r[\"askPrices\"] = Five(f, 86); r[\"askQtys\"] = Five(f, 106);",
+  "new": "        r[\"buyers\"] = Five(f, 6); r[\"bidPrices\"] = Five(f, 26); r[\"bidQtys\"] = Five(f, 46); r[\"sellers\"] = Five(f, 66); r[\"askPrices\"] = Five(f, 86); r[\"askQtys\"] = Five(f, 107);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M293 PocketfulPackets.cs:105",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"averageTradePrice\"] = U32(f, 126); r[\"open\"] = U32(f, 130); r[\"high\"] = U32(f, 134); r[\"low\"] = U32(f, 138); r[\"close\"] = U32(f, 142);",
+  "new": "        r[\"averageTradePrice\"] = U32(f, 127); r[\"open\"] = U32(f, 130); r[\"high\"] = U32(f, 134); r[\"low\"] = U32(f, 138); r[\"close\"] = U32(f, 142);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M294 PocketfulPackets.cs:105",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"averageTradePrice\"] = U32(f, 126); r[\"open\"] = U32(f, 130); r[\"high\"] = U32(f, 134); r[\"low\"] = U32(f, 138); r[\"close\"] = U32(f, 142);",
+  "new": "        r[\"averageTradePrice\"] = U32(f, 126); r[\"open\"] = U32(f, 131); r[\"high\"] = U32(f, 134); r[\"low\"] = U32(f, 138); r[\"close\"] = U32(f, 142);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M295 PocketfulPackets.cs:105",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"averageTradePrice\"] = U32(f, 126); r[\"open\"] = U32(f, 130); r[\"high\"] = U32(f, 134); r[\"low\"] = U32(f, 138); r[\"close\"] = U32(f, 142);",
+  "new": "        r[\"averageTradePrice\"] = U32(f, 126); r[\"open\"] = U32(f, 130); r[\"high\"] = U32(f, 135); r[\"low\"] = U32(f, 138); r[\"close\"] = U32(f, 142);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M296 PocketfulPackets.cs:105",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"averageTradePrice\"] = U32(f, 126); r[\"open\"] = U32(f, 130); r[\"high\"] = U32(f, 134); r[\"low\"] = U32(f, 138); r[\"close\"] = U32(f, 142);",
+  "new": "        r[\"averageTradePrice\"] = U32(f, 126); r[\"open\"] = U32(f, 130); r[\"high\"] = U32(f, 134); r[\"low\"] = U32(f, 139); r[\"close\"] = U32(f, 142);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M297 PocketfulPackets.cs:105",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"averageTradePrice\"] = U32(f, 126); r[\"open\"] = U32(f, 130); r[\"high\"] = U32(f, 134); r[\"low\"] = U32(f, 138); r[\"close\"] = U32(f, 142);",
+  "new": "        r[\"averageTradePrice\"] = U32(f, 126); r[\"open\"] = U32(f, 130); r[\"high\"] = U32(f, 134); r[\"low\"] = U32(f, 138); r[\"close\"] = U32(f, 143);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M298 PocketfulPackets.cs:106",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "        r[\"totalBuyQty\"] = BinaryPrimitives.ReadUInt64BigEndian(f[146..]); r[\"totalSellQty\"] = BinaryPrimitives.ReadUInt64BigEndian(f[154..]); r[\"volume\"] = U32(f, 162);",
+  "new": "        r[\"totalBuyQty\"] = BinaryPrimitives.ReadUInt64BigEndian(f[146..]); r[\"totalSellQty\"] = BinaryPrimitives.ReadUInt64BigEndian(f[154..]); r[\"volume\"] = U32(f, 163);",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M299 PocketfulPackets.cs:110",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/PocketfulPackets.cs",
+  "old": "    public static JsonObject DecodeSnapquote(string text) => FromText(text, true) ?? [];",
+  "new": "    public static JsonObject DecodeSnapquote(string text) => FromText(text, false) ?? [];",
+  "filter": "FullyQualifiedName~Pocketful",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

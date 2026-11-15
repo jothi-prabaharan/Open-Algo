@@ -129,3 +129,13 @@ public sealed class PocketfulSnapshotContractTests
         }
     }
 }
+
+/// <summary>Pocketful's stream against the Python adapter (tools/contract-fixtures/feed_pocketful.fixtures.json).</summary>
+public sealed class PocketfulFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_pocketful.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_pocketful.fixtures.json", name, () => new PocketfulFeedCodec());
+}

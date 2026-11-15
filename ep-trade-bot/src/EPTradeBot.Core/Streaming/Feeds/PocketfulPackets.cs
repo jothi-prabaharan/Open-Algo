@@ -36,7 +36,7 @@ public static class PocketfulPackets
 
     private static JsonObject Common(ReadOnlySpan<byte> f) => new()
     {
-        ["mode"] = (sbyte)f[0], ["exchange_code"] = (sbyte)f[1], ["instrument_token"] = (long)BinaryPrimitives.ReadUInt32BigEndian(f[2..]),
+        ["mode"] = (long)(sbyte)f[0], ["exchange_code"] = (long)(sbyte)f[1], ["instrument_token"] = (long)BinaryPrimitives.ReadUInt32BigEndian(f[2..]),
     };
 
     private static long U32(ReadOnlySpan<byte> f, int at) => BinaryPrimitives.ReadUInt32BigEndian(f[at..]);
