@@ -92,3 +92,55 @@ public sealed class AliceBlueContractTests(AliceBlueHost host, ITestOutputHelper
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class AliceBlueHistoryHost() : AliceBlueFileHost("history_aliceblue.fixtures.json");
+
+/// <summary>AliceBlue history (tools/contract-fixtures/history_aliceblue.fixtures.json), with the clock stopped at the recording.</summary>
+public sealed class AliceBlueHistoryContractTests(AliceBlueHistoryHost host, ITestOutputHelper output) : IClassFixture<AliceBlueHistoryHost>
+{
+    private const string NoCode = "OpenAlgo answers an empty list when AliceBlue cannot be reached or answers with something that is not data, which a trader reads as no candles. EP Trade bot says to try again in a moment.";
+
+    private static Deviation Down() => new(NoCode, f => Expect(f, 500, Error("AliceBlue could not return candles for NSE:SBIN right now. Try again in a moment.")));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_http_error_is_no_candles"] = Down(),
+        ["history_not_json_is_no_candles"] = Down(),
+        ["history_an_interval_aliceblue_lacks"] = new("OpenAlgo answers an empty list for an interval AliceBlue does not offer. EP Trade bot answers 400 and names the intervals AliceBlue offers, so a trader is never handed an empty series that looks like no data.",
+            f => { Expect(f, 400, Error("Interval 2m is not supported by AliceBlue. Use one of: 1m, 3m, 5m, 10m, 15m, 30m, 1h, D.")); f["sent"]!.AsArray().Clear(); }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_aliceblue.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class AliceBlueLoginHost() : AliceBlueFileHost("login_aliceblue.fixtures.json");
+
+/// <summary>AliceBlue sign-in (tools/contract-fixtures/login_aliceblue.fixtures.json).</summary>
+public sealed class AliceBlueLoginContractTests(AliceBlueLoginHost host, ITestOutputHelper output) : IClassFixture<AliceBlueLoginHost>
+{
+    private const string Again = "AliceBlue did not accept the sign-in. Start it again from the beginning.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_refused_not_ok"] = LoginDeviations.Refused("AliceBlue did not accept the sign-in: Invalid auth code"),
+        ["login_refused_not_ok_lowercase_without_a_message"] = LoginDeviations.Refused(Again),
+        ["login_refused_not_ok_exact_spelling"] = LoginDeviations.Refused("AliceBlue did not accept the sign-in: Auth code expired"),
+        ["login_refused_not_ok_without_a_message"] = LoginDeviations.Refused(Again),
+        ["login_refused_with_a_message_only"] = LoginDeviations.Refused("AliceBlue did not accept the sign-in: Checksum mismatch"),
+        ["login_ok_without_a_session"] = LoginDeviations.Refused(Again),
+        ["login_ok_with_an_empty_session"] = LoginDeviations.Refused(Again),
+        ["login_refused_with_a_status"] = LoginDeviations.Refused("AliceBlue did not accept the sign-in: Unauthorised"),
+        ["login_answer_that_is_not_json"] = LoginDeviations.Refused("AliceBlue sent an answer that could not be read. Try again in a moment.", 502),
+        ["login_answer_that_is_not_an_object"] = LoginDeviations.Refused("AliceBlue sent an answer that could not be read. Try again in a moment.", 502),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_aliceblue.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

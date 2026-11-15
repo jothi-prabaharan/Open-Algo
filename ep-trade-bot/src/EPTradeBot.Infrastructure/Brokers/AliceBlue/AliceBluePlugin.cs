@@ -22,7 +22,7 @@ public sealed partial class AliceBluePlugin(IHttpClientFactory http, BrokerSessi
 
     public string Name => "aliceblue";
     public string DisplayName => Display;
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     private HttpClient Client() => http.CreateClient(Name);
