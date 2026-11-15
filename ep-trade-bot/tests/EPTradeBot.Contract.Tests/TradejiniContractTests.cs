@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using EPTradeBot.Core.Streaming.Feeds;
 using EPTradeBot.IntegrationTests;
 using Xunit.Abstractions;
 using static EPTradeBot.Contract.Tests.ContractRunner;
@@ -182,4 +183,16 @@ public sealed class HistoryTradejiniContractTests(HistoryTradejiniHost host, ITe
     [PostgresTheory]
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+/// <summary>Tradejini's stream against the Python adapter and client (tools/contract-fixtures/feed_tradejini.fixtures.json).</summary>
+public sealed class TradejiniFeedContractTests
+{
+    private const string File = "feed_tradejini.fixtures.json";
+
+    public static IEnumerable<object[]> Names() => FeedRunner.Names(File);
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run(File, name, () => new EPTradeBot.Core.Streaming.Feeds.TradejiniFeedCodec());
 }

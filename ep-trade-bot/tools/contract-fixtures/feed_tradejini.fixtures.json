@@ -1,0 +1,5871 @@
+{
+  "broker": "tradejini",
+  "access_token": "tj-access-token",
+  "client_id": null,
+  "start_frames": [],
+  "now_ms": 1793700000123,
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "EQT_SBIN_EQ_NSE",
+      "name": "SBIN",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "EQT_INFY_EQ_NSE",
+      "name": "INFY",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "RELIANCE",
+      "brsymbol": "EQT_RELIANCE_EQ_NSE",
+      "name": "RELIANCE",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "2885",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "TATAMOTORS",
+      "brsymbol": "EQT_TATAMOTORS_EQ_BSE",
+      "name": "TATAMOTORS",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500570",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "SBINBSE",
+      "brsymbol": "EQT_SBIN_EQ_BSE",
+      "name": "SBINBSE",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "FUT_NIFTY_25NOV26_NFO",
+      "name": "NIFTY25NOV26FUT",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "49500",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "FUT",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "SENSEX26NOVFUT",
+      "brsymbol": "FUT_SENSEX_26NOV26_BFO",
+      "name": "SENSEX26NOVFUT",
+      "exchange": "BFO",
+      "brexchange": "BFO",
+      "token": "60001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "FUT",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "USDINR25NOV26FUT",
+      "brsymbol": "FUT_USDINR_25NOV26_CDS",
+      "name": "USDINR25NOV26FUT",
+      "exchange": "CDS",
+      "brexchange": "CDS",
+      "token": "90001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "FUT",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "FUT_GOLDM_25NOV26_MCX",
+      "name": "GOLDM25NOV26FUT",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "80001",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "FUT",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "IDX_NIFTY_NSE",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE",
+      "token": "26000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "SENSEX",
+      "brsymbol": "IDX_SENSEX_BSE",
+      "name": "SENSEX",
+      "exchange": "BSE_INDEX",
+      "brexchange": "BSE",
+      "token": "19000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "a_connection_with_nothing_subscribed_sends_nothing",
+      "steps": [
+        {
+          "step": {
+            "reconnect": {}
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_connection_repeats_the_quote_feed",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "INFY",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "reconnect": {}
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_connection_repeats_the_depth_feed",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "reconnect": {}
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_connection_repeats_both_feeds",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "INFY",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              },
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "reconnect": {}
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              },
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_connection_after_everything_was_dropped_sends_nothing",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "SBIN",
+              "exchange": "NSE",
+              "mode": 2
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "unsub"
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "reconnect": {}
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_connection_repeats_a_token_once",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              },
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "reconnect": {}
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_second_connection_repeats_again",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "reconnect": {}
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "reconnect": {}
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_ltp",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_quote",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_depth",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_several_quotes_is_one_request",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "INFY",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "RELIANCE",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "1594_NSE"
+                  },
+                  {
+                    "t": "2885_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_a_quote_and_a_depth_is_a_request_each_feed",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "INFY",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              },
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_one_at_a_time_sends_the_whole_list_each_time",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "INFY",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "RELIANCE",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "1594_NSE"
+                  },
+                  {
+                    "t": "2885_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_depth_one_at_a_time",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "INFY",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_ltp_and_quote_on_one_scrip_names_it_once",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              },
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_quote_and_depth_of_one_scrip",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              },
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_the_same_scrip_again_sends_the_list_again",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_every_exchange",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "TATAMOTORS",
+                "exchange": "BSE",
+                "mode": 2
+              },
+              {
+                "symbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "mode": 2
+              },
+              {
+                "symbol": "SENSEX26NOVFUT",
+                "exchange": "BFO",
+                "mode": 2
+              },
+              {
+                "symbol": "USDINR25NOV26FUT",
+                "exchange": "CDS",
+                "mode": 2
+              },
+              {
+                "symbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "500570_BSE"
+                  },
+                  {
+                    "t": "49500_NFO"
+                  },
+                  {
+                    "t": "60001_BFO"
+                  },
+                  {
+                    "t": "90001_CDS"
+                  },
+                  {
+                    "t": "80001_MCX"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_an_index_uses_its_cash_exchange",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "NIFTY",
+                "exchange": "NSE_INDEX",
+                "mode": 2
+              },
+              {
+                "symbol": "SENSEX",
+                "exchange": "BSE_INDEX",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "26000_NSE"
+                  },
+                  {
+                    "t": "19000_BSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_one_token_on_two_exchanges",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "SBINBSE",
+                "exchange": "BSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "3045_BSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_depth_for_an_index",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "NIFTY",
+                "exchange": "NSE_INDEX",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "26000_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe_a_scrip_between_others_keeps_the_order",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "INFY",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBINBSE",
+                "exchange": "BSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "1594_NSE"
+                  },
+                  {
+                    "t": "3045_BSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_one_of_two_sends_the_rest",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "INFY",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "SBIN",
+              "exchange": "NSE",
+              "mode": 2
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_the_last_quote_cancels_the_feed",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "SBIN",
+              "exchange": "NSE",
+              "mode": 2
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "unsub"
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_the_last_depth_cancels_the_feed",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "SBIN",
+              "exchange": "NSE",
+              "mode": 3
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "unsub"
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_depth_keeps_the_quote_feed",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              },
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "SBIN",
+              "exchange": "NSE",
+              "mode": 3
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "unsub"
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_quote_keeps_the_depth_feed",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "INFY",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              },
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "SBIN",
+              "exchange": "NSE",
+              "mode": 2
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "unsub"
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_ltp_while_the_quote_stays_resends_the_list",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              },
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "SBIN",
+              "exchange": "NSE",
+              "mode": 1
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_a_scrip_that_was_never_subscribed_resends_the_list",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "INFY",
+              "exchange": "NSE",
+              "mode": 2
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_with_nothing_subscribed_cancels_the_feed",
+      "steps": [
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "SBIN",
+              "exchange": "NSE",
+              "mode": 2
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "unsub"
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_twice",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "INFY",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "SBIN",
+              "exchange": "NSE",
+              "mode": 2
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "SBIN",
+              "exchange": "NSE",
+              "mode": 2
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_both_of_two_quotes",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "INFY",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "SBIN",
+              "exchange": "NSE",
+              "mode": 2
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "INFY",
+              "exchange": "NSE",
+              "mode": 2
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "unsub"
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_then_subscribe_again",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "SBIN",
+              "exchange": "NSE",
+              "mode": 2
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "unsub"
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_a_quote_on_one_exchange_of_two",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "SBINBSE",
+                "exchange": "BSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "3045_BSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "unsubscribe": {
+              "symbol": "SBINBSE",
+              "exchange": "BSE",
+              "mode": 2
+            }
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_quote_packet_for_a_quote_subscription",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_quote_packet_for_an_ltp_subscription",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_LTP",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 1,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_quote_packet_for_a_depth_subscription_publishes_nothing",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_quote_packet_for_ltp_and_quote_publishes_to_both",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              },
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_LTP",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 1,
+                  "timestamp": 1793700000123
+                }
+              },
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_second_packet_keeps_what_the_first_carried",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        },
+        {
+          "step": {
+            "frame": "14000000010014000a1a011be50b00001dd83a01002837d81200"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 806.0,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234999,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_with_only_the_last_price",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0f00000001000f000a1a011be50b00001dd83a0100"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 806.0,
+                  "ltt": null,
+                  "volume": 0,
+                  "open": 0,
+                  "high": 0,
+                  "low": 0,
+                  "close": 0,
+                  "last_quantity": 0,
+                  "average_price": 0,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 0,
+                  "change_percent": 0,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_with_no_fields_beyond_the_scrip",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0a00000001000a000a1a011be50b0000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 0,
+                  "ltt": null,
+                  "volume": 0,
+                  "open": 0,
+                  "high": 0,
+                  "low": 0,
+                  "close": 0,
+                  "last_quantity": 0,
+                  "average_price": 0,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 0,
+                  "change_percent": 0,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_with_every_field",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "a40000000100a4000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010025905f01002660ea000027190000002887d6120029000000fe83d797412ac05701002b401901002c581b00002d7b0000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e00000036040000003a641900003b4c1d00003c7017000046743a0100477f3801004a243a0100"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 7000,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_currency_packet_uses_its_divisor",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "USDINR25NOV26FUT",
+                "exchange": "CDS",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "90001_CDS"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a051b915f01001dc016c5311e80d4b5311f0059d431204092a63121a075bd3122210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a312090c3313264000000330300000034609dc631356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CDS_USDINR25NOV26FUT_QUOTE",
+                "data": {
+                  "ltp": 83.5,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 83.4,
+                  "high": 83.6,
+                  "low": 83.3,
+                  "close": 83.45,
+                  "last_quantity": 25,
+                  "average_price": 0.008041,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45e-05,
+                  "change_percent": 0.68,
+                  "symbol": "USDINR25NOV26FUT",
+                  "exchange": "CDS",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_commodity_packet",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "80001_MCX"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a081b813801001de07072001ed04972001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "MCX_GOLDM25NOV26FUT_QUOTE",
+                "data": {
+                  "ltp": 75000.0,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 74900.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "GOLDM25NOV26FUT",
+                  "exchange": "MCX",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_derivative_packet",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "49500_NFO"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a031b5cc100001d29c624001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002cc0cf6a002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NFO_NIFTY25NOV26FUT_QUOTE",
+                "data": {
+                  "ltp": 24100.25,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 7000000,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "NIFTY25NOV26FUT",
+                  "exchange": "NFO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_bse_derivative_packet",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SENSEX26NOVFUT",
+                "exchange": "BFO",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "60001_BFO"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a041b61ea00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "BFO_SENSEX26NOVFUT_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SENSEX26NOVFUT",
+                  "exchange": "BFO",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "an_index_packet",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "NIFTY",
+                "exchange": "NSE_INDEX",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "26000_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a011b906500001d29c624001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_INDEX_NIFTY_QUOTE",
+                "data": {
+                  "ltp": 24100.25,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "NIFTY",
+                  "exchange": "NSE_INDEX",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_bse_index_packet",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SENSEX",
+                "exchange": "BSE_INDEX",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "19000_BSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a021b384a00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "BSE_INDEX_SENSEX_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SENSEX",
+                  "exchange": "BSE_INDEX",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_bse_equity_packet",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "TATAMOTORS",
+                "exchange": "BSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "500570_BSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a021b5aa307001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "BSE_TATAMOTORS_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "TATAMOTORS",
+                  "exchange": "BSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_for_a_token_on_another_exchange_is_not_the_scrip",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a021be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_for_a_token_nobody_asked_for",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a011b0f2700001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_for_a_token_on_two_exchanges_goes_to_the_right_one",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "SBINBSE",
+                "exchange": "BSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "3045_BSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a021be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "BSE_SBINBSE_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBINBSE",
+                  "exchange": "BSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "negative_values",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a011be50b00001d5fc5feff1ee43801001f363c0100201c380100218038010022dffdffff23bcffffff241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": -805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": -5.45,
+                  "change_percent": -0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_zero_time",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e00000000319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "1970-01-01 00:00:00",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_before_anything_is_subscribed",
+      "steps": [
+        {
+          "step": {
+            "frame": "64000000010064000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "two_packets_in_one_frame",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "INFY",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "c8000000010064000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e000000360400000064000a1a011b3a0600001dfa4902001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              },
+              {
+                "topic": "NSE_INFY_QUOTE",
+                "data": {
+                  "ltp": 1500.1,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "INFY",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "two_packets_for_one_scrip_in_one_frame",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "c8000000010064000a1a011be50b00001d743a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e000000360400000064000a1a011be50b00001dd83a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.0,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              },
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 806.0,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_compressed_frame",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "5f0000000164789c4b61e09262947ecacdc020bbd08a9141ee89052383bc990d2383820c90a5d800249414991818945d18181854a4804ad425812c8df66b420c3a400683defc0d2fb30ce700258c52805c63662061b20cc835cd03b2cc588004001c700f68"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_compressed_frame_of_two_packets",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "INFY",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "670000000164789c4b61e09262947ecacdc020bbd08a9141ee89052383bc990d2383820c90a5d800249414991818945d18181854a4804ad425812c8df66b420c3a400683defc0d2fb30ce700258c52805c63662061b20cc835cd03b2cc5880440ad80e2b365ada0100fccc1e1f"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              },
+              {
+                "topic": "NSE_INFY_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "INFY",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_depth_packet_for_a_depth_subscription",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "ac0000000100ac000b1a011be50b00002f8813000030701700003705319c3a01003264000000330100000031973a010032c8000000330200000031923a0100322c0100003303000000318d3a01003290010000330400000031883a010032f4010000330500000034a63a0100356e000000360200000034ab3a010035dc000000360400000034b03a0100354a010000360600000034b53a010035b8010000360800000034ba3a01003526020000360a000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_DEPTH",
+                "data": {
+                  "ltp": 0,
+                  "ltt": null,
+                  "volume": 0,
+                  "open": 0,
+                  "high": 0,
+                  "low": 0,
+                  "close": 0,
+                  "oi": 0,
+                  "upper_circuit": 0,
+                  "lower_circuit": 0,
+                  "total_buy_quantity": 5000,
+                  "total_sell_quantity": 6000,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 100,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 200,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.3,
+                        "quantity": 300,
+                        "orders": 3
+                      },
+                      {
+                        "price": 805.25,
+                        "quantity": 400,
+                        "orders": 4
+                      },
+                      {
+                        "price": 805.2,
+                        "quantity": 500,
+                        "orders": 5
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 110,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 220,
+                        "orders": 4
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 330,
+                        "orders": 6
+                      },
+                      {
+                        "price": 805.65,
+                        "quantity": 440,
+                        "orders": 8
+                      },
+                      {
+                        "price": 805.7,
+                        "quantity": 550,
+                        "orders": 10
+                      }
+                    ]
+                  },
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_depth_packet_for_a_quote_subscription_publishes_nothing",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "ac0000000100ac000b1a011be50b00002f8813000030701700003705319c3a01003264000000330100000031973a010032c8000000330200000031923a0100322c0100003303000000318d3a01003290010000330400000031883a010032f4010000330500000034a63a0100356e000000360200000034ab3a010035dc000000360400000034b03a0100354a010000360600000034b53a010035b8010000360800000034ba3a01003526020000360a000000"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_depth_packet_with_a_short_ladder",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "43000000010043000b1a011be50b00002f8813000030701700003702319c3a01003264000000330100000031973a010032c8000000330200000034a63a0100356e0000003602000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_DEPTH",
+                "data": {
+                  "ltp": 0,
+                  "ltt": null,
+                  "volume": 0,
+                  "open": 0,
+                  "high": 0,
+                  "low": 0,
+                  "close": 0,
+                  "oi": 0,
+                  "upper_circuit": 0,
+                  "lower_circuit": 0,
+                  "total_buy_quantity": 5000,
+                  "total_sell_quantity": 6000,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 100,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 200,
+                        "orders": 2
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 110,
+                        "orders": 2
+                      }
+                    ]
+                  },
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_depth_packet_with_one_level",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "34000000010034000b1a011be50b00002f8813000030701700003701319c3a01003264000000330100000034a63a0100356e0000003602000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_DEPTH",
+                "data": {
+                  "ltp": 0,
+                  "ltt": null,
+                  "volume": 0,
+                  "open": 0,
+                  "high": 0,
+                  "low": 0,
+                  "close": 0,
+                  "oi": 0,
+                  "upper_circuit": 0,
+                  "lower_circuit": 0,
+                  "total_buy_quantity": 5000,
+                  "total_sell_quantity": 6000,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 100,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 110,
+                        "orders": 2
+                      }
+                    ]
+                  },
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_depth_packet_with_no_levels",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "16000000010016000b1a011be50b00002f8813000030701700003700"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_DEPTH",
+                "data": {
+                  "ltp": 0,
+                  "ltt": null,
+                  "volume": 0,
+                  "open": 0,
+                  "high": 0,
+                  "low": 0,
+                  "close": 0,
+                  "oi": 0,
+                  "upper_circuit": 0,
+                  "lower_circuit": 0,
+                  "total_buy_quantity": 5000,
+                  "total_sell_quantity": 6000,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      }
+                    ]
+                  },
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_depth_packet_with_a_level_count_of_zero_but_levels",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "ac0000000100ac000b1a011be50b00002f8813000030701700003700319c3a01003264000000330100000031973a010032c8000000330200000031923a0100322c0100003303000000318d3a01003290010000330400000031883a010032f4010000330500000034a63a0100356e000000360200000034ab3a010035dc000000360400000034b03a0100354a010000360600000034b53a010035b8010000360800000034ba3a01003526020000360a000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_DEPTH",
+                "data": {
+                  "ltp": 0,
+                  "ltt": null,
+                  "volume": 0,
+                  "open": 0,
+                  "high": 0,
+                  "low": 0,
+                  "close": 0,
+                  "oi": 0,
+                  "upper_circuit": 0,
+                  "lower_circuit": 0,
+                  "total_buy_quantity": 5000,
+                  "total_sell_quantity": 6000,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.4,
+                        "quantity": 100,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 200,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.3,
+                        "quantity": 300,
+                        "orders": 3
+                      },
+                      {
+                        "price": 805.25,
+                        "quantity": 400,
+                        "orders": 4
+                      },
+                      {
+                        "price": 805.2,
+                        "quantity": 500,
+                        "orders": 5
+                      },
+                      {
+                        "price": 805.5,
+                        "quantity": 110,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 220,
+                        "orders": 4
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 330,
+                        "orders": 6
+                      },
+                      {
+                        "price": 805.65,
+                        "quantity": 440,
+                        "orders": 8
+                      },
+                      {
+                        "price": 805.7,
+                        "quantity": 550,
+                        "orders": 10
+                      }
+                    ]
+                  },
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_depth_packet_with_more_levels_than_five",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "e80000000100e8000b1a011be50b00002f8813000030701700003707319c3a010032640000003301000000319b3a010032650000003301000000319a3a01003266000000330100000031993a01003267000000330100000031983a01003268000000330100000031973a01003269000000330100000031963a0100326a000000330100000034a63a0100356e000000360200000034a73a0100356f000000360200000034a83a01003570000000360200000034a93a01003571000000360200000034aa3a01003572000000360200000034ab3a01003573000000360200000034ac3a010035740000003602000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_DEPTH",
+                "data": {
+                  "ltp": 0,
+                  "ltt": null,
+                  "volume": 0,
+                  "open": 0,
+                  "high": 0,
+                  "low": 0,
+                  "close": 0,
+                  "oi": 0,
+                  "upper_circuit": 0,
+                  "lower_circuit": 0,
+                  "total_buy_quantity": 5000,
+                  "total_sell_quantity": 6000,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 100,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.39,
+                        "quantity": 101,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.38,
+                        "quantity": 102,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.37,
+                        "quantity": 103,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.36,
+                        "quantity": 104,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 105,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.34,
+                        "quantity": 106,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 110,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.51,
+                        "quantity": 111,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.52,
+                        "quantity": 112,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.53,
+                        "quantity": 113,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.54,
+                        "quantity": 114,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 115,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.56,
+                        "quantity": 116,
+                        "orders": 2
+                      }
+                    ]
+                  },
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_depth_packet_for_a_future",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "49500_NFO"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "ac0000000100ac000b1a031b5cc100002f0000000030000000003705319c3a01003264000000330100000031973a010032c8000000330200000031923a0100322c0100003303000000318d3a01003290010000330400000031883a010032f4010000330500000034a63a0100356e000000360200000034ab3a010035dc000000360400000034b03a0100354a010000360600000034b53a010035b8010000360800000034ba3a01003526020000360a000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NFO_NIFTY25NOV26FUT_DEPTH",
+                "data": {
+                  "ltp": 0,
+                  "ltt": null,
+                  "volume": 0,
+                  "open": 0,
+                  "high": 0,
+                  "low": 0,
+                  "close": 0,
+                  "oi": 0,
+                  "upper_circuit": 0,
+                  "lower_circuit": 0,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 100,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 200,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.3,
+                        "quantity": 300,
+                        "orders": 3
+                      },
+                      {
+                        "price": 805.25,
+                        "quantity": 400,
+                        "orders": 4
+                      },
+                      {
+                        "price": 805.2,
+                        "quantity": 500,
+                        "orders": 5
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 110,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 220,
+                        "orders": 4
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 330,
+                        "orders": 6
+                      },
+                      {
+                        "price": 805.65,
+                        "quantity": 440,
+                        "orders": 8
+                      },
+                      {
+                        "price": 805.7,
+                        "quantity": 550,
+                        "orders": 10
+                      }
+                    ]
+                  },
+                  "symbol": "NIFTY25NOV26FUT",
+                  "exchange": "NFO",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_depth_packet_for_currency",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "USDINR25NOV26FUT",
+                "exchange": "CDS",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "90001_CDS"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "34000000010034000b1a051b915f01002f8813000030701700003701312090c33132e8030000330100000034609dc63135e80300003601000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "CDS_USDINR25NOV26FUT_DEPTH",
+                "data": {
+                  "ltp": 0,
+                  "ltt": null,
+                  "volume": 0,
+                  "open": 0,
+                  "high": 0,
+                  "low": 0,
+                  "close": 0,
+                  "oi": 0,
+                  "upper_circuit": 0,
+                  "lower_circuit": 0,
+                  "total_buy_quantity": 5000,
+                  "total_sell_quantity": 6000,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 83.49,
+                        "quantity": 1000,
+                        "orders": 1
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 83.51,
+                        "quantity": 1000,
+                        "orders": 1
+                      }
+                    ]
+                  },
+                  "symbol": "USDINR25NOV26FUT",
+                  "exchange": "CDS",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_depth_packet_for_an_index",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "NIFTY",
+                "exchange": "NSE_INDEX",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "26000_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "ac0000000100ac000b1a011b906500002f8813000030701700003705319c3a01003264000000330100000031973a010032c8000000330200000031923a0100322c0100003303000000318d3a01003290010000330400000031883a010032f4010000330500000034a63a0100356e000000360200000034ab3a010035dc000000360400000034b03a0100354a010000360600000034b53a010035b8010000360800000034ba3a01003526020000360a000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_INDEX_NIFTY_DEPTH",
+                "data": {
+                  "ltp": 0,
+                  "ltt": null,
+                  "volume": 0,
+                  "open": 0,
+                  "high": 0,
+                  "low": 0,
+                  "close": 0,
+                  "oi": 0,
+                  "upper_circuit": 0,
+                  "lower_circuit": 0,
+                  "total_buy_quantity": 5000,
+                  "total_sell_quantity": 6000,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 100,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 200,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.3,
+                        "quantity": 300,
+                        "orders": 3
+                      },
+                      {
+                        "price": 805.25,
+                        "quantity": 400,
+                        "orders": 4
+                      },
+                      {
+                        "price": 805.2,
+                        "quantity": 500,
+                        "orders": 5
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 110,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 220,
+                        "orders": 4
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 330,
+                        "orders": 6
+                      },
+                      {
+                        "price": 805.65,
+                        "quantity": 440,
+                        "orders": 8
+                      },
+                      {
+                        "price": 805.7,
+                        "quantity": 550,
+                        "orders": 10
+                      }
+                    ]
+                  },
+                  "symbol": "NIFTY",
+                  "exchange": "NSE_INDEX",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_depth_packet_for_a_token_nobody_asked_for",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "ac0000000100ac000b1a011b0f2700002f8813000030701700003705319c3a01003264000000330100000031973a010032c8000000330200000031923a0100322c0100003303000000318d3a01003290010000330400000031883a010032f4010000330500000034a63a0100356e000000360200000034ab3a010035dc000000360400000034b03a0100354a010000360600000034b53a010035b8010000360800000034ba3a01003526020000360a000000"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_depth_packet_with_zero_prices",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "ac0000000100ac000b1a011be50b00002f8813000030701700003705310000000032000000003300000000310000000032000000003300000000310000000032000000003300000000310000000032000000003300000000310000000032000000003300000000340000000035000000003600000000340000000035000000003600000000340000000035000000003600000000340000000035000000003600000000340000000035000000003600000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_DEPTH",
+                "data": {
+                  "ltp": 0,
+                  "ltt": null,
+                  "volume": 0,
+                  "open": 0,
+                  "high": 0,
+                  "low": 0,
+                  "close": 0,
+                  "oi": 0,
+                  "upper_circuit": 0,
+                  "lower_circuit": 0,
+                  "total_buy_quantity": 5000,
+                  "total_sell_quantity": 6000,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      },
+                      {
+                        "price": 0.0,
+                        "quantity": 0,
+                        "orders": 0
+                      }
+                    ]
+                  },
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "depth_and_quote_packets_on_one_scrip",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              },
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "10010000010064000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000ac000b1a011be50b00002f8813000030701700003705319c3a01003264000000330100000031973a010032c8000000330200000031923a0100322c0100003303000000318d3a01003290010000330400000031883a010032f4010000330500000034a63a0100356e000000360200000034ab3a010035dc000000360400000034b03a0100354a010000360600000034b53a010035b8010000360800000034ba3a01003526020000360a000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              },
+              {
+                "topic": "NSE_SBIN_DEPTH",
+                "data": {
+                  "ltp": 0,
+                  "ltt": null,
+                  "volume": 0,
+                  "open": 0,
+                  "high": 0,
+                  "low": 0,
+                  "close": 0,
+                  "oi": 0,
+                  "upper_circuit": 0,
+                  "lower_circuit": 0,
+                  "total_buy_quantity": 5000,
+                  "total_sell_quantity": 6000,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 100,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 200,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.3,
+                        "quantity": 300,
+                        "orders": 3
+                      },
+                      {
+                        "price": 805.25,
+                        "quantity": 400,
+                        "orders": 4
+                      },
+                      {
+                        "price": 805.2,
+                        "quantity": 500,
+                        "orders": 5
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 110,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 220,
+                        "orders": 4
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 330,
+                        "orders": 6
+                      },
+                      {
+                        "price": 805.65,
+                        "quantity": 440,
+                        "orders": 8
+                      },
+                      {
+                        "price": 805.7,
+                        "quantity": 550,
+                        "orders": 10
+                      }
+                    ]
+                  },
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_compressed_depth_frame",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 3
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L5",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "800000000164789c5bc3c02dc528fd949b8141bf439881c1a0409c81c19cd5708e152383510a030383312390309c0ee29e00719940dc4920ae0e50c69819c4ed05712780b82c206e0788fb05c46505724d9601b9a67940961948afc96a10f70e880b526cb201c4f5022a36630371b782b83b405c0e10771788ab06d467c605e402006a8f17be"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_DEPTH",
+                "data": {
+                  "ltp": 0,
+                  "ltt": null,
+                  "volume": 0,
+                  "open": 0,
+                  "high": 0,
+                  "low": 0,
+                  "close": 0,
+                  "oi": 0,
+                  "upper_circuit": 0,
+                  "lower_circuit": 0,
+                  "total_buy_quantity": 5000,
+                  "total_sell_quantity": 6000,
+                  "depth": {
+                    "buy": [
+                      {
+                        "price": 805.4,
+                        "quantity": 100,
+                        "orders": 1
+                      },
+                      {
+                        "price": 805.35,
+                        "quantity": 200,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.3,
+                        "quantity": 300,
+                        "orders": 3
+                      },
+                      {
+                        "price": 805.25,
+                        "quantity": 400,
+                        "orders": 4
+                      },
+                      {
+                        "price": 805.2,
+                        "quantity": 500,
+                        "orders": 5
+                      }
+                    ],
+                    "sell": [
+                      {
+                        "price": 805.5,
+                        "quantity": 110,
+                        "orders": 2
+                      },
+                      {
+                        "price": 805.55,
+                        "quantity": 220,
+                        "orders": 4
+                      },
+                      {
+                        "price": 805.6,
+                        "quantity": 330,
+                        "orders": 6
+                      },
+                      {
+                        "price": 805.65,
+                        "quantity": 440,
+                        "orders": 8
+                      },
+                      {
+                        "price": 805.7,
+                        "quantity": 550,
+                        "orders": 10
+                      }
+                    ]
+                  },
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 3,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_frame_of_a_version_the_client_does_not_read_is_ignored",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000020064000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_of_length_zero_ends_the_frame",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "64000000010064000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000000064000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_of_a_type_nobody_knows_is_skipped",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "67000000010003006364000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "an_auth_packet_publishes_nothing",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "05000000010005000d1901"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_failed_auth_packet_publishes_nothing",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "05000000010005000d1900"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_ping_packet_publishes_nothing",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0500000001000500103e01"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_market_status_packet_publishes_nothing",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0e00000001000e000e3802001a0139011a033902"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "an_event_packet_publishes_nothing",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0c00000001000c000f3805003d68656c6c6f"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_candle_packet_publishes_nothing",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "2d00000001002d000c1a011be50b00001ee43801001f363c0100201c380100218038010028640000002e9fb0e96a4b316d696e"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_greeks_packet_publishes_nothing",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "2500000001002500111a011be50b00003f000000000000e03f409a9999999999c93f419a9999999999d93f"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_after_a_non_data_packet_is_still_read",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "6900000001000500103e0164000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_frame_with_no_packets",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "000000000100"
+          },
+          "result": {
+            "sent": [],
+            "published": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_frame_shorter_than_its_header",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "010000"
+          },
+          "result": {
+            "sent": [],
+            "published": [],
+            "error": "error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_with_an_unknown_field_is_an_error",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0f00000001000f000a1a011be50b00006300000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [],
+            "error": "KeyError"
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_with_an_unknown_segment_is_an_error",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0f00000001000f000a1a4d1be50b00001d64000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [],
+            "error": "KeyError"
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_with_no_segment_is_an_error",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0d00000001000d000a1be50b00001d64000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [],
+            "error": "KeyError"
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_that_is_cut_short_is_an_error",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "0e00000001000c000a1a011bdd0b"
+          },
+          "result": {
+            "sent": [],
+            "published": [],
+            "error": "error"
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_precision_field_in_a_quote_packet_is_an_error",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "11000000010011000a1a011be50b00001c021da13a0100"
+          },
+          "result": {
+            "sent": [],
+            "published": [],
+            "error": "KeyError"
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_packet_error_drops_the_rest_of_the_frame",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              },
+              {
+                "symbol": "INFY",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  },
+                  {
+                    "t": "1594_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "d2000000010064000a1a011be50b00001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e00000036040000000a000a1a4d1b3a06000064000a1a011b3a0600001da13a01001ee43801001f363c0100201c380100218038010022210200002344000000241a3a010027190000002887d612002c000000002e9fb0e96a319c3a01003264000000330300000034a63a0100356e0000003604000000"
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_QUOTE",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": "2026-11-03 09:59:59",
+                  "volume": 1234567,
+                  "open": 801.0,
+                  "high": 809.5,
+                  "low": 799.0,
+                  "close": 800.0,
+                  "last_quantity": 25,
+                  "average_price": 804.1,
+                  "total_buy_quantity": 0,
+                  "total_sell_quantity": 0,
+                  "oi": 0,
+                  "change": 5.45,
+                  "change_percent": 0.68,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 2,
+                  "timestamp": 1793700000123
+                }
+              }
+            ],
+            "error": "KeyError"
+          }
+        }
+      ]
+    },
+    {
+      "name": "a_frame_that_is_not_compressed_but_says_it_is_is_an_error",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 2
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "type": "L1",
+                "action": "sub",
+                "tokens": [
+                  {
+                    "t": "3045_NSE"
+                  }
+                ]
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "frame": "04000000016461626364"
+          },
+          "result": {
+            "sent": [],
+            "published": [],
+            "error": "error"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -7,8 +7,8 @@ READ_POSTS = []
 V = "/v2/api/oms"
 
 
-def _sym(symbol, brsymbol, exchange, token, name, lot=1, inst="EQ", expiry="", strike=-1.0, tick=0.05):
-    return {"symbol": symbol, "brsymbol": brsymbol, "name": name, "exchange": exchange, "brexchange": exchange, "token": str(token), "expiry": expiry, "strike": strike, "lotsize": lot, "instrumenttype": inst, "tick_size": tick}
+def _sym(symbol, brsymbol, exchange, token, name, lot=1, inst="EQ", expiry="", strike=-1.0, tick=0.05, brexchange=None):
+    return {"symbol": symbol, "brsymbol": brsymbol, "name": name, "exchange": exchange, "brexchange": brexchange or exchange, "token": str(token), "expiry": expiry, "strike": strike, "lotsize": lot, "instrumenttype": inst, "tick_size": tick}
 
 
 SYMBOLS = [
@@ -19,8 +19,8 @@ SYMBOLS = [
     _sym("SENSEX26NOVFUT", "FUT_SENSEX_26NOV26_BFO", "BFO", 60001, "SENSEX", 20, "FUT", "26-NOV-26", -1.0, 0.1),
     _sym("GOLDM25NOV26FUT", "FUT_GOLDM_25NOV26_MCX", "MCX", 80001, "GOLDM", 10, "FUT", "25-NOV-26", -1.0, 1.0),
     _sym("USDINR25NOV26FUT", "FUT_USDINR_25NOV26_CDS", "CDS", 90001, "USDINR", 1000, "FUT", "25-NOV-26", -1.0, 0.0025),
-    _sym("NIFTY", "IDX_NIFTY_NSE", "NSE_INDEX", 26000, "NIFTY", 1, "INDEX"),
-    _sym("SENSEX", "IDX_SENSEX_BSE", "BSE_INDEX", 1, "SENSEX", 1, "INDEX"),
+    _sym("NIFTY", "IDX_NIFTY_NSE", "NSE_INDEX", 26000, "NIFTY", 1, "INDEX", brexchange="NSE"),
+    _sym("SENSEX", "IDX_SENSEX_BSE", "BSE_INDEX", 1, "SENSEX", 1, "INDEX", brexchange="BSE"),
 ]
 
 PLACE = {"strategy": "t", "symbol": "SBIN", "exchange": "NSE", "action": "BUY", "quantity": "10", "pricetype": "LIMIT", "product": "MIS", "price": "800.5", "trigger_price": "0", "disclosed_quantity": "0"}
