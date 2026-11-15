@@ -27,6 +27,16 @@ public abstract class IndMoneyFileHost(string file) : BrokerContractHost
 
 public sealed class IndMoneyHost() : IndMoneyFileHost("indmoney.fixtures.json");
 
+/// <summary>A host whose cases each start with no scrip remembered as unquotable, as every recorded case did.</summary>
+public abstract class IndMoneyFreshHost(string file) : IndMoneyFileHost(file)
+{
+    public override Task PrepareAsync(JsonObject fixture)
+    {
+        EPTradeBot.Infrastructure.Brokers.IndMoney.IndMoneyPlugin.ForgetBadScrips();
+        return Task.CompletedTask;
+    }
+}
+
 /// <summary>IndMoney orders, books, positions and funds (tools/contract-fixtures/indmoney.fixtures.json).</summary>
 public sealed class IndMoneyContractTests(IndMoneyHost host, ITestOutputHelper output) : IClassFixture<IndMoneyHost>
 {
@@ -89,6 +99,56 @@ public sealed class IndMoneyContractTests(IndMoneyHost host, ITestOutputHelper o
     };
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("indmoney.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+
+public sealed class IndMoneyDataHost() : IndMoneyFreshHost("data_indmoney.fixtures.json");
+
+/// <summary>IndMoney quotes, depth and several quotes (tools/contract-fixtures/data_indmoney.fixtures.json).</summary>
+public sealed class IndMoneyDataContractTests(IndMoneyDataHost host, ITestOutputHelper output) : IClassFixture<IndMoneyDataHost>
+{
+    private const string Words = "OpenAlgo answers zeros, or zeros with an error of its own, when IndMoney could not give a quote or a depth. EP Trade bot says what IndMoney did and what to do.";
+
+    private static Deviation Says(int status, string message) => new(Words, f => Expect(f, status, Error(message)));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["quote_everything_fails_is_zeros"] = Says(500, "IndMoney could not give a quote for SBIN on NSE. Try again in a moment."),
+        ["quote_http_500"] = Says(500, "IndMoney could not give a quote for SBIN on NSE. Try again in a moment."),
+        ["quote_not_json"] = Says(500, "IndMoney could not give a quote for SBIN on NSE. Try again in a moment."),
+        ["depth_mkt_fails"] = Says(500, "IndMoney could not give the market depth for SBIN on NSE: Indmoney API HTTP Error 400: {\"status\":\"error\",\"message\":\"boom\"}"),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("data_indmoney.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class IndMoneyHistoryHost() : IndMoneyFreshHost("history_indmoney.fixtures.json");
+
+/// <summary>IndMoney history (tools/contract-fixtures/history_indmoney.fixtures.json).</summary>
+public sealed class IndMoneyHistoryContractTests(IndMoneyHistoryHost host, ITestOutputHelper output) : IClassFixture<IndMoneyHistoryHost>
+{
+    private const string Words = "OpenAlgo answers no candles when every history call fails. EP Trade bot says what IndMoney did and what to do.";
+
+    private const string Failed = "IndMoney could not give candles for NSE:SBIN right now. Try again in a moment.";
+
+    private static Deviation Says(int status, string message) => new(Words, f => Expect(f, status, Error(message)));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_every_chunk_failed_is_no_candles"] = Says(500, Failed),
+        ["history_not_json_is_no_candles"] = Says(500, Failed),
+        ["history_an_api_error_is_no_candles"] = Says(500, Failed),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_indmoney.fixtures.json");
 
     [PostgresTheory]
     [MemberData(nameof(Names))]
