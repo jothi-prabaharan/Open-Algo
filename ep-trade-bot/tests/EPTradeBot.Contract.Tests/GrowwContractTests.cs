@@ -102,3 +102,31 @@ public sealed class LoginGrowwContractTests(LoginGrowwHost host, ITestOutputHelp
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class DataGrowwHost() : GrowwFileHost("data_groww.fixtures.json");
+
+/// <summary>Groww quotes, depth and several quotes (tools/contract-fixtures/data_groww.fixtures.json).</summary>
+public sealed class DataGrowwContractTests(DataGrowwHost host, ITestOutputHelper output) : IClassFixture<DataGrowwHost>
+{
+    private const string Words = "OpenAlgo answers a depth it could not read as an empty one, a quote answer it cannot read as a Python error, and shows an error object beside a symbol. EP Trade bot says what Groww did and what to do.";
+
+    private static Deviation Says(int status, string message) => new(Words, f => Expect(f, status, Error(message)));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["depth_server_error"] = Says(502, "Groww did not give the market depth for SBIN: it did not answer the request. Try again in a moment."),
+        ["depth_refused"] = Says(502, "Groww did not give the market depth for SBIN: Invalid trading symbol. Try again in a moment."),
+        ["depth_failure_status"] = Says(502, "Groww did not give the market depth for SBIN: x. Try again in a moment."),
+        ["quotes_answer_is_not_json"] = Says(500, "Groww did not return a quote for SBIN: no response"),
+        ["quotes_ohlc_null"] = new("OpenAlgo fails a quote whose open, high, low and close are null with a Python error. EP Trade bot gives the quote with those figures as zero.",
+            f => Expect(f, 200, JsonNode.Parse("""{"status":"success","data":{"ltp":805.45,"open":0,"high":0,"low":0,"prev_close":0,"volume":1234567,"bid":805.4,"ask":805.5,"bid_qty":100,"ask_qty":110,"oi":0}}""")!.AsObject())),
+        ["multiquotes_the_ohlc_answer_has_no_success"] = new("OpenAlgo puts Groww's error object beside the symbol; EP Trade bot puts its message.",
+            f => Expect(f, 200, JsonNode.Parse("""{"status":"success","results":[{"symbol":"SBIN","exchange":"NSE","error":"x"}]}""")!.AsObject())),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("data_groww.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
