@@ -75,6 +75,10 @@ public sealed class BrokerSessionFactory(TokenProtector protector, IOptionsMonit
     public TimeSpan RetryBackoff(string broker, TimeSpan fallback) =>
         options.CurrentValue.RetryBackoffMs.TryGetValue(broker, out var ms) ? TimeSpan.FromMilliseconds(ms) : fallback;
 
+    /// <summary>The spacing between a broker's calls of one kind: the configured one for every kind, else the broker's own.</summary>
+    public TimeSpan Pacing(string broker, TimeSpan fallback) =>
+        options.CurrentValue.PacingMs.TryGetValue(broker, out var ms) ? TimeSpan.FromMilliseconds(ms) : fallback;
+
     /// <summary>The market-data socket address configured for the broker, if any (a test points it at a local server).</summary>
     public string? FeedUrl(string broker) =>
         options.CurrentValue.FeedUrls.TryGetValue(broker, out var url) && !string.IsNullOrWhiteSpace(url) ? url : null;

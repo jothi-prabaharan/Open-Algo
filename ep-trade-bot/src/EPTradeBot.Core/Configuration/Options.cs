@@ -138,6 +138,9 @@ public sealed class BrokerOptions
     /// <summary>Optional per-broker wait, in milliseconds, between the retries of a refused or rate-limited call. Absent means the broker's own backoff, as OpenAlgo waits.</summary>
     public Dictionary<string, int> RetryBackoffMs { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>Optional per-broker spacing, in milliseconds, between that broker's calls of one kind (Groww paces orders, quotes and reads separately). Absent means the broker's own limits, as OpenAlgo paces them; 0 turns the pacing off.</summary>
+    public Dictionary<string, int> PacingMs { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
     [System.ComponentModel.DataAnnotations.Range(1, 120)]
     public int TimeoutSeconds { get; set; } = 15;
 }
