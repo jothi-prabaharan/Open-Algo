@@ -88,3 +88,17 @@ public sealed class MarginGrowwContractTests(MarginGrowwHost host, ITestOutputHe
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginGrowwHost() : GrowwFileHost("login_groww.fixtures.json");
+
+/// <summary>Groww sign-in (tools/contract-fixtures/login_groww.fixtures.json).</summary>
+public sealed class LoginGrowwContractTests(LoginGrowwHost host, ITestOutputHelper output) : IClassFixture<LoginGrowwHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new();
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_groww.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
