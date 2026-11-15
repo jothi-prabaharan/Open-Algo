@@ -358,6 +358,7 @@ public sealed class FeedHost(
                 using var socket = new ClientWebSocket();
                 socket.Options.KeepAliveInterval = TimeSpan.FromSeconds(20);
                 foreach (var (name, value) in endpoint.Headers) socket.Options.SetRequestHeader(name, value);
+                if (endpoint.SubProtocol is { } subProtocol) socket.Options.AddSubProtocol(subProtocol);
                 try
                 {
                     using var connecting = CancellationTokenSource.CreateLinkedTokenSource(ct);

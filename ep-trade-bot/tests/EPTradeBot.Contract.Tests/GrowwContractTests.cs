@@ -148,3 +148,31 @@ public sealed class HistoryGrowwContractTests(HistoryGrowwHost host, ITestOutput
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+/// <summary>Groww's stream against the Python adapter (tools/contract-fixtures/feed_groww.fixtures.json).</summary>
+public sealed class GrowwFeedContractTests
+{
+    private const string AccessToken = "groww-access-token";
+    private const string SocketToken = "groww-socket-jwt";
+
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_groww.fixtures.json");
+
+    private static EPTradeBot.Core.Streaming.Feeds.IFeedCodec Codec()
+    {
+        EPTradeBot.Core.Streaming.Feeds.GrowwSocketCredentials.Put(AccessToken, SocketToken, EPTradeBot.Core.Streaming.Feeds.GrowwNkeys.EncodeSeed(Enumerable.Range(1, 32).Select(i => (byte)i).ToArray()));
+        return new EPTradeBot.Core.Streaming.Feeds.GrowwFeedCodec();
+    }
+
+    /// <summary>OpenAlgo sends a subscribe the moment it is asked, before the server has accepted the connection (which the server would refuse); EP Trade bot holds it and sends it, with the same ids, when the server has.</summary>
+    private static void WaitsForTheServer(JsonObject scenario)
+    {
+        var steps = scenario["steps"]!.AsArray();
+        steps[1]!["result"]!["sent"] = new JsonArray();
+        var accepted = steps[3]!["result"]!["sent"]!.AsArray();
+        accepted[0] = "SUB /ld/eq/nse/price.3045 1\r\n";
+    }
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_groww.fixtures.json", name, Codec, name == "subscribing_before_the_connection_is_signed_in_waits" ? WaitsForTheServer : null);
+}

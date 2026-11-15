@@ -13,7 +13,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Groww;
 /// four times in all, after the wait Groww asks for. Orders and positions are read once for each segment (CASH, then FNO) and the order list and trades in pages. F&amp;O is exchange NSE or BSE with segment FNO.
 /// </summary>
 [BrokerPlugin]
-public sealed partial class GrowwPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMargin, IBrokerLogin, IBrokerMultiQuotes, IBrokerHistory
+public sealed partial class GrowwPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMargin, IBrokerLogin, IBrokerMultiQuotes, IBrokerHistory, IBrokerFeedAuthorize
 {
     private const string DefaultBaseUrl = "https://api.groww.in";
     private const string Display = "Groww";

@@ -47,7 +47,7 @@ public interface IBrokerLoginStart : IBrokerLogin
 }
 
 /// <summary>Where and how to connect to a broker's market-data stream.</summary>
-public sealed record FeedEndpoint(Uri Url, IReadOnlyDictionary<string, string> Headers);
+public sealed record FeedEndpoint(Uri Url, IReadOnlyDictionary<string, string> Headers, string? SubProtocol = null);
 
 /// <summary>A broker's market-data stream: where to connect, what to say to keep it alive, and the codec that speaks its protocol.</summary>
 public interface IBrokerFeed : IBrokerPlugin
