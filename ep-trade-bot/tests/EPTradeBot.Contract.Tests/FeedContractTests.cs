@@ -132,7 +132,17 @@ public static class FeedRunner
                 }
 
                 // A message id is new every time by design; the recording holds a stand-in.
-                var actual = JsonNode.Parse(sent[i]);
+                // A message that is plain text (Nubra's commands) is recorded as the string it is.
+                JsonNode? actual;
+                try
+                {
+                    actual = JsonNode.Parse(sent[i]);
+                }
+                catch (System.Text.Json.JsonException)
+                {
+                    actual = JsonValue.Create(sent[i]);
+                }
+
                 if (actual is JsonObject { } message && message["guid"] is not null) message["guid"] = "<guid>";
                 var diffs = JsonCompare.Differences(expectedSent[i], actual);
                 Assert.True(diffs.Count == 0, $"{label}: message {i} differs:\n{string.Join("\n", diffs)}");

@@ -165,3 +165,13 @@ public sealed class NubraSnapshotContractTests
         }
     }
 }
+
+/// <summary>Nubra's stream against the Python adapter (tools/contract-fixtures/feed_nubra.fixtures.json).</summary>
+public sealed class NubraFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_nubra.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_nubra.fixtures.json", name, () => new EPTradeBot.Core.Streaming.Feeds.NubraFeedCodec());
+}

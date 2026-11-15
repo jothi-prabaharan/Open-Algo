@@ -18,9 +18,15 @@ public sealed record NubraBucket(string Name, string Exchange, long Timestamp, l
 public sealed record NubraGreeks(long RefId, long Oi, long PrevOi, long Ltp, long Volume);
 
 /// <summary>What a Nubra binary frame holds: an Any wrapping an Any wrapping one batch message, told apart by the inner type url.</summary>
-public sealed record NubraFrame(IReadOnlyList<NubraIndex> Indexes, IReadOnlyList<NubraBook> Books, IReadOnlyList<NubraBucket> Buckets, IReadOnlyList<NubraGreeks> Greeks)
+public sealed record NubraFrame(IReadOnlyList<NubraIndex> Listed, IReadOnlyList<NubraIndex> Instruments, IReadOnlyList<NubraBook> Books, IReadOnlyList<NubraBucket> ListedBuckets, IReadOnlyList<NubraBucket> InstrumentBuckets, IReadOnlyList<NubraGreeks> Greeks)
 {
-    public static readonly NubraFrame Empty = new([], [], [], []);
+    public static readonly NubraFrame Empty = new([], [], [], [], [], []);
+
+    /// <summary>The index messages in the order OpenAlgo reads them: the indexes list first, then the instruments list.</summary>
+    public IEnumerable<NubraIndex> Indexes => Listed.Concat(Instruments);
+
+    /// <summary>The candle buckets in the order OpenAlgo reads them: the indexes list first, then the instruments list.</summary>
+    public IEnumerable<NubraBucket> Buckets => ListedBuckets.Concat(InstrumentBuckets);
 }
 
 /// <summary>
@@ -227,9 +233,11 @@ public static class NubraFrames
         try
         {
             var inner = Any(Any(raw).Value);
-            var indexes = new List<NubraIndex>();
+            var listed = new List<NubraIndex>();
+            var instruments = new List<NubraIndex>();
             var books = new List<NubraBook>();
-            var buckets = new List<NubraBucket>();
+            var listedBuckets = new List<NubraBucket>();
+            var instrumentBuckets = new List<NubraBucket>();
             var greeks = new List<NubraGreeks>();
             var r = new Reader(inner.Value);
             if (inner.Url.EndsWith("BatchWebSocketIndexMessage", StringComparison.Ordinal))
@@ -237,7 +245,8 @@ public static class NubraFrames
                 while (!r.Done)
                 {
                     var tag = (int)r.Varint();
-                    if (tag == (2 << 3 | 2) || tag == (3 << 3 | 2)) indexes.Add(Index(r.Bytes()));
+                    if (tag == (2 << 3 | 2)) listed.Add(Index(r.Bytes()));
+                    else if (tag == (3 << 3 | 2)) instruments.Add(Index(r.Bytes()));
                     else r.Skip(tag & 7);
                 }
             }
@@ -255,7 +264,8 @@ public static class NubraFrames
                 while (!r.Done)
                 {
                     var tag = (int)r.Varint();
-                    if (tag == (2 << 3 | 2) || tag == (3 << 3 | 2)) buckets.Add(Bucket(r.Bytes()));
+                    if (tag == (2 << 3 | 2)) listedBuckets.Add(Bucket(r.Bytes()));
+                    else if (tag == (3 << 3 | 2)) instrumentBuckets.Add(Bucket(r.Bytes()));
                     else r.Skip(tag & 7);
                 }
             }
@@ -269,7 +279,7 @@ public static class NubraFrames
                 }
             }
 
-            return new NubraFrame(indexes, books, buckets, greeks);
+            return new NubraFrame(listed, instruments, books, listedBuckets, instrumentBuckets, greeks);
         }
         catch (FormatException)
         {

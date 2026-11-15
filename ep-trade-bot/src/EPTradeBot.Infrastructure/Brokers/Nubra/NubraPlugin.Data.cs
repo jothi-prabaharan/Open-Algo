@@ -1,6 +1,4 @@
 using System.Globalization;
-using System.Text.Encodings.Web;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using EPTradeBot.Core.Brokers;
 using EPTradeBot.Core.Streaming.Feeds;
@@ -21,13 +19,6 @@ public sealed partial class NubraPlugin : IBrokerMultiQuotes
     private const double DepthStepSeconds = 0.5;
     private const int DepthSteps = 10;
     private const int FanOut = 5;
-
-    private static readonly JsonSerializerOptions Compact = new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
-
-    private static readonly Dictionary<string, string> IndexNames = new()
-    {
-        ["NIFTY 50"] = "NIFTY", ["NIFTY BANK"] = "BANKNIFTY", ["NIFTY FINANCIAL SERVICES"] = "FINNIFTY", ["BSE SENSEX"] = "SENSEX", ["BSE SENSEX 50"] = "SENSEX50",
-    };
 
     private static INubraSockets? defaultSockets;
 
@@ -75,7 +66,7 @@ public sealed partial class NubraPlugin : IBrokerMultiQuotes
         {
             if (name.Length == 0) return null;
             var upper = name.ToUpperInvariant();
-            return (exchange.Length > 0 ? exchange : "NSE", IndexNames.GetValueOrDefault(upper, upper));
+            return (exchange.Length > 0 ? exchange : "NSE", NubraCommands.IndexNames.GetValueOrDefault(upper, upper));
         }
 
         private void Apply(NubraFrame frame)
@@ -153,10 +144,9 @@ public sealed partial class NubraPlugin : IBrokerMultiQuotes
         return connection is null ? (null, null) : (new FeedRead(connection, session.AuthToken), connection);
     }
 
-    private static string Payload(IEnumerable<long>? refs, IEnumerable<string>? names) =>
-        new JsonObject { ["instruments"] = new JsonArray((refs ?? []).Select(r => (JsonNode?)JsonValue.Create(r)).ToArray()), ["indexes"] = new JsonArray((names ?? []).Select(n => (JsonNode?)JsonValue.Create(n)).ToArray()) }.ToJsonString(Compact);
+    private static string Payload(IEnumerable<long>? refs, IEnumerable<string>? names) => NubraCommands.Payload(refs, names);
 
-    private static string Command(string verb, FeedRead read, string channel, string payload, string? tail = null) => $"{verb} {read.Token} {channel} {payload}{(tail is null ? "" : " " + tail)}";
+    private static string Command(string verb, FeedRead read, string channel, string payload, string? tail = null) => NubraCommands.Command(verb, read.Token, channel, payload, tail);
 
     private static string WsExchange(string exchange) => exchange switch { "NSE_INDEX" => "NSE", "BSE_INDEX" => "BSE", "NFO" or "CDS" => "NSE", "BFO" => "BSE", _ => exchange };
 
