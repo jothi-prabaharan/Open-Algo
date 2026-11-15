@@ -1,0 +1,6601 @@
+{
+  "broker": "tradejini",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "tj-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "EQT_SBIN_EQ_NSE",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "EQT_INFY_EQ_NSE",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "TATAMOTORS",
+      "brsymbol": "EQT_TATAMOTORS_EQ_BSE",
+      "name": "TATA MOTORS",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500570",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "FUT_NIFTY_25NOV26_NFO",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "49500",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "SENSEX26NOVFUT",
+      "brsymbol": "FUT_SENSEX_26NOV26_BFO",
+      "name": "SENSEX",
+      "exchange": "BFO",
+      "brexchange": "BFO",
+      "token": "60001",
+      "expiry": "26-NOV-26",
+      "strike": -1.0,
+      "lotsize": 20,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "FUT_GOLDM_25NOV26_MCX",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 10,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "USDINR25NOV26FUT",
+      "brsymbol": "FUT_USDINR_25NOV26_CDS",
+      "name": "USDINR",
+      "exchange": "CDS",
+      "brexchange": "CDS",
+      "token": "90001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 1000,
+      "instrumenttype": "FUT",
+      "tick_size": 0.0025
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "IDX_NIFTY_NSE",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE_INDEX",
+      "token": "26000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "SENSEX",
+      "brsymbol": "IDX_SENSEX_BSE",
+      "name": "SENSEX",
+      "exchange": "BSE_INDEX",
+      "brexchange": "BSE_INDEX",
+      "token": "1",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_cnc_delivery",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "delivery",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_nrml_product",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "24005",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "FUT_NIFTY_25NOV26_NFO",
+            "qty": "75",
+            "side": "buy",
+            "type": "limit",
+            "product": "normal",
+            "limitPrice": "24005.0",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market_sends_the_protection",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "market",
+            "product": "intraday",
+            "limitPrice": "0.0",
+            "trigPrice": "0.0",
+            "validity": "day",
+            "mktProt": "2"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL",
+        "product": "MIS",
+        "price": "800",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "stoplimit",
+            "product": "intraday",
+            "limitPrice": "800.0",
+            "trigPrice": "801.5",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market_sends_the_protection",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "stopmarket",
+            "product": "intraday",
+            "limitPrice": "0.0",
+            "trigPrice": "801.5",
+            "validity": "day",
+            "mktProt": "2"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_sell",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "sell",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_disclosed_quantity",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day",
+            "discQty": "5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_bse_equity",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "TATAMOTORS",
+        "exchange": "BSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "500",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_TATAMOTORS_EQ_BSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "delivery",
+            "limitPrice": "500.0",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_bse_derivative",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SENSEX26NOVFUT",
+        "exchange": "BFO",
+        "action": "BUY",
+        "quantity": "20",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "80000",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "FUT_SENSEX_26NOV26_BFO",
+            "qty": "20",
+            "side": "buy",
+            "type": "limit",
+            "product": "normal",
+            "limitPrice": "80000.0",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_mcx_future",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "GOLDM25NOV26FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "75000",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "FUT_GOLDM_25NOV26_MCX",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "normal",
+            "limitPrice": "75000.0",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_currency_future",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "USDINR25NOV26FUT",
+        "exchange": "CDS",
+        "action": "BUY",
+        "quantity": "1000",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "83.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "FUT_USDINR_25NOV26_CDS",
+            "qty": "1000",
+            "side": "buy",
+            "type": "limit",
+            "product": "normal",
+            "limitPrice": "83.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_reply_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ2"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ2",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_numeric_order_id",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": 12345,
+              "msg": "done"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "12345",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_with_status_200",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "error",
+            "msg": "RMS: insufficient funds"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_with_status_400",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "status": 400,
+          "body": {
+            "s": "error",
+            "msg": "Invalid quantity"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "An unexpected error occurred in the API endpoint",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_with_status_401",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "status": 401,
+          "body": {
+            "s": "error",
+            "msg": "Unauthorized"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "An unexpected error occurred in the API endpoint",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_with_a_message_in_d",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "error",
+            "d": {
+              "msg": "Inner reason"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "error"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_status_500_not_json",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "status": 500,
+          "body": "oops"
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "An unexpected error occurred in the API endpoint",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_success_without_an_order_id",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_success_with_an_empty_order_id",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": ""
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_ok_without_d",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": null,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_not_json",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "An unexpected error occurred in the API endpoint",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "None",
+            "qty": "10",
+            "side": "buy",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "TJ1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/api/oms/modify-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/modify-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "orderId": "TJ1",
+            "qty": "12",
+            "type": "limit",
+            "validity": "day",
+            "side": "buy",
+            "limitPrice": "801.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "TJ1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "SL",
+        "product": "MIS",
+        "price": "800",
+        "disclosed_quantity": "0",
+        "trigger_price": "801.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/api/oms/modify-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/modify-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "orderId": "TJ1",
+            "qty": "12",
+            "type": "stoplimit",
+            "validity": "day",
+            "side": "buy",
+            "limitPrice": "800.0",
+            "trigPrice": "801.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_market",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "TJ1",
+        "action": "SELL",
+        "quantity": "12",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "disclosed_quantity": "0",
+        "trigger_price": "801.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/api/oms/modify-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/modify-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "orderId": "TJ1",
+            "qty": "12",
+            "type": "stopmarket",
+            "validity": "day",
+            "side": "sell",
+            "trigPrice": "801.5"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_market",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "TJ1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/api/oms/modify-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/modify-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "orderId": "TJ1",
+            "qty": "12",
+            "type": "market",
+            "validity": "day",
+            "side": "buy"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_disclosed",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "TJ1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "3",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/api/oms/modify-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/modify-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "orderId": "TJ1",
+            "qty": "12",
+            "type": "limit",
+            "validity": "day",
+            "side": "buy",
+            "limitPrice": "801.0",
+            "discQty": "3"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_reply_without_an_order_id",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "TJ1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/api/oms/modify-order": {
+          "body": {
+            "s": "ok",
+            "d": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/modify-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "orderId": "TJ1",
+            "qty": "12",
+            "type": "limit",
+            "validity": "day",
+            "side": "buy",
+            "limitPrice": "801.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_reply_without_d",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "TJ1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/api/oms/modify-order": {
+          "body": {
+            "s": "ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/modify-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "orderId": "TJ1",
+            "qty": "12",
+            "type": "limit",
+            "validity": "day",
+            "side": "buy",
+            "limitPrice": "801.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused_with_status_200",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "TJ1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/api/oms/modify-order": {
+          "body": {
+            "s": "error",
+            "msg": "Order is not open"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to modify order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/modify-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "orderId": "TJ1",
+            "qty": "12",
+            "type": "limit",
+            "validity": "day",
+            "side": "buy",
+            "limitPrice": "801.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused_with_status_400",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "TJ1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/api/oms/modify-order": {
+          "status": 400,
+          "body": {
+            "s": "error",
+            "msg": "Bad price"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to modify order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/modify-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "orderId": "TJ1",
+            "qty": "12",
+            "type": "limit",
+            "validity": "day",
+            "side": "buy",
+            "limitPrice": "801.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "TJ1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/api/oms/modify-order": {
+          "body": {
+            "s": "error"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to modify order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/modify-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "orderId": "TJ1",
+            "qty": "12",
+            "type": "limit",
+            "validity": "day",
+            "side": "buy",
+            "limitPrice": "801.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_not_json",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "TJ1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/api/oms/modify-order": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to modify order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/modify-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "orderId": "TJ1",
+            "qty": "12",
+            "type": "limit",
+            "validity": "day",
+            "side": "buy",
+            "limitPrice": "801.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "orderid": "TJ1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to modify order",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "TJ1",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/api/oms/cancel-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/cancel-order",
+          "query": [
+            [
+              "orderId",
+              "TJ1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_reply_without_d",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "TJ1",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/api/oms/cancel-order": {
+          "body": {
+            "s": "ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/cancel-order",
+          "query": [
+            [
+              "orderId",
+              "TJ1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused_with_status_200",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "TJ3",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/api/oms/cancel-order": {
+          "body": {
+            "s": "error",
+            "msg": "Order already complete"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to cancel order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/cancel-order",
+          "query": [
+            [
+              "orderId",
+              "TJ3"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused_with_status_404",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "TJ3",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/api/oms/cancel-order": {
+          "status": 404,
+          "body": {
+            "s": "error",
+            "msg": "No such order"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to cancel order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/cancel-order",
+          "query": [
+            [
+              "orderId",
+              "TJ3"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "TJ3",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/api/oms/cancel-order": {
+          "body": {
+            "s": "error"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to cancel order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/cancel-order",
+          "query": [
+            [
+              "orderId",
+              "TJ3"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_not_json",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "TJ3",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /v2/api/oms/cancel-order": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to cancel order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/cancel-order",
+          "query": [
+            [
+              "orderId",
+              "TJ3"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/orders": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "orderId": "TJ1",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "qty": 10,
+                "side": "buy",
+                "type": "limit",
+                "product": "intraday",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Open",
+                "avgPrice": 0,
+                "limitPrice": 800.5,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 10,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ2",
+                "sym": {
+                  "id": "FUT_NIFTY_25NOV26_NFO",
+                  "exchange": "NFO",
+                  "symbol": "NIFTY",
+                  "tradSymbol": "NIFTY25NOV26FUT"
+                },
+                "symId": "FUT_NIFTY_25NOV26_NFO",
+                "qty": 75,
+                "side": "buy",
+                "type": "stoplimit",
+                "product": "normal",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Trigger Pending",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 75,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ3",
+                "sym": {
+                  "id": "EQT_INFY_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "INFY",
+                  "tradSymbol": "INFY-EQ"
+                },
+                "symId": "EQT_INFY_EQ_NSE",
+                "qty": 5,
+                "side": "sell",
+                "type": "limit",
+                "product": "delivery",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Completed",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 5,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ4",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "qty": 1,
+                "side": "sell",
+                "type": "market",
+                "product": "intraday",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Pending",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 1,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ5",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "qty": 1,
+                "side": "sell",
+                "type": "market",
+                "product": "intraday",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Modified",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 1,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              }
+            ]
+          }
+        },
+        "DELETE /v2/api/oms/cancel-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "X"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "TJ1",
+            "TJ2",
+            "TJ4",
+            "TJ5"
+          ],
+          "failed_cancellations": [],
+          "message": "Canceled 4 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/orders",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        },
+        {
+          "method": "DELETE",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/cancel-order",
+          "query": [
+            [
+              "orderId",
+              "TJ1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        },
+        {
+          "method": "DELETE",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/cancel-order",
+          "query": [
+            [
+              "orderId",
+              "TJ2"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        },
+        {
+          "method": "DELETE",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/cancel-order",
+          "query": [
+            [
+              "orderId",
+              "TJ4"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        },
+        {
+          "method": "DELETE",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/cancel-order",
+          "query": [
+            [
+              "orderId",
+              "TJ5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_one_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/orders": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "orderId": "TJ1",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "qty": 10,
+                "side": "buy",
+                "type": "limit",
+                "product": "intraday",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Open",
+                "avgPrice": 0,
+                "limitPrice": 800.5,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 10,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ2",
+                "sym": {
+                  "id": "FUT_NIFTY_25NOV26_NFO",
+                  "exchange": "NFO",
+                  "symbol": "NIFTY",
+                  "tradSymbol": "NIFTY25NOV26FUT"
+                },
+                "symId": "FUT_NIFTY_25NOV26_NFO",
+                "qty": 75,
+                "side": "buy",
+                "type": "stoplimit",
+                "product": "normal",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Trigger Pending",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 75,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ3",
+                "sym": {
+                  "id": "EQT_INFY_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "INFY",
+                  "tradSymbol": "INFY-EQ"
+                },
+                "symId": "EQT_INFY_EQ_NSE",
+                "qty": 5,
+                "side": "sell",
+                "type": "limit",
+                "product": "delivery",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Completed",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 5,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ4",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "qty": 1,
+                "side": "sell",
+                "type": "market",
+                "product": "intraday",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Pending",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 1,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ5",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "qty": 1,
+                "side": "sell",
+                "type": "market",
+                "product": "intraday",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Modified",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 1,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              }
+            ]
+          }
+        },
+        "DELETE /v2/api/oms/cancel-order": [
+          {
+            "body": {
+              "s": "ok",
+              "d": {
+                "orderId": "X"
+              }
+            }
+          },
+          {
+            "body": {
+              "s": "error",
+              "msg": "Already done"
+            }
+          },
+          {
+            "body": {
+              "s": "ok"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "TJ1",
+            "TJ4",
+            "TJ5"
+          ],
+          "failed_cancellations": [
+            {
+              "error": "Bad status code: 400",
+              "orderId": "TJ2"
+            }
+          ],
+          "message": "Canceled 3 orders. Failed to cancel 1 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/orders",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        },
+        {
+          "method": "DELETE",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/cancel-order",
+          "query": [
+            [
+              "orderId",
+              "TJ1"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        },
+        {
+          "method": "DELETE",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/cancel-order",
+          "query": [
+            [
+              "orderId",
+              "TJ2"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        },
+        {
+          "method": "DELETE",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/cancel-order",
+          "query": [
+            [
+              "orderId",
+              "TJ4"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        },
+        {
+          "method": "DELETE",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/cancel-order",
+          "query": [
+            [
+              "orderId",
+              "TJ5"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_book_empty",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/orders": {
+          "body": {
+            "s": "no-data",
+            "msg": "No Data Available"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/orders",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_nothing_pending",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/orders": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "orderId": "TJ3",
+                "sym": {
+                  "id": "EQT_INFY_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "INFY",
+                  "tradSymbol": "INFY-EQ"
+                },
+                "symId": "EQT_INFY_EQ_NSE",
+                "qty": 5,
+                "side": "sell",
+                "type": "limit",
+                "product": "delivery",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Completed",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 5,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/orders",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_book_failed",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/orders": {
+          "body": {
+            "s": "error",
+            "msg": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/orders",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/orders": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "orderId": "TJ1",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "qty": 10,
+                "side": "buy",
+                "type": "limit",
+                "product": "intraday",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Open",
+                "avgPrice": 0,
+                "limitPrice": 800.5,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 10,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ2",
+                "sym": {
+                  "id": "FUT_NIFTY_25NOV26_NFO",
+                  "exchange": "NFO",
+                  "symbol": "NIFTY",
+                  "tradSymbol": "NIFTY25NOV26FUT"
+                },
+                "symId": "FUT_NIFTY_25NOV26_NFO",
+                "qty": 75,
+                "side": "buy",
+                "type": "stoplimit",
+                "product": "normal",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Trigger Pending",
+                "avgPrice": 0,
+                "limitPrice": 24010,
+                "trigPrice": 24000,
+                "fillQty": 0,
+                "pendingQty": 75,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ3",
+                "sym": {
+                  "id": "EQT_INFY_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "INFY",
+                  "tradSymbol": "INFY-EQ"
+                },
+                "symId": "EQT_INFY_EQ_NSE",
+                "qty": 5,
+                "side": "sell",
+                "type": "limit",
+                "product": "delivery",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Completed",
+                "avgPrice": 1499.95,
+                "limitPrice": 1495,
+                "trigPrice": 0,
+                "fillQty": 5,
+                "pendingQty": 0,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ4",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "qty": 1,
+                "side": "sell",
+                "type": "stopmarket",
+                "product": "intraday",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Rejected",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 790.5,
+                "fillQty": 0,
+                "pendingQty": 1,
+                "validity": "day",
+                "validTill": "",
+                "reason": "RMS reject"
+              },
+              {
+                "orderId": "TJ5",
+                "sym": {
+                  "id": "EQT_TATAMOTORS_EQ_BSE",
+                  "exchange": "BSE",
+                  "symbol": "TATAMOTORS",
+                  "tradSymbol": "TATAMOTORS"
+                },
+                "symId": "EQT_TATAMOTORS_EQ_BSE",
+                "qty": 2,
+                "side": "buy",
+                "type": "market",
+                "product": "delivery",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Cancelled",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 2,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ6",
+                "sym": {
+                  "id": "FUT_GOLDM_25NOV26_MCX",
+                  "exchange": "MCX",
+                  "symbol": "GOLDM",
+                  "tradSymbol": "GOLDM25NOV26FUT"
+                },
+                "symId": "FUT_GOLDM_25NOV26_MCX",
+                "qty": 10,
+                "side": "sell",
+                "type": "market",
+                "product": "cover",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Pending",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 10,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ7",
+                "sym": {
+                  "id": "EQT_NOSUCH_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "NOSUCH",
+                  "tradSymbol": "NOSUCH-EQ"
+                },
+                "symId": "EQT_NOSUCH_EQ_NSE",
+                "qty": 3,
+                "side": "buy",
+                "type": "xx",
+                "product": "zz",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Traded",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 3,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ8",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "qty": 4,
+                "side": "buy",
+                "type": "limit",
+                "product": "bracket",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Canceled",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 4,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ9",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "qty": 4,
+                "side": "buy",
+                "type": "limit",
+                "product": "intraday",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Filled",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 4,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ10",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "qty": 4,
+                "side": "buy",
+                "type": "limit",
+                "product": "intraday",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "",
+                "avgPrice": 0,
+                "limitPrice": 0,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 4,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ11",
+                "qty": 1,
+                "side": "buy",
+                "type": "limit",
+                "product": "intraday",
+                "status": "Open",
+                "symId": "EQT_INFY_EQ_NSE"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "TJ1",
+                "price": 800.5,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 10,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NFO",
+                "order_status": "trigger pending",
+                "orderid": "TJ2",
+                "price": 24010.0,
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": 75,
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 24000.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "TJ3",
+                "price": 1495.0,
+                "pricetype": "LIMIT",
+                "product": "CNC",
+                "quantity": 5,
+                "symbol": "INFY",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "rejected",
+                "orderid": "TJ4",
+                "price": 0.0,
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": 1,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 790.5
+              },
+              {
+                "action": "BUY",
+                "exchange": "BSE",
+                "order_status": "cancelled",
+                "orderid": "TJ5",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": 2,
+                "symbol": "TATAMOTORS",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "MCX",
+                "order_status": "open",
+                "orderid": "TJ6",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CO",
+                "quantity": 10,
+                "symbol": "GOLDM25NOV26FUT",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "TJ7",
+                "price": 0.0,
+                "pricetype": "XX",
+                "product": "MIS",
+                "quantity": 3,
+                "symbol": "NOSUCH-EQ",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "cancelled",
+                "orderid": "TJ8",
+                "price": 0.0,
+                "pricetype": "LIMIT",
+                "product": "BO",
+                "quantity": 4,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "TJ9",
+                "price": 0.0,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 4,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "",
+                "orderid": "TJ10",
+                "price": 0.0,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 4,
+                "symbol": "SBIN",
+                "timestamp": "2026-11-03 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "",
+                "order_status": "open",
+                "orderid": "TJ11",
+                "price": 0.0,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 1,
+                "symbol": "",
+                "timestamp": "",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 8,
+              "total_completed_orders": 3,
+              "total_open_orders": 3,
+              "total_rejected_orders": 1,
+              "total_sell_orders": 3
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/orders",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_row_that_cannot_be_read",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/orders": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "orderId": "TJ1",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "qty": 10,
+                "side": "buy",
+                "type": "limit",
+                "product": "intraday",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Open",
+                "avgPrice": 0,
+                "limitPrice": 800.5,
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 10,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              },
+              {
+                "orderId": "TJ8",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "qty": 4,
+                "side": "buy",
+                "type": "limit",
+                "product": "intraday",
+                "orderTime": "2026-11-03 10:20:01",
+                "status": "Open",
+                "avgPrice": 0,
+                "limitPrice": "bad",
+                "trigPrice": 0,
+                "fillQty": 0,
+                "pendingQty": 4,
+                "validity": "day",
+                "validTill": "",
+                "reason": ""
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "could not convert string to float: 'bad'",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/orders",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_empty",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/orders": {
+          "body": {
+            "s": "no-data",
+            "msg": "No Data Available"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/orders",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_ok_without_d",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/orders": {
+          "body": {
+            "s": "ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/orders",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_failed",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/orders": {
+          "body": {
+            "s": "error",
+            "msg": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/orders",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_not_json",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/orders": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "'str' object has no attribute 'get'",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/orders",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_http_error",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/orders": {
+          "status": 500,
+          "body": {
+            "s": "error",
+            "msg": "down"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Server error '500 Internal Server Error' for url 'https://api.tradejini.com/v2/api/oms/orders?symDetails=true'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/orders",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/trades": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "orderId": "TJ3",
+                "sym": {
+                  "id": "EQT_INFY_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "INFY",
+                  "tradSymbol": "INFY-EQ"
+                },
+                "symId": "EQT_INFY_EQ_NSE",
+                "side": "sell",
+                "product": "delivery",
+                "fillQty": 5,
+                "fillPrice": 1499.95,
+                "fillValue": 7499.75,
+                "time": "2026-11-03 10:21:12",
+                "exchOrderId": "X1"
+              },
+              {
+                "orderId": "TJ2",
+                "sym": {
+                  "id": "FUT_NIFTY_25NOV26_NFO",
+                  "exchange": "NFO",
+                  "symbol": "NIFTY",
+                  "tradSymbol": "NIFTY25NOV26FUT"
+                },
+                "symId": "FUT_NIFTY_25NOV26_NFO",
+                "side": "buy",
+                "product": "normal",
+                "fillQty": 75,
+                "fillPrice": 24005.5,
+                "fillValue": 1800412.5,
+                "time": "2026-11-03 10:21:12",
+                "exchOrderId": "X1",
+                "remarks": "algo"
+              },
+              {
+                "orderId": "TJ99",
+                "sym": {
+                  "id": "EQT_NOSUCH_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "NOSUCH",
+                  "tradSymbol": "NOSUCH-EQ"
+                },
+                "symId": "EQT_NOSUCH_EQ_NSE",
+                "side": "buy",
+                "product": "zz",
+                "fillQty": 2,
+                "fillPrice": 2900,
+                "fillValue": 5800,
+                "time": "2026-11-03 10:21:12",
+                "exchOrderId": "X1"
+              },
+              {
+                "orderId": "TJ97",
+                "side": "sell",
+                "fillQty": 1,
+                "fillPrice": 5,
+                "fillValue": 5,
+                "symId": "EQT_SBIN_EQ_NSE",
+                "sym": {}
+              },
+              {
+                "orderId": "TJ96",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "side": "buy",
+                "product": "margin",
+                "fillQty": 1,
+                "fillPrice": 800,
+                "fillValue": 800,
+                "time": "2026-11-03 10:21:12",
+                "exchOrderId": "X1"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "SELL",
+              "average_price": 1499.95,
+              "exchange": "NSE",
+              "orderid": "TJ3",
+              "product": "CNC",
+              "quantity": 5,
+              "symbol": "INFY",
+              "timestamp": "2026-11-03 10:21:12",
+              "trade_value": 7499.75
+            },
+            {
+              "action": "BUY",
+              "average_price": 24005.5,
+              "exchange": "NFO",
+              "orderid": "TJ2",
+              "product": "NRML",
+              "quantity": 75,
+              "symbol": "NIFTY25NOV26FUT",
+              "timestamp": "2026-11-03 10:21:12",
+              "trade_value": 1800412.5
+            },
+            {
+              "action": "BUY",
+              "average_price": 2900.0,
+              "exchange": "NSE",
+              "orderid": "TJ99",
+              "product": "NRML",
+              "quantity": 2,
+              "symbol": "NOSUCH",
+              "timestamp": "2026-11-03 10:21:12",
+              "trade_value": 5800.0
+            },
+            {
+              "action": "SELL",
+              "average_price": 5.0,
+              "exchange": "",
+              "orderid": "TJ97",
+              "product": "NRML",
+              "quantity": 1,
+              "symbol": "",
+              "timestamp": "",
+              "trade_value": 5.0
+            },
+            {
+              "action": "BUY",
+              "average_price": 800.0,
+              "exchange": "NSE",
+              "orderid": "TJ96",
+              "product": "NRML",
+              "quantity": 1,
+              "symbol": "SBIN",
+              "timestamp": "2026-11-03 10:21:12",
+              "trade_value": 800.0
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/trades",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_row_that_cannot_be_read",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/trades": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "orderId": "TJ3",
+                "sym": {
+                  "id": "EQT_INFY_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "INFY",
+                  "tradSymbol": "INFY-EQ"
+                },
+                "symId": "EQT_INFY_EQ_NSE",
+                "side": "sell",
+                "product": "intraday",
+                "fillQty": 5,
+                "fillPrice": 1499.95,
+                "fillValue": 7499.75,
+                "time": "2026-11-03 10:21:12",
+                "exchOrderId": "X1"
+              },
+              {
+                "orderId": "TJ98",
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "side": "BUY",
+                "product": "intraday",
+                "fillQty": "x",
+                "fillPrice": "y",
+                "fillValue": "z",
+                "time": "2026-11-03 10:21:12",
+                "exchOrderId": "X1"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/trades",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_empty",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/trades": {
+          "body": {
+            "s": "no-data",
+            "msg": "No Data Available"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/trades",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_failed",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/trades": {
+          "body": {
+            "s": "error",
+            "msg": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "API error: Session expired",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/trades",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_not_json",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/trades": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Invalid API response format",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/trades",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_http_error",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/trades": {
+          "status": 500,
+          "body": {
+            "s": "error"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/trades",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "product": "intraday",
+                "netQty": 10,
+                "netAvgPrice": 800.0
+              },
+              {
+                "sym": {
+                  "id": "FUT_NIFTY_25NOV26_NFO",
+                  "exchange": "NFO",
+                  "symbol": "NIFTY",
+                  "tradSymbol": "NIFTY25NOV26FUT"
+                },
+                "symId": "FUT_NIFTY_25NOV26_NFO",
+                "product": "normal",
+                "netQty": -75,
+                "netAvgPrice": 24000
+              },
+              {
+                "sym": {
+                  "id": "EQT_INFY_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "INFY",
+                  "tradSymbol": "INFY-EQ"
+                },
+                "symId": "EQT_INFY_EQ_NSE",
+                "product": "delivery",
+                "netQty": 0,
+                "netAvgPrice": 1500
+              },
+              {
+                "sym": {
+                  "id": "FUT_GOLDM_25NOV26_MCX",
+                  "exchange": "MCX",
+                  "symbol": "GOLDM",
+                  "tradSymbol": "GOLDM25NOV26FUT"
+                },
+                "symId": "FUT_GOLDM_25NOV26_MCX",
+                "product": "normal",
+                "netQty": 10,
+                "netAvgPrice": 75000
+              },
+              {
+                "sym": {
+                  "id": "EQT_NOSUCH_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "NOSUCH",
+                  "tradSymbol": "NOSUCH-EQ"
+                },
+                "symId": "EQT_NOSUCH_EQ_NSE",
+                "product": "intraday",
+                "netQty": 4,
+                "netAvgPrice": 10
+              },
+              {
+                "sym": {
+                  "id": "EQT_TATAMOTORS_EQ_BSE",
+                  "exchange": "BSE",
+                  "symbol": "TATAMOTORS",
+                  "tradSymbol": "TATAMOTORS"
+                },
+                "symId": "EQT_TATAMOTORS_EQ_BSE",
+                "product": "cover",
+                "netQty": 3,
+                "netAvgPrice": 500
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "800.0",
+              "exchange": "NSE",
+              "product": "MIS",
+              "quantity": 10,
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": "24000.0",
+              "exchange": "NFO",
+              "product": "NRML",
+              "quantity": -75,
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": "1500.0",
+              "exchange": "NSE",
+              "product": "CNC",
+              "quantity": 0,
+              "symbol": "INFY"
+            },
+            {
+              "average_price": "75000.0",
+              "exchange": "MCX",
+              "product": "NRML",
+              "quantity": 10,
+              "symbol": "GOLDM25NOV26FUT"
+            },
+            {
+              "average_price": "10.0",
+              "exchange": "NSE",
+              "product": "MIS",
+              "quantity": 4,
+              "symbol": "NOSUCH"
+            },
+            {
+              "average_price": "500.0",
+              "exchange": "BSE",
+              "product": "CO",
+              "quantity": 3,
+              "symbol": "TATAMOTORS"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_row_that_cannot_be_read",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "product": "intraday",
+                "netQty": 10,
+                "netAvgPrice": "n/a"
+              },
+              {
+                "sym": {
+                  "id": "EQT_INFY_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "INFY",
+                  "tradSymbol": "INFY-EQ"
+                },
+                "symId": "EQT_INFY_EQ_NSE",
+                "product": "intraday",
+                "netQty": 2,
+                "netAvgPrice": 1500
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "1500.0",
+              "exchange": "NSE",
+              "product": "MIS",
+              "quantity": 2,
+              "symbol": "INFY"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_flat",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "body": {
+            "s": "no-data",
+            "msg": "No Data Available"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_failed",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "body": {
+            "s": "error",
+            "msg": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Session expired",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_not_json",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "An unexpected error occurred while fetching positions",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_http_error",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "status": 500,
+          "body": {
+            "s": "error"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "HTTP error 500: {\"s\":\"error\"}",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/holdings": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "holdings": [
+                {
+                  "sym": {
+                    "id": "EQT_INFY_EQ_NSE",
+                    "exchange": "NSE",
+                    "symbol": "INFY",
+                    "tradSymbol": "INFY-EQ",
+                    "lastPrice": 1510
+                  },
+                  "symId": "EQT_INFY_EQ_NSE",
+                  "qty": 6,
+                  "avgPrice": 1450.5,
+                  "realizedPnl": 12.5,
+                  "product": "delivery"
+                },
+                {
+                  "sym": {
+                    "id": "EQT_TATAMOTORS_EQ_BSE",
+                    "exchange": "BSE",
+                    "symbol": "TATAMOTORS",
+                    "tradSymbol": "TATAMOTORS",
+                    "ltp": 510
+                  },
+                  "symId": "EQT_TATAMOTORS_EQ_BSE",
+                  "qty": 4,
+                  "avgPrice": 500,
+                  "realizedPnl": 0,
+                  "product": "delivery"
+                },
+                {
+                  "sym": {
+                    "id": "EQT_SBIN_EQ_NSE",
+                    "exchange": "NSE",
+                    "symbol": "SBIN",
+                    "tradSymbol": "SBIN-EQ"
+                  },
+                  "symId": "EQT_SBIN_EQ_NSE",
+                  "qty": 3,
+                  "avgPrice": 800,
+                  "realizedPnl": 0,
+                  "product": "intraday"
+                },
+                {
+                  "sym": {
+                    "id": "EQT_NOSUCH_EQ_NSE",
+                    "exchange": "NSE",
+                    "symbol": "NOSUCH",
+                    "tradSymbol": "NOSUCH-EQ"
+                  },
+                  "symId": "EQT_NOSUCH_EQ_NSE",
+                  "qty": "x",
+                  "avgPrice": "y",
+                  "realizedPnl": 0,
+                  "product": "delivery"
+                },
+                {
+                  "sym": {},
+                  "qty": 1,
+                  "avgPrice": 5
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "avgprice": 1450.5,
+                "current_value": 9060.0,
+                "exchange": "NSE",
+                "investment": 8703.0,
+                "ltp": 1510.0,
+                "pnl": 369.5,
+                "pnlpercent": 4.25,
+                "product": "CNC",
+                "quantity": 6,
+                "symbol": "INFY"
+              },
+              {
+                "avgprice": 500.0,
+                "current_value": 2040.0,
+                "exchange": "BSE",
+                "investment": 2000.0,
+                "ltp": 510.0,
+                "pnl": 40.0,
+                "pnlpercent": 2.0,
+                "product": "CNC",
+                "quantity": 4,
+                "symbol": "TATAMOTORS"
+              },
+              {
+                "avgprice": 800.0,
+                "current_value": 2400.0,
+                "exchange": "NSE",
+                "investment": 2400.0,
+                "ltp": 800.0,
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "MIS",
+                "quantity": 3,
+                "symbol": "SBIN"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 13505.0,
+              "totalinvvalue": 13108.0,
+              "totalpnlpercentage": 3.12,
+              "totalprofitandloss": 409.5
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/holdings",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_empty",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/holdings": {
+          "body": {
+            "s": "no-data",
+            "msg": "No Data Available"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/holdings",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_no_holdings_text",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/holdings": {
+          "body": {
+            "s": "ok",
+            "d": "No Holdings"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/holdings",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_failed",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/holdings": {
+          "body": {
+            "s": "error",
+            "msg": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "API Error: Unknown error in API response",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/holdings",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_http_error",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/holdings": {
+          "status": 500,
+          "body": {
+            "s": "error"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "HTTP error: Server error '500 Internal Server Error' for url 'https://api.tradejini.com/v2/api/oms/holdings?symDetails=true'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/holdings",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {}
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/limits": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "availMargin": 100000.5,
+              "stockCollateral": 2500.25,
+              "unrealizedPnL": -120.5,
+              "realizedPnl": 340.25,
+              "marginUsed": 1184.5
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "100000.50",
+            "collateral": "2500.25",
+            "m2mrealized": "340.25",
+            "m2munrealized": "-120.50",
+            "utiliseddebits": "1184.50"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_one_row_a_segment_are_summed",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/limits": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "segment": "EQ",
+                "availMargin": 100,
+                "stockCollateral": 10,
+                "unrealizedPnL": 1.5,
+                "realizedPnl": 2,
+                "marginUsed": 3
+              },
+              {
+                "segment": "FO",
+                "availMargin": 50.25,
+                "stockCollateral": 5,
+                "unrealizedPnL": -0.5,
+                "realizedPnl": 0,
+                "marginUsed": 7,
+                "flag": true
+              },
+              "junk"
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "150.25",
+            "collateral": "15.00",
+            "m2mrealized": "2.00",
+            "m2munrealized": "1.00",
+            "utiliseddebits": "10.00"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_empty_list",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/limits": {
+          "body": {
+            "s": "ok",
+            "d": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_missing_fields",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/limits": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "availMargin": 5
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "5.00",
+            "collateral": "0.00",
+            "m2mrealized": "0.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "0.00"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_text_values",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/limits": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "availMargin": "12.5",
+              "stockCollateral": "x"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_d_that_is_text",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/limits": {
+          "body": {
+            "s": "ok",
+            "d": "nothing"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_failed",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/limits": {
+          "body": {
+            "s": "error",
+            "msg": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_http_error",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/limits": {
+          "status": 500,
+          "body": {
+            "x": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_long",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "product": "intraday",
+                "netQty": 10,
+                "netAvgPrice": 800.0
+              },
+              {
+                "sym": {
+                  "id": "FUT_NIFTY_25NOV26_NFO",
+                  "exchange": "NFO",
+                  "symbol": "NIFTY",
+                  "tradSymbol": "NIFTY25NOV26FUT"
+                },
+                "symId": "FUT_NIFTY_25NOV26_NFO",
+                "product": "normal",
+                "netQty": -75,
+                "netAvgPrice": 24000
+              },
+              {
+                "sym": {
+                  "id": "EQT_INFY_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "INFY",
+                  "tradSymbol": "INFY-EQ"
+                },
+                "symId": "EQT_INFY_EQ_NSE",
+                "product": "delivery",
+                "netQty": 0,
+                "netAvgPrice": 1500
+              },
+              {
+                "sym": {
+                  "id": "FUT_GOLDM_25NOV26_MCX",
+                  "exchange": "MCX",
+                  "symbol": "GOLDM",
+                  "tradSymbol": "GOLDM25NOV26FUT"
+                },
+                "symId": "FUT_GOLDM_25NOV26_MCX",
+                "product": "normal",
+                "netQty": 10,
+                "netAvgPrice": 75000
+              },
+              {
+                "sym": {
+                  "id": "EQT_NOSUCH_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "NOSUCH",
+                  "tradSymbol": "NOSUCH-EQ"
+                },
+                "symId": "EQT_NOSUCH_EQ_NSE",
+                "product": "intraday",
+                "netQty": 4,
+                "netAvgPrice": 10
+              },
+              {
+                "sym": {
+                  "id": "EQT_TATAMOTORS_EQ_BSE",
+                  "exchange": "BSE",
+                  "symbol": "TATAMOTORS",
+                  "tradSymbol": "TATAMOTORS"
+                },
+                "symId": "EQT_TATAMOTORS_EQ_BSE",
+                "product": "cover",
+                "netQty": 3,
+                "netAvgPrice": 500
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": 10,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_short_is_negative",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "product": "intraday",
+                "netQty": 10,
+                "netAvgPrice": 800.0
+              },
+              {
+                "sym": {
+                  "id": "FUT_NIFTY_25NOV26_NFO",
+                  "exchange": "NFO",
+                  "symbol": "NIFTY",
+                  "tradSymbol": "NIFTY25NOV26FUT"
+                },
+                "symId": "FUT_NIFTY_25NOV26_NFO",
+                "product": "normal",
+                "netQty": -75,
+                "netAvgPrice": 24000
+              },
+              {
+                "sym": {
+                  "id": "EQT_INFY_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "INFY",
+                  "tradSymbol": "INFY-EQ"
+                },
+                "symId": "EQT_INFY_EQ_NSE",
+                "product": "delivery",
+                "netQty": 0,
+                "netAvgPrice": 1500
+              },
+              {
+                "sym": {
+                  "id": "FUT_GOLDM_25NOV26_MCX",
+                  "exchange": "MCX",
+                  "symbol": "GOLDM",
+                  "tradSymbol": "GOLDM25NOV26FUT"
+                },
+                "symId": "FUT_GOLDM_25NOV26_MCX",
+                "product": "normal",
+                "netQty": 10,
+                "netAvgPrice": 75000
+              },
+              {
+                "sym": {
+                  "id": "EQT_NOSUCH_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "NOSUCH",
+                  "tradSymbol": "NOSUCH-EQ"
+                },
+                "symId": "EQT_NOSUCH_EQ_NSE",
+                "product": "intraday",
+                "netQty": 4,
+                "netAvgPrice": 10
+              },
+              {
+                "sym": {
+                  "id": "EQT_TATAMOTORS_EQ_BSE",
+                  "exchange": "BSE",
+                  "symbol": "TATAMOTORS",
+                  "tradSymbol": "TATAMOTORS"
+                },
+                "symId": "EQT_TATAMOTORS_EQ_BSE",
+                "product": "cover",
+                "netQty": 3,
+                "netAvgPrice": 500
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": -75,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_other_product_is_zero",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "product": "CNC",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "product": "intraday",
+                "netQty": 10,
+                "netAvgPrice": 800.0
+              },
+              {
+                "sym": {
+                  "id": "FUT_NIFTY_25NOV26_NFO",
+                  "exchange": "NFO",
+                  "symbol": "NIFTY",
+                  "tradSymbol": "NIFTY25NOV26FUT"
+                },
+                "symId": "FUT_NIFTY_25NOV26_NFO",
+                "product": "normal",
+                "netQty": -75,
+                "netAvgPrice": 24000
+              },
+              {
+                "sym": {
+                  "id": "EQT_INFY_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "INFY",
+                  "tradSymbol": "INFY-EQ"
+                },
+                "symId": "EQT_INFY_EQ_NSE",
+                "product": "delivery",
+                "netQty": 0,
+                "netAvgPrice": 1500
+              },
+              {
+                "sym": {
+                  "id": "FUT_GOLDM_25NOV26_MCX",
+                  "exchange": "MCX",
+                  "symbol": "GOLDM",
+                  "tradSymbol": "GOLDM25NOV26FUT"
+                },
+                "symId": "FUT_GOLDM_25NOV26_MCX",
+                "product": "normal",
+                "netQty": 10,
+                "netAvgPrice": 75000
+              },
+              {
+                "sym": {
+                  "id": "EQT_NOSUCH_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "NOSUCH",
+                  "tradSymbol": "NOSUCH-EQ"
+                },
+                "symId": "EQT_NOSUCH_EQ_NSE",
+                "product": "intraday",
+                "netQty": 4,
+                "netAvgPrice": 10
+              },
+              {
+                "sym": {
+                  "id": "EQT_TATAMOTORS_EQ_BSE",
+                  "exchange": "BSE",
+                  "symbol": "TATAMOTORS",
+                  "tradSymbol": "TATAMOTORS"
+                },
+                "symId": "EQT_TATAMOTORS_EQ_BSE",
+                "product": "cover",
+                "netQty": 3,
+                "netAvgPrice": 500
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": 0,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "product": "intraday",
+                "netQty": 10,
+                "netAvgPrice": 800.0
+              },
+              {
+                "sym": {
+                  "id": "FUT_NIFTY_25NOV26_NFO",
+                  "exchange": "NFO",
+                  "symbol": "NIFTY",
+                  "tradSymbol": "NIFTY25NOV26FUT"
+                },
+                "symId": "FUT_NIFTY_25NOV26_NFO",
+                "product": "normal",
+                "netQty": -75,
+                "netAvgPrice": 24000
+              },
+              {
+                "sym": {
+                  "id": "EQT_INFY_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "INFY",
+                  "tradSymbol": "INFY-EQ"
+                },
+                "symId": "EQT_INFY_EQ_NSE",
+                "product": "delivery",
+                "netQty": 0,
+                "netAvgPrice": 1500
+              },
+              {
+                "sym": {
+                  "id": "FUT_GOLDM_25NOV26_MCX",
+                  "exchange": "MCX",
+                  "symbol": "GOLDM",
+                  "tradSymbol": "GOLDM25NOV26FUT"
+                },
+                "symId": "FUT_GOLDM_25NOV26_MCX",
+                "product": "normal",
+                "netQty": 10,
+                "netAvgPrice": 75000
+              },
+              {
+                "sym": {
+                  "id": "EQT_NOSUCH_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "NOSUCH",
+                  "tradSymbol": "NOSUCH-EQ"
+                },
+                "symId": "EQT_NOSUCH_EQ_NSE",
+                "product": "intraday",
+                "netQty": 4,
+                "netAvgPrice": 10
+              },
+              {
+                "sym": {
+                  "id": "EQT_TATAMOTORS_EQ_BSE",
+                  "exchange": "BSE",
+                  "symbol": "TATAMOTORS",
+                  "tradSymbol": "TATAMOTORS"
+                },
+                "symId": "EQT_TATAMOTORS_EQ_BSE",
+                "product": "cover",
+                "netQty": 3,
+                "netAvgPrice": 500
+              }
+            ]
+          }
+        },
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "10",
+            "side": "sell",
+            "type": "market",
+            "product": "intraday",
+            "validity": "day",
+            "mktProt": "2"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "FUT_NIFTY_25NOV26_NFO",
+            "qty": "75",
+            "side": "buy",
+            "type": "market",
+            "product": "normal",
+            "validity": "day",
+            "mktProt": "2"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "FUT_GOLDM_25NOV26_MCX",
+            "qty": "10",
+            "side": "sell",
+            "type": "market",
+            "product": "normal",
+            "validity": "day",
+            "mktProt": "2"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "None",
+            "qty": "4",
+            "side": "sell",
+            "type": "market",
+            "product": "intraday",
+            "validity": "day",
+            "mktProt": "2"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_TATAMOTORS_EQ_BSE",
+            "qty": "3",
+            "side": "sell",
+            "type": "market",
+            "product": "intraday",
+            "validity": "day",
+            "mktProt": "2"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_nothing_open",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "body": {
+            "s": "no-data",
+            "msg": "No Data Available"
+          }
+        }
+      },
+      "expected": {
+        "status": 0,
+        "body": {
+          "message": "Failed to close positions",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_book_failed",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "body": {
+            "s": "error",
+            "msg": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 0,
+        "body": {
+          "message": "Failed to close positions",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_reduce",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "product": "intraday",
+                "netQty": 10,
+                "netAvgPrice": 800.0
+              },
+              {
+                "sym": {
+                  "id": "FUT_NIFTY_25NOV26_NFO",
+                  "exchange": "NFO",
+                  "symbol": "NIFTY",
+                  "tradSymbol": "NIFTY25NOV26FUT"
+                },
+                "symId": "FUT_NIFTY_25NOV26_NFO",
+                "product": "normal",
+                "netQty": -75,
+                "netAvgPrice": 24000
+              },
+              {
+                "sym": {
+                  "id": "EQT_INFY_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "INFY",
+                  "tradSymbol": "INFY-EQ"
+                },
+                "symId": "EQT_INFY_EQ_NSE",
+                "product": "delivery",
+                "netQty": 0,
+                "netAvgPrice": 1500
+              },
+              {
+                "sym": {
+                  "id": "FUT_GOLDM_25NOV26_MCX",
+                  "exchange": "MCX",
+                  "symbol": "GOLDM",
+                  "tradSymbol": "GOLDM25NOV26FUT"
+                },
+                "symId": "FUT_GOLDM_25NOV26_MCX",
+                "product": "normal",
+                "netQty": 10,
+                "netAvgPrice": 75000
+              },
+              {
+                "sym": {
+                  "id": "EQT_NOSUCH_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "NOSUCH",
+                  "tradSymbol": "NOSUCH-EQ"
+                },
+                "symId": "EQT_NOSUCH_EQ_NSE",
+                "product": "intraday",
+                "netQty": 4,
+                "netAvgPrice": 10
+              },
+              {
+                "sym": {
+                  "id": "EQT_TATAMOTORS_EQ_BSE",
+                  "exchange": "BSE",
+                  "symbol": "TATAMOTORS",
+                  "tradSymbol": "TATAMOTORS"
+                },
+                "symId": "EQT_TATAMOTORS_EQ_BSE",
+                "product": "cover",
+                "netQty": 3,
+                "netAvgPrice": 500
+              }
+            ]
+          }
+        },
+        "POST /v2/api/oms/place-order": {
+          "body": {
+            "s": "ok",
+            "d": {
+              "orderId": "TJ0001",
+              "msg": "Order placed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "TJ0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/place-order",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "symId": "EQT_SBIN_EQ_NSE",
+            "qty": "6",
+            "side": "sell",
+            "type": "limit",
+            "product": "intraday",
+            "limitPrice": "800.5",
+            "trigPrice": "0.0",
+            "validity": "day"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_already_matched",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "10",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "body": {
+            "s": "ok",
+            "d": [
+              {
+                "sym": {
+                  "id": "EQT_SBIN_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "SBIN",
+                  "tradSymbol": "SBIN-EQ"
+                },
+                "symId": "EQT_SBIN_EQ_NSE",
+                "product": "intraday",
+                "netQty": 10,
+                "netAvgPrice": 800.0
+              },
+              {
+                "sym": {
+                  "id": "FUT_NIFTY_25NOV26_NFO",
+                  "exchange": "NFO",
+                  "symbol": "NIFTY",
+                  "tradSymbol": "NIFTY25NOV26FUT"
+                },
+                "symId": "FUT_NIFTY_25NOV26_NFO",
+                "product": "normal",
+                "netQty": -75,
+                "netAvgPrice": 24000
+              },
+              {
+                "sym": {
+                  "id": "EQT_INFY_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "INFY",
+                  "tradSymbol": "INFY-EQ"
+                },
+                "symId": "EQT_INFY_EQ_NSE",
+                "product": "delivery",
+                "netQty": 0,
+                "netAvgPrice": 1500
+              },
+              {
+                "sym": {
+                  "id": "FUT_GOLDM_25NOV26_MCX",
+                  "exchange": "MCX",
+                  "symbol": "GOLDM",
+                  "tradSymbol": "GOLDM25NOV26FUT"
+                },
+                "symId": "FUT_GOLDM_25NOV26_MCX",
+                "product": "normal",
+                "netQty": 10,
+                "netAvgPrice": 75000
+              },
+              {
+                "sym": {
+                  "id": "EQT_NOSUCH_EQ_NSE",
+                  "exchange": "NSE",
+                  "symbol": "NOSUCH",
+                  "tradSymbol": "NOSUCH-EQ"
+                },
+                "symId": "EQT_NOSUCH_EQ_NSE",
+                "product": "intraday",
+                "netQty": 4,
+                "netAvgPrice": 10
+              },
+              {
+                "sym": {
+                  "id": "EQT_TATAMOTORS_EQ_BSE",
+                  "exchange": "BSE",
+                  "symbol": "TATAMOTORS",
+                  "tradSymbol": "TATAMOTORS"
+                },
+                "symId": "EQT_TATAMOTORS_EQ_BSE",
+                "product": "cover",
+                "netQty": 3,
+                "netAvgPrice": 500
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to place smart order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_book_failed_is_refused",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /v2/api/oms/positions": {
+          "body": {
+            "s": "error",
+            "msg": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "OpenAlgo could not read your open position from Tradejini, so no order was sent. Check your positions and try again.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.tradejini.com",
+          "path": "/v2/api/oms/positions",
+          "query": [
+            [
+              "symDetails",
+              "true"
+            ]
+          ],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key:tj-access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
