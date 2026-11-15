@@ -28,6 +28,10 @@ for m in muts:
             # A change that makes the code loop forever is caught by the tests hanging: it counts as killed.
             subprocess.run(['pkill','-f','testhost'])
             out.append(f"{m['name']}: HUNG (killed by timeout)"); continue
+        crashed=[l for l in txt.splitlines() if 'crashed' in l.lower() or 'Test Run Aborted' in l]
+        if crashed:
+            # A change that takes the test process down (a stack overflow, a loop that runs out of memory) is caught by the tests.
+            out.append(f"{m['name']}: CRASHED (killed, the test process went down)"); continue
         line=[l for l in txt.splitlines() if 'Passed!' in l or 'Failed!' in l]
         err=[l for l in txt.splitlines() if ' error ' in l]
         res=line[0].split(' - ')[1].strip() if line else ('BUILD ERROR: '+err[0][-160:] if err else 'NO RESULT')
