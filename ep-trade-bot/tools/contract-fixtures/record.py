@@ -252,6 +252,8 @@ for sc in SCENARIOS.SCENARIOS:
     state["calls"] = {}
     state["analyze"] = sc.get("analyze", False)
     _seed(sc)
+    if hasattr(SCENARIOS, "before_each"):
+        SCENARIOS.before_each(sc)
     if "login" in sc:
         # A broker sign-in is not an /api/v1 route: call the plugin's authenticate_broker directly and record what it returns.
         auth_api = importlib.import_module(f"broker.{BROKER}.api.auth_api")
