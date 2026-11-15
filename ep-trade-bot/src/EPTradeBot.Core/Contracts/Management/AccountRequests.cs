@@ -85,6 +85,9 @@ public sealed class BrokerLoginCompleteRequest
 
     [StringLength(64)] [JsonPropertyName("totp")] public string? Totp { get; set; }
 
+    /// <summary>The kind of one-time code a broker that takes either (Tradejini: totp or otp) is given.</summary>
+    [StringLength(8)] [JsonPropertyName("twofatype")] public string? TwoFaType { get; set; }
+
     /// <summary>The one-time code a broker that texts one after a first request (Definedge) is answered with.</summary>
     [StringLength(64)] [JsonPropertyName("otp")] public string? Otp { get; set; }
 

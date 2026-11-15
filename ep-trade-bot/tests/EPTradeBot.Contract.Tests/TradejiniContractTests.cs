@@ -120,3 +120,35 @@ public sealed class TradejiniContractTests(TradejiniHost host, ITestOutputHelper
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginTradejiniHost() : TradejiniFileHost("login_tradejini.fixtures.json");
+
+/// <summary>Tradejini sign-in (tools/contract-fixtures/login_tradejini.fixtures.json).</summary>
+public sealed class LoginTradejiniContractTests(LoginTradejiniHost host, ITestOutputHelper output) : IClassFixture<LoginTradejiniHost>
+{
+    private const string Unreadable = "Tradejini sent an answer that could not be read. Try again in a moment.";
+    private const string Enter = "Enter the password and the one-time code to sign in to Tradejini.";
+    private const string Unauthorized = "Tradejini did not accept the sign-in. Check, in order: the password is your CubePlus login PIN, not your account password; this server is the static IP whitelisted for your app in the Tradejini developer portal; the API key saved here is your app's API key; and the one-time code is current. Tradejini gives the same answer for all four.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_with_a_token_type_that_is_not_bearer"] = LoginDeviations.Refused("Tradejini signed you in with a session of a kind this server cannot use (mac). Try again, and tell Tradejini if it keeps happening.", 502),
+        ["login_with_no_access_token"] = LoginDeviations.Refused("Tradejini accepted the sign-in but sent no session. Start the sign-in again.", 502),
+        ["login_refused_with_a_message"] = LoginDeviations.Refused("Tradejini did not accept the sign-in: Invalid two factor code"),
+        ["login_refused_with_a_message_field"] = LoginDeviations.Refused("Tradejini did not accept the sign-in: Account locked"),
+        ["login_refused_without_a_message"] = LoginDeviations.Refused("Tradejini did not accept the sign-in. Check your password and the one-time code, then try again."),
+        ["login_refused_as_unauthorized"] = LoginDeviations.Refused(Unauthorized),
+        ["login_refused_as_unauthorized_without_a_message"] = LoginDeviations.Refused(Unauthorized),
+        ["login_with_an_answer_that_is_not_json"] = LoginDeviations.Refused(Unreadable, 502),
+        ["login_with_an_error_that_is_not_json"] = LoginDeviations.Refused(Unreadable, 502),
+        ["login_with_no_password"] = LoginDeviations.Refused(Enter),
+        ["login_with_no_code"] = LoginDeviations.Refused(Enter),
+        ["login_with_an_empty_password"] = LoginDeviations.Refused(Enter),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_tradejini.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

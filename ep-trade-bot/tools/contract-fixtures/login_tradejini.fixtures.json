@@ -1,0 +1,860 @@
+{
+  "broker": "tradejini",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_with_a_totp",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "body": {
+            "scope": "general",
+            "access_token": "tj-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "tj-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_an_otp",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "otp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "body": {
+            "scope": "general",
+            "access_token": "tj-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "tj-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "otp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_the_kind_in_capitals",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "TOTP"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "body": {
+            "scope": "general",
+            "access_token": "tj-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "tj-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_a_kind_the_service_does_not_know_is_a_totp",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "sms"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "body": {
+            "scope": "general",
+            "access_token": "tj-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "tj-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_no_kind_is_a_totp",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "body": {
+            "scope": "general",
+            "access_token": "tj-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "tj-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_a_token_type_in_capitals",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "body": {
+            "scope": "general",
+            "access_token": "tj-access-777",
+            "token_type": "Bearer",
+            "expires_in": 86400
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "tj-access-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_no_token_type",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "body": {
+            "access_token": "tj-access-888"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "tj-access-888",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_a_token_type_that_is_not_bearer",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "body": {
+            "scope": "general",
+            "access_token": "tj-access-777",
+            "token_type": "mac",
+            "expires_in": 86400
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid token type in response: mac"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_no_access_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "body": {
+            "token_type": "bearer"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "No access token in response"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "status": 400,
+          "body": {
+            "s": "error",
+            "msg": "Invalid two factor code"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid two factor code"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message_field",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "status": 403,
+          "body": {
+            "message": "Account locked"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Account locked"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "status": 500,
+          "body": {
+            "s": "error"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_as_unauthorized",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "status": 401,
+          "body": {
+            "s": "error",
+            "msg": "Unauthorized"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Unauthorized. Check, in order: the password field takes your CubePlus login PIN, not your account password; individual apps only accept requests from the static IP whitelisted on the app in the Tradejini developer portal (docs: API Basics - Static IP Requirement); BROKER_API_KEY must hold the app API key, since the login never sends the api secret; and the TOTP must be current. All four fail with this same bare 401."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_as_unauthorized_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "status": 401,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Unauthorized. Check, in order: the password field takes your CubePlus login PIN, not your account password; individual apps only accept requests from the static IP whitelisted on the app in the Tradejini developer portal (docs: API Basics - Static IP Requirement); BROKER_API_KEY must hold the app API key, since the login never sends the api secret; and the TOTP must be current. All four fail with this same bare 401."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_an_answer_that_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "No access token in response"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_an_error_that_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "totp": "123456",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "status": 502,
+          "body": "Bad gateway"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "'str' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.tradejini.com",
+          "path": "/v2/api-gw/oauth/individual-token-v2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer tj-app-api-key",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "form": {
+            "password": "1234",
+            "twoFa": "123456",
+            "twoFaTyp": "totp"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_no_password",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "totp": "123456",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "body": {
+            "scope": "general",
+            "access_token": "tj-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Password and TOTP code are required"
+        }
+      },
+      "stored": null,
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "login_with_no_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "1234",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "body": {
+            "scope": "general",
+            "access_token": "tj-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Password and TOTP code are required"
+        }
+      },
+      "stored": null,
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "login_with_an_empty_password",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "",
+        "totp": "123456",
+        "twofatype": "totp"
+      },
+      "broker": {
+        "POST /v2/api-gw/oauth/individual-token-v2": {
+          "body": {
+            "scope": "general",
+            "access_token": "tj-access-777",
+            "token_type": "bearer",
+            "expires_in": 86400
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Password and TOTP code are required"
+        }
+      },
+      "stored": null,
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}

@@ -158,7 +158,7 @@ public sealed partial class TradejiniPlugin(IHttpClientFactory http, BrokerSessi
     // ---- books -----------------------------------------------------------------------------------------------
 
     /// <summary>The rows of a book. No data is an empty book; anything else that is not an ok answer is an error naming the call, where OpenAlgo shows it as an empty book.</summary>
-    private async Task<(JsonNode? Data, bool Empty)> ReadAsync(BrokerSession session, string path, string what, CancellationToken cancellationToken, string contentType = "application/json")
+    private async Task<(JsonNode? Data, bool Empty)> ReadBookAsync(BrokerSession session, string path, string what, CancellationToken cancellationToken, string contentType = "application/json")
     {
         var (status, body, _) = await SendAsync(session, HttpMethod.Get, path, [new("symDetails", "true")], null, cancellationToken, contentType);
         if (body is JsonObject o && status < 400)
@@ -235,7 +235,7 @@ public sealed partial class TradejiniPlugin(IHttpClientFactory http, BrokerSessi
 
     public async Task<BrokerBook> GetOrderBookAsync(BrokerSession session, CancellationToken cancellationToken)
     {
-        var (data, empty) = await ReadAsync(session, "/api/oms/orders", "order book", cancellationToken, "application/x-www-form-urlencoded");
+        var (data, empty) = await ReadBookAsync(session, "/api/oms/orders", "order book", cancellationToken, "application/x-www-form-urlencoded");
         var rows = new JsonArray();
         int buy = 0, sell = 0, completed = 0, open = 0, rejected = 0;
         foreach (var r in (data as JsonArray)?.OfType<JsonObject>() ?? [])
@@ -269,7 +269,7 @@ public sealed partial class TradejiniPlugin(IHttpClientFactory http, BrokerSessi
 
     public async Task<JsonArray> GetTradeBookAsync(BrokerSession session, CancellationToken cancellationToken)
     {
-        var (data, _) = await ReadAsync(session, "/api/oms/trades", "trade book", cancellationToken);
+        var (data, _) = await ReadBookAsync(session, "/api/oms/trades", "trade book", cancellationToken);
         var result = new JsonArray();
         foreach (var t in (data as JsonArray)?.OfType<JsonObject>() ?? [])
         {
@@ -289,7 +289,7 @@ public sealed partial class TradejiniPlugin(IHttpClientFactory http, BrokerSessi
 
     public async Task<JsonArray> GetPositionsAsync(BrokerSession session, CancellationToken cancellationToken)
     {
-        var (data, _) = await ReadAsync(session, "/api/oms/positions", "position book", cancellationToken);
+        var (data, _) = await ReadBookAsync(session, "/api/oms/positions", "position book", cancellationToken);
         var result = new JsonArray();
         foreach (var p in (data as JsonArray)?.OfType<JsonObject>() ?? [])
         {
