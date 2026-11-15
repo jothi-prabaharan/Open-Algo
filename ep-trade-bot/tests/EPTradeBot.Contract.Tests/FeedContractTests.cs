@@ -1429,3 +1429,159 @@ public sealed class DefinedgeFeedEndpointTests
     [Fact]
     public void The_codec_is_a_new_one_for_each_connection() => Assert.NotSame(Plugin().CreateFeedCodec(), Plugin().CreateFeedCodec());
 }
+
+public sealed class AliceBlueFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_aliceblue.fixtures.json");
+
+    /// <summary>A message of a type the feed does not define is published by OpenAlgo on a debug topic (DEBUG_MARKET_DATA) for a developer to read; EP Trade bot has no such topic and ignores it.</summary>
+    private static readonly Dictionary<string, Action<JsonObject>> Adjusted = new()
+    {
+        ["an_unknown_message_type_is_ignored"] = scenario => scenario["steps"]![1]!["result"]!["published"] = new JsonArray(),
+    };
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_aliceblue.fixtures.json", name, () => new AliceBlueFeedCodec(), Adjusted.GetValueOrDefault(name));
+}
+
+public sealed class AliceBlueFeedEndpointTests
+{
+    private static BrokerSession Session(string token = "ab-user-session", string? client = "AB1234") =>
+        new(Guid.NewGuid(), "aliceblue", token, null, client, new Dictionary<string, string>());
+
+    private sealed class Calls(Func<HttpRequestMessage, HttpResponseMessage> answer) : IHttpClientFactory
+    {
+        public List<(string Path, string Body, string? Authorization)> Seen { get; } = [];
+
+        public HttpClient CreateClient(string name) => new(new Handler(this, answer));
+
+        private sealed class Handler(Calls owner, Func<HttpRequestMessage, HttpResponseMessage> answer) : HttpMessageHandler
+        {
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                owner.Seen.Add((request.RequestUri!.AbsolutePath, request.Content is null ? "" : await request.Content.ReadAsStringAsync(cancellationToken), request.Headers.Authorization?.ToString()));
+                return answer(request);
+            }
+        }
+    }
+
+    private static HttpResponseMessage Json(string body) => new(System.Net.HttpStatusCode.OK) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") };
+
+    private static EPTradeBot.Infrastructure.Brokers.AliceBlue.AliceBluePlugin Plugin(IHttpClientFactory? http = null)
+    {
+        var options = new EPTradeBot.Core.Configuration.BrokerOptions();
+        return new(http!, new EPTradeBot.Infrastructure.Brokers.BrokerSessionFactory(null!, new Options(options)), null!, TimeProvider.System);
+    }
+
+    private sealed class Options(EPTradeBot.Core.Configuration.BrokerOptions value) : Microsoft.Extensions.Options.IOptionsMonitor<EPTradeBot.Core.Configuration.BrokerOptions>
+    {
+        public EPTradeBot.Core.Configuration.BrokerOptions CurrentValue => value;
+
+        public EPTradeBot.Core.Configuration.BrokerOptions Get(string? name) => value;
+
+        public IDisposable? OnChange(Action<EPTradeBot.Core.Configuration.BrokerOptions, string?> listener) => null;
+    }
+
+    [Fact]
+    public void The_address_is_the_first_server()
+    {
+        var endpoint = Plugin().FeedEndpoint(Session(), null)!;
+        Assert.Equal("wss://ws1.aliceblueonline.com/NorenWS/", endpoint.Url.OriginalString);
+        Assert.Empty(endpoint.Headers);
+    }
+
+    [Fact]
+    public void A_configured_address_replaces_it() => Assert.Equal("ws://localhost:9/x", Plugin().FeedEndpoint(Session(), "ws://localhost:9/x")!.Url.OriginalString);
+
+    [Theory]
+    [InlineData("ab-user-session", null)]
+    [InlineData("ab-user-session", " ")]
+    [InlineData("", "AB1234")]
+    public void Without_a_client_id_or_a_session_there_is_no_feed(string token, string? client) => Assert.Null(Plugin().FeedEndpoint(Session(token, client), null));
+
+    [Fact]
+    public void A_heartbeat_goes_every_thirty_seconds()
+    {
+        var plugin = Plugin();
+        Assert.Equal("{\"k\":\"\",\"t\":\"h\"}", plugin.FeedKeepAliveText);
+        Assert.Equal(TimeSpan.FromSeconds(30), plugin.FeedKeepAliveEvery);
+    }
+
+    [Fact]
+    public async Task A_new_socket_session_is_asked_for_after_the_old_one_is_ended()
+    {
+        var http = new Calls(_ => Json("""{"status":"Ok"}"""));
+        var endpoint = await Plugin(http).AuthorizeAsync(Session(), null, CancellationToken.None);
+        Assert.NotNull(endpoint);
+        Assert.Equal(["/open-api/od/v1/profile/invalidateWsSess", "/open-api/od/v1/profile/createWsSess"], http.Seen.Select(c => c.Path).ToArray());
+        Assert.All(http.Seen, c => Assert.Equal("Bearer ab-user-session", c.Authorization));
+        Assert.All(http.Seen, c =>
+        {
+            var body = JsonNode.Parse(c.Body)!;
+            Assert.Equal("API", (string?)body["source"]);
+            Assert.Equal("AB1234", (string?)body["userId"]);
+        });
+    }
+
+    [Fact]
+    public async Task An_old_session_that_cannot_be_ended_does_not_stop_a_new_one()
+    {
+        var http = new Calls(r => r.RequestUri!.AbsolutePath.EndsWith("invalidateWsSess", StringComparison.Ordinal) ? Json("""{"status":"Not_Ok"}""") : Json("""{"status":"Ok"}"""));
+        Assert.NotNull(await Plugin(http).AuthorizeAsync(Session(), null, CancellationToken.None));
+    }
+
+    [Theory]
+    [InlineData("""{"status":"Not_Ok"}""")]
+    [InlineData("""{"emsg":"x"}""")]
+    [InlineData("[1]")]
+    public async Task A_socket_session_that_is_refused_means_no_feed(string answer)
+    {
+        var http = new Calls(r => r.RequestUri!.AbsolutePath.EndsWith("createWsSess", StringComparison.Ordinal) ? Json(answer) : Json("""{"status":"Ok"}"""));
+        Assert.Null(await Plugin(http).AuthorizeAsync(Session(), null, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task A_socket_session_that_cannot_be_reached_means_no_feed()
+    {
+        var http = new Calls(_ => throw new HttpRequestException("down"));
+        Assert.Null(await Plugin(http).AuthorizeAsync(Session(), null, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task A_configured_address_is_used_without_asking_for_a_session()
+    {
+        var http = new Calls(_ => Json("""{"status":"Ok"}"""));
+        Assert.NotNull(await Plugin(http).AuthorizeAsync(Session(), "ws://localhost:9/x", CancellationToken.None));
+        Assert.Empty(http.Seen);
+    }
+
+    [Fact]
+    public void The_connect_frame_hashes_the_session_twice_and_names_the_user_with_the_api_suffix()
+    {
+        var codec = new AliceBlueFeedCodec();
+        codec.Begin(Session());
+        var frame = JsonNode.Parse(codec.Resubscribe(0).Single())!;
+        var inner = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes("ab-user-session")));
+        var outer = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(inner)));
+        Assert.Equal("c", (string?)frame["t"]);
+        Assert.Equal("AB1234_API", (string?)frame["uid"]);
+        Assert.Equal("AB1234_API", (string?)frame["actid"]);
+        Assert.Equal("API", (string?)frame["source"]);
+        Assert.Equal(outer, (string?)frame["susertoken"]);
+    }
+
+    [Fact]
+    public void A_session_with_no_token_sends_no_connect_frame()
+    {
+        var codec = new AliceBlueFeedCodec();
+        codec.Begin(Session(""));
+        Assert.Empty(codec.Resubscribe(0));
+    }
+
+    [Fact]
+    public void The_codec_names_its_broker() => Assert.Equal("aliceblue", new AliceBlueFeedCodec().Broker);
+
+    [Fact]
+    public void The_codec_is_a_new_one_for_each_connection() => Assert.NotSame(Plugin().CreateFeedCodec(), Plugin().CreateFeedCodec());
+}
