@@ -58,6 +58,20 @@ public sealed partial class KotakPlugin
     }
 
     /// <summary>The last price of each (symbol, exchange) the positions hold, for those Kotak answers. A read that fails leaves its instruments without one: a price is a convenience and never fails the positions.</summary>
+    /// <summary>The quotes of an answer by "segment|token" and by "segment|display name" (without its -EQ or -IN ending), the later quote winning a key.</summary>
+    private static Dictionary<string, JsonObject> QuoteLookup(JsonArray answer)
+    {
+        var lookup = new Dictionary<string, JsonObject>();
+        foreach (var quote in answer.OfType<JsonObject>())
+        {
+            var exchange = Str(quote["exchange"]) ?? "";
+            lookup[$"{exchange}|{Str(quote["exchange_token"]) ?? ""}"] = quote;
+            if (Truthy(quote["display_symbol"])) lookup[$"{exchange}|{(Str(quote["display_symbol"]) ?? "").Replace("-EQ", "", StringComparison.Ordinal).Replace("-IN", "", StringComparison.Ordinal)}"] = quote;
+        }
+
+        return lookup;
+    }
+
     private async Task<Dictionary<(string Symbol, string Exchange), double>> LtpsAsync(Neo neo, List<JsonObject> rows, CancellationToken cancellationToken)
     {
         var prices = new Dictionary<(string, string), double>();
@@ -82,13 +96,7 @@ public sealed partial class KotakPlugin
 
             if (queries.Count > 0 && await QuotesAsync(neo, string.Join(',', queries.Select(q => q.Query)), cancellationToken) is { } answer)
             {
-                var lookup = new Dictionary<string, JsonObject>();
-                foreach (var quote in answer.OfType<JsonObject>())
-                {
-                    var exchange = Str(quote["exchange"]) ?? "";
-                    lookup[$"{exchange}|{Str(quote["exchange_token"]) ?? ""}"] = quote;
-                    if (Truthy(quote["display_symbol"])) lookup[$"{exchange}|{(Str(quote["display_symbol"]) ?? "").Replace("-EQ", "", StringComparison.Ordinal).Replace("-IN", "", StringComparison.Ordinal)}"] = quote;
-                }
+                var lookup = QuoteLookup(answer);
 
                 foreach (var (query, item) in queries)
                 {
@@ -249,13 +257,7 @@ public sealed partial class KotakPlugin
         var answer = await QuotesAsync(neo, string.Join(',', queries.Select(q => q.Query)), cancellationToken);
         if (answer is null) return null;
         if (answer.Count == 0) return [];
-        var lookup = new Dictionary<string, JsonObject>();
-        foreach (var quote in answer.OfType<JsonObject>())
-        {
-            var exchange = Str(quote["exchange"]) ?? "";
-            lookup[$"{exchange}|{Str(quote["exchange_token"]) ?? ""}"] = quote;
-            if (Truthy(quote["display_symbol"])) lookup[$"{exchange}|{(Str(quote["display_symbol"]) ?? "").Replace("-EQ", "", StringComparison.Ordinal).Replace("-IN", "", StringComparison.Ordinal)}"] = quote;
-        }
+        var lookup = QuoteLookup(answer);
 
         var results = new List<JsonObject>();
         foreach (var (query, item) in queries)

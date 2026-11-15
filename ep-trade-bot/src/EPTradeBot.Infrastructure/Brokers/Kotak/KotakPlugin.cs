@@ -258,14 +258,8 @@ public sealed partial class KotakPlugin(IHttpClientFactory http, BrokerSessionFa
     }
 
     /// <summary>The OpenAlgo symbol of a row: by its token when it has one, else by the broker's trading symbol, else the trading symbol itself.</summary>
-    private async Task<string> SymbolAsync(JsonObject row, string exchange, CancellationToken cancellationToken)
-    {
-        var token = (Str(row["tok"]) ?? "").Trim();
-        if (token.Length > 0 && (await symbols.FindByTokenAsync(Name, token, exchange, cancellationToken))?.Symbol is { Length: > 0 } byToken) return byToken;
-        var brokerSymbol = Truthy(row["trdSym"]) ? Str(row["trdSym"]) ?? "" : Str(row["sym"]) ?? "";
-        if (brokerSymbol.Length > 0 && (await symbols.FindByBrokerSymbolAsync(Name, brokerSymbol, exchange, cancellationToken))?.Symbol is { Length: > 0 } byName) return byName;
-        return Str(row["trdSym"]) ?? "";
-    }
+    private async Task<string> SymbolAsync(JsonObject row, string exchange, CancellationToken cancellationToken) =>
+        await SymbolOrNullAsync(row, exchange, cancellationToken) ?? Str(row["trdSym"]) ?? "";
 
     private static JsonNode Raw(JsonObject row, string key, JsonNode fallback) => row[key]?.DeepClone() ?? fallback;
 
