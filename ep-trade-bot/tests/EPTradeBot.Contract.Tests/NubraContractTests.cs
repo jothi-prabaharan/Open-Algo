@@ -111,3 +111,30 @@ public sealed class MarginNubraContractTests(MarginNubraHost host, ITestOutputHe
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginNubraHost() : NubraFileHost("login_nubra.fixtures.json");
+
+/// <summary>Nubra sign-in by a code sent to the phone (tools/contract-fixtures/login_nubra.fixtures.json).</summary>
+public sealed class LoginNubraContractTests(LoginNubraHost host, ITestOutputHelper output) : IClassFixture<LoginNubraHost>
+{
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_with_an_otp_that_is_not_a_number"] = LoginDeviations.Refused("Enter the numeric code that was sent to your phone."),
+        ["login_with_no_temp_token"] = LoginDeviations.Refused("The sign-in expired before the code was entered. Start the Nubra sign-in again to be sent a new code."),
+        ["login_the_pin_answer_has_no_session_token"] = LoginDeviations.Refused("Nubra accepted the PIN but sent no session. Start the sign-in again.", 502),
+        ["login_the_pin_answer_is_not_json"] = LoginDeviations.Refused("Nubra sent an answer that could not be read. Try again in a moment.", 502),
+        ["login_the_next_step_in_lower_case"] = LoginDeviations.Refused("A one-time code was sent to 98765***10. Enter it to finish signing in.", 202),
+        ["login_the_first_call_is_not_json"] = LoginDeviations.Refused("Nubra sent an answer that could not be read. Try again in a moment.", 502),
+        ["login_no_next_step"] = LoginDeviations.Refused("Nubra asked for a sign-in step this server does not know (none). Try again, and tell Nubra if it keeps happening.", 502),
+        ["login_the_code_answer_is_not_json"] = LoginDeviations.Refused("Nubra sent an answer that could not be read. Try again in a moment.", 502),
+        ["login_sends_the_code"] = LoginDeviations.Refused("A one-time code was sent to 98765***10. Enter it to finish signing in.", 202),
+        ["login_sends_the_code_in_two_calls_when_totp_is_asked"] = LoginDeviations.Refused("A one-time code was sent to 98765***10. Enter it to finish signing in.", 202),
+        ["login_an_unexpected_next_step"] = LoginDeviations.Refused("Nubra asked for a sign-in step this server does not know (SOMETHING). Try again, and tell Nubra if it keeps happening.", 502),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_nubra.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}

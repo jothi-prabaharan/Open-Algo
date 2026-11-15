@@ -142,7 +142,7 @@ public sealed partial class NubraPlugin
 
     public async Task<BrokerBook> GetOrderBookAsync(BrokerSession session, CancellationToken cancellationToken)
     {
-        var answer = await ReadAsync(session, "/sentinel/orders", "order book", true, cancellationToken);
+        var answer = await ReadBookAsync(session, "/sentinel/orders", "order book", true, cancellationToken);
         int buy = 0, sell = 0, completed = 0, open = 0, rejected = 0;
         var rows = new JsonArray();
         foreach (var (bucket, order) in Flatten(answer))
@@ -171,7 +171,7 @@ public sealed partial class NubraPlugin
 
     public async Task<JsonArray> GetTradeBookAsync(BrokerSession session, CancellationToken cancellationToken)
     {
-        var answer = await ReadAsync(session, "/sentinel/orders", "trade book", true, cancellationToken);
+        var answer = await ReadBookAsync(session, "/sentinel/orders", "trade book", true, cancellationToken);
         var rows = new JsonArray();
         foreach (var (_, order) in Flatten(answer))
         {
@@ -197,7 +197,7 @@ public sealed partial class NubraPlugin
 
     public async Task<JsonArray> GetPositionsAsync(BrokerSession session, CancellationToken cancellationToken)
     {
-        var answer = await ReadAsync(session, "/sentinel/portfolio/positions", "position book", true, cancellationToken);
+        var answer = await ReadBookAsync(session, "/sentinel/portfolio/positions", "position book", true, cancellationToken);
         var rows = new JsonArray();
         foreach (var position in PositionsOf(answer))
         {
@@ -220,7 +220,7 @@ public sealed partial class NubraPlugin
 
     public async Task<BrokerBook> GetHoldingsAsync(BrokerSession session, CancellationToken cancellationToken)
     {
-        var answer = await ReadAsync(session, "/sentinel/portfolio/holdings", "holdings", true, cancellationToken);
+        var answer = await ReadBookAsync(session, "/sentinel/portfolio/holdings", "holdings", true, cancellationToken);
         var rows = new JsonArray();
         if (answer["portfolio"] is not JsonObject portfolio || !portfolio.ContainsKey("holdings")) return new BrokerBook(rows, Totals(null));
         foreach (var holding in (portfolio["holdings"] as JsonArray ?? []).OfType<JsonObject>())
@@ -254,7 +254,7 @@ public sealed partial class NubraPlugin
 
     public async Task<JsonObject> GetFundsAsync(BrokerSession session, CancellationToken cancellationToken)
     {
-        var answer = await ReadAsync(session, "/sentinel/portfolio/user_funds_and_margin", "funds", false, cancellationToken);
+        var answer = await ReadBookAsync(session, "/sentinel/portfolio/user_funds_and_margin", "funds", false, cancellationToken);
         if (answer["portFundsAndMargin"] is not JsonObject data || data.Count == 0) return [];
         // One value that is not a number zeroes the whole row, as OpenAlgo's does.
         double Money(string key) => data[key] is null || !Truthy(data[key]) ? 0.0 : (BookFormatting.Number(data[key]) ?? (double.TryParse(Str(data[key]), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) ? parsed : throw new FormatException("not a number"))) / 100;

@@ -76,7 +76,7 @@ public sealed partial class NubraPlugin(IHttpClientFactory http, BrokerSessionFa
     private static string? MessageOrError(JsonNode? body) => body is JsonObject o ? Truthy(o["message"]) ? Str(o["message"]) : Truthy(o["error"]) ? Str(o["error"]) : null : null;
 
     /// <summary>A read that must give an object: a status of 400 or more, a 440, a throttle that never cleared, or text that is not JSON is an error that says what to do.</summary>
-    private async Task<JsonObject> ReadAsync(BrokerSession session, string path, string what, bool json, CancellationToken cancellationToken)
+    private async Task<JsonObject> ReadBookAsync(BrokerSession session, string path, string what, bool json, CancellationToken cancellationToken)
     {
         var (status, body, text) = await SendAsync(session, HttpMethod.Get, path, null, json, cancellationToken);
         if (status == SessionExpired) throw new BrokerException(ExpiredMessage, 401);

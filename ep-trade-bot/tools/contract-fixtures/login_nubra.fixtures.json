@@ -1,0 +1,1211 @@
+{
+  "broker": "nubra",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_sends_the_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": ""
+      },
+      "broker": {
+        "POST /sendphoneotp": {
+          "body": {
+            "temp_token": "temp-1",
+            "next": "VERIFY_MOBILE",
+            "message": "OTP sent",
+            "expiry": 30,
+            "attempts_left": 3
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "A one-time code was sent to 98765***10"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sendphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "phone": "9876543210",
+            "flow": "",
+            "skip_totp": false
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_sends_the_code_in_two_calls_when_totp_is_asked",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": ""
+      },
+      "broker": {
+        "POST /sendphoneotp": [
+          {
+            "body": {
+              "temp_token": "temp-1",
+              "next": "VERIFY_TOTP",
+              "message": "OTP sent",
+              "expiry": 30,
+              "attempts_left": 3
+            }
+          },
+          {
+            "body": {
+              "temp_token": "temp-2",
+              "next": "VERIFY_MOBILE",
+              "message": "OTP sent",
+              "expiry": 30,
+              "attempts_left": 3
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "A one-time code was sent to 98765***10"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sendphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "phone": "9876543210",
+            "flow": "",
+            "skip_totp": false
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sendphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-temp-token": "temp-1"
+          },
+          "json": {
+            "phone": "9876543210",
+            "flow": "",
+            "skip_totp": true
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_first_call_is_refused_with_an_error",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": ""
+      },
+      "broker": {
+        "POST /sendphoneotp": {
+          "status": 400,
+          "body": {
+            "error": "Phone not registered"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Phone not registered"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sendphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "phone": "9876543210",
+            "flow": "",
+            "skip_totp": false
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_first_call_is_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": ""
+      },
+      "broker": {
+        "POST /sendphoneotp": {
+          "status": 400,
+          "body": {
+            "message": "Too many attempts"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Too many attempts"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sendphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "phone": "9876543210",
+            "flow": "",
+            "skip_totp": false
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_first_call_is_refused_with_no_reason",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": ""
+      },
+      "broker": {
+        "POST /sendphoneotp": {
+          "status": 500,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "sendphoneotp failed (HTTP 500)"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sendphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "phone": "9876543210",
+            "flow": "",
+            "skip_totp": false
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_first_call_answers_no_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": ""
+      },
+      "broker": {
+        "POST /sendphoneotp": {
+          "body": {
+            "next": "VERIFY_MOBILE"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "sendphoneotp failed (HTTP 200)"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sendphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "phone": "9876543210",
+            "flow": "",
+            "skip_totp": false
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_first_call_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": ""
+      },
+      "broker": {
+        "POST /sendphoneotp": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "'str' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sendphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "phone": "9876543210",
+            "flow": "",
+            "skip_totp": false
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_an_unexpected_next_step",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": ""
+      },
+      "broker": {
+        "POST /sendphoneotp": {
+          "body": {
+            "temp_token": "temp-1",
+            "next": "SOMETHING",
+            "message": "OTP sent",
+            "expiry": 30,
+            "attempts_left": 3
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Unexpected Nubra login step: 'SOMETHING'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sendphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "phone": "9876543210",
+            "flow": "",
+            "skip_totp": false
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_no_next_step",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": ""
+      },
+      "broker": {
+        "POST /sendphoneotp": {
+          "body": {
+            "temp_token": "temp-1"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Unexpected Nubra login step: None"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sendphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "phone": "9876543210",
+            "flow": "",
+            "skip_totp": false
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_second_call_is_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": ""
+      },
+      "broker": {
+        "POST /sendphoneotp": [
+          {
+            "body": {
+              "temp_token": "temp-1",
+              "next": "VERIFY_TOTP",
+              "message": "OTP sent",
+              "expiry": 30,
+              "attempts_left": 3
+            }
+          },
+          {
+            "status": 400,
+            "body": {
+              "error": "Cannot send"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Cannot send"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sendphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "phone": "9876543210",
+            "flow": "",
+            "skip_totp": false
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sendphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-temp-token": "temp-1"
+          },
+          "json": {
+            "phone": "9876543210",
+            "flow": "",
+            "skip_totp": true
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_next_step_in_lower_case",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": ""
+      },
+      "broker": {
+        "POST /sendphoneotp": {
+          "body": {
+            "temp_token": "temp-1",
+            "next": "verify_mobile",
+            "message": "OTP sent",
+            "expiry": 30,
+            "attempts_left": 3
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "A one-time code was sent to 98765***10"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/sendphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "phone": "9876543210",
+            "flow": "",
+            "skip_totp": false
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_returns_the_session",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": "123456",
+        "otp_token": "temp-2"
+      },
+      "broker": {
+        "POST /verifyphoneotp": {
+          "body": {
+            "auth_token": "auth-1"
+          }
+        },
+        "POST /verifypin": {
+          "body": {
+            "session_token": "nubra-session-777"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "nubra-session-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifyphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-temp-token": "temp-2",
+            "x-device-id": "OPENALGO"
+          },
+          "json": {
+            "phone": "9876543210",
+            "otp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifypin",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer auth-1",
+            "accept": "application/json",
+            "x-device-id": "OPENALGO",
+            "content-type": "application/json"
+          },
+          "json": {
+            "pin": "1234"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_no_temp_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": "123456"
+      },
+      "broker": {
+        "POST /verifyphoneotp": {
+          "body": {
+            "auth_token": "auth-1"
+          }
+        },
+        "POST /verifypin": {
+          "body": {
+            "session_token": "nubra-session-777"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Login session expired before the OTP was submitted. Start the Nubra login again from the broker page to request a new OTP."
+        }
+      },
+      "stored": null,
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "login_with_an_otp_that_is_not_a_number",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": "12a456",
+        "otp_token": "temp-2"
+      },
+      "broker": {
+        "POST /verifyphoneotp": {
+          "body": {
+            "auth_token": "auth-1"
+          }
+        },
+        "POST /verifypin": {
+          "body": {
+            "session_token": "nubra-session-777"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid OTP: expected a numeric code"
+        }
+      },
+      "stored": null,
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "login_with_an_otp_with_spaces",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": " 123456 ",
+        "otp_token": "temp-2"
+      },
+      "broker": {
+        "POST /verifyphoneotp": {
+          "body": {
+            "auth_token": "auth-1"
+          }
+        },
+        "POST /verifypin": {
+          "body": {
+            "session_token": "nubra-session-777"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "nubra-session-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifyphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-temp-token": "temp-2",
+            "x-device-id": "OPENALGO"
+          },
+          "json": {
+            "phone": "9876543210",
+            "otp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifypin",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer auth-1",
+            "accept": "application/json",
+            "x-device-id": "OPENALGO",
+            "content-type": "application/json"
+          },
+          "json": {
+            "pin": "1234"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_code_is_refused_with_an_error",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": "123456",
+        "otp_token": "temp-2"
+      },
+      "broker": {
+        "POST /verifyphoneotp": {
+          "status": 400,
+          "body": {
+            "error": "Invalid OTP"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid OTP"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifyphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-temp-token": "temp-2",
+            "x-device-id": "OPENALGO"
+          },
+          "json": {
+            "phone": "9876543210",
+            "otp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_code_is_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": "123456",
+        "otp_token": "temp-2"
+      },
+      "broker": {
+        "POST /verifyphoneotp": {
+          "status": 400,
+          "body": {
+            "message": "Expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Expired"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifyphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-temp-token": "temp-2",
+            "x-device-id": "OPENALGO"
+          },
+          "json": {
+            "phone": "9876543210",
+            "otp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_code_is_refused_with_no_reason",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": "123456",
+        "otp_token": "temp-2"
+      },
+      "broker": {
+        "POST /verifyphoneotp": {
+          "status": 400,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "verifyphoneotp failed (HTTP 400)"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifyphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-temp-token": "temp-2",
+            "x-device-id": "OPENALGO"
+          },
+          "json": {
+            "phone": "9876543210",
+            "otp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_code_answer_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": "123456",
+        "otp_token": "temp-2"
+      },
+      "broker": {
+        "POST /verifyphoneotp": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "'str' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifyphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-temp-token": "temp-2",
+            "x-device-id": "OPENALGO"
+          },
+          "json": {
+            "phone": "9876543210",
+            "otp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_code_answer_has_no_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": "123456",
+        "otp_token": "temp-2"
+      },
+      "broker": {
+        "POST /verifyphoneotp": {
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "verifyphoneotp failed (HTTP 200)"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifyphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-temp-token": "temp-2",
+            "x-device-id": "OPENALGO"
+          },
+          "json": {
+            "phone": "9876543210",
+            "otp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_pin_is_refused_with_an_error",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": "123456",
+        "otp_token": "temp-2"
+      },
+      "broker": {
+        "POST /verifyphoneotp": {
+          "body": {
+            "auth_token": "auth-1"
+          }
+        },
+        "POST /verifypin": {
+          "status": 400,
+          "body": {
+            "error": "Wrong PIN"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Wrong PIN"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifyphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-temp-token": "temp-2",
+            "x-device-id": "OPENALGO"
+          },
+          "json": {
+            "phone": "9876543210",
+            "otp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifypin",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer auth-1",
+            "accept": "application/json",
+            "x-device-id": "OPENALGO",
+            "content-type": "application/json"
+          },
+          "json": {
+            "pin": "1234"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_pin_is_refused_with_no_reason",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": "123456",
+        "otp_token": "temp-2"
+      },
+      "broker": {
+        "POST /verifyphoneotp": {
+          "body": {
+            "auth_token": "auth-1"
+          }
+        },
+        "POST /verifypin": {
+          "status": 401,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "PIN verification failed"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifyphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-temp-token": "temp-2",
+            "x-device-id": "OPENALGO"
+          },
+          "json": {
+            "phone": "9876543210",
+            "otp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifypin",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer auth-1",
+            "accept": "application/json",
+            "x-device-id": "OPENALGO",
+            "content-type": "application/json"
+          },
+          "json": {
+            "pin": "1234"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_pin_answer_has_no_session_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": "123456",
+        "otp_token": "temp-2"
+      },
+      "broker": {
+        "POST /verifyphoneotp": {
+          "body": {
+            "auth_token": "auth-1"
+          }
+        },
+        "POST /verifypin": {
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "No session_token received from PIN verification"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifyphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-temp-token": "temp-2",
+            "x-device-id": "OPENALGO"
+          },
+          "json": {
+            "phone": "9876543210",
+            "otp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifypin",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer auth-1",
+            "accept": "application/json",
+            "x-device-id": "OPENALGO",
+            "content-type": "application/json"
+          },
+          "json": {
+            "pin": "1234"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_pin_answer_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "otp": "123456",
+        "otp_token": "temp-2"
+      },
+      "broker": {
+        "POST /verifyphoneotp": {
+          "body": {
+            "auth_token": "auth-1"
+          }
+        },
+        "POST /verifypin": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "'str' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifyphoneotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-temp-token": "temp-2",
+            "x-device-id": "OPENALGO"
+          },
+          "json": {
+            "phone": "9876543210",
+            "otp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.nubra.io",
+          "path": "/verifypin",
+          "query": [],
+          "headers": {
+            "authorization": "Bearer auth-1",
+            "accept": "application/json",
+            "x-device-id": "OPENALGO",
+            "content-type": "application/json"
+          },
+          "json": {
+            "pin": "1234"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
