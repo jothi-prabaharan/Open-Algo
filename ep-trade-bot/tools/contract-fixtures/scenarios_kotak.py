@@ -181,6 +181,27 @@ SCENARIOS = [
     req("placesmartorder_already_matched", "/api/v1/placesmartorder", {**PLACE, "quantity": "0", "position_size": "10"}, {PB: POSITIONS, q(POS_QUERY): POS_QUOTES}),
 ]
 
+EDGE_POSITIONS = {"body": {"stat": "Ok", "data": [
+    pos(3045, "nse_cm", "SBIN-EQ", "MIS", fb=10, buy="8000.00"),
+    pos(3045, "nse_cm", "SBIN-EQ", "NRML", fb=5, buy="4000.00"),
+    pos(49500, "nse_fo", "NIFTY25NOV26FUT", "NRML", cs=75, cfsell="1800000.00", upldPrc="24100.00"),
+    pos(1594, "nse_cm", "INFY-EQ", "CNC", fb=5, buy="7400.00", multiplier="0", genNum="0", genDen="0", prcNum="0", prcDen="0"),
+]}}
+EDGE_QUERY = "nse_cm|3045,nse_fo|49500,nse_cm|1594"
+EDGE_QUOTES = quote_list(("nse_cm", "3045", "SBIN-EQ", "805.45"), ("nse_fo", "49500", "NIFTY25NOV26FUT", "24005.5"), ("nse_cm", "1594", "INFY-EQ", "1500.5"))
+SCENARIOS += [
+    req("positionbook_edges", "/api/v1/positionbook", {}, {PB: EDGE_POSITIONS, q(EDGE_QUERY): EDGE_QUOTES}),
+    place("placeorder_refused_with_a_server_status", PLACE, {"status": 500, "body": {"stat": "Not_Ok", "emsg": "down"}}),
+    place("placeorder_success_with_an_empty_order_number", PLACE, {"body": {"stat": "Ok", "nOrdNo": ""}}),
+]
+for _name, _symbol, _exchange, _product, _trigger, _action in [
+    ("option_three", "NIFTY25NOV2624000CE", "NFO", "NRML", "3", "BUY"), ("option_fifty", "NIFTY25NOV2624000CE", "NFO", "NRML", "50", "BUY"), ("option_two_hundred", "NIFTY25NOV2624000CE", "NFO", "NRML", "200", "SELL"),
+    ("option_eight_hundred", "NIFTY25NOV2624000CE", "NFO", "NRML", "800", "BUY"), ("equity_fifty", "SBIN", "NSE", "MIS", "50", "BUY"), ("equity_three_hundred", "SBIN", "NSE", "MIS", "300", "SELL"),
+    ("equity_eight_hundred", "SBIN", "NSE", "MIS", "800", "BUY"), ("future_tick_point_one", "NIFTY25NOV26FUT", "NFO", "NRML", "24000", "BUY"), ("currency_four_decimals", "USDINR25NOV26FUT", "CDS", "NRML", "83.5", "SELL"),
+    ("mcx_whole_tick", "GOLDM25NOV26FUT", "MCX", "NRML", "75000", "BUY"),
+]:
+    SCENARIOS.append(place(f"placeorder_stop_market_band_{_name}", {**PLACE, "symbol": _symbol, "exchange": _exchange, "product": _product, "pricetype": "SL-M", "action": _action, "price": "0", "trigger_price": _trigger}))
+
 
 def patch():
     import broker.kotak.mapping.transform_data as td

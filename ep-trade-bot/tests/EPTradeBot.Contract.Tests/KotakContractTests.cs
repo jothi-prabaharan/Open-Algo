@@ -1,3 +1,4 @@
+using EPTradeBot.Core.Brokers;
 using System.Text.Json.Nodes;
 using EPTradeBot.IntegrationTests;
 using Xunit.Abstractions;
@@ -179,6 +180,9 @@ public sealed class KotakContractTests(KotakHost host, ITestOutputHelper output)
             f => Expect(f, 502, Error("Kotak Neo accepted the order but sent no order number, so it cannot be followed. Check the order book on Kotak Neo before trying again."))),
         ["placeorder_not_json"] = new("OpenAlgo fails with a server error when the call fails after the order was sent. EP Trade bot says the order may have been placed and to check the order book.",
             f => Expect(f, 502, Error("Kotak Neo could not confirm the order, so it may have been placed. Check the order book on Kotak Neo before trying again."))),
+        ["placeorder_refused_with_a_server_status"] = new("OpenAlgo answers a refused order with a generic sentence and drops Kotak's reason. EP Trade bot passes Kotak's own words on.", f => Expect(f, 500, Error("down"))),
+        ["placeorder_success_with_an_empty_order_number"] = new("OpenAlgo reports success with an empty order id. EP Trade bot refuses and tells the trader to check the order book, because an order with no number cannot be followed or cancelled.",
+            f => Expect(f, 502, Error("Kotak Neo accepted the order but sent no order number, so it cannot be followed. Check the order book on Kotak Neo before trying again."))),
         ["placeorder_unknown_symbol"] = new("OpenAlgo sends the order with no symbol and reports it placed. The platform names the symbol and says what to do, and sends nothing.",
             f => { Expect(f, 400, Error("NOPE on NSE is not in the Kotak Neo master contract. Check the symbol, or download the master contract again.")); f["sent"]!.AsArray().Clear(); }),
         ["placeorder_stop_market_without_a_trigger"] = Unsendable("A stop-market order needs a trigger price above zero. Enter one, then try again."),
@@ -209,4 +213,58 @@ public sealed class KotakContractTests(KotakHost host, ITestOutputHelper output)
     [PostgresTheory]
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+/// <summary>What the recorded cases cannot show: the sign-in body Kotak is sent, and the sessions the plugin accepts.</summary>
+public sealed class KotakPluginUnitTests
+{
+    private sealed class Capture(Func<HttpRequestMessage, HttpResponseMessage> answer) : IHttpClientFactory
+    {
+        public List<(string Url, string Body, Dictionary<string, string> Headers)> Seen { get; } = [];
+
+        public HttpClient CreateClient(string name) => new(new Handler(this, answer));
+
+        private sealed class Handler(Capture owner, Func<HttpRequestMessage, HttpResponseMessage> answer) : HttpMessageHandler
+        {
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                var body = request.Content is null ? "" : await request.Content.ReadAsStringAsync(cancellationToken);
+                owner.Seen.Add((request.RequestUri!.AbsoluteUri, body, request.Headers.ToDictionary(h => h.Key.ToLowerInvariant(), h => string.Join(',', h.Value))));
+                return answer(request);
+            }
+        }
+    }
+
+    private static EPTradeBot.Infrastructure.Brokers.Kotak.KotakPlugin Plugin(IHttpClientFactory http) => new(http, null!, null!, TimeProvider.System);
+
+    private static HttpResponseMessage Json(string body) => new(System.Net.HttpStatusCode.OK) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") };
+
+    [Fact]
+    public async Task The_sign_in_sends_the_mobile_number_with_the_country_code_the_client_code_and_the_one_time_code()
+    {
+        var http = new Capture(r => r.RequestUri!.AbsolutePath.EndsWith("tradeApiLogin", StringComparison.Ordinal) ? Json("""{"data":{"status":"success","token":"v","sid":"s"}}""") : Json("""{"data":{"status":"success","token":"t","sid":"i","baseUrl":"https://b.test"}}"""));
+        var result = await Plugin(http).LoginAsync(new Dictionary<string, string> { ["ApiKey"] = "UCC1", ["ApiSecret"] = "acc" }, new Dictionary<string, string> { ["mobilenumber"] = "9876543210", ["totp"] = "111111", ["mpin"] = "222222" }, CancellationToken.None);
+        Assert.True(result.Ok);
+        var first = System.Text.Json.Nodes.JsonNode.Parse(http.Seen[0].Body)!;
+        Assert.Equal("+919876543210", first["mobileNumber"]!.GetValue<string>());
+        Assert.Equal("UCC1", first["ucc"]!.GetValue<string>());
+        Assert.Equal("111111", first["totp"]!.GetValue<string>());
+        Assert.Equal("acc", http.Seen[0].Headers["authorization"]);
+        Assert.Equal("v", http.Seen[1].Headers["auth"]);
+        Assert.Equal("s", http.Seen[1].Headers["sid"]);
+        Assert.Equal("222222", System.Text.Json.Nodes.JsonNode.Parse(http.Seen[1].Body)!["mpin"]!.GetValue<string>());
+    }
+
+    [Theory]
+    [InlineData("t:::s:::https://b.test")]
+    [InlineData("t:::s")]
+    [InlineData("")]
+    public async Task A_session_with_fewer_than_four_parts_is_refused_before_any_call(string token)
+    {
+        var http = new Capture(r => Json("{}"));
+        var session = new BrokerSession(Guid.NewGuid(), "kotak", token, null, null, new Dictionary<string, string>());
+        var error = await Assert.ThrowsAsync<BrokerException>(() => Plugin(http).GetOrderBookAsync(session, CancellationToken.None));
+        Assert.Equal(401, error.HttpStatus);
+        Assert.Empty(http.Seen);
+    }
 }

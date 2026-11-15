@@ -95,6 +95,14 @@ SCENARIOS = [
     hist("history_unknown_symbol", {"symbol": "NOPE"}, {HP: INTRA}),
 ]
 
+FAULT_ONLY_MARKET = {"status": 400, "body": {"fault": {"message": "Market has not yet opened"}}}
+SCENARIOS += [
+    hist("history_one_minute_chunks_of_thirty_days", {"interval": "1m", "start_date": "2026-10-01", "end_date": "2026-10-31"}, {HP: [INTRA, ok(c("2026-10-31T09:15:00+0530"))]}),
+    hist("history_thirty_minute_chunks_of_ninety_days", {"interval": "30m", "start_date": "2026-08-01", "end_date": "2026-10-30"}, {HP: [INTRA, ok(c("2026-10-30T09:15:00+0530"))]}),
+    hist("history_a_fault_that_only_says_the_market_has_not_opened", {}, {HP: FAULT_ONLY_MARKET}),
+    hist("history_an_end_date_on_the_horizon_is_asked_for", {"interval": "D", "start_date": "2020-01-01", "end_date": "2021-11-14"}, {HP: DAILY}),
+]
+
 
 def patch():
     import importlib

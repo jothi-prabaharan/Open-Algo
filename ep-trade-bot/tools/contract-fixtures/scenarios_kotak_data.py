@@ -101,6 +101,11 @@ SCENARIOS = [
         {u(",".join(f"nse_cm|{9000 + i}" for i in range(1, 26))): {"status": 500, "body": "oops"}, u("nse_cm|9026,nse_cm|9027"): ok(*[quote("nse_cm", 9000 + i, f"STK{i:02d}-EQ", str(100 + i)) for i in (26, 27)])}),
 ]
 
+SCENARIOS += [
+    one("quotes_open_interest_with_a_fraction_is_a_zero_quote", "/api/v1/quotes", "SBIN", "NSE", {u("nse_cm|3045"): ok(quote("nse_cm", 3045, "SBIN-EQ", open_int="7.5"))}),
+    req("multiquotes_an_index_with_several_names_asks_the_first", "/api/v1/multiquotes", legs(("MIDCPNIFTY", "NSE_INDEX"),), {u("nse_cm|Nifty Mid Select"): ok(quote("nse_cm", 26074, "Nifty Mid Select", "12000.5"))}),
+]
+
 
 def patch():
     pass

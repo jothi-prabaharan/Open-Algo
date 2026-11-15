@@ -8670,6 +8670,258 @@
         }
       ],
       "ignore": []
+    },
+    {
+      "name": "quotes_open_interest_with_a_fraction_is_a_zero_quote",
+      "method": "POST",
+      "path": "/api/v1/quotes",
+      "auth": "body",
+      "request": {
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /script-details/1.0/quotes/neosymbol/nse_cm%7C3045/all": {
+          "body": [
+            {
+              "exchange": "nse_cm",
+              "exchange_token": "3045",
+              "display_symbol": "SBIN-EQ",
+              "ltp": "805.45",
+              "ohlc": {
+                "open": "801.00",
+                "high": "809.50",
+                "low": "799.00",
+                "close": "800.00"
+              },
+              "last_volume": "1234567",
+              "open_int": "7.5",
+              "total_buy": "50000",
+              "total_sell": "61000",
+              "last_traded_quantity": "25",
+              "depth": {
+                "buy": [
+                  {
+                    "price": "805.40",
+                    "quantity": "100",
+                    "orders": "1"
+                  },
+                  {
+                    "price": "805.35",
+                    "quantity": "200",
+                    "orders": "2"
+                  },
+                  {
+                    "price": "805.30",
+                    "quantity": "300",
+                    "orders": "3"
+                  },
+                  {
+                    "price": "805.25",
+                    "quantity": "400",
+                    "orders": "4"
+                  },
+                  {
+                    "price": "805.20",
+                    "quantity": "500",
+                    "orders": "5"
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "805.50",
+                    "quantity": "110",
+                    "orders": "1"
+                  },
+                  {
+                    "price": "805.55",
+                    "quantity": "220",
+                    "orders": "2"
+                  },
+                  {
+                    "price": "805.60",
+                    "quantity": "330",
+                    "orders": "3"
+                  },
+                  {
+                    "price": "805.65",
+                    "quantity": "440",
+                    "orders": "4"
+                  },
+                  {
+                    "price": "805.70",
+                    "quantity": "550",
+                    "orders": "5"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "ask": 0,
+            "bid": 0,
+            "high": 0,
+            "low": 0,
+            "ltp": 0,
+            "oi": 0,
+            "open": 0,
+            "prev_close": 0,
+            "volume": 0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/script-details/1.0/quotes/neosymbol/nse_cm%7C3045/all",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "multiquotes_an_index_with_several_names_asks_the_first",
+      "method": "POST",
+      "path": "/api/v1/multiquotes",
+      "auth": "body",
+      "request": {
+        "symbols": [
+          {
+            "symbol": "MIDCPNIFTY",
+            "exchange": "NSE_INDEX"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /script-details/1.0/quotes/neosymbol/nse_cm%7CNifty%20Mid%20Select/all": {
+          "body": [
+            {
+              "exchange": "nse_cm",
+              "exchange_token": "26074",
+              "display_symbol": "Nifty Mid Select",
+              "ltp": "12000.5",
+              "ohlc": {
+                "open": "801.00",
+                "high": "809.50",
+                "low": "799.00",
+                "close": "800.00"
+              },
+              "last_volume": "1234567",
+              "open_int": "12",
+              "total_buy": "50000",
+              "total_sell": "61000",
+              "last_traded_quantity": "25",
+              "depth": {
+                "buy": [
+                  {
+                    "price": "805.40",
+                    "quantity": "100",
+                    "orders": "1"
+                  },
+                  {
+                    "price": "805.35",
+                    "quantity": "200",
+                    "orders": "2"
+                  },
+                  {
+                    "price": "805.30",
+                    "quantity": "300",
+                    "orders": "3"
+                  },
+                  {
+                    "price": "805.25",
+                    "quantity": "400",
+                    "orders": "4"
+                  },
+                  {
+                    "price": "805.20",
+                    "quantity": "500",
+                    "orders": "5"
+                  }
+                ],
+                "sell": [
+                  {
+                    "price": "805.50",
+                    "quantity": "110",
+                    "orders": "1"
+                  },
+                  {
+                    "price": "805.55",
+                    "quantity": "220",
+                    "orders": "2"
+                  },
+                  {
+                    "price": "805.60",
+                    "quantity": "330",
+                    "orders": "3"
+                  },
+                  {
+                    "price": "805.65",
+                    "quantity": "440",
+                    "orders": "4"
+                  },
+                  {
+                    "price": "805.70",
+                    "quantity": "550",
+                    "orders": "5"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "results": [
+            {
+              "data": {
+                "ask": 805.5,
+                "bid": 805.4,
+                "high": 809.5,
+                "low": 799.0,
+                "ltp": 12000.5,
+                "oi": 12,
+                "open": 801.0,
+                "prev_close": 800.0,
+                "volume": 1234567.0
+              },
+              "exchange": "NSE_INDEX",
+              "symbol": "MIDCPNIFTY"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "kotak.test",
+          "path": "/script-details/1.0/quotes/neosymbol/nse_cm%7CNifty%20Mid%20Select/all",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "access-token",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
     }
   ]
 }

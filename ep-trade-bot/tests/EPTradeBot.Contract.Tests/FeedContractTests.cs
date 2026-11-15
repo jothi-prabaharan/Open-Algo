@@ -1307,6 +1307,14 @@ public sealed class KotakFeedEndpointTests
     }
 
     [Fact]
+    public async Task A_session_of_exactly_four_parts_has_a_feed()
+    {
+        Assert.NotNull(Plugin(new Config(r => Json("{}"))).FeedEndpoint(Session("t:::sid:::https://cis.test:::access"), null));
+        Assert.Null(Plugin(new Config(r => Json("{}"))).FeedEndpoint(Session("t:::sid:::https://cis.test"), null));
+        Assert.Null(await Plugin(new Config(r => Json("{}"))).AuthorizeAsync(Session("t:::sid:::https://cis.test"), null, CancellationToken.None));
+    }
+
+    [Fact]
     public async Task A_session_that_is_not_a_kotak_session_has_no_feed()
     {
         Assert.Null(await Plugin(new Config(r => Json("{}"))).AuthorizeAsync(Session("plain"), null, CancellationToken.None));
