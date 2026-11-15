@@ -148,7 +148,7 @@ public sealed partial class MstockPlugin : IBrokerMultiQuotes, IBrokerHistory, I
         var candles = new List<Candle>();
         foreach (var row in rows)
         {
-            if (row is not JsonArray cells || cells.Count < 6) return null;
+            if (row is not JsonArray cells || cells.Count != 6) return null;
             if (Str(cells[0]) is not { } text) return null;
             long stamp;
             try

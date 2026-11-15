@@ -1,0 +1,1075 @@
+{
+  "broker": "mstock",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_exchanges_the_code_for_tokens",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": {
+            "status": true,
+            "message": "Login ok",
+            "data": {
+              "refreshToken": "refresh-1"
+            }
+          }
+        },
+        "POST /openapi/typeb/session/verifytotp": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "jwtToken": "ms-jwt-777",
+              "feedToken": "ms-feed-777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "ms-jwt-777",
+        "feed_token": "ms-feed-777"
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/session/verifytotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "refreshToken": "refresh-1",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_the_status_as_text_true",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": {
+            "status": "true",
+            "data": {
+              "refreshToken": "r"
+            }
+          }
+        },
+        "POST /openapi/typeb/session/verifytotp": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "jwtToken": "ms-jwt-777",
+              "feedToken": "ms-feed-777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "ms-jwt-777",
+        "feed_token": "ms-feed-777"
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/session/verifytotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "refreshToken": "r",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_a_jwt_token_in_place_of_a_refresh_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": {
+            "status": true,
+            "data": {
+              "jwtToken": "j-1"
+            }
+          }
+        },
+        "POST /openapi/typeb/session/verifytotp": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "jwtToken": "ms-jwt-777",
+              "feedToken": "ms-feed-777"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "ms-jwt-777",
+        "feed_token": "ms-feed-777"
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/session/verifytotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "refreshToken": "j-1",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_without_a_feed_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": {
+            "status": true,
+            "message": "Login ok",
+            "data": {
+              "refreshToken": "refresh-1"
+            }
+          }
+        },
+        "POST /openapi/typeb/session/verifytotp": {
+          "body": {
+            "status": true,
+            "data": {
+              "jwtToken": "ms-jwt-888"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "ms-jwt-888",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/session/verifytotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "refreshToken": "refresh-1",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_login_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": {
+            "status": false,
+            "message": "Invalid password"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid password"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_login_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": {
+            "status": false
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_login_status_true_without_data",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": {
+            "status": true
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_login_with_no_token_in_it",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": {
+            "status": true,
+            "data": {
+              "x": 1
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Failed to get refresh token from response."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_login_http_error_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "status": 401,
+          "body": {
+            "message": "Bad credentials"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "HTTP error occurred: 401 - Bad credentials"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_login_http_error_without_json",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "status": 502,
+          "body": "Bad gateway"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "HTTP error occurred: 502 - \"Bad gateway\""
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_verify_refused_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": {
+            "status": true,
+            "message": "Login ok",
+            "data": {
+              "refreshToken": "refresh-1"
+            }
+          }
+        },
+        "POST /openapi/typeb/session/verifytotp": {
+          "body": {
+            "status": false,
+            "message": "Invalid TOTP"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid TOTP"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/session/verifytotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "refreshToken": "refresh-1",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_verify_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": {
+            "status": true,
+            "message": "Login ok",
+            "data": {
+              "refreshToken": "refresh-1"
+            }
+          }
+        },
+        "POST /openapi/typeb/session/verifytotp": {
+          "body": {
+            "status": false
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "TOTP verification failed."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/session/verifytotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "refreshToken": "refresh-1",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_verify_without_a_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": {
+            "status": true,
+            "message": "Login ok",
+            "data": {
+              "refreshToken": "refresh-1"
+            }
+          }
+        },
+        "POST /openapi/typeb/session/verifytotp": {
+          "body": {
+            "status": true,
+            "data": {
+              "feedToken": "f"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Failed to get authentication token from verification response."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/session/verifytotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "refreshToken": "refresh-1",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_verify_status_true_without_data",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": {
+            "status": true,
+            "message": "Login ok",
+            "data": {
+              "refreshToken": "refresh-1"
+            }
+          }
+        },
+        "POST /openapi/typeb/session/verifytotp": {
+          "body": {
+            "status": true
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "TOTP verification failed."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/session/verifytotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "refreshToken": "refresh-1",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_verify_http_error_with_a_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": {
+            "status": true,
+            "message": "Login ok",
+            "data": {
+              "refreshToken": "refresh-1"
+            }
+          }
+        },
+        "POST /openapi/typeb/session/verifytotp": {
+          "status": 400,
+          "body": {
+            "message": "Expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "HTTP error occurred: 400 - Expired"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/session/verifytotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "refreshToken": "refresh-1",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_verify_http_error_without_json",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": {
+            "status": true,
+            "message": "Login ok",
+            "data": {
+              "refreshToken": "refresh-1"
+            }
+          }
+        },
+        "POST /openapi/typeb/session/verifytotp": {
+          "status": 500,
+          "body": "oops"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "HTTP error occurred: 500 - \"oops\""
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/session/verifytotp",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "refreshToken": "refresh-1",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_answer_that_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "'str' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_answer_that_is_a_list",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "password": "pw-1",
+        "totp": "123456"
+      },
+      "broker": {
+        "POST /openapi/typeb/connect/login": {
+          "body": [
+            1
+          ]
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "'list' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/connect/login",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "json": {
+            "clientcode": "ms-client-code",
+            "password": "pw-1",
+            "totp": "123456",
+            "state": ""
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

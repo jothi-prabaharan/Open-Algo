@@ -153,3 +153,93 @@ public sealed class MstockDataContractTests(MstockDataHost host, ITestOutputHelp
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class MstockHistoryHost() : MstockFileHost("history_mstock.fixtures.json");
+
+/// <summary>mStock history (tools/contract-fixtures/history_mstock.fixtures.json), with the clock stopped at the recording.</summary>
+public sealed class MstockHistoryContractTests(MstockHistoryHost host, ITestOutputHelper output) : IClassFixture<MstockHistoryHost>
+{
+    private const string Words = "OpenAlgo puts a Python exception or the status mStock answered in the sentence. EP Trade bot says what mStock did and what to do.";
+
+    private static Deviation Says(int status, string message) => new(Words, f => Expect(f, status, Error(message)));
+
+    private const string Unreadable = "mStock sent candles that could not be read. Try again in a moment.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["history_a_price_that_is_not_a_number_is_an_error"] = Says(500, Unreadable),
+        ["history_a_time_that_does_not_parse_is_an_error"] = Says(500, Unreadable),
+        ["history_a_row_with_too_few_cells_is_an_error"] = Says(500, Unreadable),
+        ["history_a_row_with_too_many_cells_is_an_error"] = Says(500, "mStock sent candles that could not be read. Try again in a moment."),
+        ["history_today_only_that_fails_is_an_error"] = Says(500, "mStock could not give today's candles for NSE:SBIN. Try again in a moment."),
+        ["history_today_only_with_an_http_error_is_an_error"] = Says(500, "mStock could not give today's candles for NSE:SBIN. Try again in a moment."),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("history_mstock.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class MarginMstockHost() : MstockFileHost("margin_mstock.fixtures.json");
+
+/// <summary>mStock margin (tools/contract-fixtures/margin_mstock.fixtures.json).</summary>
+public sealed class MarginMstockContractTests(MarginMstockHost host, ITestOutputHelper output) : IClassFixture<MarginMstockHost>
+{
+    private const string Words = "OpenAlgo answers a refused margin with status 200 and the broker's text. EP Trade bot says what mStock did and what to do, with a failure status.";
+
+    private static Deviation Says(int status, string message) => new(Words, f => Expect(f, status, Error(message)));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["margin_every_leg_left_out"] = Says(400, "None of the positions could be priced for margin. Check that the symbols are valid."),
+        ["margin_unknown_symbol"] = Says(400, "NOPE on NFO is not in the mStock by Mirae Asset master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again."),
+        ["margin_refused"] = Says(400, "mStock could not work out the margin: Insufficient data"),
+        ["margin_refused_without_a_message"] = Says(400, "mStock could not work out the margin: no reason was given."),
+        ["margin_status_as_text_false"] = Says(400, "mStock could not work out the margin: No"),
+        ["margin_http_error"] = Says(400, "mStock could not work out the margin: down"),
+        ["margin_not_json"] = Says(502, "mStock sent an answer that could not be read. Try again in a moment."),
+        ["margin_answer_that_is_a_list"] = Says(502, "mStock sent an answer that could not be read. Try again in a moment."),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin_mstock.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class LoginMstockHost() : MstockFileHost("login_mstock.fixtures.json");
+
+/// <summary>mStock sign-in (tools/contract-fixtures/login_mstock.fixtures.json).</summary>
+public sealed class LoginMstockContractTests(LoginMstockHost host, ITestOutputHelper output) : IClassFixture<LoginMstockHost>
+{
+    private const string Check = "mStock did not accept the one-time code. Check your password and the one-time code, then try again.";
+    private const string Sign = "mStock did not accept the sign-in. Check your password and the one-time code, then try again.";
+    private const string Unreadable = "mStock sent an answer that could not be read. Try again in a moment.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_login_refused_with_a_message"] = LoginDeviations.Refused("mStock did not accept the sign-in: Invalid password"),
+        ["login_login_refused_without_a_message"] = LoginDeviations.Refused(Sign),
+        ["login_login_status_true_without_data"] = LoginDeviations.Refused(Sign),
+        ["login_login_with_no_token_in_it"] = LoginDeviations.Refused("mStock signed you in but sent no token to finish with. Start the sign-in again.", 502),
+        ["login_login_http_error_with_a_message"] = LoginDeviations.Refused("mStock did not accept the sign-in: Bad credentials"),
+        ["login_login_http_error_without_json"] = LoginDeviations.Refused(Unreadable, 502),
+        ["login_verify_refused_with_a_message"] = LoginDeviations.Refused("mStock did not accept the one-time code: Invalid TOTP"),
+        ["login_verify_refused_without_a_message"] = LoginDeviations.Refused(Check),
+        ["login_verify_without_a_token"] = LoginDeviations.Refused("mStock accepted the one-time code but sent no session. Start the sign-in again.", 502),
+        ["login_verify_status_true_without_data"] = LoginDeviations.Refused(Check),
+        ["login_verify_http_error_with_a_message"] = LoginDeviations.Refused("mStock did not accept the one-time code: Expired"),
+        ["login_verify_http_error_without_json"] = LoginDeviations.Refused(Unreadable, 502),
+        ["login_answer_that_is_not_json"] = LoginDeviations.Refused(Unreadable, 502),
+        ["login_answer_that_is_a_list"] = LoginDeviations.Refused(Unreadable, 502),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_mstock.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
