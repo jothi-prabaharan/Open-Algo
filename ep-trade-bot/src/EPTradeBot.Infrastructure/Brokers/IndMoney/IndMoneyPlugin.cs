@@ -22,7 +22,7 @@ public sealed partial class IndMoneyPlugin(IHttpClientFactory http, BrokerSessio
 
     public string Name => "indmoney";
     public string DisplayName => "IndMoney";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey"];
 
     private HttpClient Client() => http.CreateClient(Name);

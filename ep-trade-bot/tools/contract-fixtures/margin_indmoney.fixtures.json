@@ -1,0 +1,1713 @@
+{
+  "broker": "indmoney",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "ind-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "TATAMOTORS",
+      "brsymbol": "TATAMOTORS",
+      "name": "TATA MOTORS",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500570",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY-25NOV2026-FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "49500",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "SENSEX26NOVFUT",
+      "brsymbol": "SENSEX-26NOV2026-FUT",
+      "name": "SENSEX",
+      "exchange": "BFO",
+      "brexchange": "BFO",
+      "token": "60001",
+      "expiry": "26-NOV-26",
+      "strike": -1.0,
+      "lotsize": 20,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "GOLDM-25NOV2026-FUT",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 10,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "NIFTY",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE_INDEX",
+      "token": "26000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY-25NOV2026-24000-CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "49599",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "CE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "BADTOKEN",
+      "brsymbol": "BADTOKEN",
+      "name": "BAD",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "ab12",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "DECIMALTOKEN",
+      "brsymbol": "DECIMALTOKEN",
+      "name": "DEC",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "12.5",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "margin_one_future",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": {
+          "body": {
+            "status": "success",
+            "data": {
+              "total_margin": 100000.5,
+              "span_margin": 60000.25,
+              "exposure_margin": 25000.25
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 25000.25,
+            "span_margin": 60000.25,
+            "total_margin_required": 100000.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "SELL",
+            "quantity": "75",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "49500",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_buy_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "BUY",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": {
+          "body": {
+            "status": "success",
+            "data": {
+              "total_margin": 100000.5,
+              "span_margin": 60000.25,
+              "exposure_margin": 25000.25
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 25000.25,
+            "span_margin": 60000.25,
+            "total_margin_required": 100000.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "BUY",
+            "quantity": "75",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "49500",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_limit_leg_with_a_price",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV2624000CE",
+            "exchange": "NFO",
+            "action": "BUY",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "100.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": {
+          "body": {
+            "status": "success",
+            "data": {
+              "total_margin": 100000.5,
+              "span_margin": 60000.25,
+              "exposure_margin": 25000.25
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 25000.25,
+            "span_margin": 60000.25,
+            "total_margin_required": 100000.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "BUY",
+            "quantity": "75",
+            "price": "100.5",
+            "product": "MARGIN",
+            "securityID": "49599",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_leg_with_a_whole_price",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "800"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": {
+          "body": {
+            "status": "success",
+            "data": {
+              "total_margin": 100000.5,
+              "span_margin": 60000.25,
+              "exposure_margin": 25000.25
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 25000.25,
+            "span_margin": 60000.25,
+            "total_margin_required": 100000.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "EQUITY",
+            "txnType": "BUY",
+            "quantity": "10",
+            "price": "800",
+            "product": "INTRADAY",
+            "securityID": "3045",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_an_equity_leg_in_each_product",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "5",
+            "product": "CNC",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "total_margin": 100,
+                "span_margin": 60,
+                "exposure_margin": 40
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "total_margin": 50,
+                "span_margin": 30,
+                "exposure_margin": 20
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 60,
+            "span_margin": 90,
+            "total_margin_required": 150
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "EQUITY",
+            "txnType": "BUY",
+            "quantity": "10",
+            "price": "0",
+            "product": "INTRADAY",
+            "securityID": "3045",
+            "exchange": "NSE"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "EQUITY",
+            "txnType": "BUY",
+            "quantity": "5",
+            "price": "0",
+            "product": "CNC",
+            "securityID": "1594",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_bse_legs",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "TATAMOTORS",
+            "exchange": "BSE",
+            "action": "BUY",
+            "quantity": "5",
+            "product": "CNC",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SENSEX26NOVFUT",
+            "exchange": "BFO",
+            "action": "SELL",
+            "quantity": "20",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "total_margin": 100,
+                "span_margin": 60,
+                "exposure_margin": 40
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "total_margin": 50,
+                "span_margin": 30,
+                "exposure_margin": 20
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 60,
+            "span_margin": 90,
+            "total_margin_required": 150
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "EQUITY",
+            "txnType": "BUY",
+            "quantity": "5",
+            "price": "0",
+            "product": "CNC",
+            "securityID": "500570",
+            "exchange": "BSE"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "SELL",
+            "quantity": "20",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "60001",
+            "exchange": "BSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_several_legs_are_added_up",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "NIFTY25NOV2624000CE",
+            "exchange": "NFO",
+            "action": "BUY",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "total_margin": 5.5,
+                "span_margin": 3.25,
+                "exposure_margin": 2.25
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "total_margin": 10,
+                "span_margin": 6,
+                "exposure_margin": 4
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "total_margin": 1.25,
+                "span_margin": 1,
+                "exposure_margin": 0.25
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 6.5,
+            "span_margin": 10.25,
+            "total_margin_required": 16.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "SELL",
+            "quantity": "75",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "49500",
+            "exchange": "NSE"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "BUY",
+            "quantity": "75",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "49599",
+            "exchange": "NSE"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "EQUITY",
+            "txnType": "BUY",
+            "quantity": "10",
+            "price": "0",
+            "product": "INTRADAY",
+            "securityID": "3045",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_leg_that_fails_is_left_out_of_the_sum",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "total_margin": 100,
+                "span_margin": 60,
+                "exposure_margin": 40
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "error",
+              "message": "Invalid"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 40,
+            "span_margin": 60,
+            "total_margin_required": 100
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "SELL",
+            "quantity": "75",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "49500",
+            "exchange": "NSE"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "EQUITY",
+            "txnType": "BUY",
+            "quantity": "10",
+            "price": "0",
+            "product": "INTRADAY",
+            "securityID": "3045",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_leg_that_is_not_json_is_left_out",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "total_margin": 100,
+                "span_margin": 60,
+                "exposure_margin": 40
+              }
+            }
+          },
+          {
+            "status": 200,
+            "body": "<html>"
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 40,
+            "span_margin": 60,
+            "total_margin_required": 100
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "SELL",
+            "quantity": "75",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "49500",
+            "exchange": "NSE"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "EQUITY",
+            "txnType": "BUY",
+            "quantity": "10",
+            "price": "0",
+            "product": "INTRADAY",
+            "securityID": "3045",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_every_leg_failed",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": {
+          "body": {
+            "status": "error",
+            "message": "Invalid"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to calculate margin for all positions. Failed: 49500, 3045",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "SELL",
+            "quantity": "75",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "49500",
+            "exchange": "NSE"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "EQUITY",
+            "txnType": "BUY",
+            "quantity": "10",
+            "price": "0",
+            "product": "INTRADAY",
+            "securityID": "3045",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_http_error_is_read_from_its_body",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": {
+          "status": 500,
+          "body": {
+            "status": "error",
+            "message": "down"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to calculate margin for all positions. Failed: 49500",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "SELL",
+            "quantity": "75",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "49500",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_http_error_with_a_body_that_says_success",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": {
+          "status": 500,
+          "body": {
+            "status": "success",
+            "data": {
+              "total_margin": 5
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "SELL",
+            "quantity": "75",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "49500",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_without_data",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "SELL",
+            "quantity": "75",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "49500",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_with_data_that_is_empty",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": {
+          "body": {
+            "status": "success",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0,
+            "span_margin": 0,
+            "total_margin_required": 0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "SELL",
+            "quantity": "75",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "49500",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_numbers_as_text",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": {
+          "body": {
+            "status": "success",
+            "data": {
+              "total_margin": "12345.5",
+              "span_margin": "100",
+              "exposure_margin": "50"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to calculate margin for all positions. Failed: 49500",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "SELL",
+            "quantity": "75",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "49500",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_numbers_as_text_in_a_sum",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": [
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "total_margin": 100,
+                "span_margin": 60,
+                "exposure_margin": 40
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "success",
+              "data": {
+                "total_margin": "12345.5",
+                "span_margin": "100",
+                "exposure_margin": "50"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 40,
+            "span_margin": 60,
+            "total_margin_required": 100
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "SELL",
+            "quantity": "75",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "49500",
+            "exchange": "NSE"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "EQUITY",
+            "txnType": "BUY",
+            "quantity": "10",
+            "price": "0",
+            "product": "INTRADAY",
+            "securityID": "3045",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_token_with_a_decimal_point_is_priced",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "DECIMALTOKEN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "1",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": {
+          "body": {
+            "status": "success",
+            "data": {
+              "total_margin": 100000.5,
+              "span_margin": 60000.25,
+              "exposure_margin": 25000.25
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 25000.25,
+            "span_margin": 60000.25,
+            "total_margin_required": 100000.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "EQUITY",
+            "txnType": "BUY",
+            "quantity": "1",
+            "price": "0",
+            "product": "INTRADAY",
+            "securityID": "12.5",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_token_that_is_not_digits_is_left_out",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "BADTOKEN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "1",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": {
+          "body": {
+            "status": "success",
+            "data": {
+              "total_margin": 100000.5,
+              "span_margin": 60000.25,
+              "exposure_margin": 25000.25
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 25000.25,
+            "span_margin": 60000.25,
+            "total_margin_required": 100000.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "SELL",
+            "quantity": "75",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "49500",
+            "exchange": "NSE"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_every_leg_left_out",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "BADTOKEN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "1",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "No valid positions to calculate margin. Check if symbols are valid.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOPE",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "No valid positions to calculate margin. Check if symbols are valid.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_mcx_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "GOLDM25NOV26FUT",
+            "exchange": "MCX",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /margin": {
+          "body": {
+            "status": "success",
+            "data": {
+              "total_margin": 100000.5,
+              "span_margin": 60000.25,
+              "exposure_margin": 25000.25
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 25000.25,
+            "span_margin": 60000.25,
+            "total_margin_required": 100000.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.indstocks.com",
+          "path": "/margin",
+          "query": [],
+          "headers": {
+            "authorization": "ind-access-token",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "segment": "DERIVATIVE",
+            "txnType": "BUY",
+            "quantity": "10",
+            "price": "0",
+            "product": "MARGIN",
+            "securityID": "80001",
+            "exchange": "MCX"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

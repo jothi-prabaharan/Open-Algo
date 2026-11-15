@@ -154,3 +154,31 @@ public sealed class IndMoneyHistoryContractTests(IndMoneyHistoryHost host, ITest
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class IndMoneyMarginHost() : IndMoneyFileHost("margin_indmoney.fixtures.json");
+
+/// <summary>IndMoney margin (tools/contract-fixtures/margin_indmoney.fixtures.json).</summary>
+public sealed class IndMoneyMarginContractTests(IndMoneyMarginHost host, ITestOutputHelper output) : IClassFixture<IndMoneyMarginHost>
+{
+    private const string Words = "OpenAlgo answers a margin it could not work out with a fixed English sentence and a 500 or a 400. EP Trade bot says what IndMoney did and what to do, with a failure status.";
+    private const string Unpriced = "None of the positions could be priced for margin. Check that the symbols are valid.";
+
+    private static Deviation Says(int status, string message) => new(Words, f => Expect(f, status, Error(message)));
+
+    private static Deviation SaysNothingSent(int status, string message) => new(Words, f => { Expect(f, status, Error(message)); f["sent"]!.AsArray().Clear(); });
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["margin_every_leg_left_out"] = Says(400, Unpriced),
+        ["margin_unknown_symbol"] = SaysNothingSent(400, "NOPE on NFO is not in the IndMoney master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again."),
+        ["margin_every_leg_failed"] = Says(400, "IndMoney could not work out the margin for 49500, 3045. Check the symbols, then try again."),
+        ["margin_http_error_is_read_from_its_body"] = Says(400, "IndMoney could not work out the margin for 49500. Check the symbols, then try again."),
+        ["margin_numbers_as_text"] = Says(400, "IndMoney could not work out the margin for 49500. Check the symbols, then try again."),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin_indmoney.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
