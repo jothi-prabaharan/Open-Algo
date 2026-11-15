@@ -383,7 +383,8 @@ public static class ContractRunner
                 Assert.True(JsonCompare.SameValue(ev, actualForm[key]), $"{label} field {key}: expected \"{ev}\", got \"{actualForm[key]}\"");
             }
         }
-        else if (expected["json"] is { } json)
+
+        if (expected["json"] is { } json)
         {
             var diffs = JsonCompare.Differences(Masked(host, "json", json), Masked(host, "json", actual.Json), numbersMayBeText: host.NumbersMayBeText);
             Assert.True(diffs.Count == 0, $"{label} body differs from OpenAlgo's:\n" + string.Join("\n", diffs));
