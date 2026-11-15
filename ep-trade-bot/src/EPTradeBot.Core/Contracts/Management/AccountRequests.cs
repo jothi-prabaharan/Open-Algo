@@ -85,6 +85,12 @@ public sealed class BrokerLoginCompleteRequest
 
     [StringLength(64)] [JsonPropertyName("totp")] public string? Totp { get; set; }
 
+    /// <summary>The one-time code a broker that texts one after a first request (Definedge) is answered with.</summary>
+    [StringLength(64)] [JsonPropertyName("otp")] public string? Otp { get; set; }
+
+    /// <summary>The token that request was answered with, when the caller holds it (otherwise the server's own).</summary>
+    [StringLength(256)] [JsonPropertyName("otp_token")] public string? OtpToken { get; set; }
+
     /// <summary>The mobile number a broker that signs in with it (Kotak Neo) asks for.</summary>
     [StringLength(32)] [JsonPropertyName("mobilenumber")] public string? MobileNumber { get; set; }
 

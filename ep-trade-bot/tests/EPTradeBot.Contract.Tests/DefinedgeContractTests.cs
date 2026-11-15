@@ -75,6 +75,32 @@ public sealed class MarginDefinedgeContractTests(MarginDefinedgeHost host, ITest
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
 
+public sealed class LoginDefinedgeHost() : DefinedgeFileHost("login_definedge.fixtures.json");
+
+/// <summary>Definedge sign-in (tools/contract-fixtures/login_definedge.fixtures.json).</summary>
+public sealed class LoginDefinedgeContractTests(LoginDefinedgeHost host, ITestOutputHelper output) : IClassFixture<LoginDefinedgeHost>
+{
+    private static Deviation Says(int status, string message) => new(LoginDeviations.Words, f => Expect(f, status, Error(message)));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_sends_the_code"] = Says(202, "OTP sent to your registered mobile"),
+        ["login_sends_the_code_with_no_message"] = Says(202, "OTP has been sent successfully"),
+        ["login_cannot_send_the_code"] = Says(502, "Definedge did not send a one-time code. Check the API token and secret on this server, then try again."),
+        ["login_without_a_session_key"] = Says(502, "Definedge accepted the code but sent no session. Start the sign-in again."),
+        ["login_refused_with_a_message"] = Says(400, "Definedge did not accept the one-time code: Invalid OTP"),
+        ["login_refused_without_a_message"] = Says(400, "Definedge did not accept the one-time code. Check it, then try again."),
+        ["login_refused_with_a_status"] = Says(400, "Definedge did not accept the one-time code. Check it, then try again."),
+        ["login_answer_that_is_not_json"] = Says(502, "Definedge sent an answer that could not be read. Try again in a moment."),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_definedge.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
+
 /// <summary>Definedge against the Python implementation (tools/contract-fixtures/definedge.fixtures.json).</summary>
 public sealed class DefinedgeContractTests(DefinedgeHost host, ITestOutputHelper output) : IClassFixture<DefinedgeHost>
 {

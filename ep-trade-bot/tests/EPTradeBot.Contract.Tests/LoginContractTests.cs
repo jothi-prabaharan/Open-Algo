@@ -77,7 +77,7 @@ public sealed class LoginDhanHost : BrokerContractHost
     public override IReadOnlyDictionary<string, string> HarnessReplies { get; } = new Dictionary<string, string>();
 }
 
-internal static class LoginDeviations
+public static class LoginDeviations
 {
     public const string Words = "OpenAlgo shows the broker's raw error text, prefixed with \"API error\" or not at all. EP Trade bot says in a sentence which broker refused and what to do next.";
 
