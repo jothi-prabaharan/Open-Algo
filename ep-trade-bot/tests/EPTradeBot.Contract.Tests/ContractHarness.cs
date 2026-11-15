@@ -169,8 +169,8 @@ public static class ContractRunner
         foreach (var (key, value) in f["broker"]!.AsObject())
         {
             replies[key] = value is JsonArray list
-                ? list.Select(r => (r!["status"]?.GetValue<int>() ?? 200, r["body"]!.ToJsonString())).ToList()
-                : [(value!["status"]?.GetValue<int>() ?? 200, value["body"]!.ToJsonString())];
+                ? list.Select(r => (r!["status"]?.GetValue<int>() ?? 200, CannedBody(r))).ToList()
+                : [(value!["status"]?.GetValue<int>() ?? 200, CannedBody(value))];
         }
 
         foreach (var (key, body) in host.HarnessReplies) replies.TryAdd(key, [(200, body)]);
@@ -390,6 +390,9 @@ public static class ContractRunner
             Assert.True(diffs.Count == 0, $"{label} body differs from OpenAlgo's:\n" + string.Join("\n", diffs));
         }
     }
+
+    /// <summary>A canned answer's body: the JSON it was given as, or the raw text of one recorded as "text" (a CSV a broker answers a history call with).</summary>
+    private static string CannedBody(JsonNode reply) => reply["text"] is JsonValue text && text.TryGetValue<string>(out var raw) ? raw : reply["body"]!.ToJsonString();
 
     private static bool HeadersMatch(JsonObject expected, SentRequest actual, bool ignoreContentType)
     {

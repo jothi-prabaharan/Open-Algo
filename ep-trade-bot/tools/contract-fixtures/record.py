@@ -119,6 +119,9 @@ def _handler(request: httpx.Request) -> httpx.Response:
         reply = reply[min(index, len(reply) - 1)]
     if reply is None:
         return httpx.Response(599, json={"status": "error", "message": f"no canned reply for {key}"})
+    if "text" in reply:
+        # A broker that answers with text (a CSV of candles) rather than JSON.
+        return httpx.Response(reply.get("status", 200), text=reply["text"])
     return httpx.Response(reply.get("status", 200), json=reply["body"])
 
 

@@ -12,7 +12,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Definedge;
 /// An order carries the exchange's generic algo id (99999 on the NSE segments, 9999999999999999 on the BSE ones).
 /// </summary>
 [BrokerPlugin]
-public sealed partial class DefinedgePlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
+public sealed partial class DefinedgePlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
 {
     private const string DefaultBaseUrl = "https://integrate.definedgesecurities.com/dart/v1";
     private const string Display = "Definedge";
@@ -21,7 +21,7 @@ public sealed partial class DefinedgePlugin(IHttpClientFactory http, BrokerSessi
 
     public string Name => "definedge";
     public string DisplayName => Display;
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     private HttpClient Client() => http.CreateClient(Name);
@@ -50,10 +50,55 @@ public sealed partial class DefinedgePlugin(IHttpClientFactory http, BrokerSessi
     }
 
     /// <summary>One call, paced, a 429 retried up to three times; the status and the body as read (null when it was not JSON).</summary>
-    private async Task<(int Status, JsonNode? Body)> SendAsync(BrokerSession session, HttpMethod method, string path, JsonObject? body, bool order, CancellationToken cancellationToken)
+    private Task<(int Status, JsonNode? Body)> SendAsync(BrokerSession session, HttpMethod method, string path, JsonObject? body, bool order, CancellationToken cancellationToken) =>
+        SendUrlAsync(session, method, sessions.BaseUrl(Name, DefaultBaseUrl) + path, body, cancellationToken);
+
+    /// <summary>The same call to a full address (the data host's history is on another host).</summary>
+    private async Task<(int Status, JsonNode? Body, string Text)> SendRawAsync(BrokerSession session, string url, CancellationToken cancellationToken)
     {
         var key = SessionKey(session);
-        var url = sessions.BaseUrl(Name, DefaultBaseUrl) + path;
+        for (var attempt = 0; ; attempt++)
+        {
+            await PaceAsync(cancellationToken);
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.TryAddWithoutValidation("Authorization", key);
+            HttpResponseMessage response;
+            try
+            {
+                response = await Client().SendAsync(request, cancellationToken);
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new BrokerException($"{Display} did not answer. Check your connection, then try again.", 502, ex);
+            }
+
+            using (response)
+            {
+                if ((int)response.StatusCode == 429 && attempt < 3)
+                {
+                    var wait = response.Headers.RetryAfter?.Delta ?? TimeSpan.FromSeconds(Math.Pow(2, attempt));
+                    await Task.Delay(sessions.RetryBackoff(Name, wait), cancellationToken);
+                    continue;
+                }
+
+                var text = await response.Content.ReadAsStringAsync(cancellationToken);
+                JsonNode? parsed = null;
+                try
+                {
+                    parsed = string.IsNullOrWhiteSpace(text) ? null : JsonNode.Parse(text);
+                }
+                catch (System.Text.Json.JsonException)
+                {
+                }
+
+                return ((int)response.StatusCode, parsed, text);
+            }
+        }
+    }
+
+    private async Task<(int Status, JsonNode? Body)> SendUrlAsync(BrokerSession session, HttpMethod method, string url, JsonObject? body, CancellationToken cancellationToken)
+    {
+        var key = SessionKey(session);
         for (var attempt = 0; ; attempt++)
         {
             await PaceAsync(cancellationToken);

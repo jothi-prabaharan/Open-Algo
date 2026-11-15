@@ -21,6 +21,33 @@ public abstract class DefinedgeFileHost(string file) : BrokerContractHost
 
 public sealed class DefinedgeHost() : DefinedgeFileHost("definedge.fixtures.json");
 
+public sealed class DefinedgeDataHost() : DefinedgeFileHost("definedge_data.fixtures.json");
+
+/// <summary>Definedge quotes, depth and several quotes (tools/contract-fixtures/definedge_data.fixtures.json), with the clock stopped at the recording.</summary>
+public sealed class DefinedgeDataContractTests(DefinedgeDataHost host, ITestOutputHelper output) : IClassFixture<DefinedgeDataHost>
+{
+    private const string Words = "OpenAlgo puts the status Definedge answered or an internal error in the sentence. EP Trade bot says what Definedge did and what to do.";
+
+    private static Deviation Says(int status, string message) => new(Words, f => Expect(f, status, Error(message)));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["quotes_status_not_success"] = Says(500, "Definedge could not give the quote. Try again in a moment."),
+        ["quotes_http_error"] = Says(500, "Definedge could not give the quote. Try again in a moment."),
+        ["quotes_rate_limited_every_time"] = Says(500, "Definedge could not give the quote. Try again in a moment."),
+        ["depth_status_not_success"] = Says(500, "Definedge could not give the depth. Try again in a moment."),
+        ["depth_http_error"] = Says(500, "Definedge could not give the depth. Try again in a moment."),
+        ["multiquotes_a_failed_quote_is_an_error_entry"] = new("OpenAlgo puts the status code Definedge answered in the error of the quote. EP Trade bot says what happened.", f => f["expected"]!["body"]!["results"]![1]!["error"] = "Definedge answered 500 for this quote."),
+        ["multiquotes_a_quote_with_another_status_is_an_error_entry"] = new("OpenAlgo puts Definedge's status word in the error of the quote. EP Trade bot says what happened.", f => f["expected"]!["body"]!["results"]![1]!["error"] = "Definedge could not give this quote."),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("definedge_data.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
 /// <summary>Definedge against the Python implementation (tools/contract-fixtures/definedge.fixtures.json).</summary>
 public sealed class DefinedgeContractTests(DefinedgeHost host, ITestOutputHelper output) : IClassFixture<DefinedgeHost>
 {
