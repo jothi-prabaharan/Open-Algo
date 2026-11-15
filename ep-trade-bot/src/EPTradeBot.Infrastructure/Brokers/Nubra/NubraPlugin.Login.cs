@@ -41,8 +41,8 @@ public sealed partial class NubraPlugin : IBrokerLogin
     private async Task<(int Status, JsonNode? Body)> PostAsync(string path, JsonObject body, IReadOnlyDictionary<string, string> headers, CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, sessions.BaseUrl(Name, DefaultBaseUrl) + path) { Content = new StringContent(body.ToJsonString(), Encoding.UTF8, "application/json") };
-        request.Headers.TryAddWithoutValidation("Accept", "*/*");
-        foreach (var (name, value) in headers) request.Headers.TryAddWithoutValidation(name, value);
+        request.Headers.TryAddWithoutValidation("Accept", headers.GetValueOrDefault("Accept", "*/*"));
+        foreach (var (name, value) in headers.Where(h => h.Key != "Accept")) request.Headers.TryAddWithoutValidation(name, value);
         using var response = await Client().SendAsync(request, cancellationToken);
         return ((int)response.StatusCode, await ReadAsync(response, cancellationToken));
     }
@@ -89,7 +89,7 @@ public sealed partial class NubraPlugin : IBrokerLogin
         if (body is not JsonObject first) return BrokerLoginResult.Refused($"{Display} sent an answer that could not be read. Try again in a moment.", 502);
         if (!Truthy(first["auth_token"])) return BrokerLoginResult.Refused(Fallback(first, $"verifyphoneotp failed (HTTP {status})"));
 
-        var (pinStatus, pinBody) = await PostAsync("/verifypin", new JsonObject { ["pin"] = mpin }, new Dictionary<string, string> { ["Authorization"] = $"Bearer {Str(first["auth_token"])}", ["x-device-id"] = DeviceId }, cancellationToken);
+        var (pinStatus, pinBody) = await PostAsync("/verifypin", new JsonObject { ["pin"] = mpin }, new Dictionary<string, string> { ["Authorization"] = $"Bearer {Str(first["auth_token"])}", ["Accept"] = "application/json", ["x-device-id"] = DeviceId }, cancellationToken);
         if (pinBody is not JsonObject second) return BrokerLoginResult.Refused($"{Display} sent an answer that could not be read. Try again in a moment.", 502);
         if (pinStatus != 200) return BrokerLoginResult.Refused(Fallback(second, "PIN verification failed"));
         return Truthy(second["session_token"]) ? BrokerLoginResult.Success(Str(second["session_token"])!, null) : BrokerLoginResult.Refused($"{Display} accepted the PIN but sent no session. Start the sign-in again.", 502);
