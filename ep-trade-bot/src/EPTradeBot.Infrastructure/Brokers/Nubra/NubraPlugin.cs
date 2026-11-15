@@ -12,7 +12,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Nubra;
 /// is IOC with no price. HTTP 440 means the session has expired. A throttled call (429) is tried again up to three times in all. The keys are the phone number (API key) and the MPIN (API secret), used only by the sign-in.
 /// </summary>
 [BrokerPlugin]
-public sealed partial class NubraPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
+public sealed partial class NubraPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, INubraSockets? sockets = null) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
 {
     private const string DefaultBaseUrl = "https://api.nubra.io";
     private const string Display = "Nubra";
@@ -23,7 +23,7 @@ public sealed partial class NubraPlugin(IHttpClientFactory http, BrokerSessionFa
 
     public string Name => "nubra";
     public string DisplayName => "Nubra";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Margin | BrokerCapability.History;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.Margin | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     private HttpClient Client() => http.CreateClient(Name);
