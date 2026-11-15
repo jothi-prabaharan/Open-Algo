@@ -1,0 +1,2066 @@
+[
+ {
+  "name": "M1 NubraPlugin.cs:20",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "    private const int Attempts = 3;",
+  "new": "    private const int Attempts = 4;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M2 NubraPlugin.cs:21",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "    private const int SessionExpired = 440;",
+  "new": "    private const int SessionExpired = 441;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M3 NubraPlugin.cs:22",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "    private const string ExpiredMessage = \"Nubra session expired or invalid (HTTP 440). Log in to Nubra again.\";",
+  "new": "    private const string ExpiredMessage = \"Nubra session expired or invalid (HTTP 441). Log in to Nubra again.\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M4 NubraPlugin.cs:48",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "                if (status == 429 && attempt < Attempts - 1)",
+  "new": "                if (status == 429 && attempt <= Attempts - 1)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M5 NubraPlugin.cs:48",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "                if (status == 429 && attempt < Attempts - 1)",
+  "new": "                if (status != 429 && attempt < Attempts - 1)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M6 NubraPlugin.cs:48",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "                if (status == 429 && attempt < Attempts - 1)",
+  "new": "                if (status == 429 || attempt < Attempts - 1)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M7 NubraPlugin.cs:48",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "                if (status == 429 && attempt < Attempts - 1)",
+  "new": "                if (status == 430 && attempt < Attempts - 1)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M8 NubraPlugin.cs:48",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "                if (status == 429 && attempt < Attempts - 1)",
+  "new": "                if (status == 429 && attempt < Attempts - 2)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M9 NubraPlugin.cs:50",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "                    await Task.Delay(sessions.RetryBackoff(Name, TimeSpan.FromSeconds(Math.Pow(2, attempt))), cancellationToken);",
+  "new": "                    await Task.Delay(sessions.RetryBackoff(Name, TimeSpan.FromSeconds(Math.Pow(3, attempt))), cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M10 NubraPlugin.cs:68",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "                throw new BrokerException($\"{Display} did not answer. Check your connection, then try again.\", 502, ex);",
+  "new": "                throw new BrokerException($\"{Display} did not answer. Check your connection, then try again.\", 503, ex);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M11 NubraPlugin.cs:82",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (status == SessionExpired) throw new BrokerException(ExpiredMessage, 401);",
+  "new": "        if (status != SessionExpired) throw new BrokerException(ExpiredMessage, 401);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M12 NubraPlugin.cs:82",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (status == SessionExpired) throw new BrokerException(ExpiredMessage, 401);",
+  "new": "        if (status == SessionExpired) throw new BrokerException(ExpiredMessage, 402);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M13 NubraPlugin.cs:83",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (status == 429) throw new BrokerException($\"{Display} is limiting how fast it is asked for the {what}. Wait a moment, then try again.\", 429);",
+  "new": "        if (status != 429) throw new BrokerException($\"{Display} is limiting how fast it is asked for the {what}. Wait a moment, then try again.\", 429);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M14 NubraPlugin.cs:83",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (status == 429) throw new BrokerException($\"{Display} is limiting how fast it is asked for the {what}. Wait a moment, then try again.\", 429);",
+  "new": "        if (status == 430) throw new BrokerException($\"{Display} is limiting how fast it is asked for the {what}. Wait a moment, then try again.\", 429);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M15 NubraPlugin.cs:83",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (status == 429) throw new BrokerException($\"{Display} is limiting how fast it is asked for the {what}. Wait a moment, then try again.\", 429);",
+  "new": "        if (status == 429) throw new BrokerException($\"{Display} is limiting how fast it is asked for the {what}. Wait a moment, then try again.\", 430);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M16 NubraPlugin.cs:84",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (status >= 400) throw new BrokerException(ErrorOf(body) is { } why ? $\"{Display} did not give the {what}: {why}\" : $\"{Display} did not give the {what}. Try again in a moment.\", status);",
+  "new": "        if (status > 400) throw new BrokerException(ErrorOf(body) is { } why ? $\"{Display} did not give the {what}: {why}\" : $\"{Display} did not give the {what}. Try again in a moment.\", status);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M17 NubraPlugin.cs:84",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (status >= 400) throw new BrokerException(ErrorOf(body) is { } why ? $\"{Display} did not give the {what}: {why}\" : $\"{Display} did not give the {what}. Try again in a moment.\", status);",
+  "new": "        if (status >= 401) throw new BrokerException(ErrorOf(body) is { } why ? $\"{Display} did not give the {what}: {why}\" : $\"{Display} did not give the {what}. Try again in a moment.\", status);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M18 NubraPlugin.cs:86",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        return body as JsonObject ?? throw new BrokerException($\"{Display} sent the {what} in a form that could not be read. Try again in a moment.\", 502);",
+  "new": "        return body as JsonObject ?? throw new BrokerException($\"{Display} sent the {what} in a form that could not be read. Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M19 NubraPlugin.cs:91",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "    private static string Side(string action) => action.ToUpperInvariant() == \"SELL\" ? \"SELL\" : \"BUY\";",
+  "new": "    private static string Side(string action) => action.ToUpperInvariant() != \"SELL\" ? \"SELL\" : \"BUY\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M20 NubraPlugin.cs:99",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "    private static string Validity(string pricetype) => PriceType(pricetype) == \"MARKET\" ? \"IOC\" : \"DAY\";",
+  "new": "    private static string Validity(string pricetype) => PriceType(pricetype) != \"MARKET\" ? \"IOC\" : \"DAY\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M21 NubraPlugin.cs:101",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "    private static long Paise(decimal price) => (long)Math.Round(price * 100, MidpointRounding.ToEven);",
+  "new": "    private static long Paise(decimal price) => (long)Math.Round(price * 101, MidpointRounding.ToEven);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M22 NubraPlugin.cs:107",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        return slug.Length == 0 ? \"openalgo\" : slug;",
+  "new": "        return slug.Length != 0 ? \"openalgo\" : slug;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M23 NubraPlugin.cs:114",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (paise == 0) return null;",
+  "new": "        if (paise != 0) return null;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M24 NubraPlugin.cs:115",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        var bound = Side(action) == \"BUY\" ? \"atOrAbove\" : \"atOrBelow\";",
+  "new": "        var bound = Side(action) != \"BUY\" ? \"atOrAbove\" : \"atOrBelow\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M25 NubraPlugin.cs:124",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (info is null) return BrokerCallResult.Refused(400, $\"{order.Symbol} on {order.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\");",
+  "new": "        if (info is null) return BrokerCallResult.Refused(401, $\"{order.Symbol} on {order.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M26 NubraPlugin.cs:125",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (info.Token.Length == 0 || !info.Token.All(char.IsAsciiDigit)) return BrokerCallResult.Refused(400, $\"No numeric {Display} reference id was found for {order.Symbol} on {order.Exchange}. Download the master contract again.\");",
+  "new": "        if (info.Token.Length != 0 || !info.Token.All(char.IsAsciiDigit)) return BrokerCallResult.Refused(400, $\"No numeric {Display} reference id was found for {order.Symbol} on {order.Exchange}. Download the master contract again.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M27 NubraPlugin.cs:125",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (info.Token.Length == 0 || !info.Token.All(char.IsAsciiDigit)) return BrokerCallResult.Refused(400, $\"No numeric {Display} reference id was found for {order.Symbol} on {order.Exchange}. Download the master contract again.\");",
+  "new": "        if (info.Token.Length == 0 && !info.Token.All(char.IsAsciiDigit)) return BrokerCallResult.Refused(400, $\"No numeric {Display} reference id was found for {order.Symbol} on {order.Exchange}. Download the master contract again.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M28 NubraPlugin.cs:125",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (info.Token.Length == 0 || !info.Token.All(char.IsAsciiDigit)) return BrokerCallResult.Refused(400, $\"No numeric {Display} reference id was found for {order.Symbol} on {order.Exchange}. Download the master contract again.\");",
+  "new": "        if (info.Token.Length == 0 || !info.Token.All(char.IsAsciiDigit)) return BrokerCallResult.Refused(401, $\"No numeric {Display} reference id was found for {order.Symbol} on {order.Exchange}. Download the master contract again.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M29 NubraPlugin.cs:126",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (order.PriceType.ToUpperInvariant() is \"SL\" or \"SL-M\" && order.TriggerPrice == 0)",
+  "new": "        if (order.PriceType.ToUpperInvariant() is \"SL\" or \"SL-M\" && order.TriggerPrice != 0)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M30 NubraPlugin.cs:126",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (order.PriceType.ToUpperInvariant() is \"SL\" or \"SL-M\" && order.TriggerPrice == 0)",
+  "new": "        if (order.PriceType.ToUpperInvariant() is \"SL\" or \"SL-M\" || order.TriggerPrice == 0)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M31 NubraPlugin.cs:127",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            return BrokerCallResult.Refused(400, $\"{order.PriceType.ToUpperInvariant()} order requires a non-zero trigger_price for {order.Symbol} on {order.Exchange}.\");",
+  "new": "            return BrokerCallResult.Refused(401, $\"{order.PriceType.ToUpperInvariant()} order requires a non-zero trigger_price for {order.Symbol} on {order.Exchange}.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M32 NubraPlugin.cs:132",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            [\"validityType\"] = Validity(order.PriceType), [\"isMultiLeg\"] = false, [\"executionMode\"] = \"ENTRY\", [\"stratTags\"] = new JsonArray(Tag(order.Strategy)),",
+  "new": "            [\"validityType\"] = Validity(order.PriceType), [\"isMultiLeg\"] = true, [\"executionMode\"] = \"ENTRY\", [\"stratTags\"] = new JsonArray(Tag(order.Strategy)),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M33 NubraPlugin.cs:134",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (PriceType(order.PriceType) == \"LIMIT\") item[\"entryPrice\"] = Paise(order.Price);",
+  "new": "        if (PriceType(order.PriceType) != \"LIMIT\") item[\"entryPrice\"] = Paise(order.Price);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M34 NubraPlugin.cs:140",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            reply = await SendAsync(session, HttpMethod.Post, \"/sentinel/orders/create\", new JsonObject { [\"orders\"] = new JsonArray(item) }, true, cancellationToken);",
+  "new": "            reply = await SendAsync(session, HttpMethod.Post, \"/sentinel/orders/create\", new JsonObject { [\"orders\"] = new JsonArray(item) }, false, cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M35 NubraPlugin.cs:144",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M36 NubraPlugin.cs:144",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(true, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M37 NubraPlugin.cs:144",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 503, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M38 NubraPlugin.cs:147",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (reply.Status == SessionExpired) return BrokerCallResult.Refused(SessionExpired, ExpiredMessage);",
+  "new": "        if (reply.Status != SessionExpired) return BrokerCallResult.Refused(SessionExpired, ExpiredMessage);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M39 NubraPlugin.cs:148",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (reply.Status == 429) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast orders can be sent, and this one was not placed. Wait a moment, then try again.\");",
+  "new": "        if (reply.Status != 429) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast orders can be sent, and this one was not placed. Wait a moment, then try again.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M40 NubraPlugin.cs:148",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (reply.Status == 429) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast orders can be sent, and this one was not placed. Wait a moment, then try again.\");",
+  "new": "        if (reply.Status == 430) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast orders can be sent, and this one was not placed. Wait a moment, then try again.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M41 NubraPlugin.cs:148",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (reply.Status == 429) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast orders can be sent, and this one was not placed. Wait a moment, then try again.\");",
+  "new": "        if (reply.Status == 429) return BrokerCallResult.Refused(430, $\"{Display} is limiting how fast orders can be sent, and this one was not placed. Wait a moment, then try again.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M42 NubraPlugin.cs:149",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the order may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the order may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M43 NubraPlugin.cs:149",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the order may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(true, 502, $\"{Display} sent an answer that could not be read, so the order may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M44 NubraPlugin.cs:149",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the order may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 503, $\"{Display} sent an answer that could not be read, so the order may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M45 NubraPlugin.cs:150",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (reply.Status is 200 or 201)",
+  "new": "        if (reply.Status is 201 or 201)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M46 NubraPlugin.cs:150",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (reply.Status is 200 or 201)",
+  "new": "        if (reply.Status is 200 or 202)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M47 NubraPlugin.cs:152",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (answer[\"orders\"] is JsonArray { Count: > 0 } orders && orders[0] is JsonObject first && Truthy(first[\"intentOrderId\"])) return BrokerCallResult.Success(Str(first[\"intentOrderId\"]) ?? \"\");",
+  "new": "            if (answer[\"orders\"] is JsonArray { Count: >= 0 } orders && orders[0] is JsonObject first && Truthy(first[\"intentOrderId\"])) return BrokerCallResult.Success(Str(first[\"intentOrderId\"]) ?? \"\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M48 NubraPlugin.cs:152",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (answer[\"orders\"] is JsonArray { Count: > 0 } orders && orders[0] is JsonObject first && Truthy(first[\"intentOrderId\"])) return BrokerCallResult.Success(Str(first[\"intentOrderId\"]) ?? \"\");",
+  "new": "            if (answer[\"orders\"] is JsonArray { Count: > 0 } orders || orders[0] is JsonObject first && Truthy(first[\"intentOrderId\"])) return BrokerCallResult.Success(Str(first[\"intentOrderId\"]) ?? \"\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M49 NubraPlugin.cs:153",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            return ErrorOf(answer) is { } why ? BrokerCallResult.Refused(400, why)",
+  "new": "            return ErrorOf(answer) is { } why ? BrokerCallResult.Refused(401, why)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M50 NubraPlugin.cs:154",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "                : new BrokerCallResult(false, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "                : new BrokerCallResult(false, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M51 NubraPlugin.cs:154",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "                : new BrokerCallResult(false, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "                : new BrokerCallResult(true, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M52 NubraPlugin.cs:154",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "                : new BrokerCallResult(false, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "                : new BrokerCallResult(false, 503, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M53 NubraPlugin.cs:162",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (!long.TryParse(change.OrderId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)) return BrokerCallResult.Refused(400, $\"Invalid order id: {change.OrderId}\");",
+  "new": "        if (!long.TryParse(change.OrderId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)) return BrokerCallResult.Refused(401, $\"Invalid order id: {change.OrderId}\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M54 NubraPlugin.cs:167",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (PriceType(change.PriceType) == \"LIMIT\") item[\"entryPrice\"] = Paise(change.Price);",
+  "new": "        if (PriceType(change.PriceType) != \"LIMIT\") item[\"entryPrice\"] = Paise(change.Price);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M55 NubraPlugin.cs:171",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            var (status, body, text) = await SendAsync(session, HttpMethod.Post, \"/sentinel/orders/modify\", new JsonObject { [\"orders\"] = new JsonArray(item) }, true, cancellationToken);",
+  "new": "            var (status, body, text) = await SendAsync(session, HttpMethod.Post, \"/sentinel/orders/modify\", new JsonObject { [\"orders\"] = new JsonArray(item) }, false, cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M56 NubraPlugin.cs:173",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (status == 429) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast changes can be sent, and this one was not made. Wait a moment, then try again.\");",
+  "new": "            if (status != 429) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast changes can be sent, and this one was not made. Wait a moment, then try again.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M57 NubraPlugin.cs:173",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (status == 429) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast changes can be sent, and this one was not made. Wait a moment, then try again.\");",
+  "new": "            if (status == 430) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast changes can be sent, and this one was not made. Wait a moment, then try again.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M58 NubraPlugin.cs:173",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (status == 429) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast changes can be sent, and this one was not made. Wait a moment, then try again.\");",
+  "new": "            if (status == 429) return BrokerCallResult.Refused(430, $\"{Display} is limiting how fast changes can be sent, and this one was not made. Wait a moment, then try again.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M59 NubraPlugin.cs:174",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (string.IsNullOrWhiteSpace(text)) return status is 200 or 201 or 204 ? BrokerCallResult.Success(change.OrderId) : BrokerCallResult.Refused(status, $\"{Display} answered with nothing. Check the order book on {Display}.\");",
+  "new": "            if (string.IsNullOrWhiteSpace(text)) return status is 201 or 201 or 204 ? BrokerCallResult.Success(change.OrderId) : BrokerCallResult.Refused(status, $\"{Display} answered with nothing. Check the order book on {Display}.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M60 NubraPlugin.cs:174",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (string.IsNullOrWhiteSpace(text)) return status is 200 or 201 or 204 ? BrokerCallResult.Success(change.OrderId) : BrokerCallResult.Refused(status, $\"{Display} answered with nothing. Check the order book on {Display}.\");",
+  "new": "            if (string.IsNullOrWhiteSpace(text)) return status is 200 or 202 or 204 ? BrokerCallResult.Success(change.OrderId) : BrokerCallResult.Refused(status, $\"{Display} answered with nothing. Check the order book on {Display}.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M61 NubraPlugin.cs:174",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (string.IsNullOrWhiteSpace(text)) return status is 200 or 201 or 204 ? BrokerCallResult.Success(change.OrderId) : BrokerCallResult.Refused(status, $\"{Display} answered with nothing. Check the order book on {Display}.\");",
+  "new": "            if (string.IsNullOrWhiteSpace(text)) return status is 200 or 201 or 205 ? BrokerCallResult.Success(change.OrderId) : BrokerCallResult.Refused(status, $\"{Display} answered with nothing. Check the order book on {Display}.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M62 NubraPlugin.cs:175",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the change may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the change may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M63 NubraPlugin.cs:175",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the change may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            if (body is not JsonObject answer) return new BrokerCallResult(true, 502, $\"{Display} sent an answer that could not be read, so the change may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M64 NubraPlugin.cs:175",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the change may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 503, $\"{Display} sent an answer that could not be read, so the change may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M65 NubraPlugin.cs:176",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (status is 200 or 201)",
+  "new": "            if (status is 201 or 201)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M66 NubraPlugin.cs:176",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (status is 200 or 201)",
+  "new": "            if (status is 200 or 202)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M67 NubraPlugin.cs:177",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "                return BrokerCallResult.Success(answer[\"orders\"] is JsonArray { Count: > 0 } orders && orders[0] is JsonObject first && Truthy(first[\"intentOrderId\"]) ? Str(first[\"intentOrderId\"])! : change.OrderId);",
+  "new": "                return BrokerCallResult.Success(answer[\"orders\"] is JsonArray { Count: >= 0 } orders && orders[0] is JsonObject first && Truthy(first[\"intentOrderId\"]) ? Str(first[\"intentOrderId\"])! : change.OrderId);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M68 NubraPlugin.cs:177",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "                return BrokerCallResult.Success(answer[\"orders\"] is JsonArray { Count: > 0 } orders && orders[0] is JsonObject first && Truthy(first[\"intentOrderId\"]) ? Str(first[\"intentOrderId\"])! : change.OrderId);",
+  "new": "                return BrokerCallResult.Success(answer[\"orders\"] is JsonArray { Count: > 0 } orders || orders[0] is JsonObject first && Truthy(first[\"intentOrderId\"]) ? Str(first[\"intentOrderId\"])! : change.OrderId);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M69 NubraPlugin.cs:182",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The change was sent to {Display} but no reply came back, so it may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 502, $\"The change was sent to {Display} but no reply came back, so it may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M70 NubraPlugin.cs:182",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The change was sent to {Display} but no reply came back, so it may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(true, 502, $\"The change was sent to {Display} but no reply came back, so it may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M71 NubraPlugin.cs:182",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The change was sent to {Display} but no reply came back, so it may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 503, $\"The change was sent to {Display} but no reply came back, so it may have been made. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M72 NubraPlugin.cs:188",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "        if (!long.TryParse(orderId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)) return BrokerCallResult.Refused(400, $\"Invalid order id: {orderId}\");",
+  "new": "        if (!long.TryParse(orderId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)) return BrokerCallResult.Refused(401, $\"Invalid order id: {orderId}\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M73 NubraPlugin.cs:191",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            var (status, body, text) = await SendAsync(session, HttpMethod.Post, \"/sentinel/orders/cancel\", new JsonObject { [\"orders\"] = new JsonArray(new JsonObject { [\"orderId\"] = id }) }, true, cancellationToken);",
+  "new": "            var (status, body, text) = await SendAsync(session, HttpMethod.Post, \"/sentinel/orders/cancel\", new JsonObject { [\"orders\"] = new JsonArray(new JsonObject { [\"orderId\"] = id }) }, false, cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M74 NubraPlugin.cs:193",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (status == 429) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast orders can be cancelled, and this one was not. Wait a moment, then try again.\");",
+  "new": "            if (status != 429) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast orders can be cancelled, and this one was not. Wait a moment, then try again.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M75 NubraPlugin.cs:193",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (status == 429) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast orders can be cancelled, and this one was not. Wait a moment, then try again.\");",
+  "new": "            if (status == 430) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast orders can be cancelled, and this one was not. Wait a moment, then try again.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M76 NubraPlugin.cs:193",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (status == 429) return BrokerCallResult.Refused(429, $\"{Display} is limiting how fast orders can be cancelled, and this one was not. Wait a moment, then try again.\");",
+  "new": "            if (status == 429) return BrokerCallResult.Refused(430, $\"{Display} is limiting how fast orders can be cancelled, and this one was not. Wait a moment, then try again.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M77 NubraPlugin.cs:194",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (string.IsNullOrWhiteSpace(text)) return status is 200 or 201 or 204 ? BrokerCallResult.Success(orderId) : BrokerCallResult.Refused(status, $\"{Display} answered with nothing. Check the order book on {Display}.\");",
+  "new": "            if (string.IsNullOrWhiteSpace(text)) return status is 201 or 201 or 204 ? BrokerCallResult.Success(orderId) : BrokerCallResult.Refused(status, $\"{Display} answered with nothing. Check the order book on {Display}.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M78 NubraPlugin.cs:194",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (string.IsNullOrWhiteSpace(text)) return status is 200 or 201 or 204 ? BrokerCallResult.Success(orderId) : BrokerCallResult.Refused(status, $\"{Display} answered with nothing. Check the order book on {Display}.\");",
+  "new": "            if (string.IsNullOrWhiteSpace(text)) return status is 200 or 202 or 204 ? BrokerCallResult.Success(orderId) : BrokerCallResult.Refused(status, $\"{Display} answered with nothing. Check the order book on {Display}.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M79 NubraPlugin.cs:194",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (string.IsNullOrWhiteSpace(text)) return status is 200 or 201 or 204 ? BrokerCallResult.Success(orderId) : BrokerCallResult.Refused(status, $\"{Display} answered with nothing. Check the order book on {Display}.\");",
+  "new": "            if (string.IsNullOrWhiteSpace(text)) return status is 200 or 201 or 205 ? BrokerCallResult.Success(orderId) : BrokerCallResult.Refused(status, $\"{Display} answered with nothing. Check the order book on {Display}.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M80 NubraPlugin.cs:195",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "new": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M81 NubraPlugin.cs:195",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "new": "            if (body is not JsonObject answer) return new BrokerCallResult(true, 502, $\"{Display} sent an answer that could not be read, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M82 NubraPlugin.cs:195",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} sent an answer that could not be read, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "new": "            if (body is not JsonObject answer) return new BrokerCallResult(false, 503, $\"{Display} sent an answer that could not be read, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M83 NubraPlugin.cs:196",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            return status is 200 or 201 or 204 ? BrokerCallResult.Success(orderId) : BrokerCallResult.Refused(status, MessageOrError(answer) ?? $\"{Display} refused to cancel the order.\");",
+  "new": "            return status is 201 or 201 or 204 ? BrokerCallResult.Success(orderId) : BrokerCallResult.Refused(status, MessageOrError(answer) ?? $\"{Display} refused to cancel the order.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M84 NubraPlugin.cs:196",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            return status is 200 or 201 or 204 ? BrokerCallResult.Success(orderId) : BrokerCallResult.Refused(status, MessageOrError(answer) ?? $\"{Display} refused to cancel the order.\");",
+  "new": "            return status is 200 or 202 or 204 ? BrokerCallResult.Success(orderId) : BrokerCallResult.Refused(status, MessageOrError(answer) ?? $\"{Display} refused to cancel the order.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M85 NubraPlugin.cs:196",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            return status is 200 or 201 or 204 ? BrokerCallResult.Success(orderId) : BrokerCallResult.Refused(status, MessageOrError(answer) ?? $\"{Display} refused to cancel the order.\");",
+  "new": "            return status is 200 or 201 or 205 ? BrokerCallResult.Success(orderId) : BrokerCallResult.Refused(status, MessageOrError(answer) ?? $\"{Display} refused to cancel the order.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M86 NubraPlugin.cs:200",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The cancel was sent to {Display} but no reply came back, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 502, $\"The cancel was sent to {Display} but no reply came back, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M87 NubraPlugin.cs:200",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The cancel was sent to {Display} but no reply came back, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(true, 502, $\"The cancel was sent to {Display} but no reply came back, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M88 NubraPlugin.cs:200",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The cancel was sent to {Display} but no reply came back, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 503, $\"The cancel was sent to {Display} but no reply came back, so the order may have been cancelled. Check the order book on {Display}.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M89 NubraPlugin.Books.cs:16",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{2}-\\d{2})(?:[T ](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "new": "    private static readonly Regex Stamp = new(@\"^(\\d{5}-\\d{2}-\\d{2})(?:[T ](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M90 NubraPlugin.Books.cs:16",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{2}-\\d{2})(?:[T ](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "new": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{3}-\\d{2})(?:[T ](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M91 NubraPlugin.Books.cs:16",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{2}-\\d{2})(?:[T ](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "new": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{2}-\\d{3})(?:[T ](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M92 NubraPlugin.Books.cs:16",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{2}-\\d{2})(?:[T ](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "new": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{2}-\\d{2})(?:[T ](\\d{3}:\\d{2}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M93 NubraPlugin.Books.cs:16",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{2}-\\d{2})(?:[T ](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "new": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{2}-\\d{2})(?:[T ](\\d{2}:\\d{3}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M94 NubraPlugin.Books.cs:16",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{2}-\\d{2})(?:[T ](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "new": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{2}-\\d{2})(?:[T ](\\d{2}:\\d{2}:\\d{3})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M95 NubraPlugin.Books.cs:16",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{2}-\\d{2})(?:[T ](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "new": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{2}-\\d{2})(?:[T ](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{3}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M96 NubraPlugin.Books.cs:16",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{2}-\\d{2})(?:[T ](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{2})?)?)?$\", RegexOptions.CultureInvariant);",
+  "new": "    private static readonly Regex Stamp = new(@\"^(\\d{4}-\\d{2}-\\d{2})(?:[T ](\\d{2}:\\d{2}:\\d{2})(?:\\.\\d+)?(?:Z|[+-]\\d{2}(?::?\\d{3})?)?)?$\", RegexOptions.CultureInvariant);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M97 NubraPlugin.Books.cs:23",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        return (derivativeType ?? \"\").ToUpperInvariant() is \"OPT\" or \"FUT\" ? DerivativeExchange(exchange) is { Length: > 0 } d ? d : exchange : exchange;",
+  "new": "        return (derivativeType ?? \"\").ToUpperInvariant() is \"OPT\" or \"FUT\" ? DerivativeExchange(exchange) is { Length: >= 0 } d ? d : exchange : exchange;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M98 NubraPlugin.Books.cs:29",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        if (exchange.Length == 0) return [];",
+  "new": "        if (exchange.Length != 0) return [];",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M99 NubraPlugin.Books.cs:32",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        if (kind is \"OPT\" or \"FUT\") return [derivative.Length > 0 ? derivative : exchange];",
+  "new": "        if (kind is \"OPT\" or \"FUT\") return [derivative.Length >= 0 ? derivative : exchange];",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M100 NubraPlugin.Books.cs:33",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        if (kind.Length > 0) return [exchange];",
+  "new": "        if (kind.Length >= 0) return [exchange];",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M101 NubraPlugin.Books.cs:34",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        return derivative.Length > 0 ? [derivative, exchange] : [exchange];",
+  "new": "        return derivative.Length >= 0 ? [derivative, exchange] : [exchange];",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M102 NubraPlugin.Books.cs:41",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            if (candidate is not null && Truthy(candidate[\"derivativeType\"])) return Str(candidate[\"derivativeType\"]) ?? \"\";",
+  "new": "            if (candidate is not null || Truthy(candidate[\"derivativeType\"])) return Str(candidate[\"derivativeType\"]) ?? \"\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M103 NubraPlugin.Books.cs:42",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        return row[\"legs\"] is JsonArray { Count: > 0 } legs && legs[0] is JsonObject leg && leg[\"refData\"] is JsonObject data && Truthy(data[\"derivativeType\"]) ? Str(data[\"derivativeType\"]) ?? \"\" : \"\";",
+  "new": "        return row[\"legs\"] is JsonArray { Count: >= 0 } legs && legs[0] is JsonObject leg && leg[\"refData\"] is JsonObject data && Truthy(data[\"derivativeType\"]) ? Str(data[\"derivativeType\"]) ?? \"\" : \"\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M104 NubraPlugin.Books.cs:42",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        return row[\"legs\"] is JsonArray { Count: > 0 } legs && legs[0] is JsonObject leg && leg[\"refData\"] is JsonObject data && Truthy(data[\"derivativeType\"]) ? Str(data[\"derivativeType\"]) ?? \"\" : \"\";",
+  "new": "        return row[\"legs\"] is JsonArray { Count: > 0 } legs || legs[0] is JsonObject leg && leg[\"refData\"] is JsonObject data && Truthy(data[\"derivativeType\"]) ? Str(data[\"derivativeType\"]) ?? \"\" : \"\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M105 NubraPlugin.Books.cs:50",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        if (row[\"legs\"] is JsonArray legs && legs.Count > 0) sources.Add(legs[0] as JsonObject);",
+  "new": "        if (row[\"legs\"] is JsonArray legs && legs.Count >= 0) sources.Add(legs[0] as JsonObject);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M106 NubraPlugin.Books.cs:50",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        if (row[\"legs\"] is JsonArray legs && legs.Count > 0) sources.Add(legs[0] as JsonObject);",
+  "new": "        if (row[\"legs\"] is JsonArray legs || legs.Count > 0) sources.Add(legs[0] as JsonObject);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M107 NubraPlugin.Books.cs:55",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            if (source[\"refData\"] is JsonObject inner && Truthy(inner[\"exchange\"])) return Str(inner[\"exchange\"]) ?? \"\";",
+  "new": "            if (source[\"refData\"] is JsonObject inner || Truthy(inner[\"exchange\"])) return Str(inner[\"exchange\"]) ?? \"\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M108 NubraPlugin.Books.cs:67",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            if (refId.Length > 0 && await symbols.FindByTokenAsync(Name, refId, candidate, cancellationToken) is { } byToken) return (byToken.Symbol, candidate);",
+  "new": "            if (refId.Length >= 0 && await symbols.FindByTokenAsync(Name, refId, candidate, cancellationToken) is { } byToken) return (byToken.Symbol, candidate);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M109 NubraPlugin.Books.cs:67",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            if (refId.Length > 0 && await symbols.FindByTokenAsync(Name, refId, candidate, cancellationToken) is { } byToken) return (byToken.Symbol, candidate);",
+  "new": "            if (refId.Length > 0 || await symbols.FindByTokenAsync(Name, refId, candidate, cancellationToken) is { } byToken) return (byToken.Symbol, candidate);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M110 NubraPlugin.Books.cs:68",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            if (brokerSymbol.Length > 0 && await symbols.FindByBrokerSymbolAsync(Name, brokerSymbol, candidate, cancellationToken) is { } bySymbol) return (bySymbol.Symbol, candidate);",
+  "new": "            if (brokerSymbol.Length >= 0 && await symbols.FindByBrokerSymbolAsync(Name, brokerSymbol, candidate, cancellationToken) is { } bySymbol) return (bySymbol.Symbol, candidate);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M111 NubraPlugin.Books.cs:68",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            if (brokerSymbol.Length > 0 && await symbols.FindByBrokerSymbolAsync(Name, brokerSymbol, candidate, cancellationToken) is { } bySymbol) return (bySymbol.Symbol, candidate);",
+  "new": "            if (brokerSymbol.Length > 0 || await symbols.FindByBrokerSymbolAsync(Name, brokerSymbol, candidate, cancellationToken) is { } bySymbol) return (bySymbol.Symbol, candidate);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M112 NubraPlugin.Books.cs:94",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        if (!Truthy(refId) && order[\"legs\"] is JsonArray { Count: > 0 } legs)",
+  "new": "        if (!Truthy(refId) && order[\"legs\"] is JsonArray { Count: >= 0 } legs)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M113 NubraPlugin.Books.cs:94",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        if (!Truthy(refId) && order[\"legs\"] is JsonArray { Count: > 0 } legs)",
+  "new": "        if (!Truthy(refId) || order[\"legs\"] is JsonArray { Count: > 0 } legs)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M114 NubraPlugin.Books.cs:97",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            refData = leg[\"refData\"] as JsonObject is { Count: > 0 } r ? r : refData;",
+  "new": "            refData = leg[\"refData\"] as JsonObject is { Count: >= 0 } r ? r : refData;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M115 NubraPlugin.Books.cs:107",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        return (stockName.Length > 0 ? stockName : Str(refData[\"displayName\"]) ?? \"\", MapExchange(brokerExchange, derivative), id ?? \"\");",
+  "new": "        return (stockName.Length >= 0 ? stockName : Str(refData[\"displayName\"]) ?? \"\", MapExchange(brokerExchange, derivative), id ?? \"\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M116 NubraPlugin.Books.cs:110",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "    private static string? Text(JsonNode? node) => node is JsonValue v && v.TryGetValue<long>(out var whole) ? whole.ToString(CultureInfo.InvariantCulture) : Str(node);",
+  "new": "    private static string? Text(JsonNode? node) => node is JsonValue v || v.TryGetValue<long>(out var whole) ? whole.ToString(CultureInfo.InvariantCulture) : Str(node);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M117 NubraPlugin.Books.cs:118",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            if (only is not null && !only.Contains(bucket)) continue;",
+  "new": "            if (only is not null || !only.Contains(bucket)) continue;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M118 NubraPlugin.Books.cs:131",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        if (triggers is not JsonObject t || t[\"ltp\"] is not JsonObject ltp) return 0;",
+  "new": "        if (triggers is not JsonObject t && t[\"ltp\"] is not JsonObject ltp) return 0;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M119 NubraPlugin.Books.cs:133",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            if (ltp[bound] is JsonObject node && Truthy(node[\"value\"])) return (long)Math.Truncate(Float(node[\"value\"]));",
+  "new": "            if (ltp[bound] is JsonObject node || Truthy(node[\"value\"])) return (long)Math.Truncate(Float(node[\"value\"]));",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M120 NubraPlugin.Books.cs:139",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "    private static double Rupees(JsonNode? paise) => Truthy(paise) ? Float(paise) / 100 : 0.0;",
+  "new": "    private static double Rupees(JsonNode? paise) => Truthy(paise) ? Float(paise) / 101 : 0.0;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M121 NubraPlugin.Books.cs:145",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        var answer = await ReadBookAsync(session, \"/sentinel/orders\", \"order book\", true, cancellationToken);",
+  "new": "        var answer = await ReadBookAsync(session, \"/sentinel/orders\", \"order book\", false, cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M122 NubraPlugin.Books.cs:154",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            var type = trigger != 0 ? priceType == \"MARKET\" ? \"SL-M\" : \"SL\" : priceType is \"MARKET\" or \"LIMIT\" ? priceType : \"MARKET\";",
+  "new": "            var type = trigger != 0 ? priceType != \"MARKET\" ? \"SL-M\" : \"SL\" : priceType is \"MARKET\" or \"LIMIT\" ? priceType : \"MARKET\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M123 NubraPlugin.Books.cs:154",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            var type = trigger != 0 ? priceType == \"MARKET\" ? \"SL-M\" : \"SL\" : priceType is \"MARKET\" or \"LIMIT\" ? priceType : \"MARKET\";",
+  "new": "            var type = trigger == 0 ? priceType == \"MARKET\" ? \"SL-M\" : \"SL\" : priceType is \"MARKET\" or \"LIMIT\" ? priceType : \"MARKET\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M124 NubraPlugin.Books.cs:155",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            if (type is \"SL\" or \"SL-M\" && status == \"open\") status = \"trigger pending\";",
+  "new": "            if (type is \"SL\" or \"SL-M\" && status != \"open\") status = \"trigger pending\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M125 NubraPlugin.Books.cs:155",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            if (type is \"SL\" or \"SL-M\" && status == \"open\") status = \"trigger pending\";",
+  "new": "            if (type is \"SL\" or \"SL-M\" || status == \"open\") status = \"trigger pending\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M126 NubraPlugin.Books.cs:157",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            if (side == \"BUY\") buy++;",
+  "new": "            if (side != \"BUY\") buy++;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M127 NubraPlugin.Books.cs:158",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            else if (side == \"SELL\") sell++;",
+  "new": "            else if (side != \"SELL\") sell++;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M128 NubraPlugin.Books.cs:159",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            if (status == \"complete\") completed++;",
+  "new": "            if (status != \"complete\") completed++;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M129 NubraPlugin.Books.cs:160",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            else if (status == \"open\") open++;",
+  "new": "            else if (status != \"open\") open++;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M130 NubraPlugin.Books.cs:161",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            else if (status == \"rejected\") rejected++;",
+  "new": "            else if (status != \"rejected\") rejected++;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M131 NubraPlugin.Books.cs:164",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "                [\"symbol\"] = symbol, [\"exchange\"] = exchange, [\"action\"] = side, [\"quantity\"] = Raw(order, \"orderQty\"), [\"price\"] = Rupees(order[\"orderPrice\"]), [\"trigger_price\"] = trigger != 0 ? trigger / 100.0 : 0.0, [\"pricetype\"] = type,",
+  "new": "                [\"symbol\"] = symbol, [\"exchange\"] = exchange, [\"action\"] = side, [\"quantity\"] = Raw(order, \"orderQty\"), [\"price\"] = Rupees(order[\"orderPrice\"]), [\"trigger_price\"] = trigger == 0 ? trigger / 100.0 : 0.0, [\"pricetype\"] = type,",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M132 NubraPlugin.Books.cs:174",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        var answer = await ReadBookAsync(session, \"/sentinel/orders\", \"trade book\", true, cancellationToken);",
+  "new": "        var answer = await ReadBookAsync(session, \"/sentinel/orders\", \"trade book\", false, cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M133 NubraPlugin.Books.cs:180",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            if (quantity <= 0) continue;",
+  "new": "            if (quantity < 0) continue;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M134 NubraPlugin.Books.cs:186",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "                [\"average_price\"] = BookFormatting.RoundPy(price, 2), [\"trade_value\"] = BookFormatting.RoundPy(BookFormatting.RoundPy(price, 2) is var _ ? price * quantity : 0, 2),",
+  "new": "                [\"average_price\"] = BookFormatting.RoundPy(price, 3), [\"trade_value\"] = BookFormatting.RoundPy(BookFormatting.RoundPy(price, 2) is var _ ? price * quantity : 0, 2),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M135 NubraPlugin.Books.cs:186",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "                [\"average_price\"] = BookFormatting.RoundPy(price, 2), [\"trade_value\"] = BookFormatting.RoundPy(BookFormatting.RoundPy(price, 2) is var _ ? price * quantity : 0, 2),",
+  "new": "                [\"average_price\"] = BookFormatting.RoundPy(price, 2), [\"trade_value\"] = BookFormatting.RoundPy(BookFormatting.RoundPy(price, 3) is var _ ? price * quantity : 0, 2),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M136 NubraPlugin.Books.cs:186",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "                [\"average_price\"] = BookFormatting.RoundPy(price, 2), [\"trade_value\"] = BookFormatting.RoundPy(BookFormatting.RoundPy(price, 2) is var _ ? price * quantity : 0, 2),",
+  "new": "                [\"average_price\"] = BookFormatting.RoundPy(price, 2), [\"trade_value\"] = BookFormatting.RoundPy(BookFormatting.RoundPy(price, 2) is var _ ? price * quantity : 0, 3),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M137 NubraPlugin.Books.cs:196",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "    private static List<JsonObject> PositionsOf(JsonObject answer) => answer[\"portfolio\"] is JsonObject portfolio && portfolio[\"positions\"] is JsonArray list ? list.OfType<JsonObject>().ToList() : [];",
+  "new": "    private static List<JsonObject> PositionsOf(JsonObject answer) => answer[\"portfolio\"] is JsonObject portfolio || portfolio[\"positions\"] is JsonArray list ? list.OfType<JsonObject>().ToList() : [];",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M138 NubraPlugin.Books.cs:200",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        var answer = await ReadBookAsync(session, \"/sentinel/portfolio/positions\", \"position book\", true, cancellationToken);",
+  "new": "        var answer = await ReadBookAsync(session, \"/sentinel/portfolio/positions\", \"position book\", false, cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M139 NubraPlugin.Books.cs:212",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "                [\"average_price\"] = Rupees(position[\"avgPrice\"]), [\"ltp\"] = Rupees(position[\"ltp\"] is not null ? position[\"ltp\"] : position[\"lastTradedPrice\"]), [\"pnl\"] = Truthy(position[\"pnl\"]) ? Float(position[\"pnl\"]) / 100 : 0.0,",
+  "new": "                [\"average_price\"] = Rupees(position[\"avgPrice\"]), [\"ltp\"] = Rupees(position[\"ltp\"] is not null ? position[\"ltp\"] : position[\"lastTradedPrice\"]), [\"pnl\"] = Truthy(position[\"pnl\"]) ? Float(position[\"pnl\"]) / 101 : 0.0,",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M140 NubraPlugin.Books.cs:223",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        var answer = await ReadBookAsync(session, \"/sentinel/portfolio/holdings\", \"holdings\", true, cancellationToken);",
+  "new": "        var answer = await ReadBookAsync(session, \"/sentinel/portfolio/holdings\", \"holdings\", false, cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M141 NubraPlugin.Books.cs:225",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        if (answer[\"portfolio\"] is not JsonObject portfolio || !portfolio.ContainsKey(\"holdings\")) return new BrokerBook(rows, Totals(null));",
+  "new": "        if (answer[\"portfolio\"] is not JsonObject portfolio && !portfolio.ContainsKey(\"holdings\")) return new BrokerBook(rows, Totals(null));",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M142 NubraPlugin.Books.cs:228",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            var exchange = holding.ContainsKey(\"exchange\") && holding[\"exchange\"] is not null ? Str(holding[\"exchange\"]) ?? \"\" : \"NSE\";",
+  "new": "            var exchange = holding.ContainsKey(\"exchange\") || holding[\"exchange\"] is not null ? Str(holding[\"exchange\"]) ?? \"\" : \"NSE\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M143 NubraPlugin.Books.cs:231",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            double Money(string key) => Math.Round(Rupees(holding[key]), 2, MidpointRounding.ToEven) is var _ ? BookFormatting.RoundPy(Rupees(holding[key]), 2) : 0;",
+  "new": "            double Money(string key) => Math.Round(Rupees(holding[key]), 3, MidpointRounding.ToEven) is var _ ? BookFormatting.RoundPy(Rupees(holding[key]), 2) : 0;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M144 NubraPlugin.Books.cs:231",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            double Money(string key) => Math.Round(Rupees(holding[key]), 2, MidpointRounding.ToEven) is var _ ? BookFormatting.RoundPy(Rupees(holding[key]), 2) : 0;",
+  "new": "            double Money(string key) => Math.Round(Rupees(holding[key]), 2, MidpointRounding.ToEven) is var _ ? BookFormatting.RoundPy(Rupees(holding[key]), 3) : 0;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M145 NubraPlugin.Books.cs:235",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "                [\"pnl\"] = Money(\"netPnl\"), [\"pnlpercent\"] = BookFormatting.RoundPy(Truthy(holding[\"netPnlChg\"]) ? Float(holding[\"netPnlChg\"]) : 0, 2), [\"invested_value\"] = Money(\"investedValue\"), [\"current_value\"] = Money(\"currentValue\"),",
+  "new": "                [\"pnl\"] = Money(\"netPnl\"), [\"pnlpercent\"] = BookFormatting.RoundPy(Truthy(holding[\"netPnlChg\"]) ? Float(holding[\"netPnlChg\"]) : 0, 3), [\"invested_value\"] = Money(\"investedValue\"), [\"current_value\"] = Money(\"currentValue\"),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M146 NubraPlugin.Books.cs:236",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "                [\"day_pnl\"] = Money(\"dayPnl\"), [\"day_pnl_chg\"] = Money(\"dayPnl\"), [\"ltp_chg\"] = BookFormatting.RoundPy(Truthy(holding[\"netPnlChg\"]) ? Float(holding[\"netPnlChg\"]) : 0, 2), [\"ref_id\"] = Truthy(holding[\"refId\"]) ? Text(holding[\"refId\"]) : \"\",",
+  "new": "                [\"day_pnl\"] = Money(\"dayPnl\"), [\"day_pnl_chg\"] = Money(\"dayPnl\"), [\"ltp_chg\"] = BookFormatting.RoundPy(Truthy(holding[\"netPnlChg\"]) ? Float(holding[\"netPnlChg\"]) : 0, 3), [\"ref_id\"] = Truthy(holding[\"refId\"]) ? Text(holding[\"refId\"]) : \"\",",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M147 NubraPlugin.Books.cs:245",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        if (stats is null || stats.Count == 0) return new JsonObject { [\"totalholdingvalue\"] = 0, [\"totalinvvalue\"] = 0, [\"totalprofitandloss\"] = 0, [\"totalpnlpercentage\"] = 0 };",
+  "new": "        if (stats is null || stats.Count != 0) return new JsonObject { [\"totalholdingvalue\"] = 0, [\"totalinvvalue\"] = 0, [\"totalprofitandloss\"] = 0, [\"totalpnlpercentage\"] = 0 };",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M148 NubraPlugin.Books.cs:245",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        if (stats is null || stats.Count == 0) return new JsonObject { [\"totalholdingvalue\"] = 0, [\"totalinvvalue\"] = 0, [\"totalprofitandloss\"] = 0, [\"totalpnlpercentage\"] = 0 };",
+  "new": "        if (stats is null && stats.Count == 0) return new JsonObject { [\"totalholdingvalue\"] = 0, [\"totalinvvalue\"] = 0, [\"totalprofitandloss\"] = 0, [\"totalpnlpercentage\"] = 0 };",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M149 NubraPlugin.Books.cs:246",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        double Money(string key) => BookFormatting.RoundPy(Rupees(stats[key]), 2);",
+  "new": "        double Money(string key) => BookFormatting.RoundPy(Rupees(stats[key]), 3);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M150 NubraPlugin.Books.cs:249",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "            [\"totalholdingvalue\"] = Money(\"currentValue\"), [\"totalinvvalue\"] = Money(\"investedAmount\"), [\"totalprofitandloss\"] = Money(\"totalPnl\"), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(Truthy(stats[\"totalPnlChg\"]) ? Float(stats[\"totalPnlChg\"]) : 0, 2),",
+  "new": "            [\"totalholdingvalue\"] = Money(\"currentValue\"), [\"totalinvvalue\"] = Money(\"investedAmount\"), [\"totalprofitandloss\"] = Money(\"totalPnl\"), [\"totalpnlpercentage\"] = BookFormatting.RoundPy(Truthy(stats[\"totalPnlChg\"]) ? Float(stats[\"totalPnlChg\"]) : 0, 3),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M151 NubraPlugin.Books.cs:257",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        var answer = await ReadBookAsync(session, \"/sentinel/portfolio/user_funds_and_margin\", \"funds\", false, cancellationToken);",
+  "new": "        var answer = await ReadBookAsync(session, \"/sentinel/portfolio/user_funds_and_margin\", \"funds\", true, cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M152 NubraPlugin.Books.cs:258",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        if (answer[\"portFundsAndMargin\"] is not JsonObject data || data.Count == 0) return [];",
+  "new": "        if (answer[\"portFundsAndMargin\"] is not JsonObject data || data.Count != 0) return [];",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M153 NubraPlugin.Books.cs:258",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        if (answer[\"portFundsAndMargin\"] is not JsonObject data || data.Count == 0) return [];",
+  "new": "        if (answer[\"portFundsAndMargin\"] is not JsonObject data && data.Count == 0) return [];",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M154 NubraPlugin.Books.cs:260",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        double Money(string key) => data[key] is null || !Truthy(data[key]) ? 0.0 : (BookFormatting.Number(data[key]) ?? (double.TryParse(Str(data[key]), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) ? parsed : throw new FormatException(\"not a number\"))) / 100;",
+  "new": "        double Money(string key) => data[key] is null && !Truthy(data[key]) ? 0.0 : (BookFormatting.Number(data[key]) ?? (double.TryParse(Str(data[key]), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) ? parsed : throw new FormatException(\"not a number\"))) / 100;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M155 NubraPlugin.Books.cs:260",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Books.cs",
+  "old": "        double Money(string key) => data[key] is null || !Truthy(data[key]) ? 0.0 : (BookFormatting.Number(data[key]) ?? (double.TryParse(Str(data[key]), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) ? parsed : throw new FormatException(\"not a number\"))) / 100;",
+  "new": "        double Money(string key) => data[key] is null || !Truthy(data[key]) ? 0.0 : (BookFormatting.Number(data[key]) ?? (double.TryParse(Str(data[key]), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) ? parsed : throw new FormatException(\"not a number\"))) / 101;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M156 NubraPlugin.Margin.cs:20",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Margin.cs",
+  "old": "            if (token.Length == 0 || !token.Replace(\".\", \"\", StringComparison.Ordinal).Replace(\"-\", \"\", StringComparison.Ordinal).All(char.IsAsciiDigit)) continue;",
+  "new": "            if (token.Length != 0 || !token.Replace(\".\", \"\", StringComparison.Ordinal).Replace(\"-\", \"\", StringComparison.Ordinal).All(char.IsAsciiDigit)) continue;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M157 NubraPlugin.Margin.cs:20",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Margin.cs",
+  "old": "            if (token.Length == 0 || !token.Replace(\".\", \"\", StringComparison.Ordinal).Replace(\"-\", \"\", StringComparison.Ordinal).All(char.IsAsciiDigit)) continue;",
+  "new": "            if (token.Length == 0 && !token.Replace(\".\", \"\", StringComparison.Ordinal).Replace(\"-\", \"\", StringComparison.Ordinal).All(char.IsAsciiDigit)) continue;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M158 NubraPlugin.Margin.cs:25",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Margin.cs",
+  "old": "                [\"isMultiLeg\"] = false, [\"executionMode\"] = \"ENTRY\", [\"stratTags\"] = new JsonArray(\"openalgo-margin\"),",
+  "new": "                [\"isMultiLeg\"] = true, [\"executionMode\"] = \"ENTRY\", [\"stratTags\"] = new JsonArray(\"openalgo-margin\"),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M159 NubraPlugin.Margin.cs:27",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Margin.cs",
+  "old": "            if (PriceType(leg.PriceType) == \"LIMIT\") item[\"entryPrice\"] = Paise(leg.Price);",
+  "new": "            if (PriceType(leg.PriceType) != \"LIMIT\") item[\"entryPrice\"] = Paise(leg.Price);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M160 NubraPlugin.Margin.cs:32",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Margin.cs",
+  "old": "        if (orders.Count == 0) throw new BrokerException(\"None of the positions could be priced for margin. Check that the symbols are valid.\", 400);",
+  "new": "        if (orders.Count != 0) throw new BrokerException(\"None of the positions could be priced for margin. Check that the symbols are valid.\", 400);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M161 NubraPlugin.Margin.cs:32",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Margin.cs",
+  "old": "        if (orders.Count == 0) throw new BrokerException(\"None of the positions could be priced for margin. Check that the symbols are valid.\", 400);",
+  "new": "        if (orders.Count == 0) throw new BrokerException(\"None of the positions could be priced for margin. Check that the symbols are valid.\", 401);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M162 NubraPlugin.Margin.cs:33",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Margin.cs",
+  "old": "        var (status, body, _) = await SendAsync(session, HttpMethod.Post, \"/sentinel/orders/funds_required\", new JsonObject { [\"requestType\"] = \"NEW\", [\"orders\"] = orders }, true, cancellationToken);",
+  "new": "        var (status, body, _) = await SendAsync(session, HttpMethod.Post, \"/sentinel/orders/funds_required\", new JsonObject { [\"requestType\"] = \"NEW\", [\"orders\"] = orders }, false, cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M163 NubraPlugin.Margin.cs:34",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Margin.cs",
+  "old": "        if (status == SessionExpired) throw new BrokerException(ExpiredMessage, 401);",
+  "new": "        if (status != SessionExpired) throw new BrokerException(ExpiredMessage, 401);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M164 NubraPlugin.Margin.cs:34",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Margin.cs",
+  "old": "        if (status == SessionExpired) throw new BrokerException(ExpiredMessage, 401);",
+  "new": "        if (status == SessionExpired) throw new BrokerException(ExpiredMessage, 402);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M165 NubraPlugin.Margin.cs:35",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Margin.cs",
+  "old": "        if (body is not JsonObject answer) throw new BrokerException($\"{Display} sent an answer that could not be read. Try again in a moment.\", 502);",
+  "new": "        if (body is not JsonObject answer) throw new BrokerException($\"{Display} sent an answer that could not be read. Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M166 NubraPlugin.Margin.cs:36",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Margin.cs",
+  "old": "        if (answer[\"marginInfo\"] is not JsonObject info) throw new BrokerException($\"{Display} could not work out the margin: {MessageOrErrorFirst(answer) ?? \"no reason was given.\"}\", 400);",
+  "new": "        if (answer[\"marginInfo\"] is not JsonObject info) throw new BrokerException($\"{Display} could not work out the margin: {MessageOrErrorFirst(answer) ?? \"no reason was given.\"}\", 401);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M167 NubraPlugin.Margin.cs:37",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Margin.cs",
+  "old": "        double Number(JsonNode? node) => !Truthy(node) ? 0 : BookFormatting.Number(node) ?? (double.TryParse(Str(node), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) ? parsed : throw new BrokerException($\"{Display} sent margin figures that could not be read. Try again in a moment.\", 502));",
+  "new": "        double Number(JsonNode? node) => !Truthy(node) ? 0 : BookFormatting.Number(node) ?? (double.TryParse(Str(node), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) ? parsed : throw new BrokerException($\"{Display} sent margin figures that could not be read. Try again in a moment.\", 503));",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M168 NubraPlugin.Margin.cs:41",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Margin.cs",
+  "old": "        return new JsonObject { [\"total_margin_required\"] = required != 0 ? required : margin, [\"span_margin\"] = margin, [\"exposure_margin\"] = 0.0, [\"total_charges\"] = BookFormatting.RoundPy(charges, 2) };",
+  "new": "        return new JsonObject { [\"total_margin_required\"] = required == 0 ? required : margin, [\"span_margin\"] = margin, [\"exposure_margin\"] = 0.0, [\"total_charges\"] = BookFormatting.RoundPy(charges, 2) };",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M169 NubraPlugin.Margin.cs:41",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Margin.cs",
+  "old": "        return new JsonObject { [\"total_margin_required\"] = required != 0 ? required : margin, [\"span_margin\"] = margin, [\"exposure_margin\"] = 0.0, [\"total_charges\"] = BookFormatting.RoundPy(charges, 2) };",
+  "new": "        return new JsonObject { [\"total_margin_required\"] = required != 0 ? required : margin, [\"span_margin\"] = margin, [\"exposure_margin\"] = 0.0, [\"total_charges\"] = BookFormatting.RoundPy(charges, 3) };",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M170 NubraPlugin.Login.cs:24",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "    private static string Fallback(JsonNode? body, string fallback) => body is JsonObject o && Truthy(o[\"error\"]) ? Str(o[\"error\"])! : body is JsonObject m && Truthy(m[\"message\"]) ? Str(m[\"message\"])! : fallback;",
+  "new": "    private static string Fallback(JsonNode? body, string fallback) => body is JsonObject o || Truthy(o[\"error\"]) ? Str(o[\"error\"])! : body is JsonObject m && Truthy(m[\"message\"]) ? Str(m[\"message\"])! : fallback;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M171 NubraPlugin.Login.cs:28",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        if (!keys.TryGetValue(\"ApiKey\", out var phone) || string.IsNullOrWhiteSpace(phone) || !keys.TryGetValue(\"ApiSecret\", out var mpin) || string.IsNullOrWhiteSpace(mpin))",
+  "new": "        if (!keys.TryGetValue(\"ApiKey\", out var phone) && string.IsNullOrWhiteSpace(phone) || !keys.TryGetValue(\"ApiSecret\", out var mpin) || string.IsNullOrWhiteSpace(mpin))",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M172 NubraPlugin.Login.cs:29",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "            return BrokerLoginResult.Refused($\"The {Display} phone number (API key) and MPIN (API secret) are not both set on this server. Add them to the server's settings, then sign in again.\", 409);",
+  "new": "            return BrokerLoginResult.Refused($\"The {Display} phone number (API key) and MPIN (API secret) are not both set on this server. Add them to the server's settings, then sign in again.\", 410);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M173 NubraPlugin.Login.cs:33",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "            return code.Length == 0 ? await SendCodeAsync(phone, cancellationToken) : await VerifyAsync(phone, mpin, code, input.GetValueOrDefault(\"otp_token\"), cancellationToken);",
+  "new": "            return code.Length != 0 ? await SendCodeAsync(phone, cancellationToken) : await VerifyAsync(phone, mpin, code, input.GetValueOrDefault(\"otp_token\"), cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M174 NubraPlugin.Login.cs:37",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "            return BrokerLoginResult.Refused($\"Could not reach {Display} to sign in. Check your internet connection and try again.\", 502);",
+  "new": "            return BrokerLoginResult.Refused($\"Could not reach {Display} to sign in. Check your internet connection and try again.\", 503);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M175 NubraPlugin.Login.cs:45",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        foreach (var (name, value) in headers.Where(h => h.Key != \"Accept\")) request.Headers.TryAddWithoutValidation(name, value);",
+  "new": "        foreach (var (name, value) in headers.Where(h => h.Key == \"Accept\")) request.Headers.TryAddWithoutValidation(name, value);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M176 NubraPlugin.Login.cs:55",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        if (body is JsonObject answer && Truthy(answer[\"temp_token\"])) return (answer, null);",
+  "new": "        if (body is JsonObject answer || Truthy(answer[\"temp_token\"])) return (answer, null);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M177 NubraPlugin.Login.cs:61",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        var masked = phone.Length > 7 ? $\"{phone[..5]}***{phone[^2..]}\" : \"***\";",
+  "new": "        var masked = phone.Length >= 7 ? $\"{phone[..5]}***{phone[^2..]}\" : \"***\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M178 NubraPlugin.Login.cs:61",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        var masked = phone.Length > 7 ? $\"{phone[..5]}***{phone[^2..]}\" : \"***\";",
+  "new": "        var masked = phone.Length > 8 ? $\"{phone[..5]}***{phone[^2..]}\" : \"***\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M179 NubraPlugin.Login.cs:62",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        var (data, error) = await SendPhoneCodeAsync(phone, null, false, cancellationToken);",
+  "new": "        var (data, error) = await SendPhoneCodeAsync(phone, null, true, cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M180 NubraPlugin.Login.cs:65",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        if (next == \"VERIFY_TOTP\")",
+  "new": "        if (next != \"VERIFY_TOTP\")",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M181 NubraPlugin.Login.cs:67",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "            (data, error) = await SendPhoneCodeAsync(phone, Str(data![\"temp_token\"]), true, cancellationToken);",
+  "new": "            (data, error) = await SendPhoneCodeAsync(phone, Str(data![\"temp_token\"]), false, cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M182 NubraPlugin.Login.cs:68",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "            if (data is null) return BrokerLoginResult.Refused(error!, error!.Contains(\"could not be read\", StringComparison.Ordinal) ? 502 : 400);",
+  "new": "            if (data is null) return BrokerLoginResult.Refused(error!, error!.Contains(\"could not be read\", StringComparison.Ordinal) ? 503 : 400);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M183 NubraPlugin.Login.cs:68",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "            if (data is null) return BrokerLoginResult.Refused(error!, error!.Contains(\"could not be read\", StringComparison.Ordinal) ? 502 : 400);",
+  "new": "            if (data is null) return BrokerLoginResult.Refused(error!, error!.Contains(\"could not be read\", StringComparison.Ordinal) ? 502 : 401);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M184 NubraPlugin.Login.cs:70",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        else if (next != \"VERIFY_MOBILE\")",
+  "new": "        else if (next == \"VERIFY_MOBILE\")",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M185 NubraPlugin.Login.cs:72",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "            return BrokerLoginResult.Refused($\"{Display} asked for a sign-in step this server does not know ({(Truthy(data?[\"next\"]) ? Str(data![\"next\"]) : \"none\")}). Try again, and tell {Display} if it keeps happening.\", 502);",
+  "new": "            return BrokerLoginResult.Refused($\"{Display} asked for a sign-in step this server does not know ({(Truthy(data?[\"next\"]) ? Str(data![\"next\"]) : \"none\")}). Try again, and tell {Display} if it keeps happening.\", 503);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M186 NubraPlugin.Login.cs:76",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        return BrokerLoginResult.Refused($\"A one-time code was sent to {masked}. Enter it to finish signing in.\", 202);",
+  "new": "        return BrokerLoginResult.Refused($\"A one-time code was sent to {masked}. Enter it to finish signing in.\", 203);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M187 NubraPlugin.Login.cs:82",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        var typed = typedToken is { Length: > 0 } ? typedToken : null;",
+  "new": "        var typed = typedToken is { Length: >= 0 } ? typedToken : null;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M188 NubraPlugin.Login.cs:89",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        if (body is not JsonObject first) return BrokerLoginResult.Refused($\"{Display} sent an answer that could not be read. Try again in a moment.\", 502);",
+  "new": "        if (body is not JsonObject first) return BrokerLoginResult.Refused($\"{Display} sent an answer that could not be read. Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M189 NubraPlugin.Login.cs:93",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        if (pinBody is not JsonObject second) return BrokerLoginResult.Refused($\"{Display} sent an answer that could not be read. Try again in a moment.\", 502);",
+  "new": "        if (pinBody is not JsonObject second) return BrokerLoginResult.Refused($\"{Display} sent an answer that could not be read. Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M190 NubraPlugin.Login.cs:94",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        if (pinStatus != 200) return BrokerLoginResult.Refused(Fallback(second, \"PIN verification failed\"));",
+  "new": "        if (pinStatus == 200) return BrokerLoginResult.Refused(Fallback(second, \"PIN verification failed\"));",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M191 NubraPlugin.Login.cs:94",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        if (pinStatus != 200) return BrokerLoginResult.Refused(Fallback(second, \"PIN verification failed\"));",
+  "new": "        if (pinStatus != 201) return BrokerLoginResult.Refused(Fallback(second, \"PIN verification failed\"));",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M192 NubraPlugin.Login.cs:95",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.Login.cs",
+  "old": "        return Truthy(second[\"session_token\"]) ? BrokerLoginResult.Success(Str(second[\"session_token\"])!, null) : BrokerLoginResult.Refused($\"{Display} accepted the PIN but sent no session. Start the sign-in again.\", 502);",
+  "new": "        return Truthy(second[\"session_token\"]) ? BrokerLoginResult.Success(Str(second[\"session_token\"])!, null) : BrokerLoginResult.Refused($\"{Display} accepted the PIN but sent no session. Start the sign-in again.\", 503);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M193 NubraPlugin.History.cs:17",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "new": "        [\"1s\"] = (\"1s\", 8), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M194 NubraPlugin.History.cs:17",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "new": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 31), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M195 NubraPlugin.History.cs:17",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "new": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 31), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M196 NubraPlugin.History.cs:17",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "new": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 61), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M197 NubraPlugin.History.cs:17",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "new": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 61), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M198 NubraPlugin.History.cs:17",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "new": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 61), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M199 NubraPlugin.History.cs:17",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "new": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 91), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M200 NubraPlugin.History.cs:17",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "new": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 91), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M201 NubraPlugin.History.cs:17",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "new": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 366), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M202 NubraPlugin.History.cs:17",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "new": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1001), [\"M\"] = (\"1mt\", 1500),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M203 NubraPlugin.History.cs:17",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1500),",
+  "new": "        [\"1s\"] = (\"1s\", 7), [\"1m\"] = (\"1m\", 30), [\"2m\"] = (\"2m\", 30), [\"3m\"] = (\"3m\", 60), [\"5m\"] = (\"5m\", 60), [\"15m\"] = (\"15m\", 60), [\"30m\"] = (\"30m\", 90), [\"1h\"] = (\"1h\", 90), [\"D\"] = (\"1d\", 365), [\"W\"] = (\"1w\", 1000), [\"M\"] = (\"1mt\", 1501),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M204 NubraPlugin.History.cs:24",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        if (!Frames.TryGetValue(interval, out var frame)) throw new BrokerException($\"Timeframe '{interval}' is not supported by {Display}. Supported timeframes are: {string.Join(\", \", Frames.Keys)}\", 400);",
+  "new": "        if (!Frames.TryGetValue(interval, out var frame)) throw new BrokerException($\"Timeframe '{interval}' is not supported by {Display}. Supported timeframes are: {string.Join(\", \", Frames.Keys)}\", 401);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M205 NubraPlugin.History.cs:25",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        var optionLike = instrument.Symbol.Contains(\"CE\", StringComparison.Ordinal) || instrument.Symbol.Contains(\"PE\", StringComparison.Ordinal);",
+  "new": "        var optionLike = instrument.Symbol.Contains(\"CE\", StringComparison.Ordinal) && instrument.Symbol.Contains(\"PE\", StringComparison.Ordinal);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M206 NubraPlugin.History.cs:30",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            _ => throw new BrokerException($\"{Display} has no candles for {instrument.Exchange}. It serves NSE, BSE, NFO, BFO, MCX, NSE_INDEX and BSE_INDEX.\", 400),",
+  "new": "            _ => throw new BrokerException($\"{Display} has no candles for {instrument.Exchange}. It serves NSE, BSE, NFO, BFO, MCX, NSE_INDEX and BSE_INDEX.\", 401),",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M207 NubraPlugin.History.cs:33",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        if (type != \"INDEX\") fields.Add(\"tick_volume\");",
+  "new": "        if (type == \"INDEX\") fields.Add(\"tick_volume\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M208 NubraPlugin.History.cs:40",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        while (current <= to)",
+  "new": "        while (current < to)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M209 NubraPlugin.History.cs:42",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            var currentEnd = current.AddDays(frame.Days - 1) < to ? current.AddDays(frame.Days - 1) : to;",
+  "new": "            var currentEnd = current.AddDays(frame.Days - 1) <= to ? current.AddDays(frame.Days - 1) : to;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M210 NubraPlugin.History.cs:42",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            var currentEnd = current.AddDays(frame.Days - 1) < to ? current.AddDays(frame.Days - 1) : to;",
+  "new": "            var currentEnd = current.AddDays(frame.Days - 2) < to ? current.AddDays(frame.Days - 1) : to;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M211 NubraPlugin.History.cs:42",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            var currentEnd = current.AddDays(frame.Days - 1) < to ? current.AddDays(frame.Days - 1) : to;",
+  "new": "            var currentEnd = current.AddDays(frame.Days - 1) < to ? current.AddDays(frame.Days - 2) : to;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M212 NubraPlugin.History.cs:43",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            var chunkEnd = currentEnd.Date.AddDays(1).AddSeconds(-1);",
+  "new": "            var chunkEnd = currentEnd.Date.AddDays(2).AddSeconds(-1);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M213 NubraPlugin.History.cs:43",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            var chunkEnd = currentEnd.Date.AddDays(1).AddSeconds(-1);",
+  "new": "            var chunkEnd = currentEnd.Date.AddDays(1).AddSeconds(-2);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M214 NubraPlugin.History.cs:45",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            if (chunkEnd > now) chunkEnd = now;",
+  "new": "            if (chunkEnd >= now) chunkEnd = now;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M215 NubraPlugin.History.cs:46",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            if (chunkEnd <= current) break;",
+  "new": "            if (chunkEnd < current) break;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M216 NubraPlugin.History.cs:51",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                    [\"exchange\"] = api, [\"type\"] = type, [\"values\"] = new JsonArray(instrument.BrokerSymbol), [\"fields\"] = fields.DeepClone(), [\"startDate\"] = Iso(current), [\"endDate\"] = Iso(chunkEnd), [\"interval\"] = frame.Api, [\"intraDay\"] = false, [\"realTime\"] = false,",
+  "new": "                    [\"exchange\"] = api, [\"type\"] = type, [\"values\"] = new JsonArray(instrument.BrokerSymbol), [\"fields\"] = fields.DeepClone(), [\"startDate\"] = Iso(current), [\"endDate\"] = Iso(chunkEnd), [\"interval\"] = frame.Api, [\"intraDay\"] = true, [\"realTime\"] = false,",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M217 NubraPlugin.History.cs:56",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                var (status, body, text) = await SendAsync(session, HttpMethod.Post, \"/charts/timeseries\", payload, true, cancellationToken);",
+  "new": "                var (status, body, text) = await SendAsync(session, HttpMethod.Post, \"/charts/timeseries\", payload, false, cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M218 NubraPlugin.History.cs:57",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                if (status == SessionExpired) throw new BrokerException(ExpiredMessage, 401);",
+  "new": "                if (status != SessionExpired) throw new BrokerException(ExpiredMessage, 401);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M219 NubraPlugin.History.cs:57",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                if (status == SessionExpired) throw new BrokerException(ExpiredMessage, 401);",
+  "new": "                if (status == SessionExpired) throw new BrokerException(ExpiredMessage, 402);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M220 NubraPlugin.History.cs:58",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                if (status == 429) failure = (\"rejection\", $\"{Display} is limiting how fast history is asked for.\");",
+  "new": "                if (status != 429) failure = (\"rejection\", $\"{Display} is limiting how fast history is asked for.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M221 NubraPlugin.History.cs:58",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                if (status == 429) failure = (\"rejection\", $\"{Display} is limiting how fast history is asked for.\");",
+  "new": "                if (status == 430) failure = (\"rejection\", $\"{Display} is limiting how fast history is asked for.\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M222 NubraPlugin.History.cs:62",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                    if (status < 400 && Str(answer[\"message\"]) == \"charts\") Collect(answer, instrument.BrokerSymbol, candles);",
+  "new": "                    if (status <= 400 && Str(answer[\"message\"]) == \"charts\") Collect(answer, instrument.BrokerSymbol, candles);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M223 NubraPlugin.History.cs:62",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                    if (status < 400 && Str(answer[\"message\"]) == \"charts\") Collect(answer, instrument.BrokerSymbol, candles);",
+  "new": "                    if (status < 400 && Str(answer[\"message\"]) != \"charts\") Collect(answer, instrument.BrokerSymbol, candles);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M224 NubraPlugin.History.cs:62",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                    if (status < 400 && Str(answer[\"message\"]) == \"charts\") Collect(answer, instrument.BrokerSymbol, candles);",
+  "new": "                    if (status < 400 || Str(answer[\"message\"]) == \"charts\") Collect(answer, instrument.BrokerSymbol, candles);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M225 NubraPlugin.History.cs:62",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                    if (status < 400 && Str(answer[\"message\"]) == \"charts\") Collect(answer, instrument.BrokerSymbol, candles);",
+  "new": "                    if (status < 401 && Str(answer[\"message\"]) == \"charts\") Collect(answer, instrument.BrokerSymbol, candles);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M226 NubraPlugin.History.cs:64",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                else if (!string.IsNullOrWhiteSpace(text) && status < 400) failure = (\"exception\", \"the answer could not be read\");",
+  "new": "                else if (!string.IsNullOrWhiteSpace(text) && status <= 400) failure = (\"exception\", \"the answer could not be read\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M227 NubraPlugin.History.cs:64",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                else if (!string.IsNullOrWhiteSpace(text) && status < 400) failure = (\"exception\", \"the answer could not be read\");",
+  "new": "                else if (!string.IsNullOrWhiteSpace(text) || status < 400) failure = (\"exception\", \"the answer could not be read\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M228 NubraPlugin.History.cs:64",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                else if (!string.IsNullOrWhiteSpace(text) && status < 400) failure = (\"exception\", \"the answer could not be read\");",
+  "new": "                else if (!string.IsNullOrWhiteSpace(text) && status < 401) failure = (\"exception\", \"the answer could not be read\");",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M229 NubraPlugin.History.cs:66",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            catch (BrokerException ex) when (ex.HttpStatus == 502)",
+  "new": "            catch (BrokerException ex) when (ex.HttpStatus != 502)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M230 NubraPlugin.History.cs:66",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            catch (BrokerException ex) when (ex.HttpStatus == 502)",
+  "new": "            catch (BrokerException ex) when (ex.HttpStatus == 503)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M231 NubraPlugin.History.cs:71",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            current = currentEnd.AddDays(1);",
+  "new": "            current = currentEnd.AddDays(2);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M232 NubraPlugin.History.cs:72",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            if (current <= to) await Task.Delay(sessions.HistoryGap(Name, TimeSpan.FromSeconds(1)), cancellationToken);",
+  "new": "            if (current < to) await Task.Delay(sessions.HistoryGap(Name, TimeSpan.FromSeconds(1)), cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M233 NubraPlugin.History.cs:72",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            if (current <= to) await Task.Delay(sessions.HistoryGap(Name, TimeSpan.FromSeconds(1)), cancellationToken);",
+  "new": "            if (current <= to) await Task.Delay(sessions.HistoryGap(Name, TimeSpan.FromSeconds(2)), cancellationToken);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M234 NubraPlugin.History.cs:75",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        if (candles.Count == 0)",
+  "new": "        if (candles.Count != 0)",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M235 NubraPlugin.History.cs:78",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                throw new BrokerException(f.Kind == \"rejection\" ? $\"{Display} rejected the history request for {instrument.Symbol} on {instrument.Exchange} ({interval}): {f.Detail}\" : $\"{Display} could not give candles for {instrument.Symbol} on {instrument.Exchange} ({interval}): {f.Detail}\", 502);",
+  "new": "                throw new BrokerException(f.Kind != \"rejection\" ? $\"{Display} rejected the history request for {instrument.Symbol} on {instrument.Exchange} ({interval}): {f.Detail}\" : $\"{Display} could not give candles for {instrument.Symbol} on {instrument.Exchange} ({interval}): {f.Detail}\", 502);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M236 NubraPlugin.History.cs:78",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                throw new BrokerException(f.Kind == \"rejection\" ? $\"{Display} rejected the history request for {instrument.Symbol} on {instrument.Exchange} ({interval}): {f.Detail}\" : $\"{Display} could not give candles for {instrument.Symbol} on {instrument.Exchange} ({interval}): {f.Detail}\", 502);",
+  "new": "                throw new BrokerException(f.Kind == \"rejection\" ? $\"{Display} rejected the history request for {instrument.Symbol} on {instrument.Exchange} ({interval}): {f.Detail}\" : $\"{Display} could not give candles for {instrument.Symbol} on {instrument.Exchange} ({interval}): {f.Detail}\", 503);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M237 NubraPlugin.History.cs:88",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            if (daily) seconds -= ((seconds % 86400) + 86400) % 86400;",
+  "new": "            if (daily) seconds -= ((seconds % 86401) + 86400) % 86400;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M238 NubraPlugin.History.cs:88",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            if (daily) seconds -= ((seconds % 86400) + 86400) % 86400;",
+  "new": "            if (daily) seconds -= ((seconds % 86400) + 86401) % 86400;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M239 NubraPlugin.History.cs:88",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "            if (daily) seconds -= ((seconds % 86400) + 86400) % 86400;",
+  "new": "            if (daily) seconds -= ((seconds % 86400) + 86400) % 86401;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M240 NubraPlugin.History.cs:96",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "    private static long FloorDiv(long a, long b) => a / b - (a % b != 0 && (a < 0) != (b < 0) ? 1 : 0);",
+  "new": "    private static long FloorDiv(long a, long b) => a / b - (a % b != 0 && (a <= 0) != (b < 0) ? 1 : 0);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M241 NubraPlugin.History.cs:96",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "    private static long FloorDiv(long a, long b) => a / b - (a % b != 0 && (a < 0) != (b < 0) ? 1 : 0);",
+  "new": "    private static long FloorDiv(long a, long b) => a / b - (a % b == 0 && (a < 0) != (b < 0) ? 1 : 0);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M242 NubraPlugin.History.cs:96",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "    private static long FloorDiv(long a, long b) => a / b - (a % b != 0 && (a < 0) != (b < 0) ? 1 : 0);",
+  "new": "    private static long FloorDiv(long a, long b) => a / b - (a % b != 0 || (a < 0) != (b < 0) ? 1 : 0);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M243 NubraPlugin.History.cs:96",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "    private static long FloorDiv(long a, long b) => a / b - (a % b != 0 && (a < 0) != (b < 0) ? 1 : 0);",
+  "new": "    private static long FloorDiv(long a, long b) => a / b - (a % b != 0 && (a < 0) != (b < 0) ? 2 : 0);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M244 NubraPlugin.History.cs:102",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        if (answer[\"result\"] is not JsonArray { Count: > 0 } result || result[0] is not JsonObject first) return;",
+  "new": "        if (answer[\"result\"] is not JsonArray { Count: >= 0 } result || result[0] is not JsonObject first) return;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M245 NubraPlugin.History.cs:102",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        if (answer[\"result\"] is not JsonArray { Count: > 0 } result || result[0] is not JsonObject first) return;",
+  "new": "        if (answer[\"result\"] is not JsonArray { Count: > 0 } result && result[0] is not JsonObject first) return;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M246 NubraPlugin.History.cs:106",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        if (series is null || series.Count == 0) return;",
+  "new": "        if (series is null || series.Count != 0) return;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M247 NubraPlugin.History.cs:106",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        if (series is null || series.Count == 0) return;",
+  "new": "        if (series is null && series.Count == 0) return;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M248 NubraPlugin.History.cs:120",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "                row[at] = value / 100;",
+  "new": "                row[at] = value / 101;",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M249 NubraPlugin.History.cs:124",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        Fold(\"open\", 0, false);",
+  "new": "        Fold(\"open\", 0, true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M250 NubraPlugin.History.cs:125",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        Fold(\"high\", 1, false);",
+  "new": "        Fold(\"high\", 1, true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M251 NubraPlugin.History.cs:125",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        Fold(\"high\", 1, false);",
+  "new": "        Fold(\"high\", 2, false);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M252 NubraPlugin.History.cs:126",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        Fold(\"low\", 2, false);",
+  "new": "        Fold(\"low\", 2, true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M253 NubraPlugin.History.cs:126",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        Fold(\"low\", 2, false);",
+  "new": "        Fold(\"low\", 3, false);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M254 NubraPlugin.History.cs:127",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        Fold(\"close\", 3, false);",
+  "new": "        Fold(\"close\", 3, true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M255 NubraPlugin.History.cs:127",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        Fold(\"close\", 3, false);",
+  "new": "        Fold(\"close\", 4, false);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M256 NubraPlugin.History.cs:128",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        var volumeKey = series[\"tick_volume\"] is JsonArray { Count: > 0 } ? \"tick_volume\" : \"cumulative_volume\";",
+  "new": "        var volumeKey = series[\"tick_volume\"] is JsonArray { Count: >= 0 } ? \"tick_volume\" : \"cumulative_volume\";",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M257 NubraPlugin.History.cs:129",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        Fold(volumeKey, 4, true);",
+  "new": "        Fold(volumeKey, 4, false);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M258 NubraPlugin.History.cs:129",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Nubra/NubraPlugin.History.cs",
+  "old": "        Fold(volumeKey, 4, true);",
+  "new": "        Fold(volumeKey, 5, true);",
+  "filter": "FullyQualifiedName~Nubra",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]
