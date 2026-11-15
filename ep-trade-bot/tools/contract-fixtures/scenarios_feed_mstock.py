@@ -186,6 +186,7 @@ SCENARIOS = [
     scenario("a_connection_repeats_one_frame_a_mode", {"subscribe": [Q, IQ, RQ, sub("NIFTY25NOV26FUT", "NFO", 1), sub("SENSEX", "BSE_INDEX", 3)]}, {"reconnect": {}}),
     scenario("a_connection_repeats_nothing_after_everything_was_dropped", {"subscribe": [Q]}, un(Q), {"reconnect": {}}),
     scenario("a_connection_repeats_a_downgraded_token_at_the_lower_mode", {"subscribe": [Q, D]}, un(D), {"reconnect": {}}),
+    scenario("a_connection_repeats_a_token_on_two_exchanges_once_on_the_first", {"subscribe": [Q, sub("SBINBSE", "BSE", 2)]}, {"reconnect": {}}),
     scenario("a_second_connection_repeats_again", {"subscribe": [Q]}, {"reconnect": {}}, {"reconnect": {}}),
     scenario("after_a_connection_a_subscribe_sends_a_frame", {"subscribe": [Q]}, {"reconnect": {}}, {"subscribe": [IQ]}),
     scenario("after_a_connection_an_unsubscribe_sends_a_frame", {"subscribe": [Q, D]}, {"reconnect": {}}, un(D)),
@@ -282,6 +283,7 @@ SCENARIOS = [
     scenario("a_frame_of_unknown_size", {"subscribe": [Q]}, fr(b"\x02" * 80)),
     scenario("a_frame_of_a_packet_and_a_bad_one", {"subscribe": [Q, IQ]}, fr(framed([quote_packet("3045"), b"\x01" * 123], count=2))),
     scenario("a_frame_with_a_packet_longer_than_a_snapshot_reads_its_first_bytes", {"subscribe": [D]}, fr(framed([b"\x00\x00\x00\x00" + snap_packet() + b"\x00" * 6], size=389))),
+    scenario("a_frame_whose_packet_is_exactly_a_header_and_a_snapshot_long", {"subscribe": [D]}, fr(framed([b"\x00\x00\x00\x00" + snap_packet()], size=383))),
     scenario("a_frame_of_a_snapshot_packet_after_four_odd_bytes", {"subscribe": [D]}, fr(b"\x09\x09\x09\x09" + snap_packet())),
     scenario("a_frame_of_a_packet_between_sizes", {"subscribe": [Q]}, fr(quote_packet() + b"\x00" * 3)),
     # ---- text ---------------------------------------------------------------------------------------------------

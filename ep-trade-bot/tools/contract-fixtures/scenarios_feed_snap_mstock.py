@@ -93,6 +93,7 @@ SCENARIOS = [
     scenario("the_first_readable_quote_is_the_answer_even_without_depth", d("SBIN", "NSE", h(ltp_packet()), h(snap_packet()))),
     scenario("a_quote_packet_has_no_ladder", d("SBIN", "NSE", h(quote_packet()))),
     scenario("a_frame_that_cannot_be_read_is_skipped", d("SBIN", "NSE", h(b"\x01" * 10), h(snap_packet()))),
+    scenario("a_frame_whose_token_is_not_text_is_skipped", d("SBIN", "NSE", h(quote_packet(b"\xff\xfe" + b"\x00" * 23)), h(snap_packet()))),
     scenario("an_empty_frame_is_skipped", d("SBIN", "NSE", h(b""), h(snap_packet()))),
     scenario("a_packet_for_another_token_is_still_the_answer", d("SBIN", "NSE", h(snap_packet("9999")))),
     scenario("a_short_ladder_is_padded_to_five", d("SBIN", "NSE", h(snap_packet(bids=[(100, 80540, 1), (200, 80535, 2)], asks=[(110, 80550, 1)])))),

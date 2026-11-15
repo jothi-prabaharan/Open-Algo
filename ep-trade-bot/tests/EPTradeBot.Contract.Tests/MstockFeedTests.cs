@@ -206,6 +206,26 @@ public sealed class MstockFeedEndpointTests
     }
 
     [Fact]
+    public async Task Depth_asks_with_the_key_when_the_secret_is_empty()
+    {
+        var capture = new Capturing();
+        var plugin = new MstockPlugin(null!, new EPTradeBot.Infrastructure.Brokers.BrokerSessionFactory(null!, new OptionsOf(new EPTradeBot.Core.Configuration.BrokerOptions())), new Master(), TimeProvider.System, capture);
+        await Assert.ThrowsAsync<BrokerException>(() => plugin.GetDepthAsync(Session(secret: ""), "SBIN", "NSE", CancellationToken.None));
+        Assert.Equal("wss://ws.mstock.trade?API_KEY=mst-api-key&ACCESS_TOKEN=mst-session-jwt", capture.Address);
+    }
+
+    private sealed class Capturing : IMstockSockets
+    {
+        public string? Address { get; private set; }
+
+        public Task<byte[]?> SnapshotAsync(Uri address, string login, string subscribe, Func<byte[], bool> accept, CancellationToken cancellationToken)
+        {
+            Address = address.OriginalString;
+            return Task.FromResult<byte[]?>(null);
+        }
+    }
+
+    [Fact]
     public void The_codec_names_its_broker() => Assert.Equal("mstock", new MstockFeedCodec().Broker);
 
     [Fact]
