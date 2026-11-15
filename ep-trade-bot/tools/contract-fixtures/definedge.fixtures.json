@@ -1,0 +1,4212 @@
+{
+  "broker": "definedge",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "dg-session-key:::dg-susertoken:::dg-api-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN-EQ",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY-EQ",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "TATAMOTORS",
+      "brsymbol": "TATAMOTORS-EQ",
+      "name": "TATA MOTORS",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500570",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY25NOV26FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "49500",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "SENSEX26NOVFUT",
+      "brsymbol": "SENSEX26NOVFUT",
+      "name": "SENSEX",
+      "exchange": "BFO",
+      "brexchange": "BFO",
+      "token": "60001",
+      "expiry": "26-NOV-26",
+      "strike": -1.0,
+      "lotsize": 20,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "GOLDM25NOV26FUT",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 10,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "USDINR25NOV26FUT",
+      "brsymbol": "USDINR25NOV26FUT",
+      "name": "USDINR",
+      "exchange": "CDS",
+      "brexchange": "CDS",
+      "token": "90001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 1000,
+      "instrumenttype": "FUT",
+      "tick_size": 0.0025
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "Nifty 50",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE_INDEX",
+      "token": "26000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": 800.5,
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_cnc_delivery",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": 800.5,
+            "price_type": "LIMIT",
+            "product_type": "CNC",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_nrml_product",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "24005",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "quantity": 75,
+            "price": 24005.0,
+            "price_type": "LIMIT",
+            "product_type": "NORMAL",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": "0",
+            "price_type": "MARKET",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL",
+        "product": "MIS",
+        "price": "800",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": 800.0,
+            "price_type": "SL-LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "algo_id": "99999",
+            "trigger_price": 801.5
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": "0",
+            "price_type": "SL-MARKET",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "algo_id": "99999",
+            "trigger_price": 801.5
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_sell",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": 800.5,
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "SELL",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_disclosed_quantity",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": 800.5,
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "algo_id": "99999",
+            "disclosed_quantity": 5
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_bse_equity",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "TATAMOTORS",
+        "exchange": "BSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "500",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "TATAMOTORS-EQ",
+            "exchange": "BSE",
+            "quantity": 10,
+            "price": 500.0,
+            "price_type": "LIMIT",
+            "product_type": "CNC",
+            "order_type": "BUY",
+            "algo_id": "9999999999999999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_bse_derivative",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SENSEX26NOVFUT",
+        "exchange": "BFO",
+        "action": "BUY",
+        "quantity": "20",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "80000",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SENSEX26NOVFUT",
+            "exchange": "BFO",
+            "quantity": 20,
+            "price": 80000.0,
+            "price_type": "LIMIT",
+            "product_type": "NORMAL",
+            "order_type": "BUY",
+            "algo_id": "9999999999999999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_mcx_future",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "GOLDM25NOV26FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "75000",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "GOLDM25NOV26FUT",
+            "exchange": "MCX",
+            "quantity": 10,
+            "price": 75000.0,
+            "price_type": "LIMIT",
+            "product_type": "NORMAL",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_currency_future",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "USDINR25NOV26FUT",
+        "exchange": "CDS",
+        "action": "BUY",
+        "quantity": "1000",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "83.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "USDINR25NOV26FUT",
+            "exchange": "CDS",
+            "quantity": 1000,
+            "price": 83.5,
+            "price_type": "LIMIT",
+            "product_type": "NORMAL",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_reply_in_the_other_shape",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "stat": "Ok",
+            "norenordno": "NR0001"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "NR0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": 800.5,
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "status": 400,
+          "body": {
+            "status": "ERROR",
+            "message": "Insufficient funds"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Insufficient funds",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": 800.5,
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_with_an_emsg",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "status": 400,
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Bad quantity"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": 800.5,
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "status": 400,
+          "body": {
+            "status": "ERROR"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": 800.5,
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_with_status_200",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "ERROR",
+            "message": "Rejected by RMS"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Rejected by RMS",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": 800.5,
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_success_without_an_order_number",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": 800.5,
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_not_json",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "status": 502,
+          "body": "Bad gateway"
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": 800.5,
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": null,
+            "exchange": "NSE",
+            "quantity": 10,
+            "price": 800.5,
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "DG1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/modify": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG1"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/modify",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "order_id": "DG1",
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": "12",
+            "price": "801.0",
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "DG1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "SL",
+        "product": "MIS",
+        "price": "800",
+        "disclosed_quantity": "0",
+        "trigger_price": "801.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/modify": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG1"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/modify",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "order_id": "DG1",
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": "12",
+            "price": "800.0",
+            "price_type": "SL-LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "trigger_price": 801.5,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_market",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "DG1",
+        "action": "SELL",
+        "quantity": "12",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "disclosed_quantity": "0",
+        "trigger_price": "801.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/modify": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG1"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/modify",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "order_id": "DG1",
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": "12",
+            "price": "0.0",
+            "price_type": "SL-MARKET",
+            "product_type": "INTRADAY",
+            "order_type": "SELL",
+            "trigger_price": 801.5,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_market",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "DG1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/modify": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG1"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/modify",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "order_id": "DG1",
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": "12",
+            "price": "0.0",
+            "price_type": "MARKET",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_product_change",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "DG1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/modify": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG1"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/modify",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "order_id": "DG1",
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": "12",
+            "price": "801.0",
+            "price_type": "LIMIT",
+            "product_type": "CNC",
+            "order_type": "BUY",
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_disclosed",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "DG1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "3",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/modify": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG1"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/modify",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "order_id": "DG1",
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": "12",
+            "price": "801.0",
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "disclosed_quantity": 3,
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_other_reply_shape",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "DG1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/modify": {
+          "body": {
+            "stat": "Ok",
+            "norenordno": "NR9"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/modify",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "order_id": "DG1",
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": "12",
+            "price": "801.0",
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "DG1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/modify": {
+          "status": 400,
+          "body": {
+            "status": "ERROR",
+            "message": "Order is not open"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Order is not open",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/modify",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "order_id": "DG1",
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": "12",
+            "price": "801.0",
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused_with_an_emsg",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "DG1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/modify": {
+          "status": 400,
+          "body": {
+            "stat": "Not_Ok",
+            "emsg": "Nope"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Nope",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/modify",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "order_id": "DG1",
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": "12",
+            "price": "801.0",
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "DG1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /dart/v1/modify": {
+          "status": 400,
+          "body": {
+            "status": "ERROR"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to modify order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/modify",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "order_id": "DG1",
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": "12",
+            "price": "801.0",
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "BUY",
+            "validity": "DAY"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "DG1",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/cancel/DG1": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG1",
+            "request_time": "10:26:00 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/cancel/DG1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "DG3",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/cancel/DG3": {
+          "status": 404,
+          "body": {
+            "status": "ERROR",
+            "message": "Order not found to cancel"
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "message": "Order not found to cancel",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/cancel/DG3",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "DG3",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/cancel/DG3": {
+          "status": 400,
+          "body": {
+            "status": "ERROR"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to cancel order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/cancel/DG3",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "orders": [
+              {
+                "order_id": "DG1",
+                "tradingsymbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "order_type": "BUY",
+                "quantity": "10",
+                "price": "800.50",
+                "price_type": "LIMIT",
+                "product_type": "INTRADAY",
+                "order_status": "OPEN",
+                "order_entry_time": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              },
+              {
+                "order_id": "DG2",
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "order_type": "BUY",
+                "quantity": "75",
+                "price": "24010.00",
+                "price_type": "SL-LIMIT",
+                "product_type": "NORMAL",
+                "order_status": "TRIGGER PENDING",
+                "order_entry_time": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              },
+              {
+                "order_id": "DG3",
+                "tradingsymbol": "INFY-EQ",
+                "exchange": "NSE",
+                "order_type": "SELL",
+                "quantity": "5",
+                "price": "1495.00",
+                "price_type": "LIMIT",
+                "product_type": "CNC",
+                "order_status": "COMPLETE",
+                "order_entry_time": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              }
+            ]
+          }
+        },
+        "GET /dart/v1/cancel/DG1": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG1"
+          }
+        },
+        "GET /dart/v1/cancel/DG2": {
+          "status": 400,
+          "body": {
+            "status": "ERROR",
+            "message": "No"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "DG1"
+          ],
+          "failed_cancellations": [
+            "DG2"
+          ],
+          "message": "Canceled 1 orders. Failed to cancel 1 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/cancel/DG1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key"
+          }
+        },
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/cancel/DG2",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_book_empty",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "orders": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_book_failed",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/orders": {
+          "body": {
+            "status": "ERROR",
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "orders": [
+              {
+                "order_id": "DG1",
+                "tradingsymbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "order_type": "BUY",
+                "quantity": "10",
+                "price": "800.50",
+                "price_type": "LIMIT",
+                "product_type": "INTRADAY",
+                "order_status": "OPEN",
+                "order_entry_time": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              },
+              {
+                "order_id": "DG2",
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "order_type": "BUY",
+                "quantity": "75",
+                "price": "24010.00",
+                "price_type": "SL-LIMIT",
+                "product_type": "NORMAL",
+                "order_status": "OPEN",
+                "order_entry_time": "10:20:01 03-11-2026",
+                "trigger_price": "24000.00"
+              },
+              {
+                "order_id": "DG3",
+                "tradingsymbol": "INFY-EQ",
+                "exchange": "NSE",
+                "order_type": "SELL",
+                "quantity": "5",
+                "price": "1495.00",
+                "price_type": "LIMIT",
+                "product_type": "CNC",
+                "order_status": "COMPLETE",
+                "order_entry_time": "10:20:01 03-11-2026",
+                "trigger_price": "0.00",
+                "exchange_time": "10:21:12 03-11-2026"
+              },
+              {
+                "order_id": "DG4",
+                "tradingsymbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "order_type": "SELL",
+                "quantity": "1",
+                "price": "0.00",
+                "price_type": "SL-MARKET",
+                "product_type": "INTRADAY",
+                "order_status": "REJECTED",
+                "order_entry_time": "10:20:01 03-11-2026",
+                "trigger_price": "790.50"
+              },
+              {
+                "order_id": "DG5",
+                "tradingsymbol": "TATAMOTORS-EQ",
+                "exchange": "BSE",
+                "order_type": "BUY",
+                "quantity": "2",
+                "price": "0.00",
+                "price_type": "MARKET",
+                "product_type": "NORMAL",
+                "order_status": "CANCELED",
+                "order_entry_time": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              },
+              {
+                "order_id": "DG6",
+                "tradingsymbol": "USDINR25NOV26FUT",
+                "exchange": "CDS",
+                "order_type": "BUY",
+                "quantity": "1000",
+                "price": "83.50",
+                "price_type": "LIMIT",
+                "product_type": "NORMAL",
+                "order_status": "NEW",
+                "order_entry_time": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              },
+              {
+                "order_id": "DG7",
+                "tradingsymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "order_type": "SELL",
+                "quantity": "10",
+                "price": "75000",
+                "price_type": "LIMIT",
+                "product_type": "NORMAL",
+                "order_status": "REPLACED",
+                "order_entry_time": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              },
+              {
+                "order_id": "DG8",
+                "tradingsymbol": "NOSUCH-EQ",
+                "exchange": "NSE",
+                "order_type": "BUY",
+                "quantity": "3",
+                "price": "5",
+                "price_type": "XX",
+                "product_type": "ZZ",
+                "order_status": "Something Else",
+                "order_entry_time": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              },
+              {
+                "order_id": "DG9",
+                "tradingsymbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "order_type": "BUY",
+                "quantity": "4",
+                "price": "800",
+                "price_type": "LIMIT",
+                "product_type": "INTRADAY",
+                "order_status": "TRIGGER_PENDING",
+                "order_entry_time": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "DG1",
+                "price": "800.50",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "10",
+                "symbol": "SBIN",
+                "timestamp": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NFO",
+                "order_status": "open",
+                "orderid": "DG2",
+                "price": "24010.00",
+                "pricetype": "SL",
+                "product": "NRML",
+                "quantity": "75",
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "10:20:01 03-11-2026",
+                "trigger_price": "24000.00"
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "DG3",
+                "price": "1495.00",
+                "pricetype": "LIMIT",
+                "product": "CNC",
+                "quantity": "5",
+                "symbol": "INFY",
+                "timestamp": "10:21:12 03-11-2026",
+                "trigger_price": "0.00"
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "rejected",
+                "orderid": "DG4",
+                "price": "0.00",
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": "1",
+                "symbol": "SBIN",
+                "timestamp": "10:20:01 03-11-2026",
+                "trigger_price": "790.50"
+              },
+              {
+                "action": "BUY",
+                "exchange": "BSE",
+                "order_status": "cancelled",
+                "orderid": "DG5",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": "2",
+                "symbol": "TATAMOTORS",
+                "timestamp": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              },
+              {
+                "action": "BUY",
+                "exchange": "CDS",
+                "order_status": "open",
+                "orderid": "DG6",
+                "price": "83.50",
+                "pricetype": "LIMIT",
+                "product": "NRML",
+                "quantity": "1000",
+                "symbol": "USDINR25NOV26FUT",
+                "timestamp": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              },
+              {
+                "action": "SELL",
+                "exchange": "MCX",
+                "order_status": "open",
+                "orderid": "DG7",
+                "price": "75000",
+                "pricetype": "LIMIT",
+                "product": "NRML",
+                "quantity": "10",
+                "symbol": "GOLDM25NOV26FUT",
+                "timestamp": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "something else",
+                "orderid": "DG8",
+                "price": "5",
+                "pricetype": "XX",
+                "product": "ZZ",
+                "quantity": "3",
+                "symbol": "NOSUCH-EQ",
+                "timestamp": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "DG9",
+                "price": "800",
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": "4",
+                "symbol": "SBIN",
+                "timestamp": "10:20:01 03-11-2026",
+                "trigger_price": "0.00"
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 6,
+              "total_completed_orders": 1,
+              "total_open_orders": 5,
+              "total_rejected_orders": 2,
+              "total_sell_orders": 3
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_empty",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "orders": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_failed",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/orders": {
+          "body": {
+            "status": "ERROR",
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/trades": {
+          "body": {
+            "status": "SUCCESS",
+            "trades": [
+              {
+                "order_id": "DG3",
+                "tradingsymbol": "INFY-EQ",
+                "exchange": "NSE",
+                "order_type": "SELL",
+                "product_type": "CNC",
+                "filled_qty": "5",
+                "fill_price": "1499.95",
+                "fill_time": "10:21:12 03-11-2026"
+              },
+              {
+                "order_id": "DG2",
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "order_type": "BUY",
+                "product_type": "NORMAL",
+                "quantity": "75",
+                "average_traded_price": "24005.50",
+                "exchange_time": "10:22:00 03-11-2026"
+              },
+              {
+                "order_id": "DG99",
+                "tradingsymbol": "NOSUCH-EQ",
+                "exchange": "NSE",
+                "order_type": "BUY",
+                "product_type": "INTRADAY",
+                "filled_qty": "2",
+                "fill_price": "2900",
+                "fill_time": "10:23:00 03-11-2026"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "SELL",
+              "average_price": 1499.95,
+              "exchange": "NSE",
+              "orderid": "DG3",
+              "product": "CNC",
+              "quantity": 5,
+              "symbol": "INFY",
+              "timestamp": "10:21:12 03-11-2026",
+              "trade_value": 7499.75
+            },
+            {
+              "action": "BUY",
+              "average_price": 24005.5,
+              "exchange": "NFO",
+              "orderid": "DG2",
+              "product": "NRML",
+              "quantity": 75,
+              "symbol": "NIFTY25NOV26FUT",
+              "timestamp": "10:22:00 03-11-2026",
+              "trade_value": 1800412.5
+            },
+            {
+              "action": "BUY",
+              "average_price": 2900.0,
+              "exchange": "NSE",
+              "orderid": "DG99",
+              "product": "MIS",
+              "quantity": 2,
+              "symbol": "NOSUCH-EQ",
+              "timestamp": "10:23:00 03-11-2026",
+              "trade_value": 5800.0
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/trades",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_empty",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/trades": {
+          "body": {
+            "status": "SUCCESS",
+            "trades": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/trades",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_failed",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/trades": {
+          "body": {
+            "status": "ERROR",
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/trades",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/positions": {
+          "body": {
+            "status": "SUCCESS",
+            "positions": [
+              {
+                "tradingsymbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "product_type": "INTRADAY",
+                "net_quantity": "10",
+                "net_averageprice": "800.00",
+                "realized_pnl": "12.50",
+                "unrealized_pnl": "54.50",
+                "lastPrice": "805.45"
+              },
+              {
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "product_type": "NORMAL",
+                "net_quantity": "-75",
+                "net_averageprice": "24000.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "-412.50",
+                "lastPrice": "24005.5"
+              },
+              {
+                "tradingsymbol": "INFY-EQ",
+                "exchange": "NSE",
+                "product_type": "CNC",
+                "net_quantity": "0",
+                "net_averageprice": "1500.00",
+                "realized_pnl": "100.00",
+                "unrealized_pnl": "0.00",
+                "lastPrice": "1510"
+              },
+              {
+                "tradingsymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "product_type": "NORMAL",
+                "net_quantity": "10",
+                "net_averageprice": "75000.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "100.00",
+                "lastPrice": "75010"
+              },
+              {
+                "tradingsymbol": "NOSUCH-EQ",
+                "exchange": "NSE",
+                "product_type": "INTRADAY",
+                "net_quantity": "4",
+                "net_averageprice": "0.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "0.00",
+                "lastPrice": "0.00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": "800.00",
+              "exchange": "NSE",
+              "ltp": "805.45",
+              "pnl": "54.50",
+              "product": "MIS",
+              "quantity": 10,
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": "24000.00",
+              "exchange": "NFO",
+              "ltp": "24005.5",
+              "pnl": "-412.50",
+              "product": "NRML",
+              "quantity": -75,
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": "1500.00",
+              "exchange": "NSE",
+              "ltp": "1510",
+              "pnl": "100.00",
+              "product": "CNC",
+              "quantity": 0,
+              "symbol": "INFY"
+            },
+            {
+              "average_price": "75000.00",
+              "exchange": "MCX",
+              "ltp": "75010",
+              "pnl": "100.00",
+              "product": "NRML",
+              "quantity": 10,
+              "symbol": "GOLDM25NOV26FUT"
+            },
+            {
+              "average_price": "0.00",
+              "exchange": "NSE",
+              "ltp": "0.00",
+              "pnl": "0.00",
+              "product": "MIS",
+              "quantity": 4,
+              "symbol": "NOSUCH-EQ"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_flat",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/positions": {
+          "body": {
+            "status": "SUCCESS",
+            "positions": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_failed",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/positions": {
+          "body": {
+            "status": "ERROR",
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/holdings": {
+          "body": {
+            "status": "SUCCESS",
+            "data": [
+              {
+                "tradingsymbol": [
+                  {
+                    "exchange": "NSE",
+                    "tradingsymbol": "INFY-EQ",
+                    "isin": "INE009A01021"
+                  },
+                  {
+                    "exchange": "BSE",
+                    "tradingsymbol": "INFY",
+                    "isin": "INE009A01021"
+                  }
+                ],
+                "dp_qty": "6",
+                "t1_qty": "4",
+                "avg_buy_price": "1450.50"
+              },
+              {
+                "tradingsymbol": [
+                  {
+                    "exchange": "BSE",
+                    "tradingsymbol": "TATAMOTORS-EQ",
+                    "isin": "INE155A01022"
+                  }
+                ],
+                "dp_qty": "0",
+                "t1_qty": "4",
+                "avg_buy_price": "500"
+              },
+              {
+                "tradingsymbol": [
+                  {
+                    "exchange": "NSE",
+                    "tradingsymbol": "SBIN-EQ",
+                    "isin": "INE062A01020"
+                  }
+                ],
+                "dp_qty": "0",
+                "t1_qty": "0",
+                "avg_buy_price": "800"
+              },
+              {
+                "tradingsymbol": [
+                  {
+                    "exchange": "NSE",
+                    "tradingsymbol": "NOSUCH-EQ"
+                  }
+                ],
+                "dp_qty": "2",
+                "t1_qty": "0",
+                "avg_buy_price": "10"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "exchange": "NSE",
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 10,
+                "symbol": "INFY"
+              },
+              {
+                "exchange": "BSE",
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 4,
+                "symbol": "TATAMOTORS"
+              },
+              {
+                "exchange": "NSE",
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 2,
+                "symbol": "NOSUCH-EQ"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 16525.0,
+              "totalinvvalue": 16525.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_empty",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/holdings": {
+          "body": {
+            "status": "SUCCESS",
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_failed",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/holdings": {
+          "body": {
+            "status": "ERROR",
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/limits": {
+          "body": {
+            "status": "SUCCESS",
+            "cash": "100000.50",
+            "brokerCollateralAmount": "2500.25",
+            "currentUnrealizedMtom": "-120.5",
+            "currentRealizedPNL": "340.25",
+            "marginUsed": "1184.50"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "100000.50",
+            "collateral": "2500.25",
+            "m2mrealized": "340.25",
+            "m2munrealized": "-120.50",
+            "utiliseddebits": "1184.50"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_pnl_from_the_split_fields",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/limits": {
+          "body": {
+            "status": "SUCCESS",
+            "cash": "10",
+            "currentUnrealizedMtom": "0",
+            "currentUnrealizedMTOMDerivativeIntraday": "1.5",
+            "currentUnrealizedMTOMDerivativeMargin": "2",
+            "currentUnrealizedMTOMEquityIntraday": "3",
+            "currentUnrealizedMTOMEquityMargin": "4",
+            "currentUnrealizedMTOMCommodityIntraday": "5",
+            "currentUnrealizedMTOMCommodityMargin": "6",
+            "currentRealizedPNL": "0",
+            "currentRealizedPNLEquityIntraday": "1",
+            "currentRealizedPNLDerivativeIntraday": "2",
+            "currentRealizedPNLDerivativeMargin": "3",
+            "currentRealizedPNLEquityMargin": "4",
+            "currentRealizedPNLCommodityIntraday": "5",
+            "currentRealizedPNLCommodityMargin": "6"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "10.00",
+            "collateral": "0.00",
+            "m2mrealized": "21.00",
+            "m2munrealized": "21.50",
+            "utiliseddebits": "0.00"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_text_that_is_not_a_number",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/limits": {
+          "body": {
+            "status": "SUCCESS",
+            "cash": "n/a",
+            "marginUsed": null
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "0.00",
+            "collateral": "0.00",
+            "m2mrealized": "0.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "0.00"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_failed",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/limits": {
+          "body": {
+            "status": "ERROR",
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_http_error",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/limits": {
+          "status": 500,
+          "body": {
+            "x": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/limits",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_long",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/positions": {
+          "body": {
+            "status": "SUCCESS",
+            "positions": [
+              {
+                "tradingsymbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "product_type": "INTRADAY",
+                "net_quantity": "10",
+                "net_averageprice": "800.00",
+                "realized_pnl": "12.50",
+                "unrealized_pnl": "54.50",
+                "lastPrice": "805.45"
+              },
+              {
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "product_type": "NORMAL",
+                "net_quantity": "-75",
+                "net_averageprice": "24000.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "-412.50",
+                "lastPrice": "24005.5"
+              },
+              {
+                "tradingsymbol": "INFY-EQ",
+                "exchange": "NSE",
+                "product_type": "CNC",
+                "net_quantity": "0",
+                "net_averageprice": "1500.00",
+                "realized_pnl": "100.00",
+                "unrealized_pnl": "0.00",
+                "lastPrice": "1510"
+              },
+              {
+                "tradingsymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "product_type": "NORMAL",
+                "net_quantity": "10",
+                "net_averageprice": "75000.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "100.00",
+                "lastPrice": "75010"
+              },
+              {
+                "tradingsymbol": "NOSUCH-EQ",
+                "exchange": "NSE",
+                "product_type": "INTRADAY",
+                "net_quantity": "4",
+                "net_averageprice": "0.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "0.00",
+                "lastPrice": "0.00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": 10,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_short_is_negative",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/positions": {
+          "body": {
+            "status": "SUCCESS",
+            "positions": [
+              {
+                "tradingsymbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "product_type": "INTRADAY",
+                "net_quantity": "10",
+                "net_averageprice": "800.00",
+                "realized_pnl": "12.50",
+                "unrealized_pnl": "54.50",
+                "lastPrice": "805.45"
+              },
+              {
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "product_type": "NORMAL",
+                "net_quantity": "-75",
+                "net_averageprice": "24000.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "-412.50",
+                "lastPrice": "24005.5"
+              },
+              {
+                "tradingsymbol": "INFY-EQ",
+                "exchange": "NSE",
+                "product_type": "CNC",
+                "net_quantity": "0",
+                "net_averageprice": "1500.00",
+                "realized_pnl": "100.00",
+                "unrealized_pnl": "0.00",
+                "lastPrice": "1510"
+              },
+              {
+                "tradingsymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "product_type": "NORMAL",
+                "net_quantity": "10",
+                "net_averageprice": "75000.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "100.00",
+                "lastPrice": "75010"
+              },
+              {
+                "tradingsymbol": "NOSUCH-EQ",
+                "exchange": "NSE",
+                "product_type": "INTRADAY",
+                "net_quantity": "4",
+                "net_averageprice": "0.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "0.00",
+                "lastPrice": "0.00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": -75,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_other_product_is_zero",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "product": "CNC",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/positions": {
+          "body": {
+            "status": "SUCCESS",
+            "positions": [
+              {
+                "tradingsymbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "product_type": "INTRADAY",
+                "net_quantity": "10",
+                "net_averageprice": "800.00",
+                "realized_pnl": "12.50",
+                "unrealized_pnl": "54.50",
+                "lastPrice": "805.45"
+              },
+              {
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "product_type": "NORMAL",
+                "net_quantity": "-75",
+                "net_averageprice": "24000.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "-412.50",
+                "lastPrice": "24005.5"
+              },
+              {
+                "tradingsymbol": "INFY-EQ",
+                "exchange": "NSE",
+                "product_type": "CNC",
+                "net_quantity": "0",
+                "net_averageprice": "1500.00",
+                "realized_pnl": "100.00",
+                "unrealized_pnl": "0.00",
+                "lastPrice": "1510"
+              },
+              {
+                "tradingsymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "product_type": "NORMAL",
+                "net_quantity": "10",
+                "net_averageprice": "75000.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "100.00",
+                "lastPrice": "75010"
+              },
+              {
+                "tradingsymbol": "NOSUCH-EQ",
+                "exchange": "NSE",
+                "product_type": "INTRADAY",
+                "net_quantity": "4",
+                "net_averageprice": "0.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "0.00",
+                "lastPrice": "0.00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": 0,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/positions": {
+          "body": {
+            "status": "SUCCESS",
+            "positions": [
+              {
+                "tradingsymbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "product_type": "INTRADAY",
+                "net_quantity": "10",
+                "net_averageprice": "800.00",
+                "realized_pnl": "12.50",
+                "unrealized_pnl": "54.50",
+                "lastPrice": "805.45"
+              },
+              {
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "product_type": "NORMAL",
+                "net_quantity": "-75",
+                "net_averageprice": "24000.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "-412.50",
+                "lastPrice": "24005.5"
+              },
+              {
+                "tradingsymbol": "INFY-EQ",
+                "exchange": "NSE",
+                "product_type": "CNC",
+                "net_quantity": "0",
+                "net_averageprice": "1500.00",
+                "realized_pnl": "100.00",
+                "unrealized_pnl": "0.00",
+                "lastPrice": "1510"
+              },
+              {
+                "tradingsymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "product_type": "NORMAL",
+                "net_quantity": "10",
+                "net_averageprice": "75000.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "100.00",
+                "lastPrice": "75010"
+              },
+              {
+                "tradingsymbol": "NOSUCH-EQ",
+                "exchange": "NSE",
+                "product_type": "INTRADAY",
+                "net_quantity": "4",
+                "net_averageprice": "0.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "0.00",
+                "lastPrice": "0.00"
+              }
+            ]
+          }
+        },
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": "10",
+            "price": "0",
+            "price_type": "MARKET",
+            "product_type": "INTRADAY",
+            "order_type": "SELL",
+            "algo_id": "99999"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "quantity": "75",
+            "price": "0",
+            "price_type": "MARKET",
+            "product_type": "NORMAL",
+            "order_type": "BUY",
+            "algo_id": "99999"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "GOLDM25NOV26FUT",
+            "exchange": "MCX",
+            "quantity": "10",
+            "price": "0",
+            "price_type": "MARKET",
+            "product_type": "NORMAL",
+            "order_type": "SELL",
+            "algo_id": "99999"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": null,
+            "exchange": "NSE",
+            "quantity": "4",
+            "price": "0",
+            "price_type": "MARKET",
+            "product_type": "INTRADAY",
+            "order_type": "SELL",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_nothing_open",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/positions": {
+          "body": {
+            "status": "SUCCESS",
+            "positions": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_book_failed",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/positions": {
+          "body": {
+            "status": "ERROR",
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_reduce",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/positions": {
+          "body": {
+            "status": "SUCCESS",
+            "positions": [
+              {
+                "tradingsymbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "product_type": "INTRADAY",
+                "net_quantity": "10",
+                "net_averageprice": "800.00",
+                "realized_pnl": "12.50",
+                "unrealized_pnl": "54.50",
+                "lastPrice": "805.45"
+              },
+              {
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "product_type": "NORMAL",
+                "net_quantity": "-75",
+                "net_averageprice": "24000.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "-412.50",
+                "lastPrice": "24005.5"
+              },
+              {
+                "tradingsymbol": "INFY-EQ",
+                "exchange": "NSE",
+                "product_type": "CNC",
+                "net_quantity": "0",
+                "net_averageprice": "1500.00",
+                "realized_pnl": "100.00",
+                "unrealized_pnl": "0.00",
+                "lastPrice": "1510"
+              },
+              {
+                "tradingsymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "product_type": "NORMAL",
+                "net_quantity": "10",
+                "net_averageprice": "75000.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "100.00",
+                "lastPrice": "75010"
+              },
+              {
+                "tradingsymbol": "NOSUCH-EQ",
+                "exchange": "NSE",
+                "product_type": "INTRADAY",
+                "net_quantity": "4",
+                "net_averageprice": "0.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "0.00",
+                "lastPrice": "0.00"
+              }
+            ]
+          }
+        },
+        "POST /dart/v1/placeorder": {
+          "body": {
+            "status": "SUCCESS",
+            "order_id": "DG0001",
+            "request_time": "10:20:01 03-11-2026"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "DG0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/placeorder",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "tradingsymbol": "SBIN-EQ",
+            "exchange": "NSE",
+            "quantity": "6",
+            "price": 800.5,
+            "price_type": "LIMIT",
+            "product_type": "INTRADAY",
+            "order_type": "SELL",
+            "algo_id": "99999"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_already_matched",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "10",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /dart/v1/positions": {
+          "body": {
+            "status": "SUCCESS",
+            "positions": [
+              {
+                "tradingsymbol": "SBIN-EQ",
+                "exchange": "NSE",
+                "product_type": "INTRADAY",
+                "net_quantity": "10",
+                "net_averageprice": "800.00",
+                "realized_pnl": "12.50",
+                "unrealized_pnl": "54.50",
+                "lastPrice": "805.45"
+              },
+              {
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "exchange": "NFO",
+                "product_type": "NORMAL",
+                "net_quantity": "-75",
+                "net_averageprice": "24000.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "-412.50",
+                "lastPrice": "24005.5"
+              },
+              {
+                "tradingsymbol": "INFY-EQ",
+                "exchange": "NSE",
+                "product_type": "CNC",
+                "net_quantity": "0",
+                "net_averageprice": "1500.00",
+                "realized_pnl": "100.00",
+                "unrealized_pnl": "0.00",
+                "lastPrice": "1510"
+              },
+              {
+                "tradingsymbol": "GOLDM25NOV26FUT",
+                "exchange": "MCX",
+                "product_type": "NORMAL",
+                "net_quantity": "10",
+                "net_averageprice": "75000.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "100.00",
+                "lastPrice": "75010"
+              },
+              {
+                "tradingsymbol": "NOSUCH-EQ",
+                "exchange": "NSE",
+                "product_type": "INTRADAY",
+                "net_quantity": "4",
+                "net_averageprice": "0.00",
+                "realized_pnl": "0.00",
+                "unrealized_pnl": "0.00",
+                "lastPrice": "0.00"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Position already at target size",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "integrate.definedgesecurities.com",
+          "path": "/dart/v1/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "dg-session-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
