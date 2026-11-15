@@ -1,0 +1,690 @@
+[
+ {
+  "name": "M1 MstockPlugin.cs:31",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "    private async Task<(int Status, JsonNode? Body)> SendAsync(BrokerSession session, HttpMethod method, string path, JsonNode? body, CancellationToken cancellationToken, bool accept = false)",
+  "new": "    private async Task<(int Status, JsonNode? Body)> SendAsync(BrokerSession session, HttpMethod method, string path, JsonNode? body, CancellationToken cancellationToken, bool accept = true)",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M2 MstockPlugin.cs:34",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        request.Headers.TryAddWithoutValidation(\"X-Mirae-Version\", \"1\");",
+  "new": "        request.Headers.TryAddWithoutValidation(\"X-Mirae-Version\", \"2\");",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M3 MstockPlugin.cs:46",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "            throw new BrokerException($\"{Display} did not answer. Check your connection, then try again.\", 502, ex);",
+  "new": "            throw new BrokerException($\"{Display} did not answer. Check your connection, then try again.\", 503, ex);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M10 MstockPlugin.cs:84",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        if (info is null) return BrokerCallResult.Refused(400, $\"{order.Symbol} on {order.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\");",
+  "new": "        if (info is null) return BrokerCallResult.Refused(401, $\"{order.Symbol} on {order.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\");",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M11 MstockPlugin.cs:98",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        catch (BrokerException ex) when (ex.HttpStatus == 502)",
+  "new": "        catch (BrokerException ex) when (ex.HttpStatus != 502)",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M12 MstockPlugin.cs:98",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        catch (BrokerException ex) when (ex.HttpStatus == 502)",
+  "new": "        catch (BrokerException ex) when (ex.HttpStatus == 503)",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M13 MstockPlugin.cs:100",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M14 MstockPlugin.cs:100",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(true, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M15 MstockPlugin.cs:100",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 503, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M16 MstockPlugin.cs:103",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        if (reply.Body is null) return new BrokerCallResult(false, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        if (reply.Body is null) return new BrokerCallResult(false, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M17 MstockPlugin.cs:103",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        if (reply.Body is null) return new BrokerCallResult(false, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        if (reply.Body is null) return new BrokerCallResult(true, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M18 MstockPlugin.cs:103",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        if (reply.Body is null) return new BrokerCallResult(false, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        if (reply.Body is null) return new BrokerCallResult(false, 503, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M19 MstockPlugin.cs:105",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        if (!Success(answer)) return BrokerCallResult.Refused(reply.Status >= 400 ? reply.Status : 400, Message(answer) ?? \"Failed to place order\");",
+  "new": "        if (!Success(answer)) return BrokerCallResult.Refused(reply.Status > 400 ? reply.Status : 400, Message(answer) ?? \"Failed to place order\");",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M20 MstockPlugin.cs:105",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        if (!Success(answer)) return BrokerCallResult.Refused(reply.Status >= 400 ? reply.Status : 400, Message(answer) ?? \"Failed to place order\");",
+  "new": "        if (!Success(answer)) return BrokerCallResult.Refused(reply.Status >= 401 ? reply.Status : 400, Message(answer) ?? \"Failed to place order\");",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M22 MstockPlugin.cs:107",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        if (id is { Length: > 0 }) return BrokerCallResult.Success(id);",
+  "new": "        if (id is { Length: >= 0 }) return BrokerCallResult.Success(id);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M23 MstockPlugin.cs:108",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        return new BrokerCallResult(false, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        return new BrokerCallResult(false, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M28 MstockPlugin.cs:129",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        return BrokerCallResult.Refused(status >= 400 ? status : 400, Message(answer) ?? \"Failed to modify order\");",
+  "new": "        return BrokerCallResult.Refused(status > 400 ? status : 400, Message(answer) ?? \"Failed to modify order\");",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M29 MstockPlugin.cs:129",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        return BrokerCallResult.Refused(status >= 400 ? status : 400, Message(answer) ?? \"Failed to modify order\");",
+  "new": "        return BrokerCallResult.Refused(status >= 401 ? status : 400, Message(answer) ?? \"Failed to modify order\");",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M33 MstockPlugin.cs:137",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        return BrokerCallResult.Refused(status >= 400 ? status : 400, Message(answer) ?? \"Failed to cancel order\");",
+  "new": "        return BrokerCallResult.Refused(status > 400 ? status : 400, Message(answer) ?? \"Failed to cancel order\");",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M34 MstockPlugin.cs:137",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        return BrokerCallResult.Refused(status >= 400 ? status : 400, Message(answer) ?? \"Failed to cancel order\");",
+  "new": "        return BrokerCallResult.Refused(status >= 401 ? status : 400, Message(answer) ?? \"Failed to cancel order\");",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M42 MstockPlugin.cs:181",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "    private static double Round(double value) => BookFormatting.RoundPy(value, 2);",
+  "new": "    private static double Round(double value) => BookFormatting.RoundPy(value, 3);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M43 MstockPlugin.cs:195",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "                symbol = await SymbolByTokenAsync(token, lookup, cancellationToken) ?? (symbol.Length > 0 ? await SymbolByBrokerAsync(symbol, lookup, cancellationToken) : null) ?? symbol;",
+  "new": "                symbol = await SymbolByTokenAsync(token, lookup, cancellationToken) ?? (symbol.Length >= 0 ? await SymbolByBrokerAsync(symbol, lookup, cancellationToken) : null) ?? symbol;",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M52 MstockPlugin.cs:226",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        if (node is JsonValue v && (v.TryGetValue<long>(out var l) || (v.TryGetValue<int>(out var i) && (l = i) == i))) return l;",
+  "new": "        if (node is JsonValue v && (v.TryGetValue<long>(out var l) || (v.TryGetValue<int>(out var i) && (l = i) != i))) return l;",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M54 MstockPlugin.cs:226",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "        if (node is JsonValue v && (v.TryGetValue<long>(out var l) || (v.TryGetValue<int>(out var i) && (l = i) == i))) return l;",
+  "new": "        if (node is JsonValue v && (v.TryGetValue<long>(out var l) && (v.TryGetValue<int>(out var i) && (l = i) == i))) return l;",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M56 MstockPlugin.cs:241",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "            if (exchange.Length == 0)",
+  "new": "            if (exchange.Length != 0)",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M57 MstockPlugin.cs:247",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "                var brokerSymbol = exchange is \"NSE\" or \"BSE\" && instrumentName == \"EQUITY\" ? $\"{baseSymbol}-EQ\" : baseSymbol;",
+  "new": "                var brokerSymbol = exchange is \"NSE\" or \"BSE\" && instrumentName != \"EQUITY\" ? $\"{baseSymbol}-EQ\" : baseSymbol;",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M58 MstockPlugin.cs:247",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "                var brokerSymbol = exchange is \"NSE\" or \"BSE\" && instrumentName == \"EQUITY\" ? $\"{baseSymbol}-EQ\" : baseSymbol;",
+  "new": "                var brokerSymbol = exchange is \"NSE\" or \"BSE\" || instrumentName == \"EQUITY\" ? $\"{baseSymbol}-EQ\" : baseSymbol;",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M59 MstockPlugin.cs:248",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "                symbol = (token.Length > 0 ? await SymbolByTokenAsync(token, lookup, cancellationToken) : null)",
+  "new": "                symbol = (token.Length >= 0 ? await SymbolByTokenAsync(token, lookup, cancellationToken) : null)",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M60 MstockPlugin.cs:249",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "                    ?? (baseSymbol.Length > 0 ? await SymbolByBrokerAsync(brokerSymbol, lookup, cancellationToken) ?? baseSymbol : \"\");",
+  "new": "                    ?? (baseSymbol.Length >= 0 ? await SymbolByBrokerAsync(brokerSymbol, lookup, cancellationToken) ?? baseSymbol : \"\");",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M63 MstockPlugin.cs:288",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "                symbol = await SymbolByTokenAsync(token, lookup, cancellationToken) ?? (name.Length > 0 ? await SymbolByBrokerAsync(name, lookup, cancellationToken) ?? name : \"\");",
+  "new": "                symbol = await SymbolByTokenAsync(token, lookup, cancellationToken) ?? (name.Length >= 0 ? await SymbolByBrokerAsync(name, lookup, cancellationToken) ?? name : \"\");",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M64 MstockPlugin.cs:307",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "            if (symbol.Length > 0) symbol = await SymbolByBrokerAsync(symbol, exchange, cancellationToken) ?? symbol;",
+  "new": "            if (symbol.Length >= 0) symbol = await SymbolByBrokerAsync(symbol, exchange, cancellationToken) ?? symbol;",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M72 MstockPlugin.cs:341",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.cs",
+  "old": "            if (node is null || Str(node) is \"None\" or \"\") return \"0.00\";",
+  "new": "            if (node is null && Str(node) is \"None\" or \"\") return \"0.00\";",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M76 MstockPlugin.Login.cs:27",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Login.cs",
+  "old": "        request.Headers.TryAddWithoutValidation(\"X-Mirae-Version\", \"1\");",
+  "new": "        request.Headers.TryAddWithoutValidation(\"X-Mirae-Version\", \"2\");",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M77 MstockPlugin.Login.cs:35",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Login.cs",
+  "old": "        if (!keys.TryGetValue(\"ApiKey\", out var clientCode) || string.IsNullOrWhiteSpace(clientCode) || !keys.TryGetValue(\"ApiSecret\", out var apiKey) || string.IsNullOrWhiteSpace(apiKey))",
+  "new": "        if (!keys.TryGetValue(\"ApiKey\", out var clientCode) && string.IsNullOrWhiteSpace(clientCode) || !keys.TryGetValue(\"ApiSecret\", out var apiKey) || string.IsNullOrWhiteSpace(apiKey))",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M78 MstockPlugin.Login.cs:36",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Login.cs",
+  "old": "            return BrokerLoginResult.Refused($\"The {Display} client code and API key are not both set on this server. Add them to the server's settings, then sign in again.\", 409);",
+  "new": "            return BrokerLoginResult.Refused($\"The {Display} client code and API key are not both set on this server. Add them to the server's settings, then sign in again.\", 410);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M79 MstockPlugin.Login.cs:37",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Login.cs",
+  "old": "        if (!input.TryGetValue(\"password\", out var password) || string.IsNullOrEmpty(password)) return BrokerLoginResult.Refused($\"Enter the password to sign in to {Display}.\");",
+  "new": "        if (!input.TryGetValue(\"password\", out var password) && string.IsNullOrEmpty(password)) return BrokerLoginResult.Refused($\"Enter the password to sign in to {Display}.\");",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M80 MstockPlugin.Login.cs:38",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Login.cs",
+  "old": "        if (!input.TryGetValue(\"totp\", out var totp) || string.IsNullOrEmpty(totp)) return BrokerLoginResult.Refused($\"Enter the one-time code from your authenticator to sign in to {Display}.\");",
+  "new": "        if (!input.TryGetValue(\"totp\", out var totp) && string.IsNullOrEmpty(totp)) return BrokerLoginResult.Refused($\"Enter the one-time code from your authenticator to sign in to {Display}.\");",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M81 MstockPlugin.Login.cs:43",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Login.cs",
+  "old": "            if (loginStatus >= 400 || login is not JsonObject first) return Refusal(\"sign-in\", login, loginStatus);",
+  "new": "            if (loginStatus > 400 || login is not JsonObject first) return Refusal(\"sign-in\", login, loginStatus);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M83 MstockPlugin.Login.cs:43",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Login.cs",
+  "old": "            if (loginStatus >= 400 || login is not JsonObject first) return Refusal(\"sign-in\", login, loginStatus);",
+  "new": "            if (loginStatus >= 401 || login is not JsonObject first) return Refusal(\"sign-in\", login, loginStatus);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M84 MstockPlugin.Login.cs:44",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Login.cs",
+  "old": "            if (!SignedIn(first)) return Refusal(\"sign-in\", first, 200);",
+  "new": "            if (!SignedIn(first)) return Refusal(\"sign-in\", first, 201);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M87 MstockPlugin.Login.cs:50",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Login.cs",
+  "old": "            if (verifyStatus >= 400 || verify is not JsonObject second) return Refusal(\"one-time code\", verify, verifyStatus);",
+  "new": "            if (verifyStatus > 400 || verify is not JsonObject second) return Refusal(\"one-time code\", verify, verifyStatus);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M89 MstockPlugin.Login.cs:50",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Login.cs",
+  "old": "            if (verifyStatus >= 400 || verify is not JsonObject second) return Refusal(\"one-time code\", verify, verifyStatus);",
+  "new": "            if (verifyStatus >= 401 || verify is not JsonObject second) return Refusal(\"one-time code\", verify, verifyStatus);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M90 MstockPlugin.Login.cs:51",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Login.cs",
+  "old": "            if (!SignedIn(second)) return Refusal(\"one-time code\", second, 200);",
+  "new": "            if (!SignedIn(second)) return Refusal(\"one-time code\", second, 201);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M94 MstockPlugin.Login.cs:59",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Login.cs",
+  "old": "            return BrokerLoginResult.Refused($\"Could not reach {Display} to sign in. Check your internet connection and try again.\", 502);",
+  "new": "            return BrokerLoginResult.Refused($\"Could not reach {Display} to sign in. Check your internet connection and try again.\", 503);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M97 MstockPlugin.Data.cs:18",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "    private TimeSpan Pause() => sessions.HistoryGap(Name, TimeSpan.FromSeconds(1));",
+  "new": "    private TimeSpan Pause() => sessions.HistoryGap(Name, TimeSpan.FromSeconds(2));",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M99 MstockPlugin.Data.cs:41",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        if (!QuoteExchanges.TryGetValue(exchange, out var api)) throw new BrokerException($\"{Display} does not give quotes for the {exchange} exchange.\", 400);",
+  "new": "        if (!QuoteExchanges.TryGetValue(exchange, out var api)) throw new BrokerException($\"{Display} does not give quotes for the {exchange} exchange.\", 401);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M100 MstockPlugin.Data.cs:44",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        if (status >= 400 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) throw new BrokerException($\"{Display} could not give the quote: {Reason(reply)}\", 500);",
+  "new": "        if (status > 400 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) throw new BrokerException($\"{Display} could not give the quote: {Reason(reply)}\", 500);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M102 MstockPlugin.Data.cs:44",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        if (status >= 400 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) throw new BrokerException($\"{Display} could not give the quote: {Reason(reply)}\", 500);",
+  "new": "        if (status >= 401 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) throw new BrokerException($\"{Display} could not give the quote: {Reason(reply)}\", 500);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M115 MstockPlugin.Data.cs:57",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        if (!DepthExchanges.TryGetValue(exchange, out var exchangeType)) throw new BrokerException($\"{Display} does not give market depth for the {exchange} exchange.\", 400);",
+  "new": "        if (!DepthExchanges.TryGetValue(exchange, out var exchangeType)) throw new BrokerException($\"{Display} does not give market depth for the {exchange} exchange.\", 401);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M120 MstockPlugin.Data.cs:71",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        if (frame is null || quote is null) throw new BrokerException($\"{Display} did not send the market depth for {symbol} on {exchange}. Try again in a moment.\", 500);",
+  "new": "        if (frame is null || quote is null) throw new BrokerException($\"{Display} did not send the market depth for {symbol} on {exchange}. Try again in a moment.\", 501);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M122 MstockPlugin.Data.cs:72",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        if (!double.IsFinite(quote.TotalBuyQuantity) || !double.IsFinite(quote.TotalSellQuantity)) throw new BrokerException($\"{Display} sent market depth for {symbol} on {exchange} that could not be read. Try again in a moment.\", 500);",
+  "new": "        if (!double.IsFinite(quote.TotalBuyQuantity) || !double.IsFinite(quote.TotalSellQuantity)) throw new BrokerException($\"{Display} sent market depth for {symbol} on {exchange} that could not be read. Try again in a moment.\", 501);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M125 MstockPlugin.Data.cs:75",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            ? new JsonObject { [\"price\"] = levels[i].Price, [\"quantity\"] = levels[i].Quantity <= long.MaxValue ? (long)levels[i].Quantity : (double)levels[i].Quantity }",
+  "new": "            ? new JsonObject { [\"price\"] = levels[i].Price, [\"quantity\"] = levels[i].Quantity < long.MaxValue ? (long)levels[i].Quantity : (double)levels[i].Quantity }",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M126 MstockPlugin.Data.cs:85",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            [\"ltq\"] = quote.LastTradedQuantity <= long.MaxValue ? (long)quote.LastTradedQuantity : (double)quote.LastTradedQuantity,",
+  "new": "            [\"ltq\"] = quote.LastTradedQuantity < long.MaxValue ? (long)quote.LastTradedQuantity : (double)quote.LastTradedQuantity,",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M127 MstockPlugin.Data.cs:88",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            [\"volume\"] = quote.Volume <= long.MaxValue ? (long)quote.Volume : (double)quote.Volume,",
+  "new": "            [\"volume\"] = quote.Volume < long.MaxValue ? (long)quote.Volume : (double)quote.Volume,",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M128 MstockPlugin.Data.cs:89",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            [\"oi\"] = quote.OpenInterest <= long.MaxValue ? (long)quote.OpenInterest : (double)quote.OpenInterest,",
+  "new": "            [\"oi\"] = quote.OpenInterest < long.MaxValue ? (long)quote.OpenInterest : (double)quote.OpenInterest,",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M129 MstockPlugin.Data.cs:98",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        for (var start = 0; start < instruments.Count; start += QuoteBatch)",
+  "new": "        for (var start = 0; start <= instruments.Count; start += QuoteBatch)",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M130 MstockPlugin.Data.cs:100",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            if (start > 0) await Task.Delay(Pause(), cancellationToken);",
+  "new": "            if (start >= 0) await Task.Delay(Pause(), cancellationToken);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M133 MstockPlugin.Data.cs:131",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            if (status >= 400 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) throw new BrokerException($\"{Display} could not give the quotes: {Reason(reply)}\", 500);",
+  "new": "            if (status > 400 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) throw new BrokerException($\"{Display} could not give the quotes: {Reason(reply)}\", 500);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M135 MstockPlugin.Data.cs:131",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            if (status >= 400 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) throw new BrokerException($\"{Display} could not give the quotes: {Reason(reply)}\", 500);",
+  "new": "            if (status >= 401 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) throw new BrokerException($\"{Display} could not give the quotes: {Reason(reply)}\", 500);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M136 MstockPlugin.Data.cs:131",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            if (status >= 400 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) throw new BrokerException($\"{Display} could not give the quotes: {Reason(reply)}\", 500);",
+  "new": "            if (status >= 400 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) throw new BrokerException($\"{Display} could not give the quotes: {Reason(reply)}\", 501);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M145 MstockPlugin.Data.cs:181",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "    private static readonly Dictionary<string, int> ChunkDays = new() { [\"1m\"] = 2, [\"3m\"] = 8, [\"5m\"] = 13, [\"10m\"] = 26, [\"15m\"] = 40, [\"30m\"] = 76, [\"1h\"] = 166, [\"D\"] = 1000 };",
+  "new": "    private static readonly Dictionary<string, int> ChunkDays = new() { [\"1m\"] = 2, [\"3m\"] = 9, [\"5m\"] = 13, [\"10m\"] = 26, [\"15m\"] = 40, [\"30m\"] = 76, [\"1h\"] = 166, [\"D\"] = 1000 };",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M147 MstockPlugin.Data.cs:181",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "    private static readonly Dictionary<string, int> ChunkDays = new() { [\"1m\"] = 2, [\"3m\"] = 8, [\"5m\"] = 13, [\"10m\"] = 26, [\"15m\"] = 40, [\"30m\"] = 76, [\"1h\"] = 166, [\"D\"] = 1000 };",
+  "new": "    private static readonly Dictionary<string, int> ChunkDays = new() { [\"1m\"] = 2, [\"3m\"] = 8, [\"5m\"] = 13, [\"10m\"] = 27, [\"15m\"] = 40, [\"30m\"] = 76, [\"1h\"] = 166, [\"D\"] = 1000 };",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M148 MstockPlugin.Data.cs:181",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "    private static readonly Dictionary<string, int> ChunkDays = new() { [\"1m\"] = 2, [\"3m\"] = 8, [\"5m\"] = 13, [\"10m\"] = 26, [\"15m\"] = 40, [\"30m\"] = 76, [\"1h\"] = 166, [\"D\"] = 1000 };",
+  "new": "    private static readonly Dictionary<string, int> ChunkDays = new() { [\"1m\"] = 2, [\"3m\"] = 8, [\"5m\"] = 13, [\"10m\"] = 26, [\"15m\"] = 41, [\"30m\"] = 76, [\"1h\"] = 166, [\"D\"] = 1000 };",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M149 MstockPlugin.Data.cs:181",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "    private static readonly Dictionary<string, int> ChunkDays = new() { [\"1m\"] = 2, [\"3m\"] = 8, [\"5m\"] = 13, [\"10m\"] = 26, [\"15m\"] = 40, [\"30m\"] = 76, [\"1h\"] = 166, [\"D\"] = 1000 };",
+  "new": "    private static readonly Dictionary<string, int> ChunkDays = new() { [\"1m\"] = 2, [\"3m\"] = 8, [\"5m\"] = 13, [\"10m\"] = 26, [\"15m\"] = 40, [\"30m\"] = 77, [\"1h\"] = 166, [\"D\"] = 1000 };",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M150 MstockPlugin.Data.cs:181",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "    private static readonly Dictionary<string, int> ChunkDays = new() { [\"1m\"] = 2, [\"3m\"] = 8, [\"5m\"] = 13, [\"10m\"] = 26, [\"15m\"] = 40, [\"30m\"] = 76, [\"1h\"] = 166, [\"D\"] = 1000 };",
+  "new": "    private static readonly Dictionary<string, int> ChunkDays = new() { [\"1m\"] = 2, [\"3m\"] = 8, [\"5m\"] = 13, [\"10m\"] = 26, [\"15m\"] = 40, [\"30m\"] = 76, [\"1h\"] = 167, [\"D\"] = 1000 };",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M151 MstockPlugin.Data.cs:181",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "    private static readonly Dictionary<string, int> ChunkDays = new() { [\"1m\"] = 2, [\"3m\"] = 8, [\"5m\"] = 13, [\"10m\"] = 26, [\"15m\"] = 40, [\"30m\"] = 76, [\"1h\"] = 166, [\"D\"] = 1000 };",
+  "new": "    private static readonly Dictionary<string, int> ChunkDays = new() { [\"1m\"] = 2, [\"3m\"] = 8, [\"5m\"] = 13, [\"10m\"] = 26, [\"15m\"] = 40, [\"30m\"] = 76, [\"1h\"] = 166, [\"D\"] = 1001 };",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M155 MstockPlugin.Data.cs:182",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "    private static readonly Dictionary<string, string> IntradayCodes = new() { [\"NSE\"] = \"1\", [\"BSE\"] = \"4\", [\"NFO\"] = \"2\", [\"BFO\"] = \"5\", [\"CDS\"] = \"3\", [\"MCX\"] = \"6\", [\"NSE_INDEX\"] = \"1\", [\"BSE_INDEX\"] = \"4\", [\"MCX_INDEX\"] = \"6\" };",
+  "new": "    private static readonly Dictionary<string, string> IntradayCodes = new() { [\"NSE\"] = \"1\", [\"BSE\"] = \"4\", [\"NFO\"] = \"2\", [\"BFO\"] = \"6\", [\"CDS\"] = \"3\", [\"MCX\"] = \"6\", [\"NSE_INDEX\"] = \"1\", [\"BSE_INDEX\"] = \"4\", [\"MCX_INDEX\"] = \"6\" };",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M160 MstockPlugin.Data.cs:182",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "    private static readonly Dictionary<string, string> IntradayCodes = new() { [\"NSE\"] = \"1\", [\"BSE\"] = \"4\", [\"NFO\"] = \"2\", [\"BFO\"] = \"5\", [\"CDS\"] = \"3\", [\"MCX\"] = \"6\", [\"NSE_INDEX\"] = \"1\", [\"BSE_INDEX\"] = \"4\", [\"MCX_INDEX\"] = \"6\" };",
+  "new": "    private static readonly Dictionary<string, string> IntradayCodes = new() { [\"NSE\"] = \"1\", [\"BSE\"] = \"4\", [\"NFO\"] = \"2\", [\"BFO\"] = \"5\", [\"CDS\"] = \"3\", [\"MCX\"] = \"6\", [\"NSE_INDEX\"] = \"1\", [\"BSE_INDEX\"] = \"4\", [\"MCX_INDEX\"] = \"7\" };",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M168 MstockPlugin.Data.cs:225",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        if (match.Success && match.Groups[1].Value.Contains(':', StringComparison.Ordinal))",
+  "new": "        if (match.Success || match.Groups[1].Value.Contains(':', StringComparison.Ordinal))",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M170 MstockPlugin.Data.cs:228",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            if (offset != \"Z\" && offset.Length == 3) offset += \":00\";",
+  "new": "            if (offset == \"Z\" && offset.Length == 3) offset += \":00\";",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M172 MstockPlugin.Data.cs:228",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            if (offset != \"Z\" && offset.Length == 3) offset += \":00\";",
+  "new": "            if (offset != \"Z\" && offset.Length == 4) offset += \":00\";",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M174 MstockPlugin.Data.cs:229",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            else if (offset != \"Z\" && offset.Length == 5) offset = offset[..3] + \":\" + offset[3..];",
+  "new": "            else if (offset == \"Z\" && offset.Length == 5) offset = offset[..3] + \":\" + offset[3..];",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M178 MstockPlugin.Data.cs:245",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        if (!Intervals.ContainsKey(interval)) throw new BrokerException($\"Interval {interval} is not supported by {Display}. Use one of: {string.Join(\", \", HistoryTimeframes)}.\", 400);",
+  "new": "        if (!Intervals.ContainsKey(interval)) throw new BrokerException($\"Interval {interval} is not supported by {Display}. Use one of: {string.Join(\", \", HistoryTimeframes)}.\", 401);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M181 MstockPlugin.Data.cs:253",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        else if (end == today && start < today)",
+  "new": "        else if (end == today && start <= today)",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M186 MstockPlugin.Data.cs:281",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        if (to.Hour == 0 && to.Minute == 0) to = to.Date.AddHours(23).AddMinutes(59);",
+  "new": "        if (to.Hour == 0 || to.Minute == 0) to = to.Date.AddHours(23).AddMinutes(59);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M189 MstockPlugin.Data.cs:284",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        var first = true;",
+  "new": "        var first = false;",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M190 MstockPlugin.Data.cs:285",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        for (var current = from; current <= to;)",
+  "new": "        for (var current = from; current < to;)",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M191 MstockPlugin.Data.cs:288",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            first = false;",
+  "new": "            first = true;",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M192 MstockPlugin.Data.cs:289",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            var currentEnd = current.AddDays(ChunkDays[interval] - 1) < to ? current.AddDays(ChunkDays[interval] - 1) : to;",
+  "new": "            var currentEnd = current.AddDays(ChunkDays[interval] - 1) <= to ? current.AddDays(ChunkDays[interval] - 1) : to;",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M197 MstockPlugin.Data.cs:307",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            if (status >= 400 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) continue;",
+  "new": "            if (status > 400 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) continue;",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M199 MstockPlugin.Data.cs:307",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            if (status >= 400 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) continue;",
+  "new": "            if (status >= 401 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) continue;",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M200 MstockPlugin.Data.cs:308",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "            var read = ReadCandles((answer[\"data\"] as JsonObject)?[\"candles\"], daily, true);",
+  "new": "            var read = ReadCandles((answer[\"data\"] as JsonObject)?[\"candles\"], daily, false);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M202 MstockPlugin.Data.cs:318",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        if (!IntradayCodes.TryGetValue(instrument.Exchange, out var code)) throw new BrokerException($\"{Display} does not give today's candles for the {instrument.Exchange} exchange.\", 400);",
+  "new": "        if (!IntradayCodes.TryGetValue(instrument.Exchange, out var code)) throw new BrokerException($\"{Display} does not give today's candles for the {instrument.Exchange} exchange.\", 401);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M204 MstockPlugin.Data.cs:321",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        if (status >= 400 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) throw new BrokerException($\"{Display} could not give today's candles for {instrument.Exchange}:{instrument.Symbol}. Try again in a moment.\", 500);",
+  "new": "        if (status > 400 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) throw new BrokerException($\"{Display} could not give today's candles for {instrument.Exchange}:{instrument.Symbol}. Try again in a moment.\", 500);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M206 MstockPlugin.Data.cs:321",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        if (status >= 400 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) throw new BrokerException($\"{Display} could not give today's candles for {instrument.Exchange}:{instrument.Symbol}. Try again in a moment.\", 500);",
+  "new": "        if (status >= 401 || reply is not JsonObject answer || !Truthy(answer[\"status\"])) throw new BrokerException($\"{Display} could not give today's candles for {instrument.Exchange}:{instrument.Symbol}. Try again in a moment.\", 500);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M209 MstockPlugin.Data.cs:322",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Mstock/MstockPlugin.Data.cs",
+  "old": "        return ReadCandles((answer[\"data\"] as JsonObject)?[\"candles\"], false, false) ?? throw new BrokerException($\"{Display} sent candles that could not be read. Try again in a moment.\", 500);",
+  "new": "        return ReadCandles((answer[\"data\"] as JsonObject)?[\"candles\"], false, false) ?? throw new BrokerException($\"{Display} sent candles that could not be read. Try again in a moment.\", 501);",
+  "filter": "FullyQualifiedName~Mstock",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]
