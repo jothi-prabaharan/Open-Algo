@@ -21,8 +21,13 @@ for m in muts:
     for o,n in edits: mutated=mutated.replace(o,n)
     open(p,'w').write(mutated)
     try:
-        r=subprocess.run(['dotnet','test',os.path.join(root,'tests',m['project']),'--filter',m['filter']],capture_output=True,text=True,env=env,timeout=900)
-        txt=r.stdout+r.stderr
+        try:
+            r=subprocess.run(['dotnet','test',os.path.join(root,'tests',m['project']),'--filter',m['filter']],capture_output=True,text=True,env=env,timeout=int(os.environ.get('MUTATION_TIMEOUT','300')))
+            txt=r.stdout+r.stderr
+        except subprocess.TimeoutExpired:
+            # A change that makes the code loop forever is caught by the tests hanging: it counts as killed.
+            subprocess.run(['pkill','-f','testhost'])
+            out.append(f"{m['name']}: HUNG (killed by timeout)"); continue
         line=[l for l in txt.splitlines() if 'Passed!' in l or 'Failed!' in l]
         err=[l for l in txt.splitlines() if ' error ' in l]
         res=line[0].split(' - ')[1].strip() if line else ('BUILD ERROR: '+err[0][-160:] if err else 'NO RESULT')
