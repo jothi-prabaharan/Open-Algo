@@ -18,7 +18,7 @@ public sealed partial class AliceBluePlugin(IHttpClientFactory http, BrokerSessi
     private const int Window = 15 * 60;
     private const int Budget = 1800 - 50;
     private static readonly Lock QuotaGate = new();
-    private static readonly Queue<DateTime> QuotaTimes = new();
+    private static readonly Dictionary<string, Queue<DateTime>> Quota = [];
 
     public string Name => "aliceblue";
     public string DisplayName => Display;
@@ -28,19 +28,21 @@ public sealed partial class AliceBluePlugin(IHttpClientFactory http, BrokerSessi
     private HttpClient Client() => http.CreateClient(Name);
 
     /// <summary>One more request of the quota. A request the window has no room for is refused with the time to wait, where OpenAlgo holds the caller for up to a quarter of an hour.</summary>
-    private void TakeQuota()
+    private void TakeQuota(BrokerSession session)
     {
         lock (QuotaGate)
         {
+            // One window for each signed-in session: there is one session at a time, and a new sign-in starts a new allowance as AliceBlue's does.
+            if (!Quota.TryGetValue(session.AuthToken, out var times)) Quota[session.AuthToken] = times = new Queue<DateTime>();
             var now = clock.GetUtcNow().UtcDateTime;
-            while (QuotaTimes.Count > 0 && QuotaTimes.Peek() <= now.AddSeconds(-Window)) QuotaTimes.Dequeue();
-            if (QuotaTimes.Count < Budget)
+            while (times.Count > 0 && times.Peek() <= now.AddSeconds(-Window)) times.Dequeue();
+            if (times.Count < Budget)
             {
-                QuotaTimes.Enqueue(now);
+                times.Enqueue(now);
                 return;
             }
 
-            var wait = (QuotaTimes.Peek().AddSeconds(Window) - now).TotalSeconds;
+            var wait = (times.Peek().AddSeconds(Window) - now).TotalSeconds;
             var when = wait >= 120 ? $"about {(int)Math.Ceiling(wait / 60)} minutes" : $"about {Math.Max(1, (int)Math.Ceiling(wait))} seconds";
             throw new BrokerException($"{Display} allows 1800 market data and account requests every 15 minutes, and that allowance is used up for now. This request was not sent. Try again in {when}.", 429);
         }
@@ -49,7 +51,7 @@ public sealed partial class AliceBluePlugin(IHttpClientFactory http, BrokerSessi
     /// <summary>One call; the status and the body as read (null when it was not JSON). A read takes a place in the quota, an order does not.</summary>
     private async Task<(int Status, JsonNode? Body)> SendAsync(BrokerSession session, HttpMethod method, string path, JsonNode? body, bool read, CancellationToken cancellationToken)
     {
-        if (read) TakeQuota();
+        if (read) TakeQuota(session);
         using var request = new HttpRequestMessage(method, sessions.BaseUrl(Name, DefaultBaseUrl) + path);
         request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {session.AuthToken}");
         if (body is not null) request.Content = new StringContent(body.ToJsonString(), Encoding.UTF8, "application/json");

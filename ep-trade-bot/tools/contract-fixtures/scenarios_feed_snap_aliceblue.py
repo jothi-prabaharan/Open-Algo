@@ -16,7 +16,7 @@ def row(symbol, brsymbol, exchange, token, instrument="EQ"):
 
 SYMBOLS = [
     row("SBIN", "SBIN-EQ", "NSE", 3045), row("INFY", "INFY-EQ", "NSE", 1594), row("TATAMOTORS", "TATAMOTORS-EQ", "BSE", 500570), row("NIFTY25NOV26FUT", "NIFTY25NOV26FUT", "NFO", 49500, "FUT"),
-    row("NIFTY", "Nifty 50", "NSE_INDEX", 26000, "INDEX"), row("SENSEX", "SENSEX", "BSE_INDEX", 1, "INDEX"), row("ODDTOKEN", "ODDTOKEN-EQ", "NSE", "777.0"),
+    row("NIFTY", "Nifty 50", "NSE_INDEX", 26000, "INDEX"), row("SENSEX", "SENSEX", "BSE_INDEX", 1, "INDEX"), row("MCXENERGY", "MCXENERGY", "MCX_INDEX", 55001, "INDEX"), row("ODDTOKEN", "ODDTOKEN-EQ", "NSE", "777.0"),
 ]
 SYMBOLS += [row(f"BULK{i}", f"BULK{i}-EQ", "NSE", 800000 + i) for i in range(105)]
 
@@ -155,9 +155,17 @@ SCENARIOS = [
     scenario("a_quote_from_a_feed_tick_alone", q("SBIN", "NSE", [tf(bp1="805.4", sp1="805.5", bq1="9", sq1="8", oi="11", poi="10", tbq="1", tsq="2", ltq="3")])),
     scenario("a_feed_tick_updates_only_what_it_names", q("SBIN", "NSE", [tk(), {"t": "tf", "e": "NSE", "tk": "3045", "bp1": "805.0"}])),
     scenario("a_quote_whose_numbers_are_text_with_decimals_is_still_read", q("SBIN", "NSE", [tk(v="1200", oi="7000.9", poi="6500.4")])),
+    scenario("an_open_interest_that_is_an_empty_list_is_zero", q("SBIN", "NSE", [tk(oi=[], poi={})])),
+    scenario("an_open_interest_that_is_a_list_cannot_be_read", q("SBIN", "NSE", [tk(oi=[1])], [tk()])),
+    scenario("an_open_interest_that_is_zero_is_zero", q("SBIN", "NSE", [tk(oi=0, poi="0")])),
+    scenario("an_open_interest_that_is_a_true_is_one", q("SBIN", "NSE", [tk(oi=True)])),
+    scenario("an_open_interest_that_is_a_number_with_decimals_is_cut", q("SBIN", "NSE", [tk(oi=7000.9)])),
+    scenario("an_open_interest_in_a_feed_tick_that_is_text_with_decimals", q("SBIN", "NSE", [tk(), tf(oi="8000.7")])),
+    scenario("the_exchange_a_cf_confirmation_is_not_a_quote", q("SBIN", "NSE", [{"t": "cf", "k": "OK"}, tk()])),
     scenario("an_open_interest_that_is_empty_is_zero", q("SBIN", "NSE", [tk(oi="", poi="")])),
     scenario("a_quote_of_a_derivative", q("NIFTY25NOV26FUT", "NFO", [tk("49500", "NFO")])),
     scenario("a_quote_of_an_index_asks_the_cash_exchange", q("NIFTY", "NSE_INDEX", [tk("26000", "NSE")])),
+    scenario("a_quote_of_the_mcx_index", q("MCXENERGY", "MCX_INDEX", [tk("55001", "MCX")])),
     scenario("a_quote_of_the_bse_index", q("SENSEX", "BSE_INDEX", [tk("1", "BSE")])),
     scenario("a_quote_with_a_token_with_a_decimal_point", q("ODDTOKEN", "NSE", [tk("777")])),
     scenario("a_quote_for_another_token_is_not_this_ones", q("SBIN", "NSE", [tk("9999")], [tk()])),

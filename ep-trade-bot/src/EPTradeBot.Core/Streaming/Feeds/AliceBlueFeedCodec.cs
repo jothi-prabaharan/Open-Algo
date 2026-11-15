@@ -115,21 +115,24 @@ public sealed class AliceBlueFeedCodec : IFeedCodec
             var ab = Mapped(target.Exchange);
             var key = $"{ab}|{target.Token}";
             var frames = new List<string>();
-            var modes = mode is { } one ? [(int)one] : subs.TryGetValue(key, out var held) ? held.Modes.OrderBy(m => m).ToList() : [2];
-            foreach (var m in modes)
+            // A request for every mode names none: one frame goes and the scrip keeps its modes, as the broker's own adapter does.
+            if (mode is null)
             {
                 frames.Add(Frame("u", [key]));
-                if (!subs.TryGetValue(key, out var sub)) continue;
-                sub.Modes.Remove(m);
-                if (sub.Modes.Count == 0)
-                {
-                    subs.Remove(key);
-                    snapshots.Remove(key);
-                }
-                else
-                {
-                    sub.Mode = sub.Modes.Max();
-                }
+                return frames;
+            }
+
+            frames.Add(Frame("u", [key]));
+            if (!subs.TryGetValue(key, out var sub)) return frames;
+            sub.Modes.Remove((int)mode.Value);
+            if (sub.Modes.Count == 0)
+            {
+                subs.Remove(key);
+                snapshots.Remove(key);
+            }
+            else
+            {
+                sub.Mode = sub.Modes.Max();
             }
 
             return frames;

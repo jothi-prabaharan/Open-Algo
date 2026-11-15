@@ -1,8 +1,5 @@
-using System.Text;
-using System.Text.Json.Nodes;
 using EPTradeBot.Core.Brokers;
 using EPTradeBot.Core.Streaming.Feeds;
-using static EPTradeBot.Infrastructure.Brokers.JsonRead;
 
 namespace EPTradeBot.Infrastructure.Brokers.AliceBlue;
 
@@ -24,17 +21,7 @@ public sealed partial class AliceBluePlugin : IBrokerFeedAuthorize
     {
         var endpoint = FeedEndpoint(session, overrideUrl);
         if (endpoint is null || overrideUrl is not null) return endpoint;
-        try
-        {
-            var body = new JsonObject { ["source"] = "API", ["userId"] = session.ClientId };
-            await SendAsync(session, HttpMethod.Post, "/open-api/od/v1/profile/invalidateWsSess", body, read: false, cancellationToken);
-            var (_, reply) = await SendAsync(session, HttpMethod.Post, "/open-api/od/v1/profile/createWsSess", body.DeepClone(), read: false, cancellationToken);
-            return reply is JsonObject answer && Str(answer["status"]) == "Ok" ? endpoint : null;
-        }
-        catch (BrokerException)
-        {
-            return null;
-        }
+        return await CreateSocketSessionAsync(session, cancellationToken) ? endpoint : null;
     }
 
     public string? FeedKeepAliveText => "{\"k\":\"\",\"t\":\"h\"}";
