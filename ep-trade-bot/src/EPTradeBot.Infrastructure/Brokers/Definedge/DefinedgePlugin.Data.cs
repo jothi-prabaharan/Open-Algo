@@ -39,8 +39,9 @@ public sealed partial class DefinedgePlugin
 
     private async Task<JsonObject> QuoteResponseAsync(BrokerSession session, string symbol, string exchange, string what, CancellationToken cancellationToken)
     {
-        var record = await symbols.FindAsync(Name, symbol, exchange, cancellationToken);
-        var url = $"{sessions.BaseUrl(Name, DefaultBaseUrl)}/quotes/{ApiExchange(exchange)}/{record?.Token}";
+        var record = await symbols.FindAsync(Name, symbol, exchange, cancellationToken)
+            ?? throw new BrokerException($"{symbol} on {exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.", 400);
+        var url = $"{sessions.BaseUrl(Name, DefaultBaseUrl)}/quotes/{ApiExchange(exchange)}/{record.Token}";
         var (status, body, _) = await SendRawAsync(session, url, cancellationToken);
         if (status != 200 || body is not JsonObject quote || Str(quote["status"]) != "SUCCESS") throw new BrokerException($"{Display} could not give the {what}. Try again in a moment.", 500);
         return quote;
