@@ -12,7 +12,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Definedge;
 /// An order carries the exchange's generic algo id (99999 on the NSE segments, 9999999999999999 on the BSE ones).
 /// </summary>
 [BrokerPlugin]
-public sealed partial class DefinedgePlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes
+public sealed partial class DefinedgePlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerMultiQuotes, IBrokerMargin
 {
     private const string DefaultBaseUrl = "https://integrate.definedgesecurities.com/dart/v1";
     private const string Display = "Definedge";
@@ -21,7 +21,7 @@ public sealed partial class DefinedgePlugin(IHttpClientFactory http, BrokerSessi
 
     public string Name => "definedge";
     public string DisplayName => Display;
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.Margin;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     private HttpClient Client() => http.CreateClient(Name);

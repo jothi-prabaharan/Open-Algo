@@ -48,6 +48,33 @@ public sealed class DefinedgeDataContractTests(DefinedgeDataHost host, ITestOutp
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
 
+public sealed class MarginDefinedgeHost() : DefinedgeFileHost("margin_definedge.fixtures.json");
+
+/// <summary>Definedge margin (tools/contract-fixtures/margin_definedge.fixtures.json).</summary>
+public sealed class MarginDefinedgeContractTests(MarginDefinedgeHost host, ITestOutputHelper output) : IClassFixture<MarginDefinedgeHost>
+{
+    private const string Refused = "OpenAlgo answers 200 carrying a refusal. EP Trade bot answers with a failure status and the same words, so a refusal is never read as a margin figure.";
+    private const string Unknown = "NOSUCH on NFO is not in the Definedge master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["margin_text_that_is_not_a_number"] = new("OpenAlgo answers 200 carrying a parse failure. EP Trade bot answers with a failure status and says to try again.", f => Expect(f, 400, Error("Definedge sent a margin figure EP Trade bot could not read. Try again in a moment."))),
+        ["margin_refused_with_a_message"] = new(Refused, f => Expect(f, 400, Error("Invalid basket"))),
+        ["margin_refused_without_a_message"] = new(Refused, f => Expect(f, 400, Error("Failed to calculate margin"))),
+        ["margin_another_status"] = new(Refused, f => Expect(f, 400, Error("Wait"))),
+        ["margin_another_status_without_a_message"] = new(Refused, f => Expect(f, 400, Error("Unknown error from broker"))),
+        ["margin_an_answer_that_is_not_json"] = new("Same status; EP Trade bot says to try again.", f => Expect(f, 500, Error("Definedge sent a margin answer EP Trade bot could not read. Try again in a moment."))),
+        ["margin_unknown_symbol_alone"] = new("Same status; EP Trade bot names the symbol, where OpenAlgo says no symbol was valid.", f => Expect(f, 400, Error(Unknown))),
+        ["margin_unknown_symbol_among_others"] = new("OpenAlgo leaves the position whose symbol it cannot find out of the calculation and works out the rest, which understates the margin. EP Trade bot refuses and names the symbol.", f => { Expect(f, 400, Error(Unknown)); f["sent"]!.AsArray().Clear(); }),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin_definedge.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
 /// <summary>Definedge against the Python implementation (tools/contract-fixtures/definedge.fixtures.json).</summary>
 public sealed class DefinedgeContractTests(DefinedgeHost host, ITestOutputHelper output) : IClassFixture<DefinedgeHost>
 {
