@@ -18,15 +18,15 @@ public sealed partial class MstockPlugin : IBrokerMultiQuotes, IBrokerHistory, I
 
     private static JsonObject FormatQuote(JsonObject quote) => new()
     {
-        ["bid"] = 0, ["ask"] = 0, ["open"] = Flt(quote["open"]), ["high"] = Flt(quote["high"]), ["low"] = Flt(quote["low"]), ["ltp"] = Flt(quote["ltp"]), ["prev_close"] = Flt(quote["close"]),
+        ["bid"] = 0, ["ask"] = 0, ["open"] = Flt(quote, "open"), ["high"] = Flt(quote, "high"), ["low"] = Flt(quote, "low"), ["ltp"] = Flt(quote, "ltp"), ["prev_close"] = Flt(quote, "close"),
         ["volume"] = Truthy(quote["volume"]) ? WholeNumber(quote["volume"]) : 0, ["oi"] = 0,
     };
 
-    /// <summary>float(x.get(name, 0)): absent is zero, anything present has to read as a number.</summary>
-    private static double Flt(JsonNode? node)
+    /// <summary>float(x.get(name, 0)): absent is zero, anything present (a null included) has to read as a number.</summary>
+    private static double Flt(JsonObject quote, string name)
     {
-        if (node is null) return 0;
-        return Number(node) ?? throw new BrokerException($"{Display} sent a quote with a figure that is not a number.", 500);
+        if (!quote.ContainsKey(name)) return 0;
+        return Number(quote[name]) ?? throw new BrokerException($"{Display} sent a quote with a figure that is not a number.", 500);
     }
 
     private static string Reason(JsonNode? body) => Message(body) ?? "no reason was given.";
@@ -39,7 +39,7 @@ public sealed partial class MstockPlugin : IBrokerMultiQuotes, IBrokerHistory, I
             ?? throw new BrokerException($"{symbol} on {exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.", 400);
         if (!QuoteExchanges.TryGetValue(exchange, out var api)) throw new BrokerException($"{Display} does not give quotes for the {exchange} exchange.", 400);
         var body = new JsonObject { ["mode"] = "OHLC", ["exchangeTokens"] = new JsonObject { [api] = new JsonArray(record.Token) } };
-        var (status, reply) = await SendAsync(session, HttpMethod.Get, "/instruments/quote", body, cancellationToken);
+        var (status, reply) = await SendAsync(session, HttpMethod.Get, "/instruments/quote", body, cancellationToken, accept: true);
         if (status >= 400 || reply is not JsonObject answer || !Truthy(answer["status"])) throw new BrokerException($"{Display} could not give the quote: {Reason(reply)}", 500);
         var fetched = (answer["data"] as JsonObject)?["fetched"] as JsonArray;
         if (fetched is null || fetched.Count == 0 || fetched[0] is not JsonObject first) throw new BrokerException($"{Display} sent no quote for {symbol} on {exchange}. Try again in a moment.", 500);
@@ -84,13 +84,15 @@ public sealed partial class MstockPlugin : IBrokerMultiQuotes, IBrokerHistory, I
         try
         {
             var body = new JsonObject { ["mode"] = "OHLC", ["exchangeTokens"] = new JsonObject(tokens.Select(t => KeyValuePair.Create(t.Key, (JsonNode?)t.Value))) };
-            var (status, reply) = await SendAsync(session, HttpMethod.Get, "/instruments/quote", body, cancellationToken);
+            var (status, reply) = await SendAsync(session, HttpMethod.Get, "/instruments/quote", body, cancellationToken, accept: true);
             if (status >= 400 || reply is not JsonObject answer || !Truthy(answer["status"])) throw new BrokerException($"{Display} could not give the quotes: {Reason(reply)}", 500);
             foreach (var quote in ((answer["data"] as JsonObject)?["fetched"] as JsonArray)?.OfType<JsonObject>() ?? [])
             {
                 var token = Str(quote["symbolToken"]) ?? "";
-                if (!names.Remove(token, out var name)) continue;
-                results.Add(new JsonObject { ["symbol"] = name.Symbol, ["exchange"] = name.Exchange, ["data"] = FormatQuote(quote) });
+                if (!names.TryGetValue(token, out var name)) continue;
+                var formatted = FormatQuote(quote);
+                names.Remove(token);
+                results.Add(new JsonObject { ["symbol"] = name.Symbol, ["exchange"] = name.Exchange, ["data"] = formatted });
             }
 
             foreach (var (_, name) in names) results.Add(new JsonObject { ["symbol"] = name.Symbol, ["exchange"] = name.Exchange, ["error"] = "No data received" });
@@ -252,7 +254,7 @@ public sealed partial class MstockPlugin : IBrokerMultiQuotes, IBrokerHistory, I
             int status;
             try
             {
-                (status, reply) = await SendAsync(session, HttpMethod.Get, "/instruments/historical", body, cancellationToken);
+                (status, reply) = await SendAsync(session, HttpMethod.Get, "/instruments/historical", body, cancellationToken, accept: true);
             }
             catch (BrokerException)
             {
@@ -272,7 +274,7 @@ public sealed partial class MstockPlugin : IBrokerMultiQuotes, IBrokerHistory, I
     {
         if (!IntradayCodes.TryGetValue(instrument.Exchange, out var code)) throw new BrokerException($"{Display} does not give today's candles for the {instrument.Exchange} exchange.", 400);
         var body = new JsonObject { ["exchange"] = code, ["symboltoken"] = instrument.Token, ["interval"] = Intervals[interval] };
-        var (status, reply) = await SendAsync(session, HttpMethod.Post, "/instruments/intraday", body, cancellationToken);
+        var (status, reply) = await SendAsync(session, HttpMethod.Post, "/instruments/intraday", body, cancellationToken, accept: true);
         if (status >= 400 || reply is not JsonObject answer || !Truthy(answer["status"])) throw new BrokerException($"{Display} could not give today's candles for {instrument.Exchange}:{instrument.Symbol}. Try again in a moment.", 500);
         return ReadCandles((answer["data"] as JsonObject)?["candles"], false, false) ?? throw new BrokerException($"{Display} sent candles that could not be read. Try again in a moment.", 500);
     }

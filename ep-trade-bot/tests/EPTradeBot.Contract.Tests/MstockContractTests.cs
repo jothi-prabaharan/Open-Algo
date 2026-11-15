@@ -20,6 +20,7 @@ public abstract class MstockFileHost(string file) : BrokerContractHost
         ["DELETE /openapi/typeb/orders/regular/MS2"] = """{"status":"true","message":"SUCCESS"}""",
         ["DELETE /openapi/typeb/orders/regular/MS4"] = """{"status":"true","message":"SUCCESS"}""",
     };
+    public override bool NumbersMayBeText => true;
     public override IReadOnlyDictionary<string, string> Settings { get; } = new Dictionary<string, string> { ["Brokers:RetryBackoffMs:mstock"] = "0", ["OpenAlgoApi:HistorySpacingMs"] = "0", ["Brokers:HistoryGapMs:mstock"] = "0" };
 }
 
@@ -109,6 +110,44 @@ public sealed class MstockContractTests(MstockHost host, ITestOutputHelper outpu
     };
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("mstock.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
+public sealed class MstockDataHost() : MstockFileHost("mstock_data.fixtures.json");
+
+/// <summary>mStock quotes and several quotes (tools/contract-fixtures/mstock_data.fixtures.json).</summary>
+public sealed class MstockDataContractTests(MstockDataHost host, ITestOutputHelper output) : IClassFixture<MstockDataHost>
+{
+    private const string Words = "OpenAlgo puts the status mStock answered or an internal error in the sentence. EP Trade bot says what mStock did and what to do.";
+
+    private static Deviation Says(int status, string message) => new(Words, f => Expect(f, status, Error(message)));
+
+    /// <summary>OpenAlgo puts a Python exception or the status mStock answered in each item's error; EP Trade bot says what mStock did.</summary>
+    private static Deviation Items(string text) => new(Words, f =>
+    {
+        foreach (var item in f["expected"]!["body"]!["results"]!.AsArray().OfType<JsonObject>().Where(i => i["error"] is not null)) item["error"] = text;
+    });
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["multiquotes_status_false"] = Items("mStock could not give the quotes: Session expired"),
+        ["multiquotes_http_error"] = Items("mStock could not give the quotes: no reason was given."),
+        ["multiquotes_not_json"] = Items("mStock could not give the quotes: no reason was given."),
+        ["multiquotes_with_a_price_that_is_not_a_number"] = Items("mStock sent a quote with a figure that is not a number."),
+        ["quote_with_no_rows"] = Says(500, "mStock sent no quote for SBIN on NSE. Try again in a moment."),
+        ["quote_without_data"] = Says(500, "mStock sent no quote for SBIN on NSE. Try again in a moment."),
+        ["quote_status_false"] = Says(500, "mStock could not give the quote: Invalid token"),
+        ["quote_status_false_without_a_message"] = Says(500, "mStock could not give the quote: no reason was given."),
+        ["quote_http_error"] = Says(500, "mStock could not give the quote: down"),
+        ["quote_not_json"] = Says(500, "mStock could not give the quote: no reason was given."),
+        ["quote_with_a_price_that_is_not_a_number"] = Says(500, "mStock sent a quote with a figure that is not a number."),
+        ["quote_with_a_null_price"] = Says(500, "mStock sent a quote with a figure that is not a number."),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("mstock_data.fixtures.json");
 
     [PostgresTheory]
     [MemberData(nameof(Names))]

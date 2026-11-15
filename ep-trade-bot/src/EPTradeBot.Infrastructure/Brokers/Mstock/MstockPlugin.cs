@@ -24,12 +24,13 @@ public sealed partial class MstockPlugin(IHttpClientFactory http, BrokerSessionF
     private HttpClient Client() => http.CreateClient(Name);
 
     /// <summary>One call; the status and the body as read (null when it was not JSON). A request body goes on a GET as well, as mStock's quote and history calls need.</summary>
-    private async Task<(int Status, JsonNode? Body)> SendAsync(BrokerSession session, HttpMethod method, string path, JsonNode? body, CancellationToken cancellationToken)
+    private async Task<(int Status, JsonNode? Body)> SendAsync(BrokerSession session, HttpMethod method, string path, JsonNode? body, CancellationToken cancellationToken, bool accept = false)
     {
         using var request = new HttpRequestMessage(method, sessions.BaseUrl(Name, DefaultBaseUrl) + path);
         request.Headers.TryAddWithoutValidation("X-Mirae-Version", "1");
         request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {session.AuthToken}");
         request.Headers.TryAddWithoutValidation("X-PrivateKey", session.Key("ApiSecret") ?? "");
+        if (accept) request.Headers.TryAddWithoutValidation("Accept", "application/json");
         if (body is not null) request.Content = new StringContent(body.ToJsonString(), Encoding.UTF8, "application/json");
         try
         {
