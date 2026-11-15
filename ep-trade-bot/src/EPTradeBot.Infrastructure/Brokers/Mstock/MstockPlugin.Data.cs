@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json.Nodes;
 using EPTradeBot.Core.Brokers;
+using EPTradeBot.Core.Streaming.Feeds;
 using static EPTradeBot.Infrastructure.Brokers.JsonRead;
 
 namespace EPTradeBot.Infrastructure.Brokers.Mstock;
@@ -46,8 +47,50 @@ public sealed partial class MstockPlugin : IBrokerMultiQuotes, IBrokerHistory, I
         return FormatQuote(first);
     }
 
-    public Task<JsonObject> GetDepthAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken) =>
-        throw new BrokerException($"{Display} market depth is not available yet.", 501);
+    private static readonly Dictionary<string, int> DepthExchanges = new() { ["NSE"] = 1, ["NFO"] = 2, ["BSE"] = 3, ["BFO"] = 4, ["CDS"] = 13, ["MCX"] = 5, ["NSE_INDEX"] = 1, ["BSE_INDEX"] = 3 };
+
+    /// <summary>Depth is read from a short-lived market-data connection (see <see cref="IMstockSockets"/>): a mode 3 subscribe for the token, and the first frame that reads as a quote is the answer, padded to five levels a side.</summary>
+    public async Task<JsonObject> GetDepthAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken)
+    {
+        var record = await symbols.FindAsync(Name, symbol, exchange, cancellationToken)
+            ?? throw new BrokerException($"{symbol} on {exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.", 400);
+        if (!DepthExchanges.TryGetValue(exchange, out var exchangeType)) throw new BrokerException($"{Display} does not give market depth for the {exchange} exchange.", 400);
+        var key = session.Key("ApiSecret") is { Length: > 0 } secret ? secret : session.Key("ApiKey");
+        var address = new Uri($"{sessions.FeedUrl(Name) ?? "wss://ws.mstock.trade"}?API_KEY={key}&ACCESS_TOKEN={session.AuthToken}");
+        var subscribe = new JsonObject
+        {
+            ["action"] = 1,
+            ["params"] = new JsonObject { ["mode"] = 3, ["tokenList"] = new JsonArray(new JsonObject { ["exchangeType"] = exchangeType, ["tokens"] = new JsonArray(record.Token) }) },
+        }.ToJsonString();
+        MstockQuote? quote = null;
+        var frame = await Sockets.SnapshotAsync(address, $"LOGIN:{session.AuthToken}", subscribe, data =>
+        {
+            quote = MstockPackets.Read(data).FirstOrDefault();
+            return quote is not null;
+        }, cancellationToken);
+        if (frame is null || quote is null) throw new BrokerException($"{Display} did not send the market depth for {symbol} on {exchange}. Try again in a moment.", 500);
+        if (!double.IsFinite(quote.TotalBuyQuantity) || !double.IsFinite(quote.TotalSellQuantity)) throw new BrokerException($"{Display} sent market depth for {symbol} on {exchange} that could not be read. Try again in a moment.", 500);
+
+        JsonArray Side(List<MstockLevel> levels) => new(Enumerable.Range(0, 5).Select(i => (JsonNode?)(i < levels.Count
+            ? new JsonObject { ["price"] = levels[i].Price, ["quantity"] = levels[i].Quantity <= long.MaxValue ? (long)levels[i].Quantity : (double)levels[i].Quantity }
+            : new JsonObject { ["price"] = 0.0, ["quantity"] = 0 })).ToArray());
+
+        return new JsonObject
+        {
+            ["bids"] = Side(quote.Bids),
+            ["asks"] = Side(quote.Asks),
+            ["high"] = quote.High,
+            ["low"] = quote.Low,
+            ["ltp"] = quote.Ltp,
+            ["ltq"] = quote.LastTradedQuantity <= long.MaxValue ? (long)quote.LastTradedQuantity : (double)quote.LastTradedQuantity,
+            ["open"] = quote.Open,
+            ["prev_close"] = quote.Close,
+            ["volume"] = quote.Volume <= long.MaxValue ? (long)quote.Volume : (double)quote.Volume,
+            ["oi"] = quote.OpenInterest <= long.MaxValue ? (long)quote.OpenInterest : (double)quote.OpenInterest,
+            ["totalbuyqty"] = (long)Math.Truncate(quote.TotalBuyQuantity),
+            ["totalsellqty"] = (long)Math.Truncate(quote.TotalSellQuantity),
+        };
+    }
 
     public async Task<JsonArray> GetMultiQuotesAsync(BrokerSession session, IReadOnlyList<SymbolRecord> instruments, CancellationToken cancellationToken)
     {

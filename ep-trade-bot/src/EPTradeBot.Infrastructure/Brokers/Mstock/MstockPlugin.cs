@@ -11,15 +11,19 @@ namespace EPTradeBot.Infrastructure.Brokers.Mstock;
 /// (X-PrivateKey, the broker's second key here) and the bearer token. mStock answers a business refusal with status 200, so the payload's status says whether a call worked; a reply may be wrapped in a one-item list.
 /// </summary>
 [BrokerPlugin]
-public sealed partial class MstockPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
+public sealed partial class MstockPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, IMstockSockets? sockets = null) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
 {
     private const string DefaultBaseUrl = "https://api.mstock.trade/openapi/typeb";
     private const string Display = "mStock";
 
     public string Name => "mstock";
     public string DisplayName => "mStock by Mirae Asset";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.Margin | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
+
+    private static IMstockSockets? defaultSockets;
+
+    private IMstockSockets Sockets => sockets ?? (defaultSockets ??= new MstockSnapshotSocket());
 
     private HttpClient Client() => http.CreateClient(Name);
 

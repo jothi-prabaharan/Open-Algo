@@ -14,9 +14,32 @@ public static class FeedRunner
     /// <summary>A message with its id replaced by a stand-in (the id is new every time by design).</summary>
     private static string Stand(string message)
     {
-        var node = JsonNode.Parse(message);
+        JsonNode? node;
+        try
+        {
+            node = JsonNode.Parse(message);
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            // A message that is plain text (a sign-in such as LOGIN:token) stands for itself.
+            return message;
+        }
+
         if (node is JsonObject o && o["guid"] is not null) o["guid"] = "<guid>";
         return node!.ToJsonString();
+    }
+
+    /// <summary>The key a message sorts by: the JSON it is, or the JSON text a plain message would be recorded as.</summary>
+    private static string SortKey(string message)
+    {
+        try
+        {
+            return JsonNode.Parse(message)!.ToJsonString();
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return JsonValue.Create(message)!.ToJsonString();
+        }
     }
 
     public static IEnumerable<object[]> Names(string file) =>
@@ -95,7 +118,7 @@ public static class FeedRunner
             {
                 // OpenAlgo walks a Python set to repeat its subscriptions, whose order means nothing: the same messages, in any order, are the same.
                 expectedSent = new JsonArray(expectedSent.OrderBy(x => x!.ToJsonString(), StringComparer.Ordinal).Select(x => x!.DeepClone()).ToArray());
-                sent = sent.Select(x => Stand(x)).OrderBy(x => JsonNode.Parse(x)!.ToJsonString(), StringComparer.Ordinal).ToList();
+                sent = sent.Select(x => Stand(x)).OrderBy(SortKey, StringComparer.Ordinal).ToList();
             }
 
             Assert.True(expectedSent.Count == sent.Count, $"{label}: expected {expectedSent.Count} messages to the broker, got {sent.Count}: {string.Join(" | ", sent)}");
