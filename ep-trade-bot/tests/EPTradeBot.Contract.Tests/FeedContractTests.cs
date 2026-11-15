@@ -31,7 +31,7 @@ public static class FeedRunner
         var scenario = (JsonObject)fixtures["scenarios"]!.AsArray().OfType<JsonObject>().Single(s => s["name"]!.GetValue<string>() == name).DeepClone();
         adjust?.Invoke(scenario);
         var feed = codec();
-        if (fixtures["access_token"] is JsonValue token) feed.Begin(new BrokerSession(Guid.Empty, fixtures["broker"]!.GetValue<string>(), token.GetValue<string>(), null, null, new Dictionary<string, string>()));
+        if (fixtures["access_token"] is JsonValue token) feed.Begin(new BrokerSession(Guid.Empty, fixtures["broker"]!.GetValue<string>(), token.GetValue<string>(), null, fixtures["client_id"] is JsonValue client ? client.GetValue<string>() : null, new Dictionary<string, string>()));
         // A scenario that starts signed in: the sign-in answer arrives before the first step.
         foreach (var start in (fixtures["start_frames"] as JsonArray ?? []).Select(x => x!.GetValue<string>()))
         {
@@ -1339,4 +1339,82 @@ public sealed class KotakFeedEndpointTests
         Assert.Null(plugin.FeedKeepAliveText);
         Assert.Equal(TimeSpan.FromSeconds(30), plugin.FeedKeepAliveEvery);
     }
+}
+
+public sealed class DefinedgeFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_definedge.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_definedge.fixtures.json", name, () => new DefinedgeFeedCodec());
+}
+
+public sealed class DefinedgeFeedEndpointTests
+{
+    private static BrokerSession Session(string token = "key:::user-token:::api", string? feed = null, string? client = "U1") =>
+        new(Guid.NewGuid(), "definedge", token, feed, client, new Dictionary<string, string>());
+
+    private static EPTradeBot.Infrastructure.Brokers.Definedge.DefinedgePlugin Plugin() => new(null!, null!, null!, TimeProvider.System);
+
+    [Fact]
+    public void The_address_is_the_brokers()
+    {
+        var endpoint = Plugin().FeedEndpoint(Session(), null)!;
+        Assert.Equal("wss://trade.definedgesecurities.com/NorenWSTRTP/", endpoint.Url.OriginalString);
+        Assert.Empty(endpoint.Headers);
+    }
+
+    [Fact]
+    public void A_configured_address_replaces_it() => Assert.Equal("ws://localhost:9/x", Plugin().FeedEndpoint(Session(), "ws://localhost:9/x")!.Url.OriginalString);
+
+    [Theory]
+    [InlineData("key:::user-token:::api", null, null)]
+    [InlineData("key:::user-token:::api", null, " ")]
+    [InlineData("key", null, "U1")]
+    [InlineData("key:::", null, "U1")]
+    public void Without_a_user_id_or_a_session_token_there_is_no_feed(string token, string? feed, string? client) => Assert.Null(Plugin().FeedEndpoint(Session(token, feed, client), null));
+
+    [Fact]
+    public void The_stored_feed_token_stands_in_for_the_second_part() => Assert.NotNull(Plugin().FeedEndpoint(Session("key", "stored-token"), null));
+
+    [Fact]
+    public void A_heartbeat_goes_every_thirty_seconds()
+    {
+        var plugin = Plugin();
+        Assert.Equal("{\"t\":\"h\"}", plugin.FeedKeepAliveText);
+        Assert.Equal(TimeSpan.FromSeconds(30), plugin.FeedKeepAliveEvery);
+    }
+
+    [Fact]
+    public void The_connect_frame_names_the_user_twice_and_carries_the_session_token()
+    {
+        var codec = new DefinedgeFeedCodec();
+        codec.Begin(Session());
+        var frame = System.Text.Json.Nodes.JsonNode.Parse(codec.Resubscribe(0).Single())!;
+        Assert.Equal("c", (string?)frame["t"]);
+        Assert.Equal("U1", (string?)frame["uid"]);
+        Assert.Equal("U1", (string?)frame["actid"]);
+        Assert.Equal("TRTP", (string?)frame["source"]);
+        Assert.Equal("user-token", (string?)frame["susertoken"]);
+    }
+
+    [Fact]
+    public void The_stored_feed_token_is_what_the_connect_frame_carries()
+    {
+        var codec = new DefinedgeFeedCodec();
+        codec.Begin(Session(feed: "stored-token"));
+        Assert.Equal("stored-token", (string?)System.Text.Json.Nodes.JsonNode.Parse(codec.Resubscribe(0).Single())!["susertoken"]);
+    }
+
+    [Fact]
+    public void A_connection_that_cannot_be_signed_in_sends_nothing()
+    {
+        var codec = new DefinedgeFeedCodec();
+        codec.Begin(Session(client: null));
+        Assert.Empty(codec.Resubscribe(0));
+    }
+
+    [Fact]
+    public void The_codec_is_a_new_one_for_each_connection() => Assert.NotSame(Plugin().CreateFeedCodec(), Plugin().CreateFeedCodec());
 }
