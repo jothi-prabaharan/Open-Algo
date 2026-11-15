@@ -205,6 +205,7 @@ SCENARIOS = [
     scenario("a_compact_packet_in_text_with_other_names", {"subscribe": [L]}, {"text": {"mode": 2, "instrumentToken": "3045", "exchangeCode": 1, "last_traded_price": 80545}}),
     scenario("a_compact_packet_in_text_nested_in_d", {"subscribe": [L]}, {"text": {"mode": 2, "d": {"instrument_token": 3045, "exchange_code": 1, "last_traded_price": 80545}}}),
     scenario("a_compact_packet_in_text_nested_in_data", {"subscribe": [L]}, {"text": {"mode": 2, "data": {"instrument_token": 3045, "exchange_code": 1, "last_traded_price": 80545}}}),
+    scenario("a_compact_packet_in_text_with_both_names_keeps_the_first", {"subscribe": [L]}, {"text": {"mode": 2, "instrument_token": 3045, "instrumentToken": 9999, "exchange_code": 1, "exchangeCode": 2, "last_traded_price": 80545}}),
     scenario("a_compact_packet_in_text_without_an_exchange_code_is_dropped", {"subscribe": [L]}, {"text": {"mode": 2, "instrument_token": 3045, "last_traded_price": 80545}}),
     scenario("a_snapquote_packet_in_text", {"subscribe": [D]}, {"text": {"mode": 4, "instrument_token": 3045, "exchange_code": 1, "bidPrices": [80540, 80535], "bidQtys": [100, 200], "buyers": [1, 2], "askPrices": [80550], "askQtys": [110], "sellers": [3], "averageTradePrice": 80410,
                                                                       "open": 80100, "high": 80950, "low": 79900, "close": 80000, "totalBuyQty": 45000, "totalSellQty": 52000, "volume": 99}}),

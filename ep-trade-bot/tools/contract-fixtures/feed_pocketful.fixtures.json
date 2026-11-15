@@ -4008,6 +4008,69 @@
       ]
     },
     {
+      "name": "a_compact_packet_in_text_with_both_names_keeps_the_first",
+      "steps": [
+        {
+          "step": {
+            "subscribe": [
+              {
+                "symbol": "SBIN",
+                "exchange": "NSE",
+                "mode": 1
+              }
+            ]
+          },
+          "result": {
+            "sent": [
+              {
+                "a": "subscribe",
+                "v": [
+                  [
+                    1,
+                    3045
+                  ]
+                ],
+                "m": "compact_marketdata"
+              }
+            ],
+            "published": []
+          }
+        },
+        {
+          "step": {
+            "text": {
+              "mode": 2,
+              "instrument_token": 3045,
+              "instrumentToken": 9999,
+              "exchange_code": 1,
+              "exchangeCode": 2,
+              "last_traded_price": 80545
+            }
+          },
+          "result": {
+            "sent": [],
+            "published": [
+              {
+                "topic": "NSE_SBIN_LTP",
+                "data": {
+                  "ltp": 805.45,
+                  "ltt": 0,
+                  "change": 0.0,
+                  "oi": 0,
+                  "bid_price": 0.0,
+                  "ask_price": 0.0,
+                  "symbol": "SBIN",
+                  "exchange": "NSE",
+                  "mode": 1,
+                  "timestamp": 1793700000123
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
       "name": "a_compact_packet_in_text_without_an_exchange_code_is_dropped",
       "steps": [
         {

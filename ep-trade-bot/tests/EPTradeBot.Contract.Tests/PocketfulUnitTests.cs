@@ -250,4 +250,191 @@ public sealed class PocketfulUnitTests
         var error = await Assert.ThrowsAsync<BrokerException>(() => Plugin(new Capture(_ => Json("{}")), options).GetQuoteAsync(Session("PF1"), "SBIN", "NSE", CancellationToken.None));
         Assert.Contains("did not open its market data connection", error.Message, StringComparison.Ordinal);
     }
+
+    // ---- packets: every field at its own place ----------------------------------------------------------------
+
+    private static byte[] Numbered(int length, int mode)
+    {
+        // Each 4-byte word after the header holds its own number, so a field read from the wrong place shows.
+        var bytes = new byte[length];
+        bytes[0] = (byte)mode;
+        bytes[1] = 3;
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32BigEndian(bytes.AsSpan(2), 77);
+        for (var at = 6; at + 4 <= length; at += 4) System.Buffers.Binary.BinaryPrimitives.WriteUInt32BigEndian(bytes.AsSpan(at), (uint)(1000 + at));
+        return bytes;
+    }
+
+    [Fact]
+    public void A_detailed_packet_is_read_field_by_field()
+    {
+        var r = PocketfulPackets.DecodeDetailed(Numbered(102, 1));
+        var expected = new Dictionary<string, long>
+        {
+            ["last_traded_price"] = 1006, ["last_traded_time"] = 1010, ["last_traded_quantity"] = 1014, ["trade_volume"] = 1018, ["best_bid_price"] = 1022, ["best_bid_quantity"] = 1026, ["best_ask_price"] = 1030, ["best_ask_quantity"] = 1034,
+            ["average_trade_price"] = 1054, ["exchange_timestamp"] = 1058, ["open_price"] = 1062, ["high_price"] = 1066, ["low_price"] = 1070, ["close_price"] = 1074, ["yearly_high_price"] = 1078, ["yearly_low_price"] = 1082,
+            ["lowDPR"] = 1086, ["highDPR"] = 1090, ["currentOpenInterest"] = 1094, ["initialOpenInterest"] = 1098, ["instrument_token"] = 77, ["exchange_code"] = 3, ["mode"] = 1,
+        };
+        foreach (var (key, value) in expected) Assert.Equal(value, (long)r[key]!);
+        Assert.Equal((1038UL << 32) | 1042UL, (ulong)r["total_buy_quantity"]!);
+        Assert.Equal((1046UL << 32) | 1050UL, (ulong)r["total_sell_quantity"]!);
+        Assert.Empty(PocketfulPackets.DecodeDetailed(Numbered(101, 1)));
+    }
+
+    [Fact]
+    public void A_compact_packet_is_read_field_by_field()
+    {
+        var r = PocketfulPackets.DecodeCompact(Numbered(42, 2));
+        var expected = new Dictionary<string, long> { ["last_traded_price"] = 1006, ["change"] = 1010, ["last_traded_time"] = 1014, ["lowDPR"] = 1018, ["highDPR"] = 1022, ["currentOpenInterest"] = 1026, ["initialOpenInterest"] = 1030, ["bidPrice"] = 1034, ["askPrice"] = 1038, ["mode"] = 2 };
+        foreach (var (key, value) in expected) Assert.Equal(value, (long)r[key]!);
+        Assert.Empty(PocketfulPackets.DecodeCompact(Numbered(41, 2)));
+    }
+
+    [Fact]
+    public void A_snapquote_packet_is_read_field_by_field_and_its_ladders_are_five_deep()
+    {
+        var r = PocketfulPackets.DecodeSnapquote(Numbered(166, 4));
+        foreach (var (key, start) in new[] { ("buyers", 6), ("bidPrices", 26), ("bidQtys", 46), ("sellers", 66), ("askPrices", 86), ("askQtys", 106) })
+        {
+            var values = ((JsonArray)r[key]!).Select(v => (long)v!).ToArray();
+            Assert.Equal(Enumerable.Range(0, 5).Select(i => (long)(1000 + start + 4 * i)).ToArray(), values);
+        }
+
+        foreach (var (key, value) in new Dictionary<string, long> { ["averageTradePrice"] = 1126, ["open"] = 1130, ["high"] = 1134, ["low"] = 1138, ["close"] = 1142, ["volume"] = 1162 }) Assert.Equal(value, (long)r[key]!);
+        Assert.Equal((1146UL << 32) | 1150UL, (ulong)r["totalBuyQty"]!);
+        Assert.Equal((1154UL << 32) | 1158UL, (ulong)r["totalSellQty"]!);
+        Assert.Empty(PocketfulPackets.DecodeSnapquote(Numbered(165, 4)));
+    }
+
+    [Fact]
+    public void A_text_packet_keeps_the_names_it_came_with_and_borrows_the_other_ones_only_when_it_has_none()
+    {
+        var both = PocketfulPackets.DecodeCompact("""{"instrument_token":1,"instrumentToken":2,"exchange_code":3,"exchangeCode":4}""");
+        Assert.Equal(1, (int)both["instrument_token"]!);
+        Assert.Equal(3, (int)both["exchange_code"]!);
+        var other = PocketfulPackets.DecodeSnapquote("""{"instrumentToken":2,"exchangeCode":4}""");
+        Assert.Equal(2, (int)other["instrument_token"]!);
+        Assert.Equal(4, (int)other["exchange_code"]!);
+        Assert.Empty(PocketfulPackets.DecodeCompact("""[{"instrument_token":1}]"""));
+        Assert.Equal(1, (int)PocketfulPackets.DecodeSnapquote("""[{"instrument_token":1}]""")["instrument_token"]!);
+    }
+
+    // ---- waits, exchange codes and what a failed call says -----------------------------------------------------
+
+    private sealed class Capturing : IPocketfulSockets
+    {
+        public List<TimeSpan> Waits { get; } = [];
+
+        public List<bool> Finished { get; } = [];
+
+        public byte[][] Frames { get; set; } = [];
+
+        public Task<bool> RunAsync(Uri address, IReadOnlyList<string> subscribes, IReadOnlyList<string> unsubscribes, Func<PocketfulFrame, bool> onFrame, TimeSpan wait, CancellationToken cancellationToken)
+        {
+            Waits.Add(wait);
+            foreach (var frame in Frames) Finished.Add(onFrame(PocketfulFrame.Of(frame)));
+            return Task.FromResult(true);
+        }
+    }
+
+    private sealed class ManyMaster : ISymbolMaster
+    {
+        public Task<SymbolRecord?> FindAsync(string broker, string symbol, string exchange, CancellationToken cancellationToken) => Task.FromResult<SymbolRecord?>(new(symbol, symbol, exchange, exchange, "3045", null, null, null, 1, "EQ", 0.05));
+
+        public Task<SymbolRecord?> FindByBrokerSymbolAsync(string broker, string brokerSymbol, string exchange, CancellationToken cancellationToken) => Task.FromResult<SymbolRecord?>(null);
+
+        public Task<SymbolRecord?> FindByTokenAsync(string broker, string token, string exchange, CancellationToken cancellationToken) => Task.FromResult<SymbolRecord?>(null);
+    }
+
+    private static PocketfulPlugin WithSockets(IPocketfulSockets sockets) =>
+        new(new Capture(_ => Json("{}")), new EPTradeBot.Infrastructure.Brokers.BrokerSessionFactory(null!, new Options(new EPTradeBot.Core.Configuration.BrokerOptions())), new ManyMaster(), TimeProvider.System, sockets);
+
+    private static SymbolRecord Record(int i) => new($"S{i}", $"S{i}", "NSE", "NSE", (1000 + i).ToString(System.Globalization.CultureInfo.InvariantCulture), null, null, null, 1, "EQ", 0.05);
+
+    [Fact]
+    public async Task A_quote_waits_ten_seconds_depth_fifteen_and_several_quotes_half_a_second_each_between_three_and_fifteen()
+    {
+        var sockets = new Capturing();
+        var plugin = WithSockets(sockets);
+        await Assert.ThrowsAsync<BrokerException>(() => plugin.GetQuoteAsync(Session("PF1"), "SBIN", "NSE", CancellationToken.None));
+        await Assert.ThrowsAsync<BrokerException>(() => plugin.GetDepthAsync(Session("PF1"), "SBIN", "NSE", CancellationToken.None));
+        foreach (var n in new[] { 1, 6, 7, 40 }) await plugin.GetMultiQuotesAsync(Session("PF1"), Enumerable.Range(0, n).Select(Record).ToList(), CancellationToken.None);
+        Assert.Equal([10.0, 15.0, 3.0, 3.0, 3.5, 15.0], sockets.Waits.Select(w => w.TotalSeconds));
+    }
+
+    [Fact]
+    public async Task Several_quotes_are_read_fifty_at_a_time()
+    {
+        var sockets = new Capturing();
+        await WithSockets(sockets).GetMultiQuotesAsync(Session("PF1"), Enumerable.Range(0, 100).Select(Record).ToList(), CancellationToken.None);
+        Assert.Equal(2, sockets.Waits.Count);
+        sockets.Waits.Clear();
+        await WithSockets(sockets).GetMultiQuotesAsync(Session("PF1"), Enumerable.Range(0, 101).Select(Record).ToList(), CancellationToken.None);
+        Assert.Equal(3, sockets.Waits.Count);
+    }
+
+    [Fact]
+    public async Task The_read_of_several_quotes_is_finished_the_moment_every_instrument_has_come()
+    {
+        var sockets = new Capturing { Frames = [DetailedPacket(1000), DetailedPacket(1001)] };
+        var results = await WithSockets(sockets).GetMultiQuotesAsync(Session("PF1"), [Record(0), Record(1)], CancellationToken.None);
+        Assert.Equal([false, true], sockets.Finished);
+        Assert.All(results.OfType<JsonObject>(), r => Assert.NotNull(r["data"]));
+    }
+
+    [Theory]
+    [InlineData("NSE", 1)]
+    [InlineData("NFO", 2)]
+    [InlineData("CDS", 3)]
+    [InlineData("MCX", 4)]
+    [InlineData("BSE", 6)]
+    [InlineData("BFO", 7)]
+    [InlineData("NSE_INDEX", 1)]
+    [InlineData("BSE_INDEX", 6)]
+    [InlineData("SOMETHING", 1)]
+    public void An_exchange_goes_to_its_code_on_the_feed(string exchange, int code)
+    {
+        var frames = new PocketfulFeedCodec().Subscribe([new FeedRequest("NSE", "SBIN", "3045", exchange, StreamMode.Quote)], 0);
+        Assert.Equal($"{{\"a\":\"subscribe\",\"v\":[[{code},3045]],\"m\":\"marketdata\"}}", Assert.Single(frames));
+    }
+
+    [Fact]
+    public async Task A_change_or_a_cancel_that_fails_after_it_was_sent_says_it_may_have_been_made()
+    {
+        var plugin = Plugin(new Failing());
+        var change = await plugin.ModifyAsync(Session("PF1"), new BrokerOrderChange("1", "SBIN", "NSE", "BUY", 1, "LIMIT", "MIS", 1m, 0m, 0), CancellationToken.None);
+        var cancel = await plugin.CancelAsync(Session("PF1"), "1", CancellationToken.None);
+        var placed = await plugin.PlaceAsync(Session("PF1"), Order, CancellationToken.None);
+        foreach (var result in new[] { change, cancel, placed })
+        {
+            Assert.False(result.Ok);
+            Assert.Equal(502, result.HttpStatus);
+            Assert.True(result.MayHaveBeenSent);
+        }
+    }
+
+    [Fact]
+    public async Task A_sign_in_with_a_blank_key_or_code_is_refused_and_one_that_cannot_reach_pocketful_says_so()
+    {
+        var http = new Capture(_ => Json("{}"));
+        foreach (var blank in new[] { "ApiKey", "ApiSecret", "RedirectUrl" })
+        {
+            var keys = AllKeys.ToDictionary(k => k.Key, k => k.Key == blank ? " " : k.Value);
+            Assert.Equal(409, (await Plugin(http).LoginAsync(keys, new Dictionary<string, string> { ["code"] = "c" }, CancellationToken.None)).HttpStatus);
+        }
+
+        Assert.False((await Plugin(http).LoginAsync(AllKeys, new Dictionary<string, string> { ["code"] = " " }, CancellationToken.None)).Ok);
+        Assert.Empty(http.Seen);
+        var down = await Plugin(new Failing()).LoginAsync(AllKeys, new Dictionary<string, string> { ["code"] = "c" }, CancellationToken.None);
+        Assert.Equal(502, down.HttpStatus);
+        Assert.Contains("Could not reach", down.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Unsubscribing_with_no_mode_ends_all_three_modes_in_order()
+    {
+        var codec = new PocketfulFeedCodec();
+        codec.Subscribe([new FeedRequest("NSE", "SBIN", "3045", "NSE", StreamMode.Quote), new FeedRequest("NSE", "SBIN", "3045", "NSE", StreamMode.Ltp), new FeedRequest("NSE", "SBIN", "3045", "NSE", StreamMode.Depth)], 0);
+        var frames = codec.Unsubscribe(new FeedTarget("NSE", "SBIN", "3045", "NSE"), null, 0);
+        Assert.Equal(["compact_marketdata", "marketdata", "full_snapquote"], frames.Select(f => (string)JsonNode.Parse(f)!["m"]!));
+    }
 }

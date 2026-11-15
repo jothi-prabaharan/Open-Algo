@@ -27,7 +27,7 @@ SYMBOLS = [
     row("NIFTY25NOV26FUT", "NIFTY26NOVFUT", "NFO", 49500, "FUT"), row("SENSEX26NOVFUT", "SENSEX26NOVFUT", "BFO", 60001, "FUT"), row("USDINR25NOV26FUT", "USDINR26NOVFUT", "CDS", 90001, "FUT"),
     row("GOLDM25NOV26FUT", "GOLDM26NOVFUT", "MCX", 80001, "FUT"), row("NIFTY", "Nifty 50", "NSE_INDEX", 26000, "INDEX"), row("SENSEX", "SENSEX", "BSE_INDEX", 19000, "INDEX"),
     row("CRUDEOIL25NOV26FUT", "CRUDEOIL26NOVFUT", "NCO", 70001, "FUT"),
-]
+] + [row(f"T{i:03d}", f"T{i:03d}-EQ", "NSE", 100000 + i) for i in range(60)]
 
 
 class Driver:
@@ -166,7 +166,7 @@ SBIN, INFY, REL = ("SBIN", "NSE"), ("INFY", "NSE"), ("RELIANCE", "NSE")
 SCENARIOS = [
     scenario("a_quote", q("SBIN", "NSE", h(detailed()))),
     scenario("a_quote_after_a_text_frame", q("SBIN", "NSE", T, h(detailed()))),
-    scenario("a_quote_after_a_frame_for_another_token", q("SBIN", "NSE", h(detailed(1594)), h(detailed()))),
+    scenario("a_quote_after_a_frame_for_another_token", q("SBIN", "NSE", h(detailed(1594, ltp=150010)), h(detailed()))),
     scenario("a_quote_for_another_token_alone_is_the_answer_at_the_end", q("SBIN", "NSE", h(detailed(1594, ltp=150010)))),
     scenario("a_quote_the_other_modes_do_not_replace", q("SBIN", "NSE", h(detailed()), h(compact()), h(snap()))),
     scenario("a_quote_whose_frame_is_cut_short_wipes_the_last_one", q("SBIN", "NSE", h(detailed()), h(detailed()[:50]))),
@@ -188,9 +188,16 @@ SCENARIOS = [
     scenario("only_text_arrives", q("SBIN", "NSE", T, T, T)),
     scenario("the_socket_does_not_open", q("SBIN", "NSE", h(detailed()), connect=False)),
     scenario("a_large_volume", q("SBIN", "NSE", h(detailed(volume=4_000_000_000)))),
+    scenario("a_quote_whose_first_frame_is_cut_short_then_a_good_one", q("SBIN", "NSE", h(detailed()[:50]), h(detailed()))),
+    scenario("a_quote_whose_first_frame_is_a_text_in_json_then_a_good_one", q("SBIN", "NSE", {"text": json.dumps({"mode": 1})}, h(detailed()))),
+    scenario("a_depth_with_seven_levels_in_text_keeps_five", d("SBIN", "NSE", {"text": json.dumps({"mode": 4, "instrument_token": 3045, "exchange_code": 1, "bidPrices": [1, 2, 3, 4, 5, 6, 7], "bidQtys": [1, 2, 3, 4, 5, 6, 7], "buyers": [1, 2, 3, 4, 5, 6, 7],
+                                                                                          "askPrices": [1, 2, 3, 4, 5, 6, 7], "askQtys": [1, 2, 3, 4, 5, 6, 7], "sellers": [1, 2, 3, 4, 5, 6, 7]})})),
+    scenario("a_depth_with_fewer_quantities_than_prices", d("SBIN", "NSE", {"text": json.dumps({"mode": 4, "instrument_token": 3045, "exchange_code": 1, "bidPrices": [100, 200, 300], "bidQtys": [1], "buyers": [], "askPrices": [100], "askQtys": [], "sellers": [5]})})),
+    scenario("several_quotes_in_two_batches", m([(f"T{i:03d}", "NSE") for i in range(51)], *[h(detailed(100000 + i, ltp=1000 + i)) for i in (0, 50)])),
+    scenario("several_quotes_in_one_batch_of_fifty", m([(f"T{i:03d}", "NSE") for i in range(50)], *[h(detailed(100000 + i, ltp=1000 + i)) for i in (0, 49)])),
     scenario("a_quote_asked_for_twice", q("SBIN", "NSE", h(detailed())), q("INFY", "NSE", h(detailed(1594, ltp=150010)))),
     scenario("a_depth", d("SBIN", "NSE", h(snap()))),
-    scenario("a_depth_after_a_frame_for_another_token", d("SBIN", "NSE", h(snap(1594)), h(snap()))),
+    scenario("a_depth_after_a_frame_for_another_token", d("SBIN", "NSE", h(snap(1594, avg=150010)), h(snap()))),
     scenario("a_depth_for_another_token_alone_is_the_answer_at_the_end", d("SBIN", "NSE", h(snap(1594, avg=150010)))),
     scenario("a_depth_the_other_modes_do_not_replace", d("SBIN", "NSE", h(snap()), h(detailed()), h(compact()))),
     scenario("a_depth_after_a_text_frame", d("SBIN", "NSE", T, h(snap()))),
@@ -212,7 +219,7 @@ SCENARIOS = [
     scenario("several_quotes_in_the_other_order", m([SBIN, INFY], h(detailed(1594, ltp=150010)), h(detailed()))),
     scenario("several_quotes_one_never_comes", m([SBIN, INFY], h(detailed()))),
     scenario("several_quotes_none_come", m([SBIN, INFY])),
-    scenario("several_quotes_a_frame_that_is_not_asked_for", m([SBIN], h(detailed(9999)), h(detailed()))),
+    scenario("several_quotes_a_frame_that_is_not_asked_for", m([SBIN], h(detailed(9999, ltp=150010)), h(detailed()))),
     scenario("several_quotes_the_same_token_twice_over_one_frame", m([SBIN, SBIN], h(detailed()))),
     scenario("several_quotes_a_text_frame_among_them", m([SBIN, INFY], T, h(detailed()), h(detailed(1594)))),
     scenario("several_quotes_a_frame_cut_short", m([SBIN, INFY], h(detailed()), h(detailed(1594)[:40]))),
