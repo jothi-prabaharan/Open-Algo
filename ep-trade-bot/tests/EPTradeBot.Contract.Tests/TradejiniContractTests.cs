@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using EPTradeBot.Core.Streaming.Feeds;
+using EPTradeBot.Infrastructure.Brokers.Tradejini;
 using EPTradeBot.IntegrationTests;
 using Xunit.Abstractions;
 using static EPTradeBot.Contract.Tests.ContractRunner;
@@ -195,4 +196,138 @@ public sealed class TradejiniFeedContractTests
     [Theory]
     [MemberData(nameof(Names))]
     public void Matches_the_python_adapter(string name) => FeedRunner.Run(File, name, () => new EPTradeBot.Core.Streaming.Feeds.TradejiniFeedCodec());
+}
+
+/// <summary>
+/// Tradejini quotes, depth and several quotes against the Python client (tools/contract-fixtures/feed_snap_tradejini.fixtures.json): the real plugin and the real packet reader, with a connection that answers each subscribe with the frames the recording scripted.
+/// The requests sent and the answer must match what OpenAlgo's own client did. A read that OpenAlgo answers with zeros because nothing arrived is an error here that says so.
+/// </summary>
+public sealed class TradejiniSnapshotContractTests
+{
+    private const string File = "feed_snap_tradejini.fixtures.json";
+
+    public static IEnumerable<object[]> Names() => FeedRunner.Names(File);
+
+    private sealed class Options(EPTradeBot.Core.Configuration.BrokerOptions value) : Microsoft.Extensions.Options.IOptionsMonitor<EPTradeBot.Core.Configuration.BrokerOptions>
+    {
+        public EPTradeBot.Core.Configuration.BrokerOptions CurrentValue => value;
+
+        public EPTradeBot.Core.Configuration.BrokerOptions Get(string? name) => value;
+
+        public IDisposable? OnChange(Action<EPTradeBot.Core.Configuration.BrokerOptions, string?> listener) => null;
+    }
+
+    private sealed class Master(IReadOnlyList<EPTradeBot.Core.Brokers.SymbolRecord> rows) : EPTradeBot.Core.Brokers.ISymbolMaster
+    {
+        public Task<EPTradeBot.Core.Brokers.SymbolRecord?> FindAsync(string broker, string symbol, string exchange, CancellationToken cancellationToken) =>
+            Task.FromResult(rows.FirstOrDefault(r => r.Symbol == symbol && r.Exchange == exchange));
+
+        public Task<EPTradeBot.Core.Brokers.SymbolRecord?> FindByBrokerSymbolAsync(string broker, string brokerSymbol, string exchange, CancellationToken cancellationToken) => Task.FromResult<EPTradeBot.Core.Brokers.SymbolRecord?>(null);
+
+        public Task<EPTradeBot.Core.Brokers.SymbolRecord?> FindByTokenAsync(string broker, string token, string exchange, CancellationToken cancellationToken) => Task.FromResult<EPTradeBot.Core.Brokers.SymbolRecord?>(null);
+    }
+
+    /// <summary>The Python driver's connection: each subscribe is answered with the next scripted list of frames, and what is read after them is nothing.</summary>
+    private sealed class Script(JsonObject step) : ITradejiniSockets
+    {
+        private readonly Queue<JsonArray> attempts = new(step["attempts"]!.AsArray().Select(a => a!.AsArray()));
+        private readonly bool refused = step["connect_fails"]?.GetValue<bool>() ?? false;
+        private Queue<byte[]> pending = new();
+
+        public List<JsonNode> Sent { get; } = [];
+
+        public List<string> Connections { get; } = [];
+
+        public Task<ITradejiniStream?> OpenAsync(Uri address, CancellationToken cancellationToken)
+        {
+            Connections.Add(System.Web.HttpUtility.ParseQueryString(address.Query)["token"]!);
+            return Task.FromResult<ITradejiniStream?>(refused ? null : new Connection(this));
+        }
+
+        private sealed class Connection(Script owner) : ITradejiniStream
+        {
+            public Task SendAsync(string text, CancellationToken cancellationToken)
+            {
+                var request = JsonNode.Parse(text)!;
+                owner.Sent.Add(new JsonObject { ["type"] = request["type"]!.DeepClone(), ["tokens"] = new JsonArray(request["tokens"]!.AsArray().Select(t => (JsonNode?)t!["t"]!.DeepClone()).ToArray()) });
+                owner.pending = new Queue<byte[]>((owner.attempts.Count > 0 ? owner.attempts.Dequeue() : []).Select(h => Convert.FromHexString(h!.GetValue<string>())));
+                return Task.CompletedTask;
+            }
+
+            public Task<byte[]?> ReceiveAsync(TimeSpan timeout, CancellationToken cancellationToken) => Task.FromResult(owner.pending.Count > 0 ? owner.pending.Dequeue() : null);
+
+            public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+        }
+    }
+
+    private static string Reason(string name, string kind) => name.Contains("refused", StringComparison.Ordinal) ? "market data could not be reached"
+        : kind == "depth" ? "did not send the market depth for" : "did not send a quote for";
+
+    /// <summary>The recordings where OpenAlgo answered a failed read with zeros (a quote with no oi key, or a depth of nothing but zeros).</summary>
+    private static bool ZerosOnFailure(string name) => name.Contains("all_zeros", StringComparison.Ordinal);
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public async Task Matches_the_python_client(string name)
+    {
+        var fixtures = BrokerContractHost.Load(File);
+        var rows = fixtures["symbols"]!.AsArray().OfType<JsonObject>().Select(s => new EPTradeBot.Core.Brokers.SymbolRecord(s["symbol"]!.GetValue<string>(), s["brsymbol"]!.GetValue<string>(), s["exchange"]!.GetValue<string>(), s["brexchange"]!.GetValue<string>(),
+            s["token"]!.GetValue<string>(), s["name"]?.GetValue<string>(), null, null, 1, s["instrumenttype"]?.GetValue<string>(), 0.05)).ToList();
+        var options = new EPTradeBot.Core.Configuration.BrokerOptions();
+        var session = new EPTradeBot.Core.Brokers.BrokerSession(Guid.NewGuid(), "tradejini", fixtures["access_token"]!.GetValue<string>(), null, null, new Dictionary<string, string> { ["ApiKey"] = "tj-app-api-key" });
+        var sessions = new EPTradeBot.Infrastructure.Brokers.BrokerSessionFactory(null!, new Options(options));
+        var scenario = fixtures["scenarios"]!.AsArray().OfType<JsonObject>().Single(s => s["name"]!.GetValue<string>() == name);
+        var index = 0;
+        foreach (var entry in scenario["steps"]!.AsArray().OfType<JsonObject>())
+        {
+            var step = entry["step"]!.AsObject();
+            var kind = step.First().Key;
+            var inner = step[kind]!.AsObject();
+            var result = entry["result"]!.AsObject();
+            var label = $"{name} step {++index} ({kind})";
+            var sockets = new Script(inner);
+            var plugin = new EPTradeBot.Infrastructure.Brokers.Tradejini.TradejiniPlugin(null!, sessions, new Master(rows), TimeProvider.System, sockets);
+            JsonNode? actual = null;
+            string? error = null;
+            try
+            {
+                actual = kind switch
+                {
+                    "quote" => await plugin.GetQuoteAsync(session, inner["symbol"]!.GetValue<string>(), inner["exchange"]!.GetValue<string>(), CancellationToken.None),
+                    "depth" => await plugin.GetDepthAsync(session, inner["symbol"]!.GetValue<string>(), inner["exchange"]!.GetValue<string>(), CancellationToken.None),
+                    _ => await plugin.GetMultiQuotesAsync(session, inner["symbols"]!.AsArray().OfType<JsonObject>().Select(s => rows.FirstOrDefault(r => r.Symbol == s["symbol"]!.GetValue<string>() && r.Exchange == s["exchange"]!.GetValue<string>())).OfType<EPTradeBot.Core.Brokers.SymbolRecord>().ToList(), CancellationToken.None),
+                };
+            }
+            catch (EPTradeBot.Core.Brokers.BrokerException ex)
+            {
+                error = ex.Message;
+            }
+
+            if (result["error"] is JsonValue || ZerosOnFailure(name))
+            {
+                Assert.True(error is not null, $"{label}: expected an error, got an answer {actual?.ToJsonString()}");
+                Assert.Contains(Reason(name, kind), error!, StringComparison.Ordinal);
+            }
+            else
+            {
+                Assert.True(error is null, $"{label}: unexpected error: {error}");
+                var expected = result["result"]!.DeepClone();
+                // A symbol the master does not know is refused by the platform before this plugin is asked.
+                if (kind == "multiquotes") expected = new JsonArray(expected.AsArray().Where(i => (string?)i!["error"] != "Could not resolve token").Select(i => i!.DeepClone()).ToArray());
+                var diffs = JsonCompare.Differences(expected, actual);
+                Assert.True(diffs.Count == 0, $"{label}: the answer differs:\n{string.Join("\n", diffs)}");
+            }
+
+            if (name.Contains("unknown", StringComparison.Ordinal) || name.Contains("does_not_know", StringComparison.Ordinal)) continue;
+            var expectedSent = result["sent"]!.AsArray();
+            Assert.True(expectedSent.Count == sockets.Sent.Count, $"{label}: expected {expectedSent.Count} requests, got {sockets.Sent.Count}: {string.Join(" | ", sockets.Sent.Select(f => f.ToJsonString()))}");
+            for (var i = 0; i < expectedSent.Count; i++)
+            {
+                var diffs = JsonCompare.Differences(expectedSent[i], sockets.Sent[i]);
+                Assert.True(diffs.Count == 0, $"{label}: request {i} differs:\n{string.Join("\n", diffs)}");
+            }
+
+            Assert.Equal(result["connections"]!.AsArray().Select(c => c!.GetValue<string>()), sockets.Connections);
+        }
+    }
 }

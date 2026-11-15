@@ -10,14 +10,14 @@ namespace EPTradeBot.Infrastructure.Brokers.Tradejini;
 /// answer is an envelope {s: ok | no-data | error, d, msg}. An instrument is its symbol id (brsymbol of the master), and a book row carries it as a sym object.
 /// </summary>
 [BrokerPlugin]
-public sealed partial class TradejiniPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
+public sealed partial class TradejiniPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, ITradejiniSockets? sockets = null) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
 {
     private const string DefaultBaseUrl = "https://api.tradejini.com/v2";
     private const string Display = "Tradejini";
 
     public string Name => "tradejini";
     public string DisplayName => "Tradejini";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.History;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.History | BrokerCapability.Quotes | BrokerCapability.Depth;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey"];
 
     private HttpClient Client() => http.CreateClient(Name);
