@@ -1,3 +1,4 @@
+using EPTradeBot.Core.Streaming.Feeds;
 using System.Text.Json.Nodes;
 using EPTradeBot.IntegrationTests;
 using Xunit.Abstractions;
@@ -143,4 +144,312 @@ public sealed class AliceBlueLoginContractTests(AliceBlueLoginHost host, ITestOu
     [PostgresTheory]
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => ContractRunner.RunAsync(host, name, Deviations, output);
+}
+
+/// <summary>
+/// AliceBlue quotes, depth and several quotes against the Python client (tools/contract-fixtures/feed_snap_aliceblue.fixtures.json): the real plugin and the real market-data socket class, with a transport that answers each subscribe with the
+/// frames the recording scripted. The frames sent, the sockets asked for and the answer must match what OpenAlgo's own client did; an error has the same cause here and is worded for a trader.
+/// </summary>
+public sealed class AliceBlueSnapshotContractTests
+{
+    private const string File = "feed_snap_aliceblue.fixtures.json";
+
+    public static IEnumerable<object[]> Names() => FeedRunner.Names(File);
+
+    private sealed class Options(EPTradeBot.Core.Configuration.BrokerOptions value) : Microsoft.Extensions.Options.IOptionsMonitor<EPTradeBot.Core.Configuration.BrokerOptions>
+    {
+        public EPTradeBot.Core.Configuration.BrokerOptions CurrentValue => value;
+
+        public EPTradeBot.Core.Configuration.BrokerOptions Get(string? name) => value;
+
+        public IDisposable? OnChange(Action<EPTradeBot.Core.Configuration.BrokerOptions, string?> listener) => null;
+    }
+
+    private sealed class Master(IReadOnlyList<EPTradeBot.Core.Brokers.SymbolRecord> rows) : EPTradeBot.Core.Brokers.ISymbolMaster
+    {
+        public Task<EPTradeBot.Core.Brokers.SymbolRecord?> FindAsync(string broker, string symbol, string exchange, CancellationToken cancellationToken) =>
+            Task.FromResult(rows.FirstOrDefault(r => r.Symbol == symbol && r.Exchange == exchange));
+
+        public Task<EPTradeBot.Core.Brokers.SymbolRecord?> FindByBrokerSymbolAsync(string broker, string brokerSymbol, string exchange, CancellationToken cancellationToken) => Task.FromResult<EPTradeBot.Core.Brokers.SymbolRecord?>(null);
+
+        public Task<EPTradeBot.Core.Brokers.SymbolRecord?> FindByTokenAsync(string broker, string token, string exchange, CancellationToken cancellationToken) => Task.FromResult<EPTradeBot.Core.Brokers.SymbolRecord?>(null);
+    }
+
+    /// <summary>The Python driver's sockets: one is kept, a forced request makes a new one (and counts), and each subscribe is answered with the next scripted frames.</summary>
+    private sealed class Script(JsonObject step) : EPTradeBot.Infrastructure.Brokers.AliceBlue.IAliceBlueSockets
+    {
+        private readonly Queue<JsonArray> frames = new(step["attempts"]!.AsArray().Select(a => a!.AsArray()));
+        private readonly bool firstDown = step["first_socket_down"]?.GetValue<bool>() ?? false;
+        private readonly bool none = step["no_socket"]?.GetValue<bool>() ?? false;
+        private AliceBlueMarketSocket? held;
+
+        public List<JsonNode> Sent { get; } = [];
+
+        public int Forced { get; private set; }
+
+        private AliceBlueMarketSocket Make(bool connected)
+        {
+            AliceBlueMarketSocket? socket = null;
+            socket = new AliceBlueMarketSocket(text =>
+            {
+                var frame = JsonNode.Parse(text)!;
+                Sent.Add(frame);
+                if ((string?)frame["t"] is not ("t" or "d")) return;
+                foreach (var item in frames.Count > 0 ? frames.Dequeue() : []) socket!.OnMessage(item is JsonValue v && v.TryGetValue<string>(out var raw) ? raw : item!.ToJsonString());
+            }) { Connected = connected };
+            held = socket;
+            return socket;
+        }
+
+        public Task<AliceBlueMarketSocket?> GetAsync(EPTradeBot.Core.Brokers.BrokerSession session, bool forceNew, CancellationToken cancellationToken)
+        {
+            if (forceNew)
+            {
+                Forced++;
+                return Task.FromResult(none ? null : Make(true));
+            }
+
+            if (none) return Task.FromResult<AliceBlueMarketSocket?>(null);
+            return Task.FromResult<AliceBlueMarketSocket?>(held ?? Make(!firstDown));
+        }
+    }
+
+    private static string Reason(string python) => python switch
+    {
+        var p when p.Contains("No quote data received", StringComparison.Ordinal) => "AliceBlue did not send a quote for",
+        var p when p.Contains("No market depth received", StringComparison.Ordinal) => "AliceBlue did not send the market depth for",
+        var p when p.Contains("WebSocket connection unavailable", StringComparison.Ordinal) => "AliceBlue market data could not be reached",
+        _ => python,
+    };
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public async Task Matches_the_python_client(string name)
+    {
+        var fixtures = BrokerContractHost.Load(File);
+        var rows = fixtures["symbols"]!.AsArray().OfType<JsonObject>().Select(s => new EPTradeBot.Core.Brokers.SymbolRecord(s["symbol"]!.GetValue<string>(), s["brsymbol"]!.GetValue<string>(), s["exchange"]!.GetValue<string>(), s["brexchange"]!.GetValue<string>(),
+            s["token"]!.GetValue<string>(), s["name"]?.GetValue<string>(), null, null, 1, s["instrumenttype"]?.GetValue<string>(), 0.05)).ToList();
+        var options = new EPTradeBot.Core.Configuration.BrokerOptions();
+        options.RetryBackoffMs["aliceblue"] = 0;
+        var session = new EPTradeBot.Core.Brokers.BrokerSession(Guid.NewGuid(), "aliceblue", fixtures["access_token"]!.GetValue<string>(), null, fixtures["client_id"]!.GetValue<string>(), new Dictionary<string, string>());
+        var sessions = new EPTradeBot.Infrastructure.Brokers.BrokerSessionFactory(null!, new Options(options));
+        var scenario = fixtures["scenarios"]!.AsArray().OfType<JsonObject>().Single(s => s["name"]!.GetValue<string>() == name);
+        // The sockets outlive a step (a second quote in a row reuses the first's socket), so one script serves the scenario.
+        Script? sockets = null;
+        var index = 0;
+        foreach (var entry in scenario["steps"]!.AsArray().OfType<JsonObject>())
+        {
+            var step = entry["step"]!.AsObject();
+            var kind = step.First().Key;
+            var inner = step[kind]!.AsObject();
+            var result = entry["result"]!.AsObject();
+            var label = $"{name} step {++index} ({kind})";
+            sockets = new Script(inner);
+            var plugin = new EPTradeBot.Infrastructure.Brokers.AliceBlue.AliceBluePlugin(null!, sessions, new Master(rows), TimeProvider.System, sockets);
+            JsonNode? actual = null;
+            string? error = null;
+            try
+            {
+                actual = kind switch
+                {
+                    "quote" => await plugin.GetQuoteAsync(session, inner["symbol"]!.GetValue<string>(), inner["exchange"]!.GetValue<string>(), CancellationToken.None),
+                    "depth" => await plugin.GetDepthAsync(session, inner["symbol"]!.GetValue<string>(), inner["exchange"]!.GetValue<string>(), CancellationToken.None),
+                    _ => await plugin.GetMultiQuotesAsync(session, inner["symbols"]!.AsArray().OfType<JsonObject>().Select(s => rows.FirstOrDefault(r => r.Symbol == s["symbol"]!.GetValue<string>() && r.Exchange == s["exchange"]!.GetValue<string>())).OfType<EPTradeBot.Core.Brokers.SymbolRecord>().ToList(), CancellationToken.None),
+                };
+            }
+            catch (EPTradeBot.Core.Brokers.BrokerException ex)
+            {
+                error = ex.Message;
+            }
+
+            if (result["error"] is JsonValue expectedError)
+            {
+                Assert.True(error is not null, $"{label}: expected an error ({expectedError.GetValue<string>()}), got an answer {actual?.ToJsonString()}");
+                Assert.Contains(Reason(expectedError.GetValue<string>()), error!, StringComparison.Ordinal);
+            }
+            else
+            {
+                Assert.True(error is null, $"{label}: unexpected error: {error}");
+                var expected = result["result"]!.DeepClone();
+                // A symbol the master does not know is refused by the platform before this plugin is asked.
+                if (kind == "multiquotes") expected = new JsonArray(expected.AsArray().Where(i => (string?)i!["error"] != "Could not resolve token").Select(i => i!.DeepClone()).ToArray());
+                var diffs = JsonCompare.Differences(expected, actual);
+                Assert.True(diffs.Count == 0, $"{label}: the answer differs:\n{string.Join("\n", diffs)}");
+            }
+
+            var expectedSent = result["sent"]!.AsArray();
+            Assert.True(expectedSent.Count == sockets.Sent.Count, $"{label}: expected {expectedSent.Count} frames, got {sockets.Sent.Count}: {string.Join(" | ", sockets.Sent.Select(f => f.ToJsonString()))}");
+            for (var i = 0; i < expectedSent.Count; i++)
+            {
+                var diffs = JsonCompare.Differences(expectedSent[i], sockets.Sent[i]);
+                Assert.True(diffs.Count == 0, $"{label}: frame {i} differs:\n{string.Join("\n", diffs)}");
+            }
+
+            Assert.Equal(result["forced"]!.GetValue<int>(), sockets.Forced);
+        }
+    }
+}
+
+/// <summary>The real socket pool against a local market-data server: the session is made over REST, the connect frame is sent and answered, a subscribe is answered with a tick, and the socket is given back with an unsubscribe.</summary>
+public sealed class AliceBlueSocketPoolTests
+{
+    private sealed class Options(EPTradeBot.Core.Configuration.BrokerOptions value) : Microsoft.Extensions.Options.IOptionsMonitor<EPTradeBot.Core.Configuration.BrokerOptions>
+    {
+        public EPTradeBot.Core.Configuration.BrokerOptions CurrentValue => value;
+
+        public EPTradeBot.Core.Configuration.BrokerOptions Get(string? name) => value;
+
+        public IDisposable? OnChange(Action<EPTradeBot.Core.Configuration.BrokerOptions, string?> listener) => null;
+    }
+
+    private sealed class Rest : IHttpClientFactory
+    {
+        public List<string> Paths { get; } = [];
+
+        public HttpClient CreateClient(string name) => new(new Handler(this));
+
+        private sealed class Handler(Rest owner) : HttpMessageHandler
+        {
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                owner.Paths.Add(request.RequestUri!.AbsolutePath);
+                return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK) { Content = new StringContent("""{"status":"Ok"}""", System.Text.Encoding.UTF8, "application/json") });
+            }
+        }
+    }
+
+    private sealed class Master : EPTradeBot.Core.Brokers.ISymbolMaster
+    {
+        public Task<EPTradeBot.Core.Brokers.SymbolRecord?> FindAsync(string broker, string symbol, string exchange, CancellationToken cancellationToken) =>
+            Task.FromResult<EPTradeBot.Core.Brokers.SymbolRecord?>(new(symbol, symbol + "-EQ", exchange, exchange, "3045", null, null, null, 1, "EQ", 0.05));
+
+        public Task<EPTradeBot.Core.Brokers.SymbolRecord?> FindByBrokerSymbolAsync(string broker, string brokerSymbol, string exchange, CancellationToken cancellationToken) => Task.FromResult<EPTradeBot.Core.Brokers.SymbolRecord?>(null);
+
+        public Task<EPTradeBot.Core.Brokers.SymbolRecord?> FindByTokenAsync(string broker, string token, string exchange, CancellationToken cancellationToken) => Task.FromResult<EPTradeBot.Core.Brokers.SymbolRecord?>(null);
+    }
+
+    /// <summary>A server that answers the connect frame, answers a tick subscribe with a quote and records everything it was sent.</summary>
+    private static async Task ServeAsync(System.Net.HttpListener listener, List<string> received, CancellationToken stop)
+    {
+        var context = await listener.GetContextAsync();
+        var socket = (await context.AcceptWebSocketAsync(null)).WebSocket;
+        var buffer = new byte[8192];
+        while (!stop.IsCancellationRequested && socket.State == System.Net.WebSockets.WebSocketState.Open)
+        {
+            var result = await socket.ReceiveAsync(buffer, stop);
+            if (result.MessageType == System.Net.WebSockets.WebSocketMessageType.Close) break;
+            var text = System.Text.Encoding.UTF8.GetString(buffer, 0, result.Count);
+            lock (received) received.Add(text);
+            var frame = JsonNode.Parse(text)!;
+            string? reply = (string?)frame["t"] switch
+            {
+                "c" => """{"t":"ck","s":"OK"}""",
+                "t" => """{"t":"tk","e":"NSE","tk":"3045","lp":"805.45","o":"801","h":"809.5","l":"799","c":"800","v":"1000","oi":"5","bp1":"805.4","sp1":"805.5"}""",
+                _ => null,
+            };
+            if (reply is not null) await socket.SendAsync(System.Text.Encoding.UTF8.GetBytes(reply), System.Net.WebSockets.WebSocketMessageType.Text, true, stop);
+        }
+    }
+
+    [Fact]
+    public async Task A_quote_is_read_from_a_real_socket()
+    {
+        using var listener = new System.Net.HttpListener();
+        int port;
+        using (var probe = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0))
+        {
+            probe.Start();
+            port = ((System.Net.IPEndPoint)probe.LocalEndpoint).Port;
+            probe.Stop();
+        }
+
+        listener.Prefixes.Add($"http://127.0.0.1:{port}/");
+        listener.Start();
+        var received = new List<string>();
+        using var stop = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+        var server = ServeAsync(listener, received, stop.Token);
+        var options = new EPTradeBot.Core.Configuration.BrokerOptions();
+        options.FeedUrls["aliceblue"] = $"ws://127.0.0.1:{port}/";
+        var rest = new Rest();
+        var plugin = new EPTradeBot.Infrastructure.Brokers.AliceBlue.AliceBluePlugin(rest, new EPTradeBot.Infrastructure.Brokers.BrokerSessionFactory(null!, new Options(options)), new Master(), TimeProvider.System);
+        var session = new EPTradeBot.Core.Brokers.BrokerSession(Guid.NewGuid(), "aliceblue", "ab-session-pool", null, "AB1234", new Dictionary<string, string>());
+
+        var quote = await plugin.GetQuoteAsync(session, "SBIN", "NSE", stop.Token);
+
+        Assert.Equal(805.45, (double)quote["ltp"]!);
+        Assert.Equal(805.4, (double)quote["bid"]!);
+        Assert.Equal(["/open-api/od/v1/profile/invalidateWsSess", "/open-api/od/v1/profile/createWsSess"], rest.Paths.ToArray());
+        await Task.Delay(300);
+        string[] frames;
+        lock (received) frames = received.ToArray();
+        var connect = JsonNode.Parse(frames[0])!;
+        Assert.Equal("c", (string?)connect["t"]);
+        Assert.Equal("AB1234_API", (string?)connect["uid"]);
+        Assert.Equal("t,u", string.Join(',', frames.Skip(1).Select(f => (string?)JsonNode.Parse(f)!["t"])));
+        stop.Cancel();
+        listener.Stop();
+        try
+        {
+            await server;
+        }
+        catch (Exception ex) when (ex is OperationCanceledException or System.Net.HttpListenerException or System.Net.WebSockets.WebSocketException or ObjectDisposedException)
+        {
+        }
+    }
+
+    [Fact]
+    public async Task A_second_read_uses_the_same_socket_and_asks_for_no_new_session()
+    {
+        using var listener = new System.Net.HttpListener();
+        int port;
+        using (var probe = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0))
+        {
+            probe.Start();
+            port = ((System.Net.IPEndPoint)probe.LocalEndpoint).Port;
+            probe.Stop();
+        }
+
+        listener.Prefixes.Add($"http://127.0.0.1:{port}/");
+        listener.Start();
+        var received = new List<string>();
+        using var stop = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+        var server = ServeAsync(listener, received, stop.Token);
+        var options = new EPTradeBot.Core.Configuration.BrokerOptions();
+        options.FeedUrls["aliceblue"] = $"ws://127.0.0.1:{port}/";
+        var rest = new Rest();
+        var plugin = new EPTradeBot.Infrastructure.Brokers.AliceBlue.AliceBluePlugin(rest, new EPTradeBot.Infrastructure.Brokers.BrokerSessionFactory(null!, new Options(options)), new Master(), TimeProvider.System);
+        var session = new EPTradeBot.Core.Brokers.BrokerSession(Guid.NewGuid(), "aliceblue", "ab-session-pool-2", null, "AB1234", new Dictionary<string, string>());
+
+        await plugin.GetQuoteAsync(session, "SBIN", "NSE", stop.Token);
+        await plugin.GetQuoteAsync(session, "SBIN", "NSE", stop.Token);
+
+        Assert.Equal(2, rest.Paths.Count);
+        stop.Cancel();
+        listener.Stop();
+        try
+        {
+            await server;
+        }
+        catch (Exception ex) when (ex is OperationCanceledException or System.Net.HttpListenerException or System.Net.WebSockets.WebSocketException or ObjectDisposedException)
+        {
+        }
+    }
+
+    [Fact]
+    public async Task No_session_from_the_broker_means_no_socket()
+    {
+        var rest = new Rest();
+        var options = new EPTradeBot.Core.Configuration.BrokerOptions();
+        options.RetryBackoffMs["aliceblue"] = 0;
+        var plugin = new EPTradeBot.Infrastructure.Brokers.AliceBlue.AliceBluePlugin(new Rest(), new EPTradeBot.Infrastructure.Brokers.BrokerSessionFactory(null!, new Options(options)), new Master(), TimeProvider.System, new Nothing());
+        var session = new EPTradeBot.Core.Brokers.BrokerSession(Guid.NewGuid(), "aliceblue", "x", null, "AB1234", new Dictionary<string, string>());
+        var error = await Assert.ThrowsAsync<EPTradeBot.Core.Brokers.BrokerException>(() => plugin.GetDepthAsync(session, "SBIN", "NSE", CancellationToken.None));
+        Assert.Contains("could not be reached", error.Message, StringComparison.Ordinal);
+        _ = rest;
+    }
+
+    private sealed class Nothing : EPTradeBot.Infrastructure.Brokers.AliceBlue.IAliceBlueSockets
+    {
+        public Task<AliceBlueMarketSocket?> GetAsync(EPTradeBot.Core.Brokers.BrokerSession session, bool forceNew, CancellationToken cancellationToken) => Task.FromResult<AliceBlueMarketSocket?>(null);
+    }
 }

@@ -11,7 +11,7 @@ namespace EPTradeBot.Infrastructure.Brokers.AliceBlue;
 /// by AliceBlue; every other call shares a quota of 1800 a quarter hour, of which 50 are left unspent. A place goes as a one-item list.
 /// </summary>
 [BrokerPlugin]
-public sealed partial class AliceBluePlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
+public sealed partial class AliceBluePlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, IAliceBlueSockets? sockets = null) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds
 {
     private const string DefaultBaseUrl = "https://a3.aliceblueonline.com";
     private const string Display = "AliceBlue";
@@ -22,7 +22,7 @@ public sealed partial class AliceBluePlugin(IHttpClientFactory http, BrokerSessi
 
     public string Name => "aliceblue";
     public string DisplayName => Display;
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.History;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.History | BrokerCapability.Quotes | BrokerCapability.Depth;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey", "ApiSecret"];
 
     private HttpClient Client() => http.CreateClient(Name);
