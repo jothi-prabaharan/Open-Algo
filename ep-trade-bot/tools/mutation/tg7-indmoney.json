@@ -1,0 +1,2354 @@
+[
+ {
+  "name": "M1 IndMoneyPlugin.cs:34",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "    private static readonly Dictionary<string, double> Rates = new() { [\"order\"] = 10 * 0.8, [\"data\"] = 5 * 0.8, [\"quote\"] = 5 * 0.8, [\"non_trading\"] = 15 * 0.8 };",
+  "new": "    private static readonly Dictionary<string, double> Rates = new() { [\"order\"] = 11 * 0.8, [\"data\"] = 5 * 0.8, [\"quote\"] = 5 * 0.8, [\"non_trading\"] = 15 * 0.8 };",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M2 IndMoneyPlugin.cs:34",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "    private static readonly Dictionary<string, double> Rates = new() { [\"order\"] = 10 * 0.8, [\"data\"] = 5 * 0.8, [\"quote\"] = 5 * 0.8, [\"non_trading\"] = 15 * 0.8 };",
+  "new": "    private static readonly Dictionary<string, double> Rates = new() { [\"order\"] = 10 * 0.8, [\"data\"] = 6 * 0.8, [\"quote\"] = 5 * 0.8, [\"non_trading\"] = 15 * 0.8 };",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M3 IndMoneyPlugin.cs:34",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "    private static readonly Dictionary<string, double> Rates = new() { [\"order\"] = 10 * 0.8, [\"data\"] = 5 * 0.8, [\"quote\"] = 5 * 0.8, [\"non_trading\"] = 15 * 0.8 };",
+  "new": "    private static readonly Dictionary<string, double> Rates = new() { [\"order\"] = 10 * 0.8, [\"data\"] = 5 * 0.8, [\"quote\"] = 6 * 0.8, [\"non_trading\"] = 15 * 0.8 };",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M4 IndMoneyPlugin.cs:34",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "    private static readonly Dictionary<string, double> Rates = new() { [\"order\"] = 10 * 0.8, [\"data\"] = 5 * 0.8, [\"quote\"] = 5 * 0.8, [\"non_trading\"] = 15 * 0.8 };",
+  "new": "    private static readonly Dictionary<string, double> Rates = new() { [\"order\"] = 10 * 0.8, [\"data\"] = 5 * 0.8, [\"quote\"] = 5 * 0.8, [\"non_trading\"] = 16 * 0.8 };",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M5 IndMoneyPlugin.cs:43",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (path.StartsWith(\"/market/historical\", StringComparison.Ordinal) || path.StartsWith(\"/market/instruments\", StringComparison.Ordinal)) return \"data\";",
+  "new": "        if (path.StartsWith(\"/market/historical\", StringComparison.Ordinal) && path.StartsWith(\"/market/instruments\", StringComparison.Ordinal)) return \"data\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M6 IndMoneyPlugin.cs:44",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (method == HttpMethod.Post && OrderWritePaths.Contains(path)) return \"order\";",
+  "new": "        if (method != HttpMethod.Post && OrderWritePaths.Contains(path)) return \"order\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M7 IndMoneyPlugin.cs:44",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (method == HttpMethod.Post && OrderWritePaths.Contains(path)) return \"order\";",
+  "new": "        if (method == HttpMethod.Post || OrderWritePaths.Contains(path)) return \"order\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M8 IndMoneyPlugin.cs:52",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        var interval = sessions.HistoryGap(Name, TimeSpan.FromSeconds(1 / Rates[bucket]));",
+  "new": "        var interval = sessions.HistoryGap(Name, TimeSpan.FromSeconds(2 / Rates[bucket]));",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M9 IndMoneyPlugin.cs:62",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (wait > 0) await Task.Delay(TimeSpan.FromSeconds((double)wait / Stopwatch.Frequency), cancellationToken);",
+  "new": "        if (wait >= 0) await Task.Delay(TimeSpan.FromSeconds((double)wait / Stopwatch.Frequency), cancellationToken);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M10 IndMoneyPlugin.cs:69",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        var retries = bucket == \"order\" ? 0 : 3;",
+  "new": "        var retries = bucket != \"order\" ? 0 : 3;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M11 IndMoneyPlugin.cs:69",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        var retries = bucket == \"order\" ? 0 : 3;",
+  "new": "        var retries = bucket == \"order\" ? 0 : 4;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M12 IndMoneyPlugin.cs:74",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            if (parts.Length > 0) url += \"?\" + parts;",
+  "new": "            if (parts.Length >= 0) url += \"?\" + parts;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M13 IndMoneyPlugin.cs:88",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "                if (status == 429 && attempt < retries)",
+  "new": "                if (status == 429 && attempt <= retries)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M14 IndMoneyPlugin.cs:88",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "                if (status == 429 && attempt < retries)",
+  "new": "                if (status != 429 && attempt < retries)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M15 IndMoneyPlugin.cs:88",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "                if (status == 429 && attempt < retries)",
+  "new": "                if (status == 429 || attempt < retries)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M16 IndMoneyPlugin.cs:88",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "                if (status == 429 && attempt < retries)",
+  "new": "                if (status == 430 && attempt < retries)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M17 IndMoneyPlugin.cs:90",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "                    var after = response.Headers.TryGetValues(\"Retry-After\", out var values) && double.TryParse(values.First(), NumberStyles.Float, CultureInfo.InvariantCulture, out var seconds)",
+  "new": "                    var after = response.Headers.TryGetValues(\"Retry-After\", out var values) || double.TryParse(values.First(), NumberStyles.Float, CultureInfo.InvariantCulture, out var seconds)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M18 IndMoneyPlugin.cs:91",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "                        ? Math.Min(Math.Max(seconds, 0.05), 30) : Math.Min(Math.Pow(2, attempt), 30);",
+  "new": "                        ? Math.Min(Math.Max(seconds, 0.05), 31) : Math.Min(Math.Pow(2, attempt), 30);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M19 IndMoneyPlugin.cs:91",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "                        ? Math.Min(Math.Max(seconds, 0.05), 30) : Math.Min(Math.Pow(2, attempt), 30);",
+  "new": "                        ? Math.Min(Math.Max(seconds, 0.05), 30) : Math.Min(Math.Pow(3, attempt), 30);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M20 IndMoneyPlugin.cs:91",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "                        ? Math.Min(Math.Max(seconds, 0.05), 30) : Math.Min(Math.Pow(2, attempt), 30);",
+  "new": "                        ? Math.Min(Math.Max(seconds, 0.05), 30) : Math.Min(Math.Pow(2, attempt), 31);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M21 IndMoneyPlugin.cs:110",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "                throw new BrokerException($\"{Display} did not answer. Check your connection, then try again.\", 502, ex);",
+  "new": "                throw new BrokerException($\"{Display} did not answer. Check your connection, then try again.\", 503, ex);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M22 IndMoneyPlugin.cs:119",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (Str(o[\"status\"]) == \"failure\" && o[\"error\"] is JsonObject e && Truthy(e[\"msg\"])) return Str(e[\"msg\"]);",
+  "new": "        if (Str(o[\"status\"]) != \"failure\" && o[\"error\"] is JsonObject e && Truthy(e[\"msg\"])) return Str(e[\"msg\"]);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M23 IndMoneyPlugin.cs:119",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (Str(o[\"status\"]) == \"failure\" && o[\"error\"] is JsonObject e && Truthy(e[\"msg\"])) return Str(e[\"msg\"]);",
+  "new": "        if (Str(o[\"status\"]) == \"failure\" || o[\"error\"] is JsonObject e && Truthy(e[\"msg\"])) return Str(e[\"msg\"]);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M24 IndMoneyPlugin.cs:121",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        return o[\"error\"] is JsonObject inner && Truthy(inner[\"msg\"]) ? Str(inner[\"msg\"]) : null;",
+  "new": "        return o[\"error\"] is JsonObject inner || Truthy(inner[\"msg\"]) ? Str(inner[\"msg\"]) : null;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M25 IndMoneyPlugin.cs:124",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "    private static bool IsSuccess(JsonNode? body) => body is JsonObject o && Str(o[\"status\"]) == \"success\";",
+  "new": "    private static bool IsSuccess(JsonNode? body) => body is JsonObject o && Str(o[\"status\"]) != \"success\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M26 IndMoneyPlugin.cs:124",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "    private static bool IsSuccess(JsonNode? body) => body is JsonObject o && Str(o[\"status\"]) == \"success\";",
+  "new": "    private static bool IsSuccess(JsonNode? body) => body is JsonObject o || Str(o[\"status\"]) == \"success\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M27 IndMoneyPlugin.cs:130",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (status is not (200 or 201)) return (null, Reason(body) ?? $\"HTTP {status}\");",
+  "new": "        if (status is not (201 or 201)) return (null, Reason(body) ?? $\"HTTP {status}\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M28 IndMoneyPlugin.cs:130",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (status is not (200 or 201)) return (null, Reason(body) ?? $\"HTTP {status}\");",
+  "new": "        if (status is not (200 or 202)) return (null, Reason(body) ?? $\"HTTP {status}\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M29 IndMoneyPlugin.cs:131",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (string.IsNullOrWhiteSpace(text) || body is null) return (null, \"no reason was given\");",
+  "new": "        if (string.IsNullOrWhiteSpace(text) && body is null) return (null, \"no reason was given\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M30 IndMoneyPlugin.cs:134",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            if (o[\"success\"] is JsonValue s && s.TryGetValue<bool>(out var flag) && !flag) return (null, Reason(o) ?? \"no reason was given\");",
+  "new": "            if (o[\"success\"] is JsonValue s || s.TryGetValue<bool>(out var flag) && !flag) return (null, Reason(o) ?? \"no reason was given\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M31 IndMoneyPlugin.cs:136",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            if (Str(o[\"status\"]) == \"success\" && o.ContainsKey(\"data\")) return (o[\"data\"], null);",
+  "new": "            if (Str(o[\"status\"]) != \"success\" && o.ContainsKey(\"data\")) return (o[\"data\"], null);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M32 IndMoneyPlugin.cs:136",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            if (Str(o[\"status\"]) == \"success\" && o.ContainsKey(\"data\")) return (o[\"data\"], null);",
+  "new": "            if (Str(o[\"status\"]) == \"success\" || o.ContainsKey(\"data\")) return (o[\"data\"], null);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M33 IndMoneyPlugin.cs:158",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (body is not JsonObject o || o[\"data\"] is not JsonObject data) return null;",
+  "new": "        if (body is not JsonObject o && o[\"data\"] is not JsonObject data) return null;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M34 IndMoneyPlugin.cs:171",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (info is null) return BrokerCallResult.Refused(400, $\"{order.Symbol} on {order.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\");",
+  "new": "        if (info is null) return BrokerCallResult.Refused(401, $\"{order.Symbol} on {order.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M35 IndMoneyPlugin.cs:174",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (exchange is not (\"NSE\" or \"BSE\" or \"NFO\" or \"BFO\" or \"CDS\" or \"BCD\") || apiExchange is not (\"NSE\" or \"BSE\"))",
+  "new": "        if (exchange is not (\"NSE\" or \"BSE\" or \"NFO\" or \"BFO\" or \"CDS\" or \"BCD\") && apiExchange is not (\"NSE\" or \"BSE\"))",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M36 IndMoneyPlugin.cs:175",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            return BrokerCallResult.Refused(400, $\"{Display} takes orders on the NSE and BSE segments only; {order.Exchange} cannot be traded here.\");",
+  "new": "            return BrokerCallResult.Refused(401, $\"{Display} takes orders on the NSE and BSE segments only; {order.Exchange} cannot be traded here.\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M37 IndMoneyPlugin.cs:176",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        var algo = apiExchange == \"BSE\" ? \"9999999999999999\" : \"99999\";",
+  "new": "        var algo = apiExchange != \"BSE\" ? \"9999999999999999\" : \"99999\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M38 IndMoneyPlugin.cs:176",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        var algo = apiExchange == \"BSE\" ? \"9999999999999999\" : \"99999\";",
+  "new": "        var algo = apiExchange == \"BSE\" ? \"10000000000000000\" : \"99999\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M39 IndMoneyPlugin.cs:176",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        var algo = apiExchange == \"BSE\" ? \"9999999999999999\" : \"99999\";",
+  "new": "        var algo = apiExchange == \"BSE\" ? \"9999999999999999\" : \"100000\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M40 IndMoneyPlugin.cs:183",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            if (trigger <= 0) return BrokerCallResult.Refused(400, $\"A trigger price is required for a {order.PriceType} order on {order.Symbol}.\");",
+  "new": "            if (trigger < 0) return BrokerCallResult.Refused(400, $\"A trigger price is required for a {order.PriceType} order on {order.Symbol}.\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M41 IndMoneyPlugin.cs:183",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            if (trigger <= 0) return BrokerCallResult.Refused(400, $\"A trigger price is required for a {order.PriceType} order on {order.Symbol}.\");",
+  "new": "            if (trigger <= 0) return BrokerCallResult.Refused(401, $\"A trigger price is required for a {order.PriceType} order on {order.Symbol}.\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M42 IndMoneyPlugin.cs:184",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            if (apiExchange != \"NSE\") return BrokerCallResult.Refused(400, $\"{Display} takes stop orders on the NSE only; {order.Exchange} was asked for {order.Symbol}.\");",
+  "new": "            if (apiExchange == \"NSE\") return BrokerCallResult.Refused(400, $\"{Display} takes stop orders on the NSE only; {order.Exchange} was asked for {order.Symbol}.\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M43 IndMoneyPlugin.cs:184",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            if (apiExchange != \"NSE\") return BrokerCallResult.Refused(400, $\"{Display} takes stop orders on the NSE only; {order.Exchange} was asked for {order.Symbol}.\");",
+  "new": "            if (apiExchange != \"NSE\") return BrokerCallResult.Refused(401, $\"{Display} takes stop orders on the NSE only; {order.Exchange} was asked for {order.Symbol}.\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M44 IndMoneyPlugin.cs:185",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            var limit = order.PriceType == \"SL\" && (double)order.Price > 0",
+  "new": "            var limit = order.PriceType == \"SL\" && (double)order.Price >= 0",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M45 IndMoneyPlugin.cs:185",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            var limit = order.PriceType == \"SL\" && (double)order.Price > 0",
+  "new": "            var limit = order.PriceType != \"SL\" && (double)order.Price > 0",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M46 IndMoneyPlugin.cs:185",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            var limit = order.PriceType == \"SL\" && (double)order.Price > 0",
+  "new": "            var limit = order.PriceType == \"SL\" || (double)order.Price > 0",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M47 IndMoneyPlugin.cs:187",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "                : info.TickSize is { } tick and > 0 ? MarketPriceProtection.ProtectedPrice(trigger, action, MarketPriceProtection.InstrumentType(info.InstrumentType, order.Symbol), tick) : trigger;",
+  "new": "                : info.TickSize is { } tick and >= 0 ? MarketPriceProtection.ProtectedPrice(trigger, action, MarketPriceProtection.InstrumentType(info.InstrumentType, order.Symbol), tick) : trigger;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M48 IndMoneyPlugin.cs:197",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            var type = order.PriceType == \"LIMIT\" ? \"LIMIT\" : \"MARKET\";",
+  "new": "            var type = order.PriceType != \"LIMIT\" ? \"LIMIT\" : \"MARKET\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M49 IndMoneyPlugin.cs:202",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "                [\"qty\"] = order.Quantity, [\"is_amo\"] = false, [\"algo_id\"] = algo,",
+  "new": "                [\"qty\"] = order.Quantity, [\"is_amo\"] = true, [\"algo_id\"] = algo,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M50 IndMoneyPlugin.cs:204",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            if (type == \"LIMIT\") payload[\"limit_price\"] = Num((double)order.Price);",
+  "new": "            if (type != \"LIMIT\") payload[\"limit_price\"] = Num((double)order.Price);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M51 IndMoneyPlugin.cs:212",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        catch (BrokerException ex) when (ex.HttpStatus == 502)",
+  "new": "        catch (BrokerException ex) when (ex.HttpStatus != 502)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M52 IndMoneyPlugin.cs:212",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        catch (BrokerException ex) when (ex.HttpStatus == 502)",
+  "new": "        catch (BrokerException ex) when (ex.HttpStatus == 503)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M53 IndMoneyPlugin.cs:214",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M54 IndMoneyPlugin.cs:214",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(true, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M55 IndMoneyPlugin.cs:214",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 503, $\"The order was sent to {Display} but no reply came back, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M56 IndMoneyPlugin.cs:217",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M57 IndMoneyPlugin.cs:217",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(true, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M58 IndMoneyPlugin.cs:217",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 502, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "        if (reply.Body is not JsonObject answer) return new BrokerCallResult(false, 503, $\"{Display} could not confirm the order, so it may have been placed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M59 IndMoneyPlugin.cs:218",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (reply.Status is not (200 or 201)) return BrokerCallResult.Refused(reply.Status, Reason(answer) ?? $\"{Display} refused the order.\");",
+  "new": "        if (reply.Status is not (201 or 201)) return BrokerCallResult.Refused(reply.Status, Reason(answer) ?? $\"{Display} refused the order.\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M60 IndMoneyPlugin.cs:218",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (reply.Status is not (200 or 201)) return BrokerCallResult.Refused(reply.Status, Reason(answer) ?? $\"{Display} refused the order.\");",
+  "new": "        if (reply.Status is not (200 or 202)) return BrokerCallResult.Refused(reply.Status, Reason(answer) ?? $\"{Display} refused the order.\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M61 IndMoneyPlugin.cs:223",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M62 IndMoneyPlugin.cs:223",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(true, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M63 IndMoneyPlugin.cs:223",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 503, $\"{Display} accepted the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M64 IndMoneyPlugin.cs:228",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"{Display} placed the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 502, $\"{Display} placed the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: false);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M65 IndMoneyPlugin.cs:228",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"{Display} placed the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(true, 502, $\"{Display} placed the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M66 IndMoneyPlugin.cs:228",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            return new BrokerCallResult(false, 502, $\"{Display} placed the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "new": "            return new BrokerCallResult(false, 503, $\"{Display} placed the order but sent no order number, so it cannot be followed. Check the order book on {Display} before trying again.\", MayHaveBeenSent: true);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M67 IndMoneyPlugin.cs:229",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        return BrokerCallResult.Refused(400, Reason(answer) ?? $\"{Display} refused the order.\");",
+  "new": "        return BrokerCallResult.Refused(401, Reason(answer) ?? $\"{Display} refused the order.\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M68 IndMoneyPlugin.cs:235",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (orderId.StartsWith(\"GTT-\", StringComparison.Ordinal)) return true;",
+  "new": "        if (orderId.StartsWith(\"GTT-\", StringComparison.Ordinal)) return false;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M69 IndMoneyPlugin.cs:237",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (error is not null || data is not JsonArray rows) return false;",
+  "new": "        if (error is not null && data is not JsonArray rows) return false;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M70 IndMoneyPlugin.cs:237",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (error is not null || data is not JsonArray rows) return false;",
+  "new": "        if (error is not null || data is not JsonArray rows) return true;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M71 IndMoneyPlugin.cs:239",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            if ((Str(row[\"id\"]) ?? \"\") == orderId) return SmartTypes.Contains((Str(row[\"order_type\"]) ?? \"\").ToUpperInvariant());",
+  "new": "            if ((Str(row[\"id\"]) ?? \"\") != orderId) return SmartTypes.Contains((Str(row[\"order_type\"]) ?? \"\").ToUpperInvariant());",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M72 IndMoneyPlugin.cs:240",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        return false;",
+  "new": "        return true;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M73 IndMoneyPlugin.cs:249",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            payload[\"algo_id\"] = \"99999\";",
+  "new": "            payload[\"algo_id\"] = \"100000\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M74 IndMoneyPlugin.cs:250",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "            if (change.TriggerPrice != 0)",
+  "new": "            if (change.TriggerPrice == 0)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M75 IndMoneyPlugin.cs:259",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (body is JsonObject && status == 200 && IsSuccess(body)) return BrokerCallResult.Success(change.OrderId);",
+  "new": "        if (body is JsonObject && status != 200 && IsSuccess(body)) return BrokerCallResult.Success(change.OrderId);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M76 IndMoneyPlugin.cs:259",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (body is JsonObject && status == 200 && IsSuccess(body)) return BrokerCallResult.Success(change.OrderId);",
+  "new": "        if (body is JsonObject || status == 200 && IsSuccess(body)) return BrokerCallResult.Success(change.OrderId);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M77 IndMoneyPlugin.cs:259",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (body is JsonObject && status == 200 && IsSuccess(body)) return BrokerCallResult.Success(change.OrderId);",
+  "new": "        if (body is JsonObject && status == 201 && IsSuccess(body)) return BrokerCallResult.Success(change.OrderId);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M78 IndMoneyPlugin.cs:260",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        return BrokerCallResult.Refused(status is >= 400 ? status : 400, Reason(body) ?? \"Failed to modify order\");",
+  "new": "        return BrokerCallResult.Refused(status is > 400 ? status : 400, Reason(body) ?? \"Failed to modify order\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M79 IndMoneyPlugin.cs:260",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        return BrokerCallResult.Refused(status is >= 400 ? status : 400, Reason(body) ?? \"Failed to modify order\");",
+  "new": "        return BrokerCallResult.Refused(status is >= 401 ? status : 400, Reason(body) ?? \"Failed to modify order\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M80 IndMoneyPlugin.cs:260",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        return BrokerCallResult.Refused(status is >= 400 ? status : 400, Reason(body) ?? \"Failed to modify order\");",
+  "new": "        return BrokerCallResult.Refused(status is >= 400 ? status : 401, Reason(body) ?? \"Failed to modify order\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M81 IndMoneyPlugin.cs:268",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (body is JsonObject && status == 200 && IsSuccess(body)) return BrokerCallResult.Success(orderId);",
+  "new": "        if (body is JsonObject && status != 200 && IsSuccess(body)) return BrokerCallResult.Success(orderId);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M82 IndMoneyPlugin.cs:268",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (body is JsonObject && status == 200 && IsSuccess(body)) return BrokerCallResult.Success(orderId);",
+  "new": "        if (body is JsonObject || status == 200 && IsSuccess(body)) return BrokerCallResult.Success(orderId);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M83 IndMoneyPlugin.cs:268",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        if (body is JsonObject && status == 200 && IsSuccess(body)) return BrokerCallResult.Success(orderId);",
+  "new": "        if (body is JsonObject && status == 201 && IsSuccess(body)) return BrokerCallResult.Success(orderId);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M84 IndMoneyPlugin.cs:269",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        return BrokerCallResult.Refused(status is >= 400 ? status : 400, Reason(body) ?? \"Failed to cancel order\");",
+  "new": "        return BrokerCallResult.Refused(status is > 400 ? status : 400, Reason(body) ?? \"Failed to cancel order\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M85 IndMoneyPlugin.cs:269",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        return BrokerCallResult.Refused(status is >= 400 ? status : 400, Reason(body) ?? \"Failed to cancel order\");",
+  "new": "        return BrokerCallResult.Refused(status is >= 401 ? status : 400, Reason(body) ?? \"Failed to cancel order\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M86 IndMoneyPlugin.cs:269",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.cs",
+  "old": "        return BrokerCallResult.Refused(status is >= 400 ? status : 400, Reason(body) ?? \"Failed to cancel order\");",
+  "new": "        return BrokerCallResult.Refused(status is >= 400 ? status : 401, Reason(body) ?? \"Failed to cancel order\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M87 IndMoneyPlugin.Books.cs:29",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        if (id.Length > 0)",
+  "new": "        if (id.Length >= 0)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M88 IndMoneyPlugin.Books.cs:32",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            if (exch is \"NSE\" or \"BSE\") candidates = candidates.Where(c => c == exch || c == (exch == \"NSE\" ? \"NFO\" : \"BFO\")).ToArray();",
+  "new": "            if (exch is \"NSE\" or \"BSE\") candidates = candidates.Where(c => c != exch || c == (exch == \"NSE\" ? \"NFO\" : \"BFO\")).ToArray();",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M89 IndMoneyPlugin.Books.cs:32",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            if (exch is \"NSE\" or \"BSE\") candidates = candidates.Where(c => c == exch || c == (exch == \"NSE\" ? \"NFO\" : \"BFO\")).ToArray();",
+  "new": "            if (exch is \"NSE\" or \"BSE\") candidates = candidates.Where(c => c == exch && c == (exch == \"NSE\" ? \"NFO\" : \"BFO\")).ToArray();",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M90 IndMoneyPlugin.Books.cs:43",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        if (p == \"INTRADAY\") return \"MIS\";",
+  "new": "        if (p != \"INTRADAY\") return \"MIS\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M91 IndMoneyPlugin.Books.cs:45",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        if (p == \"MARGIN\") return \"NRML\";",
+  "new": "        if (p != \"MARGIN\") return \"NRML\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M92 IndMoneyPlugin.Books.cs:53",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        if (s == \"SL-PENDING\") return \"trigger pending\";",
+  "new": "        if (s != \"SL-PENDING\") return \"trigger pending\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M93 IndMoneyPlugin.Books.cs:70",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "                if (n != 0) return n;",
+  "new": "                if (n == 0) return n;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M94 IndMoneyPlugin.Books.cs:74",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            if (double.TryParse(text.Replace(\",\", \"\", StringComparison.Ordinal).Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) && parsed != 0) return parsed;",
+  "new": "            if (double.TryParse(text.Replace(\",\", \"\", StringComparison.Ordinal).Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) && parsed == 0) return parsed;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M95 IndMoneyPlugin.Books.cs:74",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            if (double.TryParse(text.Replace(\",\", \"\", StringComparison.Ordinal).Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) && parsed != 0) return parsed;",
+  "new": "            if (double.TryParse(text.Replace(\",\", \"\", StringComparison.Ordinal).Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) || parsed != 0) return parsed;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M96 IndMoneyPlugin.Books.cs:84",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        return Str(node) is { } s && double.TryParse(s.Replace(\",\", \"\", StringComparison.Ordinal).Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) ? parsed : fallback;",
+  "new": "        return Str(node) is { } s || double.TryParse(s.Replace(\",\", \"\", StringComparison.Ordinal).Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) ? parsed : fallback;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M97 IndMoneyPlugin.Books.cs:90",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        if (node is null || !Truthy(node)) return 0;",
+  "new": "        if (node is null && !Truthy(node)) return 0;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M98 IndMoneyPlugin.Books.cs:92",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        if (Str(node) is { } s && double.TryParse(s.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
+  "new": "        if (Str(node) is { } s || double.TryParse(s.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M99 IndMoneyPlugin.Books.cs:93",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        throw new BrokerException($\"{Display} sent {what} that could not be read as a number.\", 500);",
+  "new": "        throw new BrokerException($\"{Display} sent {what} that could not be read as a number.\", 501);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M100 IndMoneyPlugin.Books.cs:99",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        if (error is not null) throw new BrokerException($\"{Display} could not send the {what}: {error}.\", 500);",
+  "new": "        if (error is not null) throw new BrokerException($\"{Display} could not send the {what}: {error}.\", 501);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M101 IndMoneyPlugin.Books.cs:104",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        !string.IsNullOrEmpty(token) && await symbols.FindByTokenAsync(Name, token, exchange, cancellationToken) is { } found ? found.Symbol : fallback;",
+  "new": "        !string.IsNullOrEmpty(token) || await symbols.FindByTokenAsync(Name, token, exchange, cancellationToken) is { } found ? found.Symbol : fallback;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M102 IndMoneyPlugin.Books.cs:120",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            if (action == \"BUY\") buy++;",
+  "new": "            if (action != \"BUY\") buy++;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M103 IndMoneyPlugin.Books.cs:121",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            else if (action == \"SELL\") sell++;",
+  "new": "            else if (action != \"SELL\") sell++;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M104 IndMoneyPlugin.Books.cs:122",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            if (status == \"complete\") completed++;",
+  "new": "            if (status != \"complete\") completed++;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M105 IndMoneyPlugin.Books.cs:124",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            else if (status == \"rejected\") rejected++;",
+  "new": "            else if (status != \"rejected\") rejected++;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M106 IndMoneyPlugin.Books.cs:165",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            var info = Truthy(t[\"exch_order_id\"]) && byOrder.TryGetValue(Str(t[\"exch_order_id\"])!, out var found) ? found : null;",
+  "new": "            var info = Truthy(t[\"exch_order_id\"]) || byOrder.TryGetValue(Str(t[\"exch_order_id\"])!, out var found) ? found : null;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M107 IndMoneyPlugin.Books.cs:166",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            var exchangeHint = info is not null && Truthy(info[\"exchange\"]) ? Str(info[\"exchange\"]) : Str(t[\"exchange\"]);",
+  "new": "            var exchangeHint = info is not null || Truthy(info[\"exchange\"]) ? Str(info[\"exchange\"]) : Str(t[\"exchange\"]);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M108 IndMoneyPlugin.Books.cs:196",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "                failed ??= new BrokerException($\"{Display} could not send the {segment} {product} positions: {error}.\", 500);",
+  "new": "                failed ??= new BrokerException($\"{Display} could not send the {segment} {product} positions: {error}.\", 501);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M109 IndMoneyPlugin.Books.cs:217",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            if (BookFormatting.Number(row[\"net_qty\"] ?? row[\"net_quantity\"]) is { } nq && (long)nq == 0) continue;",
+  "new": "            if (BookFormatting.Number(row[\"net_qty\"] ?? row[\"net_quantity\"]) is { } nq && (long)nq != 0) continue;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M110 IndMoneyPlugin.Books.cs:217",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            if (BookFormatting.Number(row[\"net_qty\"] ?? row[\"net_quantity\"]) is { } nq && (long)nq == 0) continue;",
+  "new": "            if (BookFormatting.Number(row[\"net_qty\"] ?? row[\"net_quantity\"]) is { } nq || (long)nq == 0) continue;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M111 IndMoneyPlugin.Books.cs:219",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            if (token.Length == 0) continue;",
+  "new": "            if (token.Length != 0) continue;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M112 IndMoneyPlugin.Books.cs:225",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        if (scripOf.Count > 0)",
+  "new": "        if (scripOf.Count >= 0)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M113 IndMoneyPlugin.Books.cs:235",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "                        if (value is JsonObject q && q[\"live_price\"] is { } live && BookFormatting.Number(live) is { } price) prices[key] = price;",
+  "new": "                        if (value is JsonObject q || q[\"live_price\"] is { } live && BookFormatting.Number(live) is { } price) prices[key] = price;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M114 IndMoneyPlugin.Books.cs:249",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            var live = scripOf.TryGetValue(row, out var scrip) && prices.TryGetValue(scrip, out var p) ? p : (double?)null;",
+  "new": "            var live = scripOf.TryGetValue(row, out var scrip) || prices.TryGetValue(scrip, out var p) ? p : (double?)null;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M115 IndMoneyPlugin.Books.cs:251",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            var multiplier = row.ContainsKey(\"multiplier\") ? Float(row[\"multiplier\"], 1) : 1;",
+  "new": "            var multiplier = row.ContainsKey(\"multiplier\") ? Float(row[\"multiplier\"], 2) : 1;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M116 IndMoneyPlugin.Books.cs:251",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            var multiplier = row.ContainsKey(\"multiplier\") ? Float(row[\"multiplier\"], 1) : 1;",
+  "new": "            var multiplier = row.ContainsKey(\"multiplier\") ? Float(row[\"multiplier\"], 1) : 2;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M117 IndMoneyPlugin.Books.cs:256",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            else pnl = Float(row[\"realized_profit\"]) + (net != 0 && ltp != 0 ? (ltp - average) * net * multiplier : 0);",
+  "new": "            else pnl = Float(row[\"realized_profit\"]) + (net == 0 && ltp != 0 ? (ltp - average) * net * multiplier : 0);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M118 IndMoneyPlugin.Books.cs:256",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "            else pnl = Float(row[\"realized_profit\"]) + (net != 0 && ltp != 0 ? (ltp - average) * net * multiplier : 0);",
+  "new": "            else pnl = Float(row[\"realized_profit\"]) + (net != 0 || ltp != 0 ? (ltp - average) * net * multiplier : 0);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M119 IndMoneyPlugin.Books.cs:286",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        return new BrokerBook(rows, new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(investment, 2), [\"totalprofitandloss\"] = 0.0, [\"totalpnlpercentage\"] = 0.0 });",
+  "new": "        return new BrokerBook(rows, new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 3), [\"totalinvvalue\"] = BookFormatting.RoundPy(investment, 2), [\"totalprofitandloss\"] = 0.0, [\"totalpnlpercentage\"] = 0.0 });",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M120 IndMoneyPlugin.Books.cs:286",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        return new BrokerBook(rows, new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(investment, 2), [\"totalprofitandloss\"] = 0.0, [\"totalpnlpercentage\"] = 0.0 });",
+  "new": "        return new BrokerBook(rows, new JsonObject { [\"totalholdingvalue\"] = BookFormatting.RoundPy(value, 2), [\"totalinvvalue\"] = BookFormatting.RoundPy(investment, 3), [\"totalprofitandloss\"] = 0.0, [\"totalpnlpercentage\"] = 0.0 });",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M121 IndMoneyPlugin.Books.cs:292",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        if (error is not null || data is not JsonObject d || d.Count == 0) throw new BrokerException($\"{Display} could not send the funds: {error ?? \"no reason was given.\"}\", 500);",
+  "new": "        if (error is not null || data is not JsonObject d || d.Count != 0) throw new BrokerException($\"{Display} could not send the funds: {error ?? \"no reason was given.\"}\", 500);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M122 IndMoneyPlugin.Books.cs:292",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        if (error is not null || data is not JsonObject d || d.Count == 0) throw new BrokerException($\"{Display} could not send the funds: {error ?? \"no reason was given.\"}\", 500);",
+  "new": "        if (error is not null && data is not JsonObject d || d.Count == 0) throw new BrokerException($\"{Display} could not send the funds: {error ?? \"no reason was given.\"}\", 500);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M123 IndMoneyPlugin.Books.cs:292",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Books.cs",
+  "old": "        if (error is not null || data is not JsonObject d || d.Count == 0) throw new BrokerException($\"{Display} could not send the funds: {error ?? \"no reason was given.\"}\", 500);",
+  "new": "        if (error is not null || data is not JsonObject d || d.Count == 0) throw new BrokerException($\"{Display} could not send the funds: {error ?? \"no reason was given.\"}\", 501);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M124 IndMoneyPlugin.Data.cs:15",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "    private const int QuoteBatch = 500;",
+  "new": "    private const int QuoteBatch = 501;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M125 IndMoneyPlugin.Data.cs:16",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "    private static readonly TimeSpan BadScripTtl = TimeSpan.FromMinutes(5);",
+  "new": "    private static readonly TimeSpan BadScripTtl = TimeSpan.FromMinutes(6);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M126 IndMoneyPlugin.Data.cs:30",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        ScripSegments.TryGetValue(exchange, out var segment) ? $\"{segment}_{record.Token}\" : throw new BrokerException($\"{Display} does not give quotes for the {exchange} exchange.\", 400);",
+  "new": "        ScripSegments.TryGetValue(exchange, out var segment) ? $\"{segment}_{record.Token}\" : throw new BrokerException($\"{Display} does not give quotes for the {exchange} exchange.\", 401);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M127 IndMoneyPlugin.Data.cs:36",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (status != 200) throw new CallFailed($\"Indmoney API HTTP Error {status}: {text}\");",
+  "new": "        if (status == 200) throw new CallFailed($\"Indmoney API HTTP Error {status}: {text}\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M128 IndMoneyPlugin.Data.cs:36",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (status != 200) throw new CallFailed($\"Indmoney API HTTP Error {status}: {text}\");",
+  "new": "        if (status != 201) throw new CallFailed($\"Indmoney API HTTP Error {status}: {text}\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M129 IndMoneyPlugin.Data.cs:38",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (response[\"success\"] is JsonValue s && s.TryGetValue<bool>(out var ok) && ok) return response;",
+  "new": "        if (response[\"success\"] is JsonValue s || s.TryGetValue<bool>(out var ok) && ok) return response;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M130 IndMoneyPlugin.Data.cs:40",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        var hasData = data is JsonArray { Count: > 0 }",
+  "new": "        var hasData = data is JsonArray { Count: >= 0 }",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M131 IndMoneyPlugin.Data.cs:41",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            || (data is JsonObject d && (d[\"candles\"] is JsonArray { Count: > 0 } || d.Any(kv => kv.Value is JsonObject nested && nested[\"candles\"] is JsonArray { Count: > 0 })));",
+  "new": "            || (data is JsonObject d && (d[\"candles\"] is JsonArray { Count: >= 0 } || d.Any(kv => kv.Value is JsonObject nested && nested[\"candles\"] is JsonArray { Count: > 0 })));",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M132 IndMoneyPlugin.Data.cs:41",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            || (data is JsonObject d && (d[\"candles\"] is JsonArray { Count: > 0 } || d.Any(kv => kv.Value is JsonObject nested && nested[\"candles\"] is JsonArray { Count: > 0 })));",
+  "new": "            || (data is JsonObject d || (d[\"candles\"] is JsonArray { Count: > 0 } || d.Any(kv => kv.Value is JsonObject nested && nested[\"candles\"] is JsonArray { Count: > 0 })));",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M133 IndMoneyPlugin.Data.cs:41",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            || (data is JsonObject d && (d[\"candles\"] is JsonArray { Count: > 0 } || d.Any(kv => kv.Value is JsonObject nested && nested[\"candles\"] is JsonArray { Count: > 0 })));",
+  "new": "            && (data is JsonObject d && (d[\"candles\"] is JsonArray { Count: > 0 } || d.Any(kv => kv.Value is JsonObject nested && nested[\"candles\"] is JsonArray { Count: > 0 })));",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M134 IndMoneyPlugin.Data.cs:43",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (Str(response[\"status\"]) != \"success\") throw new CallFailed($\"Indmoney API Error ({(response[\"code\"] is { } c ? Str(c) : \"unknown\")}): {(Truthy(response[\"message\"]) ? Str(response[\"message\"]) : response[\"error\"] is { } e ? Str(e) : \"Unknown error\")}\");",
+  "new": "        if (Str(response[\"status\"]) == \"success\") throw new CallFailed($\"Indmoney API Error ({(response[\"code\"] is { } c ? Str(c) : \"unknown\")}): {(Truthy(response[\"message\"]) ? Str(response[\"message\"]) : response[\"error\"] is { } e ? Str(e) : \"Unknown error\")}\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M135 IndMoneyPlugin.Data.cs:52",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        return text.Length > 0 && double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var v) ? v : fallback;",
+  "new": "        return text.Length >= 0 && double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var v) ? v : fallback;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M136 IndMoneyPlugin.Data.cs:52",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        return text.Length > 0 && double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var v) ? v : fallback;",
+  "new": "        return text.Length > 0 || double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var v) ? v : fallback;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M137 IndMoneyPlugin.Data.cs:60",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (c[code] is JsonObject nested && (nested.ContainsKey(\"depth\") || nested.ContainsKey(\"aggregate\"))) return nested;",
+  "new": "        if (c[code] is JsonObject nested || (nested.ContainsKey(\"depth\") || nested.ContainsKey(\"aggregate\"))) return nested;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M138 IndMoneyPlugin.Data.cs:60",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (c[code] is JsonObject nested && (nested.ContainsKey(\"depth\") || nested.ContainsKey(\"aggregate\"))) return nested;",
+  "new": "        if (c[code] is JsonObject nested && (nested.ContainsKey(\"depth\") && nested.ContainsKey(\"aggregate\"))) return nested;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M139 IndMoneyPlugin.Data.cs:61",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (c.ContainsKey(\"depth\") || c.ContainsKey(\"aggregate\")) return c;",
+  "new": "        if (c.ContainsKey(\"depth\") && c.ContainsKey(\"aggregate\")) return c;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M140 IndMoneyPlugin.Data.cs:62",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (c.Count == 1 && c.First().Value is JsonObject only && (only.ContainsKey(\"depth\") || only.ContainsKey(\"aggregate\"))) return only;",
+  "new": "        if (c.Count != 1 && c.First().Value is JsonObject only && (only.ContainsKey(\"depth\") || only.ContainsKey(\"aggregate\"))) return only;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M141 IndMoneyPlugin.Data.cs:62",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (c.Count == 1 && c.First().Value is JsonObject only && (only.ContainsKey(\"depth\") || only.ContainsKey(\"aggregate\"))) return only;",
+  "new": "        if (c.Count == 1 || c.First().Value is JsonObject only && (only.ContainsKey(\"depth\") || only.ContainsKey(\"aggregate\"))) return only;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M142 IndMoneyPlugin.Data.cs:62",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (c.Count == 1 && c.First().Value is JsonObject only && (only.ContainsKey(\"depth\") || only.ContainsKey(\"aggregate\"))) return only;",
+  "new": "        if (c.Count == 1 && c.First().Value is JsonObject only && (only.ContainsKey(\"depth\") && only.ContainsKey(\"aggregate\"))) return only;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M143 IndMoneyPlugin.Data.cs:62",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (c.Count == 1 && c.First().Value is JsonObject only && (only.ContainsKey(\"depth\") || only.ContainsKey(\"aggregate\"))) return only;",
+  "new": "        if (c.Count == 2 && c.First().Value is JsonObject only && (only.ContainsKey(\"depth\") || only.ContainsKey(\"aggregate\"))) return only;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M144 IndMoneyPlugin.Data.cs:69",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (depth[\"depth\"] is JsonArray { Count: > 0 } levels && levels[0] is JsonObject first)",
+  "new": "        if (depth[\"depth\"] is JsonArray { Count: >= 0 } levels && levels[0] is JsonObject first)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M145 IndMoneyPlugin.Data.cs:69",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (depth[\"depth\"] is JsonArray { Count: > 0 } levels && levels[0] is JsonObject first)",
+  "new": "        if (depth[\"depth\"] is JsonArray { Count: > 0 } levels || levels[0] is JsonObject first)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M146 IndMoneyPlugin.Data.cs:71",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            if (first[\"buy\"] is JsonObject buy && buy.ContainsKey(\"price\")) bid = Clean(buy[\"price\"]);",
+  "new": "            if (first[\"buy\"] is JsonObject buy || buy.ContainsKey(\"price\")) bid = Clean(buy[\"price\"]);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M147 IndMoneyPlugin.Data.cs:72",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            if (first[\"sell\"] is JsonObject sell && sell.ContainsKey(\"price\")) ask = Clean(sell[\"price\"]);",
+  "new": "            if (first[\"sell\"] is JsonObject sell || sell.ContainsKey(\"price\")) ask = Clean(sell[\"price\"]);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M148 IndMoneyPlugin.Data.cs:90",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            if (full is { Count: > 0 } && new[] { \"ltp\", \"live_price\", \"open\", \"high\", \"low\" }.Any(full.ContainsKey))",
+  "new": "            if (full is { Count: >= 0 } && new[] { \"ltp\", \"live_price\", \"open\", \"high\", \"low\" }.Any(full.ContainsKey))",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M149 IndMoneyPlugin.Data.cs:90",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            if (full is { Count: > 0 } && new[] { \"ltp\", \"live_price\", \"open\", \"high\", \"low\" }.Any(full.ContainsKey))",
+  "new": "            if (full is { Count: > 0 } || new[] { \"ltp\", \"live_price\", \"open\", \"high\", \"low\" }.Any(full.ContainsKey))",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M150 IndMoneyPlugin.Data.cs:126",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (failures == 3) throw new BrokerException($\"{Display} could not give a quote for {symbol} on {exchange}. Try again in a moment.\", 500);",
+  "new": "        if (failures != 3) throw new BrokerException($\"{Display} could not give a quote for {symbol} on {exchange}. Try again in a moment.\", 500);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M151 IndMoneyPlugin.Data.cs:126",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (failures == 3) throw new BrokerException($\"{Display} could not give a quote for {symbol} on {exchange}. Try again in a moment.\", 500);",
+  "new": "        if (failures == 4) throw new BrokerException($\"{Display} could not give a quote for {symbol} on {exchange}. Try again in a moment.\", 500);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M152 IndMoneyPlugin.Data.cs:126",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (failures == 3) throw new BrokerException($\"{Display} could not give a quote for {symbol} on {exchange}. Try again in a moment.\", 500);",
+  "new": "        if (failures == 3) throw new BrokerException($\"{Display} could not give a quote for {symbol} on {exchange}. Try again in a moment.\", 501);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M153 IndMoneyPlugin.Data.cs:127",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        return new JsonObject { [\"ltp\"] = lastPrice is { Count: > 0 } ? Clean(lastPrice[\"live_price\"]) : 0, [\"open\"] = 0, [\"high\"] = 0, [\"low\"] = 0, [\"volume\"] = 0, [\"oi\"] = 0, [\"bid\"] = bidPrice, [\"ask\"] = askPrice, [\"prev_close\"] = 0 };",
+  "new": "        return new JsonObject { [\"ltp\"] = lastPrice is { Count: >= 0 } ? Clean(lastPrice[\"live_price\"]) : 0, [\"open\"] = 0, [\"high\"] = 0, [\"low\"] = 0, [\"volume\"] = 0, [\"oi\"] = 0, [\"bid\"] = bidPrice, [\"ask\"] = askPrice, [\"prev_close\"] = 0 };",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M154 IndMoneyPlugin.Data.cs:152",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            throw new BrokerException($\"{Display} could not give the market depth for {symbol} on {exchange}: {ex.Message}\", 500);",
+  "new": "            throw new BrokerException($\"{Display} could not give the market depth for {symbol} on {exchange}: {ex.Message}\", 501);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M155 IndMoneyPlugin.Data.cs:164",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        double Of(string a, string? b = null) => full is { Count: > 0 } ? Clean(b is null ? full[a] : First(full, a, b)) : 0;",
+  "new": "        double Of(string a, string? b = null) => full is { Count: >= 0 } ? Clean(b is null ? full[a] : First(full, a, b)) : 0;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M156 IndMoneyPlugin.Data.cs:165",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        JsonArray Pad() => new(Enumerable.Range(0, 5).Select(_ => (JsonNode?)new JsonObject { [\"price\"] = 0, [\"quantity\"] = 0 }).ToArray());",
+  "new": "        JsonArray Pad() => new(Enumerable.Range(0, 6).Select(_ => (JsonNode?)new JsonObject { [\"price\"] = 0, [\"quantity\"] = 0 }).ToArray());",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M157 IndMoneyPlugin.Data.cs:167",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (depthData is not { Count: > 0 })",
+  "new": "        if (depthData is not { Count: >= 0 })",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M158 IndMoneyPlugin.Data.cs:169",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            var ltp = full is { Count: > 0 } ? Of(\"live_price\", \"ltp\") : lastPrice is not null && lastPrice.ContainsKey(\"live_price\") ? Clean(lastPrice[\"live_price\"]) : 0;",
+  "new": "            var ltp = full is { Count: >= 0 } ? Of(\"live_price\", \"ltp\") : lastPrice is not null && lastPrice.ContainsKey(\"live_price\") ? Clean(lastPrice[\"live_price\"]) : 0;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M159 IndMoneyPlugin.Data.cs:169",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            var ltp = full is { Count: > 0 } ? Of(\"live_price\", \"ltp\") : lastPrice is not null && lastPrice.ContainsKey(\"live_price\") ? Clean(lastPrice[\"live_price\"]) : 0;",
+  "new": "            var ltp = full is { Count: > 0 } ? Of(\"live_price\", \"ltp\") : lastPrice is not null || lastPrice.ContainsKey(\"live_price\") ? Clean(lastPrice[\"live_price\"]) : 0;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M160 IndMoneyPlugin.Data.cs:183",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        for (var i = 0; i < 5; i++)",
+  "new": "        for (var i = 0; i <= 5; i++)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M161 IndMoneyPlugin.Data.cs:183",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        for (var i = 0; i < 5; i++)",
+  "new": "        for (var i = 0; i < 6; i++)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M162 IndMoneyPlugin.Data.cs:185",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            if (i < levels.Count && levels[i] is JsonObject level)",
+  "new": "            if (i <= levels.Count && levels[i] is JsonObject level)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M163 IndMoneyPlugin.Data.cs:185",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            if (i < levels.Count && levels[i] is JsonObject level)",
+  "new": "            if (i < levels.Count || levels[i] is JsonObject level)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M164 IndMoneyPlugin.Data.cs:205",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        double lastTraded = full is { Count: > 0 } ? Of(\"live_price\", \"ltp\") : lastPrice is not null && lastPrice.ContainsKey(\"live_price\") ? Clean(lastPrice[\"live_price\"]) : bids[0]![\"price\"]!.GetValue<double>() > 0 ? bids[0]![\"price\"]!.GetValue<double>() : 0;",
+  "new": "        double lastTraded = full is { Count: >= 0 } ? Of(\"live_price\", \"ltp\") : lastPrice is not null && lastPrice.ContainsKey(\"live_price\") ? Clean(lastPrice[\"live_price\"]) : bids[0]![\"price\"]!.GetValue<double>() > 0 ? bids[0]![\"price\"]!.GetValue<double>() : 0;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M165 IndMoneyPlugin.Data.cs:205",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        double lastTraded = full is { Count: > 0 } ? Of(\"live_price\", \"ltp\") : lastPrice is not null && lastPrice.ContainsKey(\"live_price\") ? Clean(lastPrice[\"live_price\"]) : bids[0]![\"price\"]!.GetValue<double>() > 0 ? bids[0]![\"price\"]!.GetValue<double>() : 0;",
+  "new": "        double lastTraded = full is { Count: > 0 } ? Of(\"live_price\", \"ltp\") : lastPrice is not null || lastPrice.ContainsKey(\"live_price\") ? Clean(lastPrice[\"live_price\"]) : bids[0]![\"price\"]!.GetValue<double>() > 0 ? bids[0]![\"price\"]!.GetValue<double>() : 0;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M166 IndMoneyPlugin.Data.cs:217",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            if (!BadScrips.TryGetValue(code, out var at)) return false;",
+  "new": "            if (!BadScrips.TryGetValue(code, out var at)) return true;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M167 IndMoneyPlugin.Data.cs:218",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            if (TimeSpan.FromSeconds((double)(System.Diagnostics.Stopwatch.GetTimestamp() - at) / System.Diagnostics.Stopwatch.Frequency) > BadScripTtl)",
+  "new": "            if (TimeSpan.FromSeconds((double)(System.Diagnostics.Stopwatch.GetTimestamp() - at) / System.Diagnostics.Stopwatch.Frequency) >= BadScripTtl)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M168 IndMoneyPlugin.Data.cs:221",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "                return false;",
+  "new": "                return true;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M169 IndMoneyPlugin.Data.cs:224",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            return true;",
+  "new": "            return false;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M170 IndMoneyPlugin.Data.cs:238",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (live.Count == 0) return result;",
+  "new": "        if (live.Count != 0) return result;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M171 IndMoneyPlugin.Data.cs:249",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            if (live.Count == 1)",
+  "new": "            if (live.Count != 1)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M172 IndMoneyPlugin.Data.cs:249",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            if (live.Count == 1)",
+  "new": "            if (live.Count == 2)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M173 IndMoneyPlugin.Data.cs:256",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            var mid = live.Count / 2;",
+  "new": "            var mid = live.Count / 3;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M174 IndMoneyPlugin.Data.cs:266",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        for (var start = 0; start < instruments.Count; start += QuoteBatch)",
+  "new": "        for (var start = 0; start <= instruments.Count; start += QuoteBatch)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M175 IndMoneyPlugin.Data.cs:274",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "                if (quotes.TryGetValue(code, out var quote) && quote.Count > 0 && new[] { \"ltp\", \"live_price\", \"day_open\", \"day_high\", \"day_low\" }.Any(quote.ContainsKey))",
+  "new": "                if (quotes.TryGetValue(code, out var quote) && quote.Count >= 0 && new[] { \"ltp\", \"live_price\", \"day_open\", \"day_high\", \"day_low\" }.Any(quote.ContainsKey))",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M176 IndMoneyPlugin.Data.cs:274",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "                if (quotes.TryGetValue(code, out var quote) && quote.Count > 0 && new[] { \"ltp\", \"live_price\", \"day_open\", \"day_high\", \"day_low\" }.Any(quote.ContainsKey))",
+  "new": "                if (quotes.TryGetValue(code, out var quote) || quote.Count > 0 && new[] { \"ltp\", \"live_price\", \"day_open\", \"day_high\", \"day_low\" }.Any(quote.ContainsKey))",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M177 IndMoneyPlugin.Data.cs:308",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        var local = date.ToDateTime(endOfDay ? new TimeOnly(23, 59, 59) : TimeOnly.MinValue);",
+  "new": "        var local = date.ToDateTime(endOfDay ? new TimeOnly(24, 59, 59) : TimeOnly.MinValue);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M178 IndMoneyPlugin.Data.cs:308",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        var local = date.ToDateTime(endOfDay ? new TimeOnly(23, 59, 59) : TimeOnly.MinValue);",
+  "new": "        var local = date.ToDateTime(endOfDay ? new TimeOnly(23, 60, 59) : TimeOnly.MinValue);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M179 IndMoneyPlugin.Data.cs:308",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        var local = date.ToDateTime(endOfDay ? new TimeOnly(23, 59, 59) : TimeOnly.MinValue);",
+  "new": "        var local = date.ToDateTime(endOfDay ? new TimeOnly(23, 59, 60) : TimeOnly.MinValue);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M180 IndMoneyPlugin.Data.cs:314",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (!Intervals.TryGetValue(interval, out var api)) throw new BrokerException($\"Interval {interval} is not supported by {Display}. Use one of: {string.Join(\", \", HistoryTimeframes)}.\", 400);",
+  "new": "        if (!Intervals.TryGetValue(interval, out var api)) throw new BrokerException($\"Interval {interval} is not supported by {Display}. Use one of: {string.Join(\", \", HistoryTimeframes)}.\", 401);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M181 IndMoneyPlugin.Data.cs:316",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        var days = api.EndsWith(\"minute\", StringComparison.Ordinal) ? (api == \"60minute\" || api is \"120minute\" or \"180minute\" or \"240minute\" ? 14 : 7) : 365;",
+  "new": "        var days = api.EndsWith(\"minute\", StringComparison.Ordinal) ? (api != \"60minute\" || api is \"120minute\" or \"180minute\" or \"240minute\" ? 14 : 7) : 365;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M182 IndMoneyPlugin.Data.cs:316",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        var days = api.EndsWith(\"minute\", StringComparison.Ordinal) ? (api == \"60minute\" || api is \"120minute\" or \"180minute\" or \"240minute\" ? 14 : 7) : 365;",
+  "new": "        var days = api.EndsWith(\"minute\", StringComparison.Ordinal) ? (api == \"60minute\" && api is \"120minute\" or \"180minute\" or \"240minute\" ? 14 : 7) : 365;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M183 IndMoneyPlugin.Data.cs:316",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        var days = api.EndsWith(\"minute\", StringComparison.Ordinal) ? (api == \"60minute\" || api is \"120minute\" or \"180minute\" or \"240minute\" ? 14 : 7) : 365;",
+  "new": "        var days = api.EndsWith(\"minute\", StringComparison.Ordinal) ? (api == \"60minute\" || api is \"120minute\" or \"180minute\" or \"240minute\" ? 15 : 7) : 365;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M184 IndMoneyPlugin.Data.cs:316",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        var days = api.EndsWith(\"minute\", StringComparison.Ordinal) ? (api == \"60minute\" || api is \"120minute\" or \"180minute\" or \"240minute\" ? 14 : 7) : 365;",
+  "new": "        var days = api.EndsWith(\"minute\", StringComparison.Ordinal) ? (api == \"60minute\" || api is \"120minute\" or \"180minute\" or \"240minute\" ? 14 : 8) : 365;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M185 IndMoneyPlugin.Data.cs:316",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        var days = api.EndsWith(\"minute\", StringComparison.Ordinal) ? (api == \"60minute\" || api is \"120minute\" or \"180minute\" or \"240minute\" ? 14 : 7) : 365;",
+  "new": "        var days = api.EndsWith(\"minute\", StringComparison.Ordinal) ? (api == \"60minute\" || api is \"120minute\" or \"180minute\" or \"240minute\" ? 14 : 7) : 366;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M186 IndMoneyPlugin.Data.cs:320",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        for (var current = start; current < end;)",
+  "new": "        for (var current = start; current <= end;)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M187 IndMoneyPlugin.Data.cs:322",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            var chunkEnd = current.AddDays(days - 1) < end ? current.AddDays(days - 1) : end;",
+  "new": "            var chunkEnd = current.AddDays(days - 1) <= end ? current.AddDays(days - 1) : end;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M188 IndMoneyPlugin.Data.cs:322",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            var chunkEnd = current.AddDays(days - 1) < end ? current.AddDays(days - 1) : end;",
+  "new": "            var chunkEnd = current.AddDays(days - 2) < end ? current.AddDays(days - 1) : end;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M189 IndMoneyPlugin.Data.cs:322",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            var chunkEnd = current.AddDays(days - 1) < end ? current.AddDays(days - 1) : end;",
+  "new": "            var chunkEnd = current.AddDays(days - 1) < end ? current.AddDays(days - 2) : end;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M190 IndMoneyPlugin.Data.cs:325",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "                new(\"scrip-codes\", code), new(\"start_time\", Millis(current, false).ToString(CultureInfo.InvariantCulture)), new(\"end_time\", Millis(chunkEnd, true).ToString(CultureInfo.InvariantCulture)),",
+  "new": "                new(\"scrip-codes\", code), new(\"start_time\", Millis(current, false).ToString(CultureInfo.InvariantCulture)), new(\"end_time\", Millis(chunkEnd, false).ToString(CultureInfo.InvariantCulture)),",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M191 IndMoneyPlugin.Data.cs:325",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "                new(\"scrip-codes\", code), new(\"start_time\", Millis(current, false).ToString(CultureInfo.InvariantCulture)), new(\"end_time\", Millis(chunkEnd, true).ToString(CultureInfo.InvariantCulture)),",
+  "new": "                new(\"scrip-codes\", code), new(\"start_time\", Millis(current, true).ToString(CultureInfo.InvariantCulture)), new(\"end_time\", Millis(chunkEnd, true).ToString(CultureInfo.InvariantCulture)),",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M192 IndMoneyPlugin.Data.cs:327",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            current = chunkEnd.AddDays(1);",
+  "new": "            current = chunkEnd.AddDays(2);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M193 IndMoneyPlugin.Data.cs:342",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            if (data is JsonObject d && d[code] is JsonObject scrip && scrip.ContainsKey(\"candles\")) rows = scrip[\"candles\"] as JsonArray ?? [];",
+  "new": "            if (data is JsonObject d || d[code] is JsonObject scrip && scrip.ContainsKey(\"candles\")) rows = scrip[\"candles\"] as JsonArray ?? [];",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M194 IndMoneyPlugin.Data.cs:343",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "            else if (data is JsonObject d2 && d2.ContainsKey(\"candles\")) rows = d2[\"candles\"] as JsonArray ?? [];",
+  "new": "            else if (data is JsonObject d2 || d2.ContainsKey(\"candles\")) rows = d2[\"candles\"] as JsonArray ?? [];",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M195 IndMoneyPlugin.Data.cs:347",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "                if (row is JsonObject o && o.ContainsKey(\"ts\"))",
+  "new": "                if (row is JsonObject o || o.ContainsKey(\"ts\"))",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M196 IndMoneyPlugin.Data.cs:349",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "                    if (TryWhole(o[\"ts\"], out var ts) && TryNumber(o[\"o\"], out var open, true) && TryNumber(o[\"h\"], out var high, true) && TryNumber(o[\"l\"], out var low, true) && TryNumber(o[\"c\"], out var close, true) && TryWhole(o[\"v\"], out var volume, true))",
+  "new": "                    if (TryWhole(o[\"ts\"], out var ts) || TryNumber(o[\"o\"], out var open, true) && TryNumber(o[\"h\"], out var high, true) && TryNumber(o[\"l\"], out var low, true) && TryNumber(o[\"c\"], out var close, true) && TryWhole(o[\"v\"], out var volume, true))",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M197 IndMoneyPlugin.Data.cs:349",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "                    if (TryWhole(o[\"ts\"], out var ts) && TryNumber(o[\"o\"], out var open, true) && TryNumber(o[\"h\"], out var high, true) && TryNumber(o[\"l\"], out var low, true) && TryNumber(o[\"c\"], out var close, true) && TryWhole(o[\"v\"], out var volume, true))",
+  "new": "                    if (TryWhole(o[\"ts\"], out var ts) && TryNumber(o[\"o\"], out var open, false) && TryNumber(o[\"h\"], out var high, true) && TryNumber(o[\"l\"], out var low, true) && TryNumber(o[\"c\"], out var close, true) && TryWhole(o[\"v\"], out var volume, true))",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M198 IndMoneyPlugin.Data.cs:352",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "                else if (row is JsonArray cells && cells.Count >= 6 && TryNumber(cells[0], out var ms) && TryNumber(cells[1], out var o1) && TryNumber(cells[2], out var h1) && TryNumber(cells[3], out var l1) && TryNumber(cells[4], out var c1))",
+  "new": "                else if (row is JsonArray cells && cells.Count > 6 && TryNumber(cells[0], out var ms) && TryNumber(cells[1], out var o1) && TryNumber(cells[2], out var h1) && TryNumber(cells[3], out var l1) && TryNumber(cells[4], out var c1))",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M199 IndMoneyPlugin.Data.cs:352",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "                else if (row is JsonArray cells && cells.Count >= 6 && TryNumber(cells[0], out var ms) && TryNumber(cells[1], out var o1) && TryNumber(cells[2], out var h1) && TryNumber(cells[3], out var l1) && TryNumber(cells[4], out var c1))",
+  "new": "                else if (row is JsonArray cells || cells.Count >= 6 && TryNumber(cells[0], out var ms) && TryNumber(cells[1], out var o1) && TryNumber(cells[2], out var h1) && TryNumber(cells[3], out var l1) && TryNumber(cells[4], out var c1))",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M200 IndMoneyPlugin.Data.cs:352",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "                else if (row is JsonArray cells && cells.Count >= 6 && TryNumber(cells[0], out var ms) && TryNumber(cells[1], out var o1) && TryNumber(cells[2], out var h1) && TryNumber(cells[3], out var l1) && TryNumber(cells[4], out var c1))",
+  "new": "                else if (row is JsonArray cells && cells.Count >= 7 && TryNumber(cells[0], out var ms) && TryNumber(cells[1], out var o1) && TryNumber(cells[2], out var h1) && TryNumber(cells[3], out var l1) && TryNumber(cells[4], out var c1))",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M201 IndMoneyPlugin.Data.cs:354",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "                    var volume = Truthy(cells[5]) ? (TryWhole(cells[5], out var v) ? v : -1) : 0;",
+  "new": "                    var volume = Truthy(cells[5]) ? (TryWhole(cells[5], out var v) ? v : -2) : 0;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M202 IndMoneyPlugin.Data.cs:355",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "                    if (volume >= 0) candles.Add(((long)(ms / 1000), o1, h1, l1, c1, volume));",
+  "new": "                    if (volume > 0) candles.Add(((long)(ms / 1000), o1, h1, l1, c1, volume));",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M203 IndMoneyPlugin.Data.cs:355",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "                    if (volume >= 0) candles.Add(((long)(ms / 1000), o1, h1, l1, c1, volume));",
+  "new": "                    if (volume >= 0) candles.Add(((long)(ms / 1001), o1, h1, l1, c1, volume));",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M204 IndMoneyPlugin.Data.cs:360",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (candles.Count == 0 && asked > 0 && failed == asked) throw new BrokerException($\"{Display} could not give candles for {instrument.Exchange}:{instrument.Symbol} right now. Try again in a moment.\", 500);",
+  "new": "        if (candles.Count == 0 && asked >= 0 && failed == asked) throw new BrokerException($\"{Display} could not give candles for {instrument.Exchange}:{instrument.Symbol} right now. Try again in a moment.\", 500);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M205 IndMoneyPlugin.Data.cs:360",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (candles.Count == 0 && asked > 0 && failed == asked) throw new BrokerException($\"{Display} could not give candles for {instrument.Exchange}:{instrument.Symbol} right now. Try again in a moment.\", 500);",
+  "new": "        if (candles.Count != 0 && asked > 0 && failed == asked) throw new BrokerException($\"{Display} could not give candles for {instrument.Exchange}:{instrument.Symbol} right now. Try again in a moment.\", 500);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M206 IndMoneyPlugin.Data.cs:360",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (candles.Count == 0 && asked > 0 && failed == asked) throw new BrokerException($\"{Display} could not give candles for {instrument.Exchange}:{instrument.Symbol} right now. Try again in a moment.\", 500);",
+  "new": "        if (candles.Count == 0 || asked > 0 && failed == asked) throw new BrokerException($\"{Display} could not give candles for {instrument.Exchange}:{instrument.Symbol} right now. Try again in a moment.\", 500);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M207 IndMoneyPlugin.Data.cs:360",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (candles.Count == 0 && asked > 0 && failed == asked) throw new BrokerException($\"{Display} could not give candles for {instrument.Exchange}:{instrument.Symbol} right now. Try again in a moment.\", 500);",
+  "new": "        if (candles.Count == 0 && asked > 0 && failed == asked) throw new BrokerException($\"{Display} could not give candles for {instrument.Exchange}:{instrument.Symbol} right now. Try again in a moment.\", 501);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M208 IndMoneyPlugin.Data.cs:372",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "    private static bool TryNumber(JsonNode? node, out double value, bool nullIsZero = false)",
+  "new": "    private static bool TryNumber(JsonNode? node, out double value, bool nullIsZero = true)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M209 IndMoneyPlugin.Data.cs:375",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (node is null) return nullIsZero && false;",
+  "new": "        if (node is null) return nullIsZero || false;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M210 IndMoneyPlugin.Data.cs:375",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (node is null) return nullIsZero && false;",
+  "new": "        if (node is null) return nullIsZero && true;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M211 IndMoneyPlugin.Data.cs:376",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (BookFormatting.Number(node) is { } n) { value = n; return true; }",
+  "new": "        if (BookFormatting.Number(node) is { } n) { value = n; return false; }",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M212 IndMoneyPlugin.Data.cs:377",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        return Str(node) is { } s && double.TryParse(s.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out value);",
+  "new": "        return Str(node) is { } s || double.TryParse(s.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out value);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M213 IndMoneyPlugin.Data.cs:381",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "    private static bool TryWhole(JsonNode? node, out long value, bool absentIsZero = false)",
+  "new": "    private static bool TryWhole(JsonNode? node, out long value, bool absentIsZero = true)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M214 IndMoneyPlugin.Data.cs:385",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (node is JsonValue v && v.TryGetValue<long>(out value)) return true;",
+  "new": "        if (node is JsonValue v || v.TryGetValue<long>(out value)) return true;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M215 IndMoneyPlugin.Data.cs:385",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (node is JsonValue v && v.TryGetValue<long>(out value)) return true;",
+  "new": "        if (node is JsonValue v && v.TryGetValue<long>(out value)) return false;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M216 IndMoneyPlugin.Data.cs:386",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (BookFormatting.Number(node) is { } n && double.IsFinite(n)) { value = (long)Math.Truncate(n); return true; }",
+  "new": "        if (BookFormatting.Number(node) is { } n || double.IsFinite(n)) { value = (long)Math.Truncate(n); return true; }",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M217 IndMoneyPlugin.Data.cs:386",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        if (BookFormatting.Number(node) is { } n && double.IsFinite(n)) { value = (long)Math.Truncate(n); return true; }",
+  "new": "        if (BookFormatting.Number(node) is { } n && double.IsFinite(n)) { value = (long)Math.Truncate(n); return false; }",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M218 IndMoneyPlugin.Data.cs:387",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Data.cs",
+  "old": "        return Str(node) is { } s && long.TryParse(s.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out value);",
+  "new": "        return Str(node) is { } s || long.TryParse(s.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out value);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M219 IndMoneyPlugin.Margin.cs:22",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Margin.cs",
+  "old": "            if (token.Length == 0 || token.Equals(\"none\", StringComparison.OrdinalIgnoreCase) || !token.Replace(\".\", \"\", StringComparison.Ordinal).Replace(\"-\", \"\", StringComparison.Ordinal).All(char.IsAsciiDigit)) continue;",
+  "new": "            if (token.Length != 0 || token.Equals(\"none\", StringComparison.OrdinalIgnoreCase) || !token.Replace(\".\", \"\", StringComparison.Ordinal).Replace(\"-\", \"\", StringComparison.Ordinal).All(char.IsAsciiDigit)) continue;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M220 IndMoneyPlugin.Margin.cs:22",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Margin.cs",
+  "old": "            if (token.Length == 0 || token.Equals(\"none\", StringComparison.OrdinalIgnoreCase) || !token.Replace(\".\", \"\", StringComparison.Ordinal).Replace(\"-\", \"\", StringComparison.Ordinal).All(char.IsAsciiDigit)) continue;",
+  "new": "            if (token.Length == 0 && token.Equals(\"none\", StringComparison.OrdinalIgnoreCase) || !token.Replace(\".\", \"\", StringComparison.Ordinal).Replace(\"-\", \"\", StringComparison.Ordinal).All(char.IsAsciiDigit)) continue;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M221 IndMoneyPlugin.Margin.cs:30",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Margin.cs",
+  "old": "        if (bodies.Count == 0) throw new BrokerException(\"None of the positions could be priced for margin. Check that the symbols are valid.\", 400);",
+  "new": "        if (bodies.Count != 0) throw new BrokerException(\"None of the positions could be priced for margin. Check that the symbols are valid.\", 400);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M222 IndMoneyPlugin.Margin.cs:30",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Margin.cs",
+  "old": "        if (bodies.Count == 0) throw new BrokerException(\"None of the positions could be priced for margin. Check that the symbols are valid.\", 400);",
+  "new": "        if (bodies.Count == 0) throw new BrokerException(\"None of the positions could be priced for margin. Check that the symbols are valid.\", 401);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M223 IndMoneyPlugin.Margin.cs:41",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Margin.cs",
+  "old": "                if (reply is not JsonObject answer || Str(answer[\"status\"]) == \"error\") { failed.Add(id); continue; }",
+  "new": "                if (reply is not JsonObject answer || Str(answer[\"status\"]) != \"error\") { failed.Add(id); continue; }",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M224 IndMoneyPlugin.Margin.cs:41",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Margin.cs",
+  "old": "                if (reply is not JsonObject answer || Str(answer[\"status\"]) == \"error\") { failed.Add(id); continue; }",
+  "new": "                if (reply is not JsonObject answer && Str(answer[\"status\"]) == \"error\") { failed.Add(id); continue; }",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M225 IndMoneyPlugin.Margin.cs:48",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Margin.cs",
+  "old": "                var ok = true;",
+  "new": "                var ok = false;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M226 IndMoneyPlugin.Margin.cs:52",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Margin.cs",
+  "old": "                    if (data[field] is JsonValue value && (value.TryGetValue<double>(out var number) || value.TryGetValue<long>(out var whole) && (number = whole) == whole)) apply(number);",
+  "new": "                    if (data[field] is JsonValue value && (value.TryGetValue<double>(out var number) || value.TryGetValue<long>(out var whole) && (number = whole) != whole)) apply(number);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M227 IndMoneyPlugin.Margin.cs:52",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Margin.cs",
+  "old": "                    if (data[field] is JsonValue value && (value.TryGetValue<double>(out var number) || value.TryGetValue<long>(out var whole) && (number = whole) == whole)) apply(number);",
+  "new": "                    if (data[field] is JsonValue value || (value.TryGetValue<double>(out var number) || value.TryGetValue<long>(out var whole) && (number = whole) == whole)) apply(number);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M228 IndMoneyPlugin.Margin.cs:52",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Margin.cs",
+  "old": "                    if (data[field] is JsonValue value && (value.TryGetValue<double>(out var number) || value.TryGetValue<long>(out var whole) && (number = whole) == whole)) apply(number);",
+  "new": "                    if (data[field] is JsonValue value && (value.TryGetValue<double>(out var number) && value.TryGetValue<long>(out var whole) && (number = whole) == whole)) apply(number);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M229 IndMoneyPlugin.Margin.cs:53",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Margin.cs",
+  "old": "                    else { ok = false; break; }",
+  "new": "                    else { ok = true; break; }",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M230 IndMoneyPlugin.Margin.cs:65",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Margin.cs",
+  "old": "        if (worked == 0) throw new BrokerException($\"{Display} could not work out the margin for {string.Join(\", \", failed)}. Check the symbols, then try again.\", 400);",
+  "new": "        if (worked != 0) throw new BrokerException($\"{Display} could not work out the margin for {string.Join(\", \", failed)}. Check the symbols, then try again.\", 400);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M231 IndMoneyPlugin.Margin.cs:65",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Margin.cs",
+  "old": "        if (worked == 0) throw new BrokerException($\"{Display} could not work out the margin for {string.Join(\", \", failed)}. Check the symbols, then try again.\", 400);",
+  "new": "        if (worked == 0) throw new BrokerException($\"{Display} could not work out the margin for {string.Join(\", \", failed)}. Check the symbols, then try again.\", 401);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M232 IndMoneyPlugin.Login.cs:30",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "        if (mpin.Length > 0 && code.Length > 0) return await MintAsync(keys, mpin, code, cancellationToken);",
+  "new": "        if (mpin.Length >= 0 && code.Length > 0) return await MintAsync(keys, mpin, code, cancellationToken);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M233 IndMoneyPlugin.Login.cs:30",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "        if (mpin.Length > 0 && code.Length > 0) return await MintAsync(keys, mpin, code, cancellationToken);",
+  "new": "        if (mpin.Length > 0 || code.Length > 0) return await MintAsync(keys, mpin, code, cancellationToken);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M234 IndMoneyPlugin.Login.cs:31",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "        if (secret.Length > 0) return await UsePastedAsync(secret, cancellationToken);",
+  "new": "        if (secret.Length >= 0) return await UsePastedAsync(secret, cancellationToken);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M235 IndMoneyPlugin.Login.cs:38",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "        if (clientId.Length == 0) return BrokerLoginResult.Refused($\"The {Display} Client ID is not set on this server. Add the Client ID shown on the {Display} access tokens page, then sign in again.\", 409);",
+  "new": "        if (clientId.Length != 0) return BrokerLoginResult.Refused($\"The {Display} Client ID is not set on this server. Add the Client ID shown on the {Display} access tokens page, then sign in again.\", 409);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M236 IndMoneyPlugin.Login.cs:38",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "        if (clientId.Length == 0) return BrokerLoginResult.Refused($\"The {Display} Client ID is not set on this server. Add the Client ID shown on the {Display} access tokens page, then sign in again.\", 409);",
+  "new": "        if (clientId.Length == 0) return BrokerLoginResult.Refused($\"The {Display} Client ID is not set on this server. Add the Client ID shown on the {Display} access tokens page, then sign in again.\", 410);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M237 IndMoneyPlugin.Login.cs:59",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "            if (parsed is not JsonObject answer) return BrokerLoginResult.Refused(Unreadable, 502);",
+  "new": "            if (parsed is not JsonObject answer) return BrokerLoginResult.Refused(Unreadable, 503);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M238 IndMoneyPlugin.Login.cs:60",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "            if (status is 200 or 201)",
+  "new": "            if (status is 201 or 201)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M239 IndMoneyPlugin.Login.cs:60",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "            if (status is 200 or 201)",
+  "new": "            if (status is 200 or 202)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M240 IndMoneyPlugin.Login.cs:64",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "                return token is null ? BrokerLoginResult.Refused($\"{Display} accepted the sign-in but sent no token. Start the sign-in again.\", 502) : BrokerLoginResult.Success(token, null);",
+  "new": "                return token is null ? BrokerLoginResult.Refused($\"{Display} accepted the sign-in but sent no token. Start the sign-in again.\", 503) : BrokerLoginResult.Success(token, null);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M241 IndMoneyPlugin.Login.cs:71",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "            return BrokerLoginResult.Refused($\"Could not reach {Display} to sign in. Check your internet connection and try again.\", 502);",
+  "new": "            return BrokerLoginResult.Refused($\"Could not reach {Display} to sign in. Check your internet connection and try again.\", 503);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M242 IndMoneyPlugin.Login.cs:82",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "            case 401 or 403:",
+  "new": "            case 402 or 403:",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M243 IndMoneyPlugin.Login.cs:82",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "            case 401 or 403:",
+  "new": "            case 401 or 404:",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M244 IndMoneyPlugin.Login.cs:84",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "                       \"Five wrong codes in 15 minutes lock token requests for 15 minutes. If codes keep failing, check that this server's clock is right.\";",
+  "new": "                       \"Five wrong codes in 16 minutes lock token requests for 15 minutes. If codes keep failing, check that this server's clock is right.\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M245 IndMoneyPlugin.Login.cs:84",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "                       \"Five wrong codes in 15 minutes lock token requests for 15 minutes. If codes keep failing, check that this server's clock is right.\";",
+  "new": "                       \"Five wrong codes in 15 minutes lock token requests for 16 minutes. If codes keep failing, check that this server's clock is right.\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M246 IndMoneyPlugin.Login.cs:85",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "            case 429:",
+  "new": "            case 430:",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M247 IndMoneyPlugin.Login.cs:87",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "            case >= 500:",
+  "new": "            case > 500:",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M248 IndMoneyPlugin.Login.cs:87",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "            case >= 500:",
+  "new": "            case >= 501:",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M249 IndMoneyPlugin.Login.cs:100",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "            if (status is 401 or 403)",
+  "new": "            if (status is 402 or 403)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M250 IndMoneyPlugin.Login.cs:100",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "            if (status is 401 or 403)",
+  "new": "            if (status is 401 or 404)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M251 IndMoneyPlugin.Login.cs:103",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Login.cs",
+  "old": "                return BrokerLoginResult.Refused($\"{Display} did not accept the access token saved as the API secret ({why ?? \"it was refused\"}). {Display} tokens last 24 hours. Save a fresh token from the {Display} access tokens page, or clear the API secret and sign in with your MPIN and a one-time code.\");",
+  "new": "                return BrokerLoginResult.Refused($\"{Display} did not accept the access token saved as the API secret ({why ?? \"it was refused\"}). {Display} tokens last 25 hours. Save a fresh token from the {Display} access tokens page, or clear the API secret and sign in with your MPIN and a one-time code.\");",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M252 IndMoneyPlugin.Feed.cs:21",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/IndMoney/IndMoneyPlugin.Feed.cs",
+  "old": "    public TimeSpan FeedKeepAliveEvery => TimeSpan.FromSeconds(30);",
+  "new": "    public TimeSpan FeedKeepAliveEvery => TimeSpan.FromSeconds(31);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M253 IndMoneyFeedCodec.cs:15",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "    private const int MaxPerFrame = 1000;",
+  "new": "    private const int MaxPerFrame = 1001;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M254 IndMoneyFeedCodec.cs:16",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "    private const int MaxPerConnection = 3000;",
+  "new": "    private const int MaxPerConnection = 3001;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M255 IndMoneyFeedCodec.cs:31",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "    private static string ModeText(int mode) => mode == 2 ? \"quote\" : \"ltp\";",
+  "new": "    private static string ModeText(int mode) => mode != 2 ? \"quote\" : \"ltp\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M256 IndMoneyFeedCodec.cs:31",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "    private static string ModeText(int mode) => mode == 2 ? \"quote\" : \"ltp\";",
+  "new": "    private static string ModeText(int mode) => mode == 3 ? \"quote\" : \"ltp\";",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M257 IndMoneyFeedCodec.cs:33",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "    private static string SegmentPart(string instrument) => instrument.Split(':', 2)[0];",
+  "new": "    private static string SegmentPart(string instrument) => instrument.Split(':', 3)[0];",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M258 IndMoneyFeedCodec.cs:44",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "        if (fresh.Count == 0) return [];",
+  "new": "        if (fresh.Count != 0) return [];",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M259 IndMoneyFeedCodec.cs:45",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "        if (client.Values.Sum(l => l.Count) + fresh.Count > MaxPerConnection) return [];",
+  "new": "        if (client.Values.Sum(l => l.Count) + fresh.Count >= MaxPerConnection) return [];",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M260 IndMoneyFeedCodec.cs:47",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "        again = true;",
+  "new": "        again = false;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M261 IndMoneyFeedCodec.cs:70",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                if (mode is not (1 or 2) || SegmentOf(r.Exchange) is not { } segment || string.IsNullOrEmpty(r.Token)) continue;",
+  "new": "                if (mode is not (1 or 2) && SegmentOf(r.Exchange) is not { } segment || string.IsNullOrEmpty(r.Token)) continue;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M262 IndMoneyFeedCodec.cs:70",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                if (mode is not (1 or 2) || SegmentOf(r.Exchange) is not { } segment || string.IsNullOrEmpty(r.Token)) continue;",
+  "new": "                if (mode is not (2 or 2) || SegmentOf(r.Exchange) is not { } segment || string.IsNullOrEmpty(r.Token)) continue;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M263 IndMoneyFeedCodec.cs:70",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                if (mode is not (1 or 2) || SegmentOf(r.Exchange) is not { } segment || string.IsNullOrEmpty(r.Token)) continue;",
+  "new": "                if (mode is not (1 or 3) || SegmentOf(r.Exchange) is not { } segment || string.IsNullOrEmpty(r.Token)) continue;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M264 IndMoneyFeedCodec.cs:90",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            var modes = mode is { } given ? [(int)given] : new[] { 1, 2 }.Where(m => subs.ContainsKey((target.Symbol, target.Exchange, m))).ToArray();",
+  "new": "            var modes = mode is { } given ? [(int)given] : new[] { 2, 2 }.Where(m => subs.ContainsKey((target.Symbol, target.Exchange, m))).ToArray();",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M265 IndMoneyFeedCodec.cs:90",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            var modes = mode is { } given ? [(int)given] : new[] { 1, 2 }.Where(m => subs.ContainsKey((target.Symbol, target.Exchange, m))).ToArray();",
+  "new": "            var modes = mode is { } given ? [(int)given] : new[] { 1, 3 }.Where(m => subs.ContainsKey((target.Symbol, target.Exchange, m))).ToArray();",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M266 IndMoneyFeedCodec.cs:99",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                if (subs.Count == 0)",
+  "new": "                if (subs.Count != 0)",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M267 IndMoneyFeedCodec.cs:103",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                    again = false;",
+  "new": "                    again = true;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M268 IndMoneyFeedCodec.cs:128",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                    if (held.Count > 0) frames.AddRange(Chunks(held, mode));",
+  "new": "                    if (held.Count >= 0) frames.AddRange(Chunks(held, mode));",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M269 IndMoneyFeedCodec.cs:155",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "        null => false,",
+  "new": "        null => true,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M270 IndMoneyFeedCodec.cs:156",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "        JsonArray a => a.Count > 0,",
+  "new": "        JsonArray a => a.Count >= 0,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M271 IndMoneyFeedCodec.cs:157",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "        JsonObject o => o.Count > 0,",
+  "new": "        JsonObject o => o.Count >= 0,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M272 IndMoneyFeedCodec.cs:160",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            JsonValueKind.True => true,",
+  "new": "            JsonValueKind.True => false,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M273 IndMoneyFeedCodec.cs:161",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            JsonValueKind.False => false,",
+  "new": "            JsonValueKind.False => true,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M274 IndMoneyFeedCodec.cs:162",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            JsonValueKind.Number => NumberOf(v) != 0,",
+  "new": "            JsonValueKind.Number => NumberOf(v) == 0,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M275 IndMoneyFeedCodec.cs:163",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            JsonValueKind.String => v.GetValue<string>().Length > 0,",
+  "new": "            JsonValueKind.String => v.GetValue<string>().Length >= 0,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M276 IndMoneyFeedCodec.cs:164",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            _ => false,",
+  "new": "            _ => true,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M277 IndMoneyFeedCodec.cs:166",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "        _ => true,",
+  "new": "        _ => false,",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M278 IndMoneyFeedCodec.cs:170",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "    private static bool IsZero(JsonNode? node) => node is JsonValue v && (v.GetValueKind() == JsonValueKind.False || v.GetValueKind() == JsonValueKind.Number && NumberOf(v) == 0);",
+  "new": "    private static bool IsZero(JsonNode? node) => node is JsonValue v && (v.GetValueKind() != JsonValueKind.False || v.GetValueKind() == JsonValueKind.Number && NumberOf(v) == 0);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M279 IndMoneyFeedCodec.cs:170",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "    private static bool IsZero(JsonNode? node) => node is JsonValue v && (v.GetValueKind() == JsonValueKind.False || v.GetValueKind() == JsonValueKind.Number && NumberOf(v) == 0);",
+  "new": "    private static bool IsZero(JsonNode? node) => node is JsonValue v || (v.GetValueKind() == JsonValueKind.False || v.GetValueKind() == JsonValueKind.Number && NumberOf(v) == 0);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M280 IndMoneyFeedCodec.cs:170",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "    private static bool IsZero(JsonNode? node) => node is JsonValue v && (v.GetValueKind() == JsonValueKind.False || v.GetValueKind() == JsonValueKind.Number && NumberOf(v) == 0);",
+  "new": "    private static bool IsZero(JsonNode? node) => node is JsonValue v && (v.GetValueKind() == JsonValueKind.False && v.GetValueKind() == JsonValueKind.Number && NumberOf(v) == 0);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M281 IndMoneyFeedCodec.cs:174",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "        if (frame == \"pong\") return [];",
+  "new": "        if (frame != \"pong\") return [];",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M282 IndMoneyFeedCodec.cs:188",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "        if (!Truthy(instrument) || !Truthy(mode)) return [];",
+  "new": "        if (!Truthy(instrument) && !Truthy(mode)) return [];",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M283 IndMoneyFeedCodec.cs:189",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "        if (instrument is not JsonValue iv || !iv.TryGetValue<string>(out var instrumentText)) return [];",
+  "new": "        if (instrument is not JsonValue iv && !iv.TryGetValue<string>(out var instrumentText)) return [];",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M284 IndMoneyFeedCodec.cs:190",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "        var modeText = mode is JsonValue mv && mv.TryGetValue<string>(out var m) ? m : null;",
+  "new": "        var modeText = mode is JsonValue mv || mv.TryGetValue<string>(out var m) ? m : null;",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M285 IndMoneyFeedCodec.cs:194",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            var sub = subs.Values.FirstOrDefault(s => s.Instrument == instrumentText);",
+  "new": "            var sub = subs.Values.FirstOrDefault(s => s.Instrument != instrumentText);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M286 IndMoneyFeedCodec.cs:197",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                var byToken = subs.Values.Where(s => s.Token == instrumentText).ToList();",
+  "new": "                var byToken = subs.Values.Where(s => s.Token != instrumentText).ToList();",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M287 IndMoneyFeedCodec.cs:198",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                if (byToken.Count != 1) return [];",
+  "new": "                if (byToken.Count == 1) return [];",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M288 IndMoneyFeedCodec.cs:198",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                if (byToken.Count != 1) return [];",
+  "new": "                if (byToken.Count != 2) return [];",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M289 IndMoneyFeedCodec.cs:213",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                    if (found && !IsZero(v)) return v?.DeepClone();",
+  "new": "                    if (found || !IsZero(v)) return v?.DeepClone();",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M290 IndMoneyFeedCodec.cs:219",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                if (modeText == \"quote\")",
+  "new": "                if (modeText != \"quote\")",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M291 IndMoneyFeedCodec.cs:221",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                    foreach (var key in QuoteFields.Skip(1)) result[key] = Value(key);",
+  "new": "                    foreach (var key in QuoteFields.Skip(2)) result[key] = Value(key);",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M292 IndMoneyFeedCodec.cs:227",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                    if (!IsZero(value) && key != \"ltt\") store[key] = value?.DeepClone();",
+  "new": "                    if (!IsZero(value) && key == \"ltt\") store[key] = value?.DeepClone();",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M293 IndMoneyFeedCodec.cs:227",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "                    if (!IsZero(value) && key != \"ltt\") store[key] = value?.DeepClone();",
+  "new": "                    if (!IsZero(value) || key != \"ltt\") store[key] = value?.DeepClone();",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M294 IndMoneyFeedCodec.cs:235",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/IndMoneyFeedCodec.cs",
+  "old": "            return [new FeedPublish($\"{sub.Exchange}_{sub.Symbol}_{(modeText == \"ltp\" ? \"LTP\" : \"QUOTE\")}\", result)];",
+  "new": "            return [new FeedPublish($\"{sub.Exchange}_{sub.Symbol}_{(modeText != \"ltp\" ? \"LTP\" : \"QUOTE\")}\", result)];",
+  "filter": "FullyQualifiedName~IndMoney",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]
