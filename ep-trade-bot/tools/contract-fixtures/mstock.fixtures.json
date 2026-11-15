@@ -1,0 +1,6808 @@
+{
+  "broker": "mstock",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "ms-jwt-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN-EQ",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY-EQ",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "TATAMOTORS",
+      "brsymbol": "TATAMOTORS-EQ",
+      "name": "TATA MOTORS",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500570",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY25NOV26FUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NFO",
+      "token": "49500",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "SENSEX26NOVFUT",
+      "brsymbol": "SENSEX26NOVFUT",
+      "name": "SENSEX",
+      "exchange": "BFO",
+      "brexchange": "BFO",
+      "token": "60001",
+      "expiry": "26-NOV-26",
+      "strike": -1.0,
+      "lotsize": 20,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "GOLDM25NOV26FUT",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 10,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    },
+    {
+      "symbol": "USDINR25NOV26FUT",
+      "brsymbol": "USDINR25NOV26FUT",
+      "name": "USDINR",
+      "exchange": "CDS",
+      "brexchange": "CDS",
+      "token": "90001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 1000,
+      "instrumenttype": "FUT",
+      "tick_size": 0.0025
+    },
+    {
+      "symbol": "NIFTY",
+      "brsymbol": "Nifty 50",
+      "name": "NIFTY",
+      "exchange": "NSE_INDEX",
+      "brexchange": "NSE_INDEX",
+      "token": "26000",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "SENSEX",
+      "brsymbol": "SENSEX",
+      "name": "SENSEX",
+      "exchange": "BSE_INDEX",
+      "brexchange": "BSE_INDEX",
+      "token": "1",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "INDEX",
+      "tick_size": 0.05
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "auth_invalid_key",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "wrong-key"
+      },
+      "broker": {},
+      "expected": {
+        "status": 403,
+        "body": {
+          "message": "Invalid openalgo apikey",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_cnc_delivery",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "DELIVERY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_nrml_product",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "action": "BUY",
+        "quantity": "75",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "24005",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "NIFTY25NOV26FUT",
+            "symboltoken": "49500",
+            "exchange": "NFO",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "75",
+            "producttype": "CARRYFORWARD",
+            "price": "24005.0",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "MARKET",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "0.0",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL",
+        "product": "MIS",
+        "price": "800",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "STOPLOSS",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "STOPLOSS_LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.0",
+            "triggerprice": "801.5",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_stop_market",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "trigger_price": "801.5",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "STOPLOSS",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "STOPLOSS_MARKET",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "0.0",
+            "triggerprice": "801.5",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_sell",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "SELL",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_disclosed_quantity",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "5",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_bse_equity",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "TATAMOTORS",
+        "exchange": "BSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "500",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "TATAMOTORS-EQ",
+            "symboltoken": "500570",
+            "exchange": "BSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "DELIVERY",
+            "price": "500.0",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_bse_derivative",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SENSEX26NOVFUT",
+        "exchange": "BFO",
+        "action": "BUY",
+        "quantity": "20",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "80000",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SENSEX26NOVFUT",
+            "symboltoken": "60001",
+            "exchange": "BFO",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "20",
+            "producttype": "CARRYFORWARD",
+            "price": "80000.0",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_mcx_future",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "GOLDM25NOV26FUT",
+        "exchange": "MCX",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "75000",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "GOLDM25NOV26FUT",
+            "symboltoken": "80001",
+            "exchange": "MCX",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "CARRYFORWARD",
+            "price": "75000.0",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_currency_future",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "USDINR25NOV26FUT",
+        "exchange": "CDS",
+        "action": "BUY",
+        "quantity": "1000",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "83.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "USDINR25NOV26FUT",
+            "symboltoken": "90001",
+            "exchange": "CDS",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "1000",
+            "producttype": "CARRYFORWARD",
+            "price": "83.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_reply_with_a_boolean_status",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": true,
+            "data": {
+              "orderid": "MS2"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS2",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_reply_in_a_list",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": [
+            {
+              "status": "true",
+              "data": {
+                "orderid": "MS3"
+              }
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS3",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_reply_with_only_the_unique_id",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "True",
+            "data": {
+              "uniqueorderid": "U9"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "U9",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_reply_with_the_status_in_capitals",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "TRUE",
+            "data": {
+              "orderid": "MS4"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS4",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_with_status_200",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "false",
+            "message": "RMS: insufficient funds",
+            "errorcode": "RMS001"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "RMS: insufficient funds",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_with_status_400",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "status": 400,
+          "body": {
+            "status": "false",
+            "message": "Invalid quantity"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Invalid quantity",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "false"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_success_without_an_order_id",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "data": {}
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_success_with_no_data",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_data_that_is_not_an_object",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "data": "ok"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_empty_list",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": []
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_not_json",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to place order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "10",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": null,
+            "symboltoken": null,
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "ordertype": "LIMIT",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /openapi/typeb/orders/regular/MS1": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "orderid": "MS1",
+            "ordertype": "LIMIT",
+            "quantity": "12",
+            "producttype": "INTRADAY",
+            "duration": "DAY",
+            "price": "801.0",
+            "triggerprice": "0.0",
+            "disclosedquantity": "0",
+            "modqty_remng": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_limit",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "SL",
+        "product": "MIS",
+        "price": "800",
+        "disclosed_quantity": "0",
+        "trigger_price": "801.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /openapi/typeb/orders/regular/MS1": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "STOPLOSS",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "orderid": "MS1",
+            "ordertype": "STOPLOSS_LIMIT",
+            "quantity": "12",
+            "producttype": "INTRADAY",
+            "duration": "DAY",
+            "price": "800.0",
+            "triggerprice": "801.5",
+            "disclosedquantity": "0",
+            "modqty_remng": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_stop_market",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "SELL",
+        "quantity": "12",
+        "pricetype": "SL-M",
+        "product": "MIS",
+        "price": "0",
+        "disclosed_quantity": "0",
+        "trigger_price": "801.5",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /openapi/typeb/orders/regular/MS1": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "STOPLOSS",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "orderid": "MS1",
+            "ordertype": "STOPLOSS_MARKET",
+            "quantity": "12",
+            "producttype": "INTRADAY",
+            "duration": "DAY",
+            "price": "0.0",
+            "triggerprice": "801.5",
+            "disclosedquantity": "0",
+            "modqty_remng": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_market",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "MARKET",
+        "product": "MIS",
+        "price": "0",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /openapi/typeb/orders/regular/MS1": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "orderid": "MS1",
+            "ordertype": "MARKET",
+            "quantity": "12",
+            "producttype": "INTRADAY",
+            "duration": "DAY",
+            "price": "0.0",
+            "triggerprice": "0.0",
+            "disclosedquantity": "0",
+            "modqty_remng": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_disclosed",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "3",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /openapi/typeb/orders/regular/MS1": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "orderid": "MS1",
+            "ordertype": "LIMIT",
+            "quantity": "12",
+            "producttype": "INTRADAY",
+            "duration": "DAY",
+            "price": "801.0",
+            "triggerprice": "0.0",
+            "disclosedquantity": "3",
+            "modqty_remng": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_product_change",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "CNC",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /openapi/typeb/orders/regular/MS1": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS1"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "orderid": "MS1",
+            "ordertype": "LIMIT",
+            "quantity": "12",
+            "producttype": "DELIVERY",
+            "duration": "DAY",
+            "price": "801.0",
+            "triggerprice": "0.0",
+            "disclosedquantity": "0",
+            "modqty_remng": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_reply_in_a_list",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /openapi/typeb/orders/regular/MS1": {
+          "body": [
+            {
+              "status": true,
+              "data": {
+                "orderid": " MS1X "
+              }
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "orderid": "MS1",
+            "ordertype": "LIMIT",
+            "quantity": "12",
+            "producttype": "INTRADAY",
+            "duration": "DAY",
+            "price": "801.0",
+            "triggerprice": "0.0",
+            "disclosedquantity": "0",
+            "modqty_remng": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_reply_with_a_message_only",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /openapi/typeb/orders/regular/MS1": {
+          "body": {
+            "message": "SUCCESS"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "orderid": "MS1",
+            "ordertype": "LIMIT",
+            "quantity": "12",
+            "producttype": "INTRADAY",
+            "duration": "DAY",
+            "price": "801.0",
+            "triggerprice": "0.0",
+            "disclosedquantity": "0",
+            "modqty_remng": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_success_without_data",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /openapi/typeb/orders/regular/MS1": {
+          "body": {
+            "status": "true"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "orderid": "MS1",
+            "ordertype": "LIMIT",
+            "quantity": "12",
+            "producttype": "INTRADAY",
+            "duration": "DAY",
+            "price": "801.0",
+            "triggerprice": "0.0",
+            "disclosedquantity": "0",
+            "modqty_remng": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_success_with_data_that_has_no_order_id",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /openapi/typeb/orders/regular/MS1": {
+          "body": {
+            "status": "true",
+            "data": {
+              "x": 1
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "orderid": "MS1",
+            "ordertype": "LIMIT",
+            "quantity": "12",
+            "producttype": "INTRADAY",
+            "duration": "DAY",
+            "price": "801.0",
+            "triggerprice": "0.0",
+            "disclosedquantity": "0",
+            "modqty_remng": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused_with_status_200",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /openapi/typeb/orders/regular/MS1": {
+          "body": {
+            "status": "false",
+            "message": "Order is not open",
+            "errorcode": "E1"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Order is not open",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "orderid": "MS1",
+            "ordertype": "LIMIT",
+            "quantity": "12",
+            "producttype": "INTRADAY",
+            "duration": "DAY",
+            "price": "801.0",
+            "triggerprice": "0.0",
+            "disclosedquantity": "0",
+            "modqty_remng": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused_with_status_400",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /openapi/typeb/orders/regular/MS1": {
+          "status": 400,
+          "body": {
+            "status": "false",
+            "message": "Bad price"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Bad price",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "orderid": "MS1",
+            "ordertype": "LIMIT",
+            "quantity": "12",
+            "producttype": "INTRADAY",
+            "duration": "DAY",
+            "price": "801.0",
+            "triggerprice": "0.0",
+            "disclosedquantity": "0",
+            "modqty_remng": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /openapi/typeb/orders/regular/MS1": {
+          "body": {
+            "status": "false"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to modify order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "orderid": "MS1",
+            "ordertype": "LIMIT",
+            "quantity": "12",
+            "producttype": "INTRADAY",
+            "duration": "DAY",
+            "price": "801.0",
+            "triggerprice": "0.0",
+            "disclosedquantity": "0",
+            "modqty_remng": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_not_json",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /openapi/typeb/orders/regular/MS1": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to modify order due to internal error",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "BUY",
+            "orderid": "MS1",
+            "ordertype": "LIMIT",
+            "quantity": "12",
+            "producttype": "INTRADAY",
+            "duration": "DAY",
+            "price": "801.0",
+            "triggerprice": "0.0",
+            "disclosedquantity": "0",
+            "modqty_remng": "0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NOPE",
+        "exchange": "NSE",
+        "orderid": "MS1",
+        "action": "BUY",
+        "quantity": "12",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "801",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Symbol token not found in database",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "MS1",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /openapi/typeb/orders/regular/MS1": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "orderid": "MS1"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_with_only_the_message",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "MS1",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /openapi/typeb/orders/regular/MS1": {
+          "body": {
+            "message": "SUCCESS"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "orderid": "MS1"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_reply_in_a_list",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "MS1",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /openapi/typeb/orders/regular/MS1": {
+          "body": [
+            {
+              "status": true
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS1",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS1",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "orderid": "MS1"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused_with_status_200",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "MS3",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /openapi/typeb/orders/regular/MS3": {
+          "body": {
+            "status": "false",
+            "message": "Order already complete"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Order already complete",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS3",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "orderid": "MS3"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused_with_status_404",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "MS3",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /openapi/typeb/orders/regular/MS3": {
+          "status": 404,
+          "body": {
+            "status": "false",
+            "message": "No such order"
+          }
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "message": "No such order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS3",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "orderid": "MS3"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_refused_without_a_message",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "MS3",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /openapi/typeb/orders/regular/MS3": {
+          "body": {
+            "status": "false"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Failed to cancel order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS3",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "orderid": "MS3"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelorder_not_json",
+      "method": "POST",
+      "path": "/api/v1/cancelorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "orderid": "MS3",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "DELETE /openapi/typeb/orders/regular/MS3": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to cancel order due to internal error",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "DELETE",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular/MS3",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "orderid": "MS3"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/orders": {
+          "body": {
+            "status": "true",
+            "data": [
+              {
+                "orderid": "MS1",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 10,
+                "price": 800.5,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "LIMIT",
+                "producttype": "INTRADAY",
+                "status": "open",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS2",
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 75,
+                "price": 24010,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "SL",
+                "producttype": "CARRYFORWARD",
+                "status": "Trigger Pending",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS3",
+                "tradingsymbol": "INFY-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "SELL",
+                "quantity": 5,
+                "price": 1495,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "LIMIT",
+                "producttype": "DELIVERY",
+                "status": "Traded",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS4",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "SELL",
+                "quantity": 1,
+                "price": 0,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "MARKET",
+                "producttype": "INTRADAY",
+                "status": "O-Pending",
+                "updatetime": "03-Nov-2026 10:20:01"
+              }
+            ]
+          }
+        },
+        "POST /openapi/typeb/orders/cancelall": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "MS1",
+            "MS2",
+            "MS4"
+          ],
+          "failed_cancellations": [],
+          "message": "Canceled 3 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/cancelall",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_reply_status_success",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/orders": {
+          "body": {
+            "status": "true",
+            "data": [
+              {
+                "orderid": "MS1",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 10,
+                "price": 800.5,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "LIMIT",
+                "producttype": "INTRADAY",
+                "status": "open",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS2",
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 75,
+                "price": 24010,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "SL",
+                "producttype": "CARRYFORWARD",
+                "status": "Trigger Pending",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS3",
+                "tradingsymbol": "INFY-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "SELL",
+                "quantity": 5,
+                "price": 1495,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "LIMIT",
+                "producttype": "DELIVERY",
+                "status": "Traded",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS4",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "SELL",
+                "quantity": 1,
+                "price": 0,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "MARKET",
+                "producttype": "INTRADAY",
+                "status": "O-Pending",
+                "updatetime": "03-Nov-2026 10:20:01"
+              }
+            ]
+          }
+        },
+        "POST /openapi/typeb/orders/cancelall": {
+          "body": {
+            "status": "success"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "MS1",
+            "MS2",
+            "MS4"
+          ],
+          "failed_cancellations": [],
+          "message": "Canceled 3 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/cancelall",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_reply_message_success",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/orders": {
+          "body": {
+            "status": "true",
+            "data": [
+              {
+                "orderid": "MS1",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 10,
+                "price": 800.5,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "LIMIT",
+                "producttype": "INTRADAY",
+                "status": "open",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS2",
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 75,
+                "price": 24010,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "SL",
+                "producttype": "CARRYFORWARD",
+                "status": "Trigger Pending",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS3",
+                "tradingsymbol": "INFY-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "SELL",
+                "quantity": 5,
+                "price": 1495,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "LIMIT",
+                "producttype": "DELIVERY",
+                "status": "Traded",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS4",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "SELL",
+                "quantity": 1,
+                "price": 0,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "MARKET",
+                "producttype": "INTRADAY",
+                "status": "O-Pending",
+                "updatetime": "03-Nov-2026 10:20:01"
+              }
+            ]
+          }
+        },
+        "POST /openapi/typeb/orders/cancelall": {
+          "body": {
+            "message": "SUCCESS"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [
+            "MS1",
+            "MS2",
+            "MS4"
+          ],
+          "failed_cancellations": [],
+          "message": "Canceled 3 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/cancelall",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_refused",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/orders": {
+          "body": {
+            "status": "true",
+            "data": [
+              {
+                "orderid": "MS1",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 10,
+                "price": 800.5,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "LIMIT",
+                "producttype": "INTRADAY",
+                "status": "open",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS2",
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 75,
+                "price": 24010,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "SL",
+                "producttype": "CARRYFORWARD",
+                "status": "Trigger Pending",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS3",
+                "tradingsymbol": "INFY-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "SELL",
+                "quantity": 5,
+                "price": 1495,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "LIMIT",
+                "producttype": "DELIVERY",
+                "status": "Traded",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS4",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "SELL",
+                "quantity": 1,
+                "price": 0,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "MARKET",
+                "producttype": "INTRADAY",
+                "status": "O-Pending",
+                "updatetime": "03-Nov-2026 10:20:01"
+              }
+            ]
+          }
+        },
+        "POST /openapi/typeb/orders/cancelall": {
+          "body": {
+            "status": "false",
+            "message": "Cannot cancel now"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [
+            "MS1",
+            "MS2",
+            "MS4"
+          ],
+          "message": "Canceled 0 orders. Failed to cancel 3 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/cancelall",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_not_json",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/orders": {
+          "body": {
+            "status": "true",
+            "data": [
+              {
+                "orderid": "MS1",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 10,
+                "price": 800.5,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "LIMIT",
+                "producttype": "INTRADAY",
+                "status": "open",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS2",
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 75,
+                "price": 24010,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "SL",
+                "producttype": "CARRYFORWARD",
+                "status": "Trigger Pending",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS3",
+                "tradingsymbol": "INFY-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "SELL",
+                "quantity": 5,
+                "price": 1495,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "LIMIT",
+                "producttype": "DELIVERY",
+                "status": "Traded",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS4",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "SELL",
+                "quantity": 1,
+                "price": 0,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "MARKET",
+                "producttype": "INTRADAY",
+                "status": "O-Pending",
+                "updatetime": "03-Nov-2026 10:20:01"
+              }
+            ]
+          }
+        },
+        "POST /openapi/typeb/orders/cancelall": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to cancel all orders due to internal error",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/cancelall",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_book_empty",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/orders": {
+          "body": {
+            "status": true,
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_nothing_pending",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/orders": {
+          "body": {
+            "status": true,
+            "data": [
+              {
+                "orderid": "MS3",
+                "tradingsymbol": "INFY-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "SELL",
+                "quantity": 5,
+                "price": 1495,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "LIMIT",
+                "producttype": "DELIVERY",
+                "status": "Traded",
+                "updatetime": "03-Nov-2026 10:20:01"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "cancelallorder_book_failed",
+      "method": "POST",
+      "path": "/api/v1/cancelallorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/orders": {
+          "body": {
+            "status": false,
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "canceled_orders": [],
+          "failed_cancellations": [],
+          "message": "Canceled 0 orders. Failed to cancel 0 orders.",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/orders": {
+          "body": {
+            "status": true,
+            "data": [
+              {
+                "orderid": "MS1",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 10,
+                "price": 800.5,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "LIMIT",
+                "producttype": "INTRADAY",
+                "status": "Pending",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS2",
+                "tradingsymbol": "NIFTY25NOV26FUT",
+                "symboltoken": "49500",
+                "exchange": "NSE",
+                "instrumenttype": "FUTIDX",
+                "transactiontype": "BUY",
+                "quantity": 75,
+                "price": 24010,
+                "triggerprice": 24000,
+                "averageprice": 0,
+                "ordertype": "STOPLOSS_LIMIT",
+                "producttype": "CARRYFORWARD",
+                "status": "Trigger Pending",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS3",
+                "tradingsymbol": "INFY-EQ",
+                "symboltoken": "1594",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "SELL",
+                "quantity": 5,
+                "price": 1495,
+                "triggerprice": 0,
+                "averageprice": 1499.95,
+                "ordertype": "LIMIT",
+                "producttype": "DELIVERY",
+                "status": "Traded",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS4",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "SELL",
+                "quantity": 1,
+                "price": 0,
+                "triggerprice": 790.5,
+                "averageprice": 0,
+                "ordertype": "STOP_LOSS_MARKET",
+                "producttype": "INTRADAY",
+                "status": "Rejected",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS5",
+                "tradingsymbol": "TATAMOTORS-EQ",
+                "symboltoken": "500570",
+                "exchange": "BSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 2,
+                "price": 0,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "MARKET",
+                "producttype": "DELIVERY",
+                "status": "Cancelled",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS6",
+                "tradingsymbol": "SENSEX26NOVFUT",
+                "symboltoken": "60001",
+                "exchange": "BSE",
+                "instrumenttype": "FUTIDX",
+                "transactiontype": "BUY",
+                "quantity": 20,
+                "price": 80000,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "SL",
+                "producttype": "CARRYFORWARD",
+                "status": "O-Pending",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS7",
+                "tradingsymbol": "GOLDM25NOV26FUT",
+                "symboltoken": "80001",
+                "exchange": "MCX",
+                "instrumenttype": "",
+                "transactiontype": "SELL",
+                "quantity": 10,
+                "price": 75000,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "STOPLOSS_MARKET",
+                "producttype": "CARRYFORWARD",
+                "status": "O-Modified",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS8",
+                "tradingsymbol": "NOSUCH-EQ",
+                "symboltoken": "999999",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 3,
+                "price": 5,
+                "triggerprice": 0,
+                "averageprice": "5.5",
+                "ordertype": "XX",
+                "producttype": "ZZ",
+                "status": "TRADE CONFIRMED",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS9",
+                "tradingsymbol": "USDINR25NOV26FUT",
+                "symboltoken": "90001",
+                "exchange": "CDS",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 1000,
+                "price": 83.5,
+                "triggerprice": 0,
+                "averageprice": "83.6",
+                "ordertype": "MARKET",
+                "producttype": "CARRYFORWARD",
+                "status": "Something Else",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS10",
+                "tradingsymbol": "SBIN-EQ",
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 4,
+                "price": "bad",
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "LIMIT",
+                "producttype": "MARGIN",
+                "status": "O-Cancelled",
+                "updatetime": "03-Nov-2026 10:20:01"
+              },
+              {
+                "orderid": "MS11",
+                "tradingsymbol": "INFY-EQ",
+                "symboltoken": "1594",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "transactiontype": "BUY",
+                "quantity": 1,
+                "price": 10,
+                "triggerprice": 0,
+                "averageprice": 0,
+                "ordertype": "LIMIT",
+                "producttype": "INTRADAY",
+                "status": "",
+                "updatetime": "03-Nov-2026 10:20:01"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "open",
+                "orderid": "MS1",
+                "price": 800.5,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 10,
+                "symbol": "SBIN",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NFO",
+                "order_status": "trigger pending",
+                "orderid": "MS2",
+                "price": 24010.0,
+                "pricetype": "SL",
+                "product": "CARRYFORWARD",
+                "quantity": 75,
+                "symbol": "NIFTY25NOV26FUT",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": 24000.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "MS3",
+                "price": 1499.95,
+                "pricetype": "LIMIT",
+                "product": "CNC",
+                "quantity": 5,
+                "symbol": "INFY",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "NSE",
+                "order_status": "rejected",
+                "orderid": "MS4",
+                "price": 0.0,
+                "pricetype": "SL-M",
+                "product": "MIS",
+                "quantity": 1,
+                "symbol": "SBIN",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": 790.5
+              },
+              {
+                "action": "BUY",
+                "exchange": "BSE",
+                "order_status": "cancelled",
+                "orderid": "MS5",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "CNC",
+                "quantity": 2,
+                "symbol": "TATAMOTORS",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "BFO",
+                "order_status": "open",
+                "orderid": "MS6",
+                "price": 80000.0,
+                "pricetype": "SL",
+                "product": "CARRYFORWARD",
+                "quantity": 20,
+                "symbol": "SENSEX26NOVFUT",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "SELL",
+                "exchange": "MCX",
+                "order_status": "open",
+                "orderid": "MS7",
+                "price": 0.0,
+                "pricetype": "SL-M",
+                "product": "NRML",
+                "quantity": 10,
+                "symbol": "GOLDM25NOV26FUT",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "complete",
+                "orderid": "MS8",
+                "price": 5.5,
+                "pricetype": "XX",
+                "product": "ZZ",
+                "quantity": 3,
+                "symbol": "NOSUCH-EQ",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "CDS",
+                "order_status": "something else",
+                "orderid": "MS9",
+                "price": 0.0,
+                "pricetype": "MARKET",
+                "product": "NRML",
+                "quantity": 1000,
+                "symbol": "USDINR25NOV26FUT",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "cancelled",
+                "orderid": "MS10",
+                "price": 0.0,
+                "pricetype": "LIMIT",
+                "product": "MARGIN",
+                "quantity": 4,
+                "symbol": "SBIN",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": 0.0
+              },
+              {
+                "action": "BUY",
+                "exchange": "NSE",
+                "order_status": "",
+                "orderid": "MS11",
+                "price": 10.0,
+                "pricetype": "LIMIT",
+                "product": "MIS",
+                "quantity": 1,
+                "symbol": "INFY",
+                "timestamp": "03-Nov-2026 10:20:01",
+                "trigger_price": 0.0
+              }
+            ],
+            "statistics": {
+              "total_buy_orders": 8,
+              "total_cancelled_orders": 0,
+              "total_completed_orders": 1,
+              "total_open_orders": 3,
+              "total_rejected_orders": 3,
+              "total_sell_orders": 3
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_empty",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/orders": {
+          "body": {
+            "status": true,
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_cancelled_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_null_data",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/orders": {
+          "body": {
+            "status": true,
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_cancelled_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_failed",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/orders": {
+          "body": {
+            "status": false,
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_cancelled_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_not_json",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/orders": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_cancelled_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "orderbook_http_error",
+      "method": "POST",
+      "path": "/api/v1/orderbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/orders": {
+          "status": 500,
+          "body": {
+            "status": "false",
+            "message": "down"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "orders": [],
+            "statistics": {
+              "total_buy_orders": 0,
+              "total_cancelled_orders": 0,
+              "total_completed_orders": 0,
+              "total_open_orders": 0,
+              "total_rejected_orders": 0,
+              "total_sell_orders": 0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/tradebook": {
+          "body": {
+            "status": "true",
+            "data": [
+              {
+                "ORDER_NUMBER": "MS3",
+                "SYMBOL": "INFY",
+                "EXCHANGE": "NSE",
+                "SEC_ID": "1594",
+                "INSTRUMENT_NAME": "EQUITY",
+                "PRODUCT": "DELIVERY",
+                "BUY_SELL": "Sell",
+                "QUANTITY": 5,
+                "PRICE": 1499.95,
+                "TRADE_VALUE": 7499.75,
+                "ORDER_DATE_TIME": "03-Nov-2026 10:21:12"
+              },
+              {
+                "ORDER_NUMBER": "MS2",
+                "SYMBOL": "NIFTY25NOV26FUT",
+                "EXCHANGE": "NSE",
+                "SEC_ID": "49500",
+                "INSTRUMENT_NAME": "FUTIDX",
+                "PRODUCT": "CARRYFORWARD",
+                "BUY_SELL": "Buy",
+                "QUANTITY": 75,
+                "PRICE": 24005.5,
+                "TRADE_VALUE": 1800412.5,
+                "ORDER_DATE_TIME": "03-Nov-2026 10:21:12"
+              },
+              {
+                "ORDER_NUMBER": "MS99",
+                "SYMBOL": "NOSUCH",
+                "EXCHANGE": "NSE",
+                "SEC_ID": "999999",
+                "INSTRUMENT_NAME": "EQUITY",
+                "PRODUCT": "CNC",
+                "BUY_SELL": "BUY",
+                "QUANTITY": 2,
+                "PRICE": 2900,
+                "TRADE_VALUE": 5800,
+                "ORDER_DATE_TIME": "03-Nov-2026 10:21:12"
+              },
+              {
+                "ORDER_NUMBER": "MS98",
+                "SYMBOL": "SBIN",
+                "EXCHANGE": "NSE",
+                "SEC_ID": "",
+                "INSTRUMENT_NAME": "EQUITY",
+                "PRODUCT": "INTRADAY",
+                "BUY_SELL": "buy",
+                "QUANTITY": "x",
+                "PRICE": "y",
+                "TRADE_VALUE": "z",
+                "ORDER_DATE_TIME": "03-Nov-2026 10:21:12"
+              },
+              {
+                "ORDER_NUMBER": "MS97",
+                "SYMBOL": "SBIN",
+                "EXCHANGE": "NSE",
+                "SEC_ID": "",
+                "INSTRUMENT_NAME": "EQUITY",
+                "PRODUCT": "MARGIN",
+                "BUY_SELL": "Buy",
+                "QUANTITY": 1,
+                "PRICE": 800,
+                "TRADE_VALUE": 800,
+                "ORDER_DATE_TIME": "03-Nov-2026 10:21:12"
+              },
+              {
+                "ORDER_NUMBER": "MS96",
+                "SYMBOL": "",
+                "EXCHANGE": "NSE",
+                "SEC_ID": "",
+                "INSTRUMENT_NAME": "EQUITY",
+                "PRODUCT": "INTRADAY",
+                "BUY_SELL": "Buy",
+                "QUANTITY": 1,
+                "PRICE": 800,
+                "TRADE_VALUE": 800,
+                "ORDER_DATE_TIME": "03-Nov-2026 10:21:12"
+              },
+              {
+                "ORDER_NUMBER": "MS95",
+                "SYMBOL": "TATAMOTORS",
+                "EXCHANGE": "BSE",
+                "SEC_ID": "500570",
+                "INSTRUMENT_NAME": "EQUITY",
+                "PRODUCT": "DELIVERY",
+                "BUY_SELL": "Sell",
+                "QUANTITY": 3,
+                "PRICE": 500,
+                "TRADE_VALUE": 1500,
+                "ORDER_DATE_TIME": "03-Nov-2026 10:21:12"
+              },
+              {
+                "ORDER_NUMBER": "MS94",
+                "SYMBOL": "SBIN",
+                "SEC_ID": "3045",
+                "BUY_SELL": "Buy",
+                "QUANTITY": 1,
+                "PRICE": 800,
+                "TRADE_VALUE": 800
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "action": "SELL",
+              "average_price": 1499.95,
+              "exchange": "NSE",
+              "orderid": "MS3",
+              "product": "CNC",
+              "quantity": 5,
+              "symbol": "INFY",
+              "timestamp": "03-Nov-2026 10:21:12",
+              "trade_value": 7499.75
+            },
+            {
+              "action": "BUY",
+              "average_price": 24005.5,
+              "exchange": "NFO",
+              "orderid": "MS2",
+              "product": "NRML",
+              "quantity": 75,
+              "symbol": "NIFTY25NOV26FUT",
+              "timestamp": "03-Nov-2026 10:21:12",
+              "trade_value": 1800412.5
+            },
+            {
+              "action": "BUY",
+              "average_price": 2900.0,
+              "exchange": "NSE",
+              "orderid": "MS99",
+              "product": "CNC",
+              "quantity": 2,
+              "symbol": "NOSUCH",
+              "timestamp": "03-Nov-2026 10:21:12",
+              "trade_value": 5800.0
+            },
+            {
+              "action": "BUY",
+              "average_price": 0.0,
+              "exchange": "NSE",
+              "orderid": "MS98",
+              "product": "MIS",
+              "quantity": 0,
+              "symbol": "SBIN",
+              "timestamp": "03-Nov-2026 10:21:12",
+              "trade_value": 0.0
+            },
+            {
+              "action": "BUY",
+              "average_price": 800.0,
+              "exchange": "NSE",
+              "orderid": "MS97",
+              "product": "MARGIN",
+              "quantity": 1,
+              "symbol": "SBIN",
+              "timestamp": "03-Nov-2026 10:21:12",
+              "trade_value": 800.0
+            },
+            {
+              "action": "BUY",
+              "average_price": 800.0,
+              "exchange": "NSE",
+              "orderid": "MS96",
+              "product": "MIS",
+              "quantity": 1,
+              "symbol": "",
+              "timestamp": "03-Nov-2026 10:21:12",
+              "trade_value": 800.0
+            },
+            {
+              "action": "SELL",
+              "average_price": 500.0,
+              "exchange": "BSE",
+              "orderid": "MS95",
+              "product": "CNC",
+              "quantity": 3,
+              "symbol": "TATAMOTORS",
+              "timestamp": "03-Nov-2026 10:21:12",
+              "trade_value": 1500.0
+            },
+            {
+              "action": "BUY",
+              "average_price": 800.0,
+              "exchange": "",
+              "orderid": "MS94",
+              "product": "",
+              "quantity": 1,
+              "symbol": "SBIN",
+              "timestamp": "",
+              "trade_value": 800.0
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/tradebook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_empty",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/tradebook": {
+          "body": {
+            "status": true,
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/tradebook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_null_data",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/tradebook": {
+          "body": {
+            "status": true,
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/tradebook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "tradebook_failed",
+      "method": "POST",
+      "path": "/api/v1/tradebook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/tradebook": {
+          "body": {
+            "status": false,
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/tradebook",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/positions": {
+          "body": {
+            "status": true,
+            "data": [
+              {
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "INTRADAY",
+                "netqty": "10",
+                "avgnetprice": "800.00",
+                "netvalue": "54.5"
+              },
+              {
+                "symboltoken": "49500",
+                "exchange": "NSE",
+                "instrumenttype": "FUTIDX",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "-75",
+                "avgnetprice": "24000",
+                "netvalue": "-412.5"
+              },
+              {
+                "symboltoken": "1594",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "DELIVERY",
+                "netqty": "0",
+                "avgnetprice": "1500",
+                "netvalue": "100"
+              },
+              {
+                "symboltoken": "80001",
+                "exchange": "MCX",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "10",
+                "avgnetprice": "75000",
+                "netvalue": "100"
+              },
+              {
+                "symboltoken": "999999",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "NOSUCH-EQ",
+                "producttype": "INTRADAY",
+                "netqty": "4",
+                "avgnetprice": "10",
+                "netvalue": "0"
+              },
+              {
+                "symboltoken": "60001",
+                "exchange": "BSE",
+                "instrumenttype": "FUTIDX",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "20",
+                "avgnetprice": "80000",
+                "netvalue": "x"
+              },
+              {
+                "symboltoken": "500570",
+                "exchange": "BSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "MARGIN",
+                "netqty": "n/a",
+                "avgnetprice": "5",
+                "netvalue": "0"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": 800.0,
+              "exchange": "NSE",
+              "ltp": "NA",
+              "pnl": 54.5,
+              "product": "MIS",
+              "quantity": 10,
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": 24000.0,
+              "exchange": "NFO",
+              "ltp": "NA",
+              "pnl": -412.5,
+              "product": "CARRYFORWARD",
+              "quantity": -75,
+              "symbol": "NIFTY25NOV26FUT"
+            },
+            {
+              "average_price": 1500.0,
+              "exchange": "NSE",
+              "ltp": "NA",
+              "pnl": 100.0,
+              "product": "CNC",
+              "quantity": 0,
+              "symbol": "INFY"
+            },
+            {
+              "average_price": 75000.0,
+              "exchange": "MCX",
+              "ltp": "NA",
+              "pnl": 100.0,
+              "product": "NRML",
+              "quantity": 10,
+              "symbol": "GOLDM25NOV26FUT"
+            },
+            {
+              "average_price": 10.0,
+              "exchange": "NSE",
+              "ltp": "NA",
+              "pnl": 0.0,
+              "product": "MIS",
+              "quantity": 4,
+              "symbol": "NOSUCH-EQ"
+            },
+            {
+              "average_price": 80000.0,
+              "exchange": "BFO",
+              "ltp": "NA",
+              "pnl": 0.0,
+              "product": "CARRYFORWARD",
+              "quantity": 20,
+              "symbol": "SENSEX26NOVFUT"
+            },
+            {
+              "average_price": 5.0,
+              "exchange": "BSE",
+              "ltp": "NA",
+              "pnl": 0.0,
+              "product": "MARGIN",
+              "quantity": 0,
+              "symbol": "TATAMOTORS"
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_rows_without_a_token_or_not_in_the_master",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/positions": {
+          "body": {
+            "status": true,
+            "data": [
+              {
+                "symboltoken": "",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "SBIN-EQ",
+                "producttype": "INTRADAY",
+                "netqty": "1",
+                "avgnetprice": "bad",
+                "netvalue": "0"
+              },
+              {
+                "symboltoken": "",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "INTRADAY",
+                "netqty": "1",
+                "avgnetprice": "5",
+                "netvalue": "0"
+              },
+              {
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "IGNORED",
+                "producttype": "INTRADAY",
+                "netqty": "2",
+                "avgnetprice": "5",
+                "netvalue": "0"
+              },
+              {
+                "symboltoken": "999999",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "INFY-EQ",
+                "producttype": "INTRADAY",
+                "netqty": "3",
+                "avgnetprice": "5",
+                "netvalue": "0"
+              },
+              {
+                "symboltoken": "3045",
+                "exchange": "",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "INTRADAY",
+                "netqty": "2",
+                "avgnetprice": "5",
+                "netvalue": "0"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "average_price": 0.0,
+              "exchange": "NSE",
+              "ltp": "NA",
+              "pnl": 0.0,
+              "product": "MIS",
+              "quantity": 1,
+              "symbol": ""
+            },
+            {
+              "average_price": 5.0,
+              "exchange": "NSE",
+              "ltp": "NA",
+              "pnl": 0.0,
+              "product": "MIS",
+              "quantity": 1,
+              "symbol": ""
+            },
+            {
+              "average_price": 5.0,
+              "exchange": "NSE",
+              "ltp": "NA",
+              "pnl": 0.0,
+              "product": "MIS",
+              "quantity": 2,
+              "symbol": "SBIN"
+            },
+            {
+              "average_price": 5.0,
+              "exchange": "NSE",
+              "ltp": "NA",
+              "pnl": 0.0,
+              "product": "MIS",
+              "quantity": 3,
+              "symbol": "INFY"
+            },
+            {
+              "average_price": 5.0,
+              "exchange": "",
+              "ltp": "NA",
+              "pnl": 0.0,
+              "product": "MIS",
+              "quantity": 2,
+              "symbol": ""
+            }
+          ],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_flat",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/positions": {
+          "body": {
+            "status": true,
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_null_data",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/positions": {
+          "body": {
+            "status": true,
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "positionbook_failed",
+      "method": "POST",
+      "path": "/api/v1/positionbook",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/positions": {
+          "body": {
+            "status": false,
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": [],
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/holdings": {
+          "body": {
+            "status": "true",
+            "data": [
+              {
+                "tradingsymbol": "INFY-EQ",
+                "exchange": "NSE",
+                "quantity": 6,
+                "averageprice": 1450.5,
+                "ltp": 1510,
+                "profitandloss": 357,
+                "pnlpercentage": 4.1,
+                "product": "DELIVERY"
+              },
+              {
+                "tradingsymbol": "TATAMOTORS-EQ",
+                "exchange": "BSE",
+                "quantity": "4",
+                "averageprice": 500,
+                "ltp": 510,
+                "profitandloss": "40",
+                "pnlpercentage": "2.0",
+                "product": null
+              },
+              {
+                "tradingsymbol": "SBIN-EQ",
+                "exchange": null,
+                "quantity": 3,
+                "averageprice": 800,
+                "ltp": 805,
+                "profitandloss": null,
+                "pnlpercentage": "n/a"
+              },
+              {
+                "tradingsymbol": "NOSUCH-EQ",
+                "exchange": "NSE",
+                "quantity": "x",
+                "averageprice": "y",
+                "ltp": 11,
+                "profitandloss": 2,
+                "pnlpercentage": 10,
+                "product": "DELIVERY"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [
+              {
+                "exchange": "NSE",
+                "pnl": 357.0,
+                "pnlpercent": 4.1,
+                "product": "CNC",
+                "quantity": 6,
+                "symbol": "INFY"
+              },
+              {
+                "exchange": "BSE",
+                "pnl": 40.0,
+                "pnlpercent": 2.0,
+                "product": "CNC",
+                "quantity": 4,
+                "symbol": "TATAMOTORS"
+              },
+              {
+                "exchange": "NSE",
+                "pnl": 0.0,
+                "pnlpercent": 0.0,
+                "product": "CNC",
+                "quantity": 3,
+                "symbol": "SBIN"
+              },
+              {
+                "exchange": "NSE",
+                "pnl": 2.0,
+                "pnlpercent": 10.0,
+                "product": "CNC",
+                "quantity": 0,
+                "symbol": "NOSUCH-EQ"
+              }
+            ],
+            "statistics": {
+              "totalholdingvalue": 13515.0,
+              "totalinvvalue": 13103.0,
+              "totalpnlpercentage": 3.03,
+              "totalprofitandloss": 397.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_empty",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/holdings": {
+          "body": {
+            "status": true,
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_null_data",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/holdings": {
+          "body": {
+            "status": true,
+            "data": null
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "holdings_failed",
+      "method": "POST",
+      "path": "/api/v1/holdings",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/holdings": {
+          "body": {
+            "status": false,
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "holdings": [],
+            "statistics": {
+              "totalholdingvalue": 0.0,
+              "totalinvvalue": 0.0,
+              "totalpnlpercentage": 0.0,
+              "totalprofitandloss": 0.0
+            }
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/holdings",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/user/fundsummary": {
+          "body": {
+            "status": true,
+            "data": [
+              {
+                "AVAILABLE_BALANCE": "100000.5",
+                "COLLATERALS": 2500.25,
+                "REALISED_PROFITS": "340.25",
+                "MTM_COMBINED": -120.5,
+                "AMOUNT_UTILIZED": "1184.5"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "100000.50",
+            "collateral": "2500.25",
+            "m2mrealized": "340.25",
+            "m2munrealized": "-120.50",
+            "utiliseddebits": "1184.50"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/user/fundsummary",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_values_that_are_empty_or_text",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/user/fundsummary": {
+          "body": {
+            "status": true,
+            "data": [
+              {
+                "AVAILABLE_BALANCE": "None",
+                "COLLATERALS": "",
+                "REALISED_PROFITS": null,
+                "MTM_COMBINED": "n/a",
+                "AMOUNT_UTILIZED": 12
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "availablecash": "0.00",
+            "collateral": "0.00",
+            "m2mrealized": "0.00",
+            "m2munrealized": "0.00",
+            "utiliseddebits": "12.00"
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/user/fundsummary",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_without_data",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/user/fundsummary": {
+          "body": {
+            "status": true,
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/user/fundsummary",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_failed",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/user/fundsummary": {
+          "body": {
+            "status": false,
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/user/fundsummary",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "funds_http_error",
+      "method": "POST",
+      "path": "/api/v1/funds",
+      "auth": "body",
+      "request": {
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/user/fundsummary": {
+          "status": 500,
+          "body": {
+            "x": 1
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {},
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/user/fundsummary",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_long",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "product": "MIS",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/positions": {
+          "body": {
+            "status": true,
+            "data": [
+              {
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "INTRADAY",
+                "netqty": "10",
+                "avgnetprice": "800.00",
+                "netvalue": "54.5"
+              },
+              {
+                "symboltoken": "49500",
+                "exchange": "NSE",
+                "instrumenttype": "FUTIDX",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "-75",
+                "avgnetprice": "24000",
+                "netvalue": "-412.5"
+              },
+              {
+                "symboltoken": "1594",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "DELIVERY",
+                "netqty": "0",
+                "avgnetprice": "1500",
+                "netvalue": "100"
+              },
+              {
+                "symboltoken": "80001",
+                "exchange": "MCX",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "10",
+                "avgnetprice": "75000",
+                "netvalue": "100"
+              },
+              {
+                "symboltoken": "999999",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "NOSUCH-EQ",
+                "producttype": "INTRADAY",
+                "netqty": "4",
+                "avgnetprice": "10",
+                "netvalue": "0"
+              },
+              {
+                "symboltoken": "60001",
+                "exchange": "BSE",
+                "instrumenttype": "FUTIDX",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "20",
+                "avgnetprice": "80000",
+                "netvalue": "x"
+              },
+              {
+                "symboltoken": "500570",
+                "exchange": "BSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "MARGIN",
+                "netqty": "n/a",
+                "avgnetprice": "5",
+                "netvalue": "0"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": 10,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_short_is_negative",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "NIFTY25NOV26FUT",
+        "exchange": "NFO",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/positions": {
+          "body": {
+            "status": true,
+            "data": [
+              {
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "INTRADAY",
+                "netqty": "10",
+                "avgnetprice": "800.00",
+                "netvalue": "54.5"
+              },
+              {
+                "symboltoken": "49500",
+                "exchange": "NSE",
+                "instrumenttype": "FUTIDX",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "-75",
+                "avgnetprice": "24000",
+                "netvalue": "-412.5"
+              },
+              {
+                "symboltoken": "1594",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "DELIVERY",
+                "netqty": "0",
+                "avgnetprice": "1500",
+                "netvalue": "100"
+              },
+              {
+                "symboltoken": "80001",
+                "exchange": "MCX",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "10",
+                "avgnetprice": "75000",
+                "netvalue": "100"
+              },
+              {
+                "symboltoken": "999999",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "NOSUCH-EQ",
+                "producttype": "INTRADAY",
+                "netqty": "4",
+                "avgnetprice": "10",
+                "netvalue": "0"
+              },
+              {
+                "symboltoken": "60001",
+                "exchange": "BSE",
+                "instrumenttype": "FUTIDX",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "20",
+                "avgnetprice": "80000",
+                "netvalue": "x"
+              },
+              {
+                "symboltoken": "500570",
+                "exchange": "BSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "MARGIN",
+                "netqty": "n/a",
+                "avgnetprice": "5",
+                "netvalue": "0"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": 0,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "openposition_other_product_is_zero",
+      "method": "POST",
+      "path": "/api/v1/openposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "product": "CNC",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/positions": {
+          "body": {
+            "status": true,
+            "data": [
+              {
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "INTRADAY",
+                "netqty": "10",
+                "avgnetprice": "800.00",
+                "netvalue": "54.5"
+              },
+              {
+                "symboltoken": "49500",
+                "exchange": "NSE",
+                "instrumenttype": "FUTIDX",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "-75",
+                "avgnetprice": "24000",
+                "netvalue": "-412.5"
+              },
+              {
+                "symboltoken": "1594",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "DELIVERY",
+                "netqty": "0",
+                "avgnetprice": "1500",
+                "netvalue": "100"
+              },
+              {
+                "symboltoken": "80001",
+                "exchange": "MCX",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "10",
+                "avgnetprice": "75000",
+                "netvalue": "100"
+              },
+              {
+                "symboltoken": "999999",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "NOSUCH-EQ",
+                "producttype": "INTRADAY",
+                "netqty": "4",
+                "avgnetprice": "10",
+                "netvalue": "0"
+              },
+              {
+                "symboltoken": "60001",
+                "exchange": "BSE",
+                "instrumenttype": "FUTIDX",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "20",
+                "avgnetprice": "80000",
+                "netvalue": "x"
+              },
+              {
+                "symboltoken": "500570",
+                "exchange": "BSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "MARGIN",
+                "netqty": "n/a",
+                "avgnetprice": "5",
+                "netvalue": "0"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "quantity": 0,
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/positions": {
+          "body": {
+            "status": true,
+            "data": [
+              {
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "INTRADAY",
+                "netqty": "10",
+                "avgnetprice": "800.00",
+                "netvalue": "54.5"
+              },
+              {
+                "symboltoken": "49500",
+                "exchange": "NSE",
+                "instrumenttype": "FUTIDX",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "-75",
+                "avgnetprice": "24000",
+                "netvalue": "-412.5"
+              },
+              {
+                "symboltoken": "1594",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "DELIVERY",
+                "netqty": "0",
+                "avgnetprice": "1500",
+                "netvalue": "100"
+              },
+              {
+                "symboltoken": "80001",
+                "exchange": "MCX",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "10",
+                "avgnetprice": "75000",
+                "netvalue": "100"
+              },
+              {
+                "symboltoken": "999999",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "NOSUCH-EQ",
+                "producttype": "INTRADAY",
+                "netqty": "4",
+                "avgnetprice": "10",
+                "netvalue": "0"
+              },
+              {
+                "symboltoken": "60001",
+                "exchange": "BSE",
+                "instrumenttype": "FUTIDX",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "20",
+                "avgnetprice": "80000",
+                "netvalue": "x"
+              },
+              {
+                "symboltoken": "500570",
+                "exchange": "BSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "MARGIN",
+                "netqty": "n/a",
+                "avgnetprice": "5",
+                "netvalue": "0"
+              }
+            ]
+          }
+        },
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "ordertype": "MARKET",
+            "quantity": "10",
+            "producttype": "INTRADAY",
+            "price": "0",
+            "triggerprice": "0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "NIFTY25NOV26FUT",
+            "symboltoken": "49500",
+            "exchange": "NFO",
+            "transactiontype": "BUY",
+            "ordertype": "MARKET",
+            "quantity": "75",
+            "producttype": "CARRYFORWARD",
+            "price": "0",
+            "triggerprice": "0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "GOLDM25NOV26FUT",
+            "symboltoken": "80001",
+            "exchange": "MCX",
+            "transactiontype": "SELL",
+            "ordertype": "MARKET",
+            "quantity": "10",
+            "producttype": "CARRYFORWARD",
+            "price": "0",
+            "triggerprice": "0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SENSEX26NOVFUT",
+            "symboltoken": "60001",
+            "exchange": "BFO",
+            "transactiontype": "SELL",
+            "ordertype": "MARKET",
+            "quantity": "20",
+            "producttype": "CARRYFORWARD",
+            "price": "0",
+            "triggerprice": "0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_nothing_open",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/positions": {
+          "body": {
+            "status": true,
+            "data": []
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "closeposition_book_failed",
+      "method": "POST",
+      "path": "/api/v1/closeposition",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/positions": {
+          "body": {
+            "status": false,
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "message": "All Open Positions Squared Off",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_reduce",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/positions": {
+          "body": {
+            "status": true,
+            "data": [
+              {
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "INTRADAY",
+                "netqty": "10",
+                "avgnetprice": "800.00",
+                "netvalue": "54.5"
+              },
+              {
+                "symboltoken": "49500",
+                "exchange": "NSE",
+                "instrumenttype": "FUTIDX",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "-75",
+                "avgnetprice": "24000",
+                "netvalue": "-412.5"
+              },
+              {
+                "symboltoken": "1594",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "DELIVERY",
+                "netqty": "0",
+                "avgnetprice": "1500",
+                "netvalue": "100"
+              },
+              {
+                "symboltoken": "80001",
+                "exchange": "MCX",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "10",
+                "avgnetprice": "75000",
+                "netvalue": "100"
+              },
+              {
+                "symboltoken": "999999",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "NOSUCH-EQ",
+                "producttype": "INTRADAY",
+                "netqty": "4",
+                "avgnetprice": "10",
+                "netvalue": "0"
+              },
+              {
+                "symboltoken": "60001",
+                "exchange": "BSE",
+                "instrumenttype": "FUTIDX",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "20",
+                "avgnetprice": "80000",
+                "netvalue": "x"
+              },
+              {
+                "symboltoken": "500570",
+                "exchange": "BSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "MARGIN",
+                "netqty": "n/a",
+                "avgnetprice": "5",
+                "netvalue": "0"
+              }
+            ]
+          }
+        },
+        "POST /openapi/typeb/orders/regular": {
+          "body": {
+            "status": "true",
+            "message": "SUCCESS",
+            "data": {
+              "orderid": "MS0001",
+              "uniqueorderid": "U0001"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "MS0001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/orders/regular",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          },
+          "json": {
+            "variety": "NORMAL",
+            "tradingsymbol": "SBIN-EQ",
+            "symboltoken": "3045",
+            "exchange": "NSE",
+            "transactiontype": "SELL",
+            "ordertype": "LIMIT",
+            "quantity": "6",
+            "producttype": "INTRADAY",
+            "price": "800.5",
+            "triggerprice": "0.0",
+            "squareoff": "0",
+            "stoploss": "0",
+            "trailingStopLoss": "",
+            "disclosedquantity": "0",
+            "duration": "DAY",
+            "ordertag": ""
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_already_matched",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "10",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/positions": {
+          "body": {
+            "status": true,
+            "data": [
+              {
+                "symboltoken": "3045",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "INTRADAY",
+                "netqty": "10",
+                "avgnetprice": "800.00",
+                "netvalue": "54.5"
+              },
+              {
+                "symboltoken": "49500",
+                "exchange": "NSE",
+                "instrumenttype": "FUTIDX",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "-75",
+                "avgnetprice": "24000",
+                "netvalue": "-412.5"
+              },
+              {
+                "symboltoken": "1594",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "DELIVERY",
+                "netqty": "0",
+                "avgnetprice": "1500",
+                "netvalue": "100"
+              },
+              {
+                "symboltoken": "80001",
+                "exchange": "MCX",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "10",
+                "avgnetprice": "75000",
+                "netvalue": "100"
+              },
+              {
+                "symboltoken": "999999",
+                "exchange": "NSE",
+                "instrumenttype": "",
+                "symbolname": "NOSUCH-EQ",
+                "producttype": "INTRADAY",
+                "netqty": "4",
+                "avgnetprice": "10",
+                "netvalue": "0"
+              },
+              {
+                "symboltoken": "60001",
+                "exchange": "BSE",
+                "instrumenttype": "FUTIDX",
+                "symbolname": "",
+                "producttype": "CARRYFORWARD",
+                "netqty": "20",
+                "avgnetprice": "80000",
+                "netvalue": "x"
+              },
+              {
+                "symboltoken": "500570",
+                "exchange": "BSE",
+                "instrumenttype": "",
+                "symbolname": "",
+                "producttype": "MARGIN",
+                "netqty": "n/a",
+                "avgnetprice": "5",
+                "netvalue": "0"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "No OpenPosition Found. Not placing Exit order.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placesmartorder_book_failed_is_refused",
+      "method": "POST",
+      "path": "/api/v1/placesmartorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SBIN",
+        "exchange": "NSE",
+        "action": "BUY",
+        "quantity": "0",
+        "pricetype": "LIMIT",
+        "product": "MIS",
+        "price": "800.5",
+        "trigger_price": "0",
+        "disclosed_quantity": "0",
+        "position_size": "4",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "GET /openapi/typeb/portfolio/positions": {
+          "body": {
+            "status": false,
+            "message": "Session expired"
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "OpenAlgo could not read your open position from mStock by Mirae Asset, so no order was sent. Check your positions and try again.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "GET",
+          "host": "api.mstock.trade",
+          "path": "/openapi/typeb/portfolio/positions",
+          "query": [],
+          "headers": {
+            "accept": "*/*",
+            "authorization": "Bearer ms-jwt-token",
+            "x-privatekey": "ms-private-key",
+            "content-type": "application/json"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}
