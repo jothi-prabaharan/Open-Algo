@@ -1,0 +1,2228 @@
+{
+  "broker": "groww",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "groww-access-token",
+  "client_id": null,
+  "recorded_at": null,
+  "read_posts": [
+    "/v1/margins/detail/orders"
+  ],
+  "symbols": [
+    {
+      "symbol": "SBIN",
+      "brsymbol": "SBIN",
+      "name": "STATE BANK OF INDIA",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "3045",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "INFY",
+      "brsymbol": "INFY",
+      "name": "INFOSYS",
+      "exchange": "NSE",
+      "brexchange": "NSE",
+      "token": "1594",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "TATAMOTORS",
+      "brsymbol": "TATAMOTORS",
+      "name": "TATA MOTORS",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500570",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "BSEONLY",
+      "brsymbol": "BSEONLY",
+      "name": "BSE ONLY CO",
+      "exchange": "BSE",
+      "brexchange": "BSE",
+      "token": "500999",
+      "expiry": "",
+      "strike": -1.0,
+      "lotsize": 1,
+      "instrumenttype": "EQ",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "NIFTY25NOV26FUT",
+      "brsymbol": "NIFTY26NOVFUT",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE",
+      "token": "49500",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 75,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "NIFTY25NOV2624000CE",
+      "brsymbol": "NIFTY26NOV24000CE",
+      "name": "NIFTY",
+      "exchange": "NFO",
+      "brexchange": "NSE",
+      "token": "49599",
+      "expiry": "25-NOV-26",
+      "strike": 24000.0,
+      "lotsize": 75,
+      "instrumenttype": "CE",
+      "tick_size": 0.05
+    },
+    {
+      "symbol": "SENSEX26NOVFUT",
+      "brsymbol": "SENSEX26NOVFUT",
+      "name": "SENSEX",
+      "exchange": "BFO",
+      "brexchange": "BSE",
+      "token": "60001",
+      "expiry": "26-NOV-26",
+      "strike": -1.0,
+      "lotsize": 20,
+      "instrumenttype": "FUT",
+      "tick_size": 0.1
+    },
+    {
+      "symbol": "GOLDM25NOV26FUT",
+      "brsymbol": "GOLDM26NOVFUT",
+      "name": "GOLDM",
+      "exchange": "MCX",
+      "brexchange": "MCX",
+      "token": "80001",
+      "expiry": "25-NOV-26",
+      "strike": -1.0,
+      "lotsize": 10,
+      "instrumenttype": "FUT",
+      "tick_size": 1.0
+    }
+  ],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "margin_one_future",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "payload": {
+              "exposure_required": 20500.25,
+              "span_required": 80000.5,
+              "option_buy_premium": 0,
+              "brokerage_and_charges": 10.5,
+              "total_requirement": 100500.75
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20500.25,
+            "span_margin": 80000.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_buy_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "BUY",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "payload": {
+              "exposure_required": 20500.25,
+              "span_required": 80000.5,
+              "option_buy_premium": 0,
+              "brokerage_and_charges": 10.5,
+              "total_requirement": 100500.75
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20500.25,
+            "span_margin": 80000.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "BUY"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_limit_option_leg_with_a_price",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV2624000CE",
+            "exchange": "NFO",
+            "action": "BUY",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "LIMIT",
+            "price": "100.55"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "payload": {
+              "exposure_required": 20500.25,
+              "span_required": 80000.5,
+              "option_buy_premium": 0,
+              "brokerage_and_charges": 10.5,
+              "total_requirement": 100500.75
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20500.25,
+            "span_margin": 80000.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOV24000CE",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "LIMIT",
+              "transaction_type": "BUY",
+              "price": 100.55
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_stop_limit_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "SL",
+            "price": "24000",
+            "trigger_price": "23990.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "payload": {
+              "exposure_required": 20500.25,
+              "span_required": 80000.5,
+              "option_buy_premium": 0,
+              "brokerage_and_charges": 10.5,
+              "total_requirement": 100500.75
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20500.25,
+            "span_margin": 80000.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "SL",
+              "transaction_type": "SELL",
+              "price": 24000.0
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_stop_market_leg",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "SL-M",
+            "trigger_price": "23990.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "payload": {
+              "exposure_required": 20500.25,
+              "span_required": 80000.5,
+              "option_buy_premium": 0,
+              "brokerage_and_charges": 10.5,
+              "total_requirement": 100500.75
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20500.25,
+            "span_margin": 80000.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "SL_M",
+              "transaction_type": "SELL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_bse_future",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SENSEX26NOVFUT",
+            "exchange": "BFO",
+            "action": "BUY",
+            "quantity": "20",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "payload": {
+              "exposure_required": 20500.25,
+              "span_required": 80000.5,
+              "option_buy_premium": 0,
+              "brokerage_and_charges": 10.5,
+              "total_requirement": 100500.75
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20500.25,
+            "span_margin": 80000.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "SENSEX26NOVFUT",
+              "quantity": 20,
+              "exchange": "BSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "BUY"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_f_and_o_legs_are_one_basket",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "NIFTY25NOV2624000CE",
+            "exchange": "NFO",
+            "action": "BUY",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "SENSEX26NOVFUT",
+            "exchange": "BFO",
+            "action": "BUY",
+            "quantity": "20",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "payload": {
+              "exposure_required": 20500.25,
+              "span_required": 80000.5,
+              "option_buy_premium": 0,
+              "brokerage_and_charges": 10.5,
+              "total_requirement": 100500.75
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20500.25,
+            "span_margin": 80000.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            },
+            {
+              "trading_symbol": "NIFTY26NOV24000CE",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "BUY"
+            },
+            {
+              "trading_symbol": "SENSEX26NOVFUT",
+              "quantity": 20,
+              "exchange": "BSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "BUY"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_each_cash_leg_is_a_request",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "5",
+            "product": "CNC",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "TATAMOTORS",
+            "exchange": "BSE",
+            "action": "BUY",
+            "quantity": "2",
+            "product": "CNC",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": [
+          {
+            "body": {
+              "status": "SUCCESS",
+              "payload": {
+                "exposure_required": 40,
+                "span_required": 60,
+                "option_buy_premium": 0,
+                "brokerage_and_charges": 10.5,
+                "total_requirement": 100
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "SUCCESS",
+              "payload": {
+                "exposure_required": 80,
+                "span_required": 120,
+                "option_buy_premium": 0,
+                "brokerage_and_charges": 10.5,
+                "total_requirement": 200
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "SUCCESS",
+              "payload": {
+                "exposure_required": 120,
+                "span_required": 180,
+                "option_buy_premium": 0,
+                "brokerage_and_charges": 10.5,
+                "total_requirement": 300
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 240.0,
+            "span_margin": 360.0,
+            "total_margin_required": 600.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "CASH"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "SBIN",
+              "quantity": 10,
+              "exchange": "NSE",
+              "segment": "CASH",
+              "product": "MIS",
+              "order_type": "MARKET",
+              "transaction_type": "BUY"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "CASH"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "INFY",
+              "quantity": 5,
+              "exchange": "NSE",
+              "segment": "CASH",
+              "product": "CNC",
+              "order_type": "MARKET",
+              "transaction_type": "BUY"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "CASH"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "TATAMOTORS",
+              "quantity": 2,
+              "exchange": "BSE",
+              "segment": "CASH",
+              "product": "CNC",
+              "order_type": "MARKET",
+              "transaction_type": "BUY"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_cash_and_f_and_o_are_added",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": [
+          {
+            "body": {
+              "status": "SUCCESS",
+              "payload": {
+                "exposure_required": 40,
+                "span_required": 60,
+                "option_buy_premium": 0,
+                "brokerage_and_charges": 10.5,
+                "total_requirement": 100
+              }
+            }
+          },
+          {
+            "body": {
+              "status": "SUCCESS",
+              "payload": {
+                "exposure_required": 100,
+                "span_required": 150,
+                "option_buy_premium": 0,
+                "brokerage_and_charges": 10.5,
+                "total_requirement": 250
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 140.0,
+            "span_margin": 210.0,
+            "total_margin_required": 350.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "CASH"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "SBIN",
+              "quantity": 10,
+              "exchange": "NSE",
+              "segment": "CASH",
+              "product": "MIS",
+              "order_type": "MARKET",
+              "transaction_type": "BUY"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_cash_leg_with_a_price",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "LIMIT",
+            "price": "800.5"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "payload": {
+              "exposure_required": 20500.25,
+              "span_required": 80000.5,
+              "option_buy_premium": 0,
+              "brokerage_and_charges": 10.5,
+              "total_requirement": 100500.75
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20500.25,
+            "span_margin": 80000.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "CASH"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "SBIN",
+              "quantity": 10,
+              "exchange": "NSE",
+              "segment": "CASH",
+              "product": "MIS",
+              "order_type": "LIMIT",
+              "transaction_type": "BUY",
+              "price": 800.5
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_cash_leg_without_a_price_in_the_request",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET",
+            "price": "0"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "payload": {
+              "exposure_required": 20500.25,
+              "span_required": 80000.5,
+              "option_buy_premium": 0,
+              "brokerage_and_charges": 10.5,
+              "total_requirement": 100500.75
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20500.25,
+            "span_margin": 80000.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "CASH"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "SBIN",
+              "quantity": 10,
+              "exchange": "NSE",
+              "segment": "CASH",
+              "product": "MIS",
+              "order_type": "MARKET",
+              "transaction_type": "BUY"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_numbers_that_are_missing_are_zero",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "payload": {
+              "total_requirement": 500
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 0.0,
+            "total_margin_required": 500.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_numbers_as_text",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "payload": {
+              "total_requirement": "1200.5",
+              "span_required": "1000",
+              "exposure_required": "200.5"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 200.5,
+            "span_margin": 1000.0,
+            "total_margin_required": 1200.5
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_numbers_that_are_not_numbers",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "payload": {
+              "total_requirement": "x"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Could not reach Groww to calculate the margin. Try again shortly.",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_with_an_empty_payload",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "SUCCESS"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 0.0,
+            "span_margin": 0.0,
+            "total_margin_required": 0.0
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_refused_with_an_error",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "status": 400,
+          "body": {
+            "status": "FAILURE",
+            "error": {
+              "code": "GA040",
+              "message": "Invalid order"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Invalid order",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_refused_with_no_reason",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "status": 400,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Groww could not calculate the margin",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_failure_status_in_a_200",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "FAILURE",
+            "error": {
+              "message": "Not allowed"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Not allowed",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_http_error_with_a_reason",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "status": 500,
+          "body": {
+            "status": "FAILURE",
+            "error": {
+              "code": "GA500",
+              "message": "Down"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Down",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_answer_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Groww returned no margin data",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_throttled_then_answered",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": [
+          {
+            "status": 429,
+            "body": {}
+          },
+          {
+            "body": {
+              "status": "SUCCESS",
+              "payload": {
+                "exposure_required": 20500.25,
+                "span_required": 80000.5,
+                "option_buy_premium": 0,
+                "brokerage_and_charges": 10.5,
+                "total_requirement": 100500.75
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "data": {
+            "exposure_margin": 20500.25,
+            "span_margin": 80000.5,
+            "total_margin_required": 100500.75
+          },
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_throttled_every_time",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "status": 429,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 429,
+        "body": {
+          "message": "Groww could not calculate the margin",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "FNO"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "NIFTY26NOVFUT",
+              "quantity": 75,
+              "exchange": "NSE",
+              "segment": "FNO",
+              "product": "NRML",
+              "order_type": "MARKET",
+              "transaction_type": "SELL"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_the_second_request_is_refused",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "SBIN",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "MIS",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "INFY",
+            "exchange": "NSE",
+            "action": "BUY",
+            "quantity": "5",
+            "product": "CNC",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": [
+          {
+            "body": {
+              "status": "SUCCESS",
+              "payload": {
+                "exposure_required": 20500.25,
+                "span_required": 80000.5,
+                "option_buy_premium": 0,
+                "brokerage_and_charges": 10.5,
+                "total_requirement": 100500.75
+              }
+            }
+          },
+          {
+            "status": 400,
+            "body": {
+              "status": "FAILURE",
+              "error": {
+                "code": "GA041",
+                "message": "Bad leg"
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Bad leg",
+          "status": "error"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "CASH"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "SBIN",
+              "quantity": 10,
+              "exchange": "NSE",
+              "segment": "CASH",
+              "product": "MIS",
+              "order_type": "MARKET",
+              "transaction_type": "BUY"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "host": "api.groww.in",
+          "path": "/v1/margins/detail/orders",
+          "query": [
+            [
+              "segment",
+              "CASH"
+            ]
+          ],
+          "headers": {
+            "authorization": "Bearer groww-access-token",
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-api-version": "1.0"
+          },
+          "json": [
+            {
+              "trading_symbol": "INFY",
+              "quantity": 5,
+              "exchange": "NSE",
+              "segment": "CASH",
+              "product": "CNC",
+              "order_type": "MARKET",
+              "transaction_type": "BUY"
+            }
+          ]
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "margin_unknown_symbol",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NOPE",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Cannot calculate margin for NOPE on NFO: NOPE is not in the NFO master contract",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_mcx_is_refused",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "GOLDM25NOV26FUT",
+            "exchange": "MCX",
+            "action": "BUY",
+            "quantity": "10",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {},
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Cannot calculate margin for GOLDM25NOV26FUT on MCX: Groww's trading API does not support the MCX exchange. Orders can be placed on NSE, BSE, NFO and BFO only.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "margin_a_leg_that_is_refused_spoils_the_basket",
+      "method": "POST",
+      "path": "/api/v1/margin",
+      "auth": "body",
+      "request": {
+        "positions": [
+          {
+            "symbol": "NIFTY25NOV26FUT",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          },
+          {
+            "symbol": "NOPE",
+            "exchange": "NFO",
+            "action": "SELL",
+            "quantity": "75",
+            "product": "NRML",
+            "pricetype": "MARKET"
+          }
+        ],
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v1/margins/detail/orders": {
+          "body": {
+            "status": "SUCCESS",
+            "payload": {
+              "exposure_required": 20500.25,
+              "span_required": 80000.5,
+              "option_buy_premium": 0,
+              "brokerage_and_charges": 10.5,
+              "total_requirement": 100500.75
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "message": "Cannot calculate margin for NOPE on NFO: NOPE is not in the NFO master contract",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    }
+  ]
+}

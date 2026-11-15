@@ -65,3 +65,26 @@ public sealed class GrowwContractTests(GrowwHost host, ITestOutputHelper output)
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class MarginGrowwHost() : GrowwFileHost("margin_groww.fixtures.json");
+
+/// <summary>Groww margin (tools/contract-fixtures/margin_groww.fixtures.json).</summary>
+public sealed class MarginGrowwContractTests(MarginGrowwHost host, ITestOutputHelper output) : IClassFixture<MarginGrowwHost>
+{
+    private const string Words = "OpenAlgo answers a margin figure that is not a number as a failure to reach Groww, and a throttle as an empty reason. EP Trade bot says what Groww did and what to do.";
+
+    private static Deviation Says(int status, string message) => new(Words, f => Expect(f, status, Error(message)));
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["margin_unknown_symbol"] = Says(400, "NOPE on NFO is not in the Groww master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again."),
+        ["margin_a_leg_that_is_refused_spoils_the_basket"] = Says(400, "NOPE on NFO is not in the Groww master contract, so the margin cannot be worked out. Check the symbol, or download the master contract again."),
+        ["margin_numbers_that_are_not_numbers"] = Says(502, "Groww sent margin figures that could not be read. Try again in a moment."),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("margin_groww.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
