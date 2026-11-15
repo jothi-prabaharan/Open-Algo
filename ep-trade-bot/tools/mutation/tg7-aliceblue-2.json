@@ -1,0 +1,346 @@
+[
+ {
+  "name": "A12 AliceBluePlugin.cs num",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.cs",
+  "old": "            var when = wait >= 120 ? $\"about {(int)Math.Ceiling(wait / 60)} minutes\" : $\"about {Math.Max(1, (int)Math.Ceiling(wait))} seconds\";",
+  "new": "            var when = wait >= 120 ? $\"about {(int)Math.Ceiling(wait / 61)} minutes\" : $\"about {Math.Max(1, (int)Math.Ceiling(wait))} seconds\";",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A49 AliceBluePlugin.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.cs",
+  "old": "        return BrokerCallResult.Refused(reply.Status >= 400 ? reply.Status : 400, Reason(reply.Body, \"Failed to modify order\"));",
+  "new": "        return BrokerCallResult.Refused(reply.Status > 400 ? reply.Status : 400, Reason(reply.Body, \"Failed to modify order\"));",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A54 AliceBluePlugin.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.cs",
+  "old": "        return BrokerCallResult.Refused(reply.Status >= 400 ? reply.Status : 400, Reason(reply.Body, \"Failed to cancel order\"));",
+  "new": "        return BrokerCallResult.Refused(reply.Status > 400 ? reply.Status : 400, Reason(reply.Body, \"Failed to cancel order\"));",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A59 AliceBluePlugin.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.cs",
+  "old": "        if (message.Length > 0 && (noneWords.Any(w => message.Contains(w, StringComparison.OrdinalIgnoreCase)) || message.Contains(\"not found\", StringComparison.OrdinalIgnoreCase))) return [];",
+  "new": "        if (message.Length >= 0 && (noneWords.Any(w => message.Contains(w, StringComparison.OrdinalIgnoreCase)) || message.Contains(\"not found\", StringComparison.OrdinalIgnoreCase))) return [];",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A60 AliceBluePlugin.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.cs",
+  "old": "        if (message.Length > 0 && (noneWords.Any(w => message.Contains(w, StringComparison.OrdinalIgnoreCase)) || message.Contains(\"not found\", StringComparison.OrdinalIgnoreCase))) return [];",
+  "new": "        if (message.Length > 0 && (noneWords.All(w => message.Contains(w, StringComparison.OrdinalIgnoreCase)) || message.Contains(\"not found\", StringComparison.OrdinalIgnoreCase))) return [];",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A76 AliceBluePlugin.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.cs",
+  "old": "            var average = net > 0 ? buyAverage : net < 0 ? sellAverage : 0;",
+  "new": "            var average = net > 0 ? buyAverage : net <= 0 ? sellAverage : 0;",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A78 AliceBluePlugin.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.cs",
+  "old": "                pnl = net > 0 ? (ltp - average) * net : (average - ltp) * Math.Abs(net);",
+  "new": "                pnl = net >= 0 ? (ltp - average) * net : (average - ltp) * Math.Abs(net);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A79 AliceBluePlugin.cs num",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.cs",
+  "old": "                percentage = pnl / (average * Math.Abs(net)) * 100;",
+  "new": "                percentage = pnl / (average * Math.Abs(net)) * 101;",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A83 AliceBluePlugin.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.cs",
+  "old": "                if (average > 0 && net != 0) percentage = pnl / (average * Math.Abs(net)) * 100;",
+  "new": "                if (average >= 0 && net != 0) percentage = pnl / (average * Math.Abs(net)) * 100;",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A93 AliceBluePlugin.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.cs",
+  "old": "    private static double? Number(JsonNode? node) => BookFormatting.Number(node) is { } n ? n : Str(node) is { } s && double.TryParse(s.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var d) ? d : null;",
+  "new": "    private static double? Number(JsonNode? node) => BookFormatting.Number(node) is { } n ? n : Str(node) is { } s && double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var d) ? d : null;",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A116 AliceBluePlugin.History.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.History.cs",
+  "old": "        if (to > now) to = now;",
+  "new": "        if (to >= now) to = now;",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A121 AliceBluePlugin.History.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.History.cs",
+  "old": "        if (!daily && to - from < 3_600_000) to = from + 3_600_000;",
+  "new": "        if (!daily && to - from <= 3_600_000) to = from + 3_600_000;",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A133 AliceBluePlugin.History.cs num",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.History.cs",
+  "old": "            var numbers = new double[5];",
+  "new": "            var numbers = new double[6];",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A146 AliceBluePlugin.Login.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Login.cs",
+  "old": "        var code = input.TryGetValue(\"code\", out var c) && !string.IsNullOrWhiteSpace(c) ? c : input.TryGetValue(\"request_token\", out var t) ? t : null;",
+  "new": "        var code = input.TryGetValue(\"code\", out var c) || !string.IsNullOrWhiteSpace(c) ? c : input.TryGetValue(\"request_token\", out var t) ? t : null;",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A153 AliceBluePlugin.Login.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Login.cs",
+  "old": "        if (Str(answer[\"stat\"]) == \"Not_ok\") return BrokerLoginResult.Refused(Truthy(answer[\"emsg\"]) ? $\"{Display} did not accept the sign-in: {Str(answer[\"emsg\"])}\" : $\"{Display} did not accept the sign-in. Start it again from the beginning.\");",
+  "new": "        if (Str(answer[\"stat\"]) != \"Not_ok\") return BrokerLoginResult.Refused(Truthy(answer[\"emsg\"]) ? $\"{Display} did not accept the sign-in: {Str(answer[\"emsg\"])}\" : $\"{Display} did not accept the sign-in. Start it again from the beginning.\");",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A166 AliceBluePlugin.Data.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
+  "old": "        while (!ready() && DateTime.UtcNow - started < limit) await Task.Delay(50, cancellationToken);",
+  "new": "        while (!ready() || DateTime.UtcNow - started < limit) await Task.Delay(50, cancellationToken);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A167 AliceBluePlugin.Data.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
+  "old": "        while (!ready() && DateTime.UtcNow - started < limit) await Task.Delay(50, cancellationToken);",
+  "new": "        while (!ready() && DateTime.UtcNow - started <= limit) await Task.Delay(50, cancellationToken);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A168 AliceBluePlugin.Data.cs num",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
+  "old": "        while (!ready() && DateTime.UtcNow - started < limit) await Task.Delay(50, cancellationToken);",
+  "new": "        while (!ready() && DateTime.UtcNow - started < limit) await Task.Delay(51, cancellationToken);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A180 AliceBluePlugin.Data.cs num",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
+  "old": "        if (quote is null) throw new BrokerException($\"{Display} did not send a quote for {symbol} on {exchange}. Try again in a moment.\", 500);",
+  "new": "        if (quote is null) throw new BrokerException($\"{Display} did not send a quote for {symbol} on {exchange}. Try again in a moment.\", 501);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A182 AliceBluePlugin.Data.cs num",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
+  "old": "            await UntilAsync(() => socket.GetQuote(instrument.Exchange, instrument.Token) is not null, TimeSpan.FromSeconds(2), cancellationToken);",
+  "new": "            await UntilAsync(() => socket.GetQuote(instrument.Exchange, instrument.Token) is not null, TimeSpan.FromSeconds(3), cancellationToken);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A183 AliceBluePlugin.Data.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
+  "old": "    private static double Number(JsonObject quote, string name) => quote.TryGetPropertyValue(name, out var node) && node is not null ? Float(node) : 0;",
+  "new": "    private static double Number(JsonObject quote, string name) => quote.TryGetPropertyValue(name, out var node) || node is not null ? Float(node) : 0;",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A186 AliceBluePlugin.Data.cs num",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
+  "old": "            await UntilAsync(() => socket.GetDepth(instrument.Exchange, instrument.Token) is not null, TimeSpan.FromSeconds(2), cancellationToken);",
+  "new": "            await UntilAsync(() => socket.GetDepth(instrument.Exchange, instrument.Token) is not null, TimeSpan.FromSeconds(3), cancellationToken);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A187 AliceBluePlugin.Data.cs num",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
+  "old": "        if (depth is null) throw new BrokerException($\"{Display} did not send the market depth for {symbol} on {exchange}. Try again in a moment.\", 500);",
+  "new": "        if (depth is null) throw new BrokerException($\"{Display} did not send the market depth for {symbol} on {exchange}. Try again in a moment.\", 501);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A192 AliceBluePlugin.Data.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
+  "old": "            socket = await Sockets.GetAsync(session, true, cancellationToken);",
+  "new": "            socket = await Sockets.GetAsync(session, false, cancellationToken);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A195 AliceBluePlugin.Data.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
+  "old": "            subscribed = socket is { Connected: true } && socket.Subscribe(wanted, depth: false);",
+  "new": "            subscribed = socket is { Connected: true } && socket.Subscribe(wanted, depth: true);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A196 AliceBluePlugin.Data.cs num",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
+  "old": "            await UntilAsync(() => names.Keys.All(Has), TimeSpan.FromSeconds(Math.Min(Math.Max(wanted.Count * 0.08, 2), 20)), cancellationToken);",
+  "new": "            await UntilAsync(() => names.Keys.All(Has), TimeSpan.FromSeconds(Math.Min(Math.Max(wanted.Count * 0.08, 3), 20)), cancellationToken);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A197 AliceBluePlugin.Data.cs num",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
+  "old": "            await UntilAsync(() => names.Keys.All(Has), TimeSpan.FromSeconds(Math.Min(Math.Max(wanted.Count * 0.08, 2), 20)), cancellationToken);",
+  "new": "            await UntilAsync(() => names.Keys.All(Has), TimeSpan.FromSeconds(Math.Min(Math.Max(wanted.Count * 0.08, 2), 21)), cancellationToken);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A198 AliceBluePlugin.Data.cs op",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
+  "old": "            if (missing.Count > 0)",
+  "new": "            if (missing.Count >= 0)",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A199 AliceBluePlugin.Data.cs num",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/AliceBlue/AliceBluePlugin.Data.cs",
+  "old": "                await UntilAsync(() => missing.All(Has), TimeSpan.FromSeconds(3), cancellationToken);",
+  "new": "                await UntilAsync(() => missing.All(Has), TimeSpan.FromSeconds(4), cancellationToken);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A219 AliceBlueFeedCodec.cs op",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
+  "old": "            if (v.TryGetValue<string>(out var text) && double.TryParse(text.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
+  "new": "            if (v.TryGetValue<string>(out var text) && double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A220 AliceBlueFeedCodec.cs op",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
+  "old": "                if (double.IsNaN(d) || double.IsInfinity(d)) throw new FormatException(\"Not an integer.\");",
+  "new": "                if (double.IsNaN(d) && double.IsInfinity(d)) throw new FormatException(\"Not an integer.\");",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A226 AliceBlueFeedCodec.cs num",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
+  "old": "        for (var i = 1; i <= 5; i++)",
+  "new": "        for (var i = 1; i <= 6; i++)",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A228 AliceBlueFeedCodec.cs op",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
+  "old": "        if (node is not JsonValue v || v.TryGetValue<string>(out _) || v.TryGetValue<bool>(out _)) return false;",
+  "new": "        if (node is not JsonValue v || v.TryGetValue<string>(out _) || v.TryGetValue<bool>(out _)) return true;",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A230 AliceBlueFeedCodec.cs op",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
+  "old": "        if (!v.TryGetValue<long>(out var whole)) return false;",
+  "new": "        if (!v.TryGetValue<long>(out var whole)) return true;",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A240 AliceBlueFeedCodec.cs op",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
+  "old": "        var hasQuote = new[] { \"open\", \"high\", \"low\", \"close\", \"volume\" }.Any(data.ContainsKey);",
+  "new": "        var hasQuote = new[] { \"open\", \"high\", \"low\", \"close\", \"volume\" }.All(data.ContainsKey);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A243 AliceBlueFeedCodec.cs num",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
+  "old": "            topics.Add(3);",
+  "new": "            topics.Add(4);",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A249 AliceBlueFeedCodec.cs op",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueFeedCodec.cs",
+  "old": "        if (topics.Count == 0 && modes.Count > 0) topics.Add(modes.Max());",
+  "new": "        if (topics.Count == 0 && modes.Count >= 0) topics.Add(modes.Max());",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A262 AliceBlueMarketSocket.cs op",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
+  "old": "                if (Text(data, \"s\") == \"OK\")",
+  "new": "                if (Text(data, \"s\") != \"OK\")",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A274 AliceBlueMarketSocket.cs op",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
+  "old": "            if (v.TryGetValue<string>(out var text) && double.TryParse(text.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
+  "new": "            if (v.TryGetValue<string>(out var text) && double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A275 AliceBlueMarketSocket.cs op",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
+  "old": "                if (double.IsNaN(d) || double.IsInfinity(d)) throw new FormatException(\"Not an integer.\");",
+  "new": "                if (double.IsNaN(d) && double.IsInfinity(d)) throw new FormatException(\"Not an integer.\");",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A277 AliceBlueMarketSocket.cs op",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
+  "old": "            if (v.TryGetValue<string>(out var text) && long.TryParse(text.Trim(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
+  "new": "            if (v.TryGetValue<string>(out var text) && long.TryParse(text, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var parsed)) return parsed;",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A282 AliceBlueMarketSocket.cs num",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
+  "old": "            for (var i = 1; i <= 5; i++)",
+  "new": "            for (var i = 1; i <= 6; i++)",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "A286 AliceBlueMarketSocket.cs op",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/AliceBlueMarketSocket.cs",
+  "old": "            while (side.Count < i) side.Add(new Level());",
+  "new": "            while (side.Count <= i) side.Add(new Level());",
+  "filter": "FullyQualifiedName~AliceBlue",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]
