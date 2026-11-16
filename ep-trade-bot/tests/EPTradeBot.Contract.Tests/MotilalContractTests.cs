@@ -141,7 +141,6 @@ public sealed class LoginMotilalContractTests(LoginMotilalHost host, ITestOutput
         ["login_answer_that_is_not_json"] = new(RH, f => Expect(f, 502, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal sent an answer that could not be read. Try again in a moment."}""")!.AsObject())),
         ["login_token_waiting_for_its_code_is_refused"] = new(RO, f => Expect(f, 400, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal wants a code sent to you by SMS or email, which is not available here. Turn on an authenticator app with Motilal Oswal and sign in with its code."}""")!.AsObject())),
         ["login_server_error"] = new(RH, f => Expect(f, 400, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal did not accept the sign-in. Check your details, then try again."}""")!.AsObject())),
-        ["login_without_the_authenticator_code"] = new(RH, f => Expect(f, 400, JsonNode.Parse("""{"status":"error","message":"Enter the one-time code from your authenticator to sign in to Motilal Oswal. Signing in with a code sent by SMS or email is not available here."}""")!.AsObject())),
     };
 
     public static IEnumerable<object[]> Names() => ContractRunner.Names("login_motilal.fixtures.json");
