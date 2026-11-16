@@ -25,6 +25,48 @@ public abstract class MotilalFileHost(string file) : BrokerContractHost
 
 public sealed class MotilalHost() : MotilalFileHost("motilal.fixtures.json");
 
+/// <summary>A host whose cases each start with nothing learned (no dealer login, no index exchange spelling), as every recorded case did.</summary>
+public abstract class MotilalFreshHost(string file) : MotilalFileHost(file)
+{
+    public override Task PrepareAsync(JsonObject fixture)
+    {
+        EPTradeBot.Infrastructure.Brokers.Motilal.MotilalPlugin.ForgetLearned();
+        return Task.CompletedTask;
+    }
+}
+
+public sealed class DataMotilalHost() : MotilalFreshHost("data_motilal.fixtures.json");
+
+/// <summary>Motilal quotes and today's daily candle (tools/contract-fixtures/data_motilal.fixtures.json).</summary>
+public sealed class DataMotilalContractTests(DataMotilalHost host, ITestOutputHelper output) : IClassFixture<DataMotilalHost>
+{
+    private const string Words = "OpenAlgo answers every failed quote or history read with a 500 and a Python-style message. EP Trade bot says what Motilal did and what to do, with a status that tells a refusal from an unreachable broker.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["quote_index_other_error_is_not_retried"] = new(Words, f => Expect(f, 502, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal did not give the quote for NIFTY: Token expired (errorcode: MO8002) Try again in a moment."}""")!.AsObject())),
+        ["history_weekly_is_refused"] = new(Words, f => Expect(f, 400, JsonNode.Parse("""{"status":"error","message":"Interval \u0027W\u0027 is not available from Motilal Oswal: it gives no history, only today\u0027s daily candle (interval D)."}""")!.AsObject())),
+        ["quote_refused"] = new(Words, f => Expect(f, 502, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal did not give the quote for SBIN: Token expired (errorcode: MO8002) Try again in a moment."}""")!.AsObject())),
+        ["quote_null_data"] = new(Words, f => Expect(f, 502, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal sent no quote for SBIN. Try again in a moment."}""")!.AsObject())),
+        ["quote_mcx_index_is_not_supported"] = new(Words, f => Expect(f, 400, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal gives no quote for CRUDEIDX: it can quote NSE and BSE indices only."}""")!.AsObject())),
+        ["quote_not_json"] = new(Words, f => Expect(f, 502, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal did not give the quote for SBIN: Motilal Oswal sent an answer that could not be read (HTTP 200). Try again in a moment."}""")!.AsObject())),
+        ["quote_dealer_login_refused_again"] = new(Words, f => Expect(f, 502, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal did not give the quote for SBIN: Please provide client code (errorcode: MO1062) Try again in a moment."}""")!.AsObject())),
+        ["quote_index_both_field_names_refused"] = new(Words, f => Expect(f, 502, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal did not give the quote for NIFTY: Invalid Exchange Input Parameter (errorcode: MO1051) Try again in a moment."}""")!.AsObject())),
+        ["quote_no_data"] = new(Words, f => Expect(f, 502, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal sent no quote for SBIN. Try again in a moment."}""")!.AsObject())),
+        ["history_intraday_is_refused"] = new(Words, f => Expect(f, 400, JsonNode.Parse("""{"status":"error","message":"Interval \u00275m\u0027 is not available from Motilal Oswal: it gives no history, only today\u0027s daily candle (interval D)."}""")!.AsObject())),
+        ["history_quote_refused"] = new(Words, f => Expect(f, 502, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal did not give the quote for SBIN: Token expired (errorcode: MO8002) Try again in a moment."}""")!.AsObject())),
+        ["quote_index_no_rows"] = new(Words, f => Expect(f, 502, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal sent no quote for NIFTY. Try again in a moment."}""")!.AsObject())),
+        ["quote_message_without_provide_is_not_a_dealer_login"] = new(Words, f => Expect(f, 502, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal did not give the quote for SBIN: Invalid client code (errorcode: MO2222) Try again in a moment."}""")!.AsObject())),
+        ["quote_http_error"] = new(Words, f => Expect(f, 500, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal did not give the quote for SBIN: Motilal Oswal sent an answer that could not be read (HTTP 500). Try again in a moment."}""")!.AsObject())),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("data_motilal.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
+
 /// <summary>Motilal orders, books, positions, holdings and funds (tools/contract-fixtures/motilal.fixtures.json).</summary>
 public sealed class MotilalContractTests(MotilalHost host, ITestOutputHelper output) : IClassFixture<MotilalHost>
 {

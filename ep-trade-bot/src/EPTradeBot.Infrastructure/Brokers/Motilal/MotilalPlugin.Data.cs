@@ -14,10 +14,17 @@ public sealed partial class MotilalPlugin
     private static readonly HashSet<string> IndexExchanges = ["NSE_INDEX", "BSE_INDEX", "MCX_INDEX"];
 
     /// <summary>Whether this server has been told a login is a dealer's (it then sends the client code with every report call). Like Python's, it is learned once and kept.</summary>
-    private volatile bool dealerMode;
+    private static volatile bool dealerMode;
 
     /// <summary>Which spelling of the index exchange field the broker accepted, once learned.</summary>
-    private volatile string? indexExchangeField;
+    private static volatile string? indexExchangeField;
+
+    /// <summary>Forgets what was learned (a dealer login, the index exchange spelling), as a restart does.</summary>
+    public static void ForgetLearned()
+    {
+        dealerMode = false;
+        indexExchangeField = null;
+    }
 
     private async Task<Reply> ReportAsync(BrokerSession session, string endpoint, JsonObject payload, CancellationToken cancellationToken)
     {
