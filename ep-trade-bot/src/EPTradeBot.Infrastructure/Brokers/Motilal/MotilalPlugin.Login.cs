@@ -18,6 +18,14 @@ public sealed partial class MotilalPlugin : IBrokerLogin
 
     public string? LoginUrl(IReadOnlyDictionary<string, string> keys, string state) => null;
 
+    /// <summary>Python's str(x) of a JSON value: a missing key reads as the empty default, a null as None, a boolean as True or False.</summary>
+    private static string PyText(JsonNode? node) => node switch
+    {
+        null => "None",
+        JsonValue v when v.TryGetValue<bool>(out var flag) => flag ? "True" : "False",
+        _ => Str(node) ?? node.ToJsonString(),
+    };
+
     private static string Reason(JsonObject body, string fallback)
     {
         var message = Truthy(body["message"]) ? Str(body["message"])! : fallback;
@@ -41,10 +49,10 @@ public sealed partial class MotilalPlugin : IBrokerLogin
             AddHeaders(request, keys, user, null);
             request.Content = new StringContent(new JsonObject { ["userid"] = user, ["password"] = hash, ["2FA"] = dob, ["totp"] = totp }.ToJsonString(), Encoding.UTF8, "application/json");
             using var response = await Client().SendAsync(request, cancellationToken);
-            if ((int)response.StatusCode != 200) return BrokerLoginResult.Refused($"{Display} did not accept the sign-in (HTTP {(int)response.StatusCode}). Check your details, then try again.");
+            if ((int)response.StatusCode != 200) return BrokerLoginResult.Refused($"{Display} did not accept the sign-in. Check your details, then try again.");
             if (await ReadAsync(response, cancellationToken) is not JsonObject answer) return BrokerLoginResult.Refused($"{Display} sent an answer that could not be read. Try again in a moment.", 502);
             if (Str(answer["status"]) != "SUCCESS" || !Truthy(answer["AuthToken"])) return BrokerLoginResult.Refused(Reason(answer, "Authentication failed. Please try again."));
-            var verified = (Truthy(answer["isAuthTokenVerified"]) ? Str(answer["isAuthTokenVerified"])! : "").Trim().ToUpperInvariant();
+            var verified = PyText(answer["isAuthTokenVerified"]).Trim().ToUpperInvariant();
             if (verified is "FALSE" or "0" or "NO" or "N")
                 return BrokerLoginResult.Refused($"{Display} wants a code sent to you by SMS or email, which is not available here. Turn on an authenticator app with {Display} and sign in with its code.");
             var token = Str(answer["AuthToken"])!;
@@ -65,6 +73,7 @@ public sealed partial class MotilalPlugin : IBrokerLogin
         {
             using var request = new HttpRequestMessage(HttpMethod.Post, sessions.BaseUrl(Name, DefaultBaseUrl) + Endpoints["getaccesstoken"]);
             AddHeaders(request, keys, user, token);
+            request.Content = new StringContent("", Encoding.UTF8, "application/json");
             using var response = await Client().SendAsync(request, cancellationToken);
             if ((int)response.StatusCode != 200) return null;
             return await ReadAsync(response, cancellationToken) is JsonObject o && Str(o["status"]) == "SUCCESS" && Truthy(o["accesstoken"]) ? Str(o["accesstoken"]) : null;

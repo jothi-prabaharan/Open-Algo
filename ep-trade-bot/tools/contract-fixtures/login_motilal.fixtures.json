@@ -1,0 +1,1392 @@
+{
+  "broker": "motilal",
+  "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
+  "auth_token": "kite-access-token",
+  "client_id": "AB1234",
+  "recorded_at": null,
+  "read_posts": [],
+  "symbols": [],
+  "freeze": [],
+  "fixtures": [
+    {
+      "name": "login_with_the_access_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "AuthToken": "mo-auth-token-777",
+            "isAuthTokenVerified": "TRUE"
+          }
+        },
+        "POST /rest/login/v1/getaccesstoken": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "accesstoken": "mo-access-token-888"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "mo-auth-token-777:::mo-access-token-888",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v1/getaccesstoken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret",
+            "authorization": "mo-auth-token-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_access_token_refused_keeps_the_auth_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "AuthToken": "mo-auth-token-777",
+            "isAuthTokenVerified": "TRUE"
+          }
+        },
+        "POST /rest/login/v1/getaccesstoken": {
+          "body": {
+            "status": "FAILURE",
+            "message": "Bad secret",
+            "errorcode": "MO2005"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "mo-auth-token-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v1/getaccesstoken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret",
+            "authorization": "mo-auth-token-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_access_token_http_error_keeps_the_auth_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "AuthToken": "mo-auth-token-777",
+            "isAuthTokenVerified": "TRUE"
+          }
+        },
+        "POST /rest/login/v1/getaccesstoken": {
+          "status": 500,
+          "body": {}
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "mo-auth-token-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v1/getaccesstoken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret",
+            "authorization": "mo-auth-token-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_access_token_with_no_token_keeps_the_auth_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "AuthToken": "mo-auth-token-777",
+            "isAuthTokenVerified": "TRUE"
+          }
+        },
+        "POST /rest/login/v1/getaccesstoken": {
+          "body": {
+            "status": "SUCCESS",
+            "accesstoken": ""
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "mo-auth-token-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v1/getaccesstoken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret",
+            "authorization": "mo-auth-token-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_access_token_answer_not_json_keeps_the_auth_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "AuthToken": "mo-auth-token-777",
+            "isAuthTokenVerified": "TRUE"
+          }
+        },
+        "POST /rest/login/v1/getaccesstoken": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "mo-auth-token-777",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v1/getaccesstoken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret",
+            "authorization": "mo-auth-token-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_without_a_verified_flag_is_accepted",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "AuthToken": "mo-auth-token-777",
+            "isAuthTokenVerified": null
+          }
+        },
+        "POST /rest/login/v1/getaccesstoken": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "accesstoken": "mo-access-token-888"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "mo-auth-token-777:::mo-access-token-888",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v1/getaccesstoken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret",
+            "authorization": "mo-auth-token-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_with_an_unrecognised_verified_flag_is_accepted",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "AuthToken": "mo-auth-token-777",
+            "isAuthTokenVerified": "MAYBE"
+          }
+        },
+        "POST /rest/login/v1/getaccesstoken": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "accesstoken": "mo-access-token-888"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "mo-auth-token-777:::mo-access-token-888",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v1/getaccesstoken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret",
+            "authorization": "mo-auth-token-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_verified_flag_in_lower_case",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "AuthToken": "mo-auth-token-777",
+            "isAuthTokenVerified": "true"
+          }
+        },
+        "POST /rest/login/v1/getaccesstoken": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "accesstoken": "mo-access-token-888"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "mo-auth-token-777:::mo-access-token-888",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v1/getaccesstoken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret",
+            "authorization": "mo-auth-token-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_token_waiting_for_its_code_is_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "AuthToken": "mo-auth-token-777",
+            "isAuthTokenVerified": "FALSE"
+          }
+        },
+        "POST /rest/login/v1/getaccesstoken": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "accesstoken": "mo-access-token-888"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Login requires OTP verification, which is not yet supported by OpenAlgo. Please enable an authenticator app with Motilal Oswal and log in using a TOTP code instead."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_flag_no_is_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "AuthToken": "mo-auth-token-777",
+            "isAuthTokenVerified": "no"
+          }
+        },
+        "POST /rest/login/v1/getaccesstoken": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "accesstoken": "mo-access-token-888"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Login requires OTP verification, which is not yet supported by OpenAlgo. Please enable an authenticator app with Motilal Oswal and log in using a TOTP code instead."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_flag_zero_is_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "AuthToken": "mo-auth-token-777",
+            "isAuthTokenVerified": 0
+          }
+        },
+        "POST /rest/login/v1/getaccesstoken": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "accesstoken": "mo-access-token-888"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Login requires OTP verification, which is not yet supported by OpenAlgo. Please enable an authenticator app with Motilal Oswal and log in using a TOTP code instead."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_flag_n_is_refused",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "AuthToken": "mo-auth-token-777",
+            "isAuthTokenVerified": "N"
+          }
+        },
+        "POST /rest/login/v1/getaccesstoken": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "accesstoken": "mo-access-token-888"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Login requires OTP verification, which is not yet supported by OpenAlgo. Please enable an authenticator app with Motilal Oswal and log in using a TOTP code instead."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message_and_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "FAILURE",
+            "message": "Invalid TOTP",
+            "errorcode": "MO1093"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Invalid TOTP (errorcode: MO1093)"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_a_message_only",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "FAILURE",
+            "message": "Bad"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Bad"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_refused_with_no_message",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "FAILURE"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed. Please try again."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_success_with_no_auth_token",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Success"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_http_error",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "status": 403,
+          "body": {
+            "status": "FAILURE",
+            "message": "Forbidden"
+          }
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed with HTTP status 403."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_server_error",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "status": 503,
+          "body": ""
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "Authentication failed with HTTP status 503."
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_answer_that_is_not_json",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "status": 200,
+          "body": "<html>"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "status": "error",
+          "message": "'str' object has no attribute 'get'"
+        }
+      },
+      "stored": null,
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_without_the_authenticator_code",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "Secret#1",
+        "totp": "",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "AuthToken": "mo-auth-token-777",
+            "isAuthTokenVerified": "TRUE"
+          }
+        },
+        "POST /rest/login/v1/getaccesstoken": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "accesstoken": "mo-access-token-888"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "mo-auth-token-777:::mo-access-token-888",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "55e27d4145705996446bd7407bc3f022bdc2ae524e238d59480bea891d76396c",
+            "2FA": "18/10/1988"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v1/getaccesstoken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret",
+            "authorization": "mo-auth-token-777"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "login_password_with_symbols",
+      "method": "POST",
+      "path": "/api/v1/accounts/{account}/broker-login/complete",
+      "auth": "admin",
+      "request": {
+        "clientcode": "AB1234",
+        "password": "p@ss w0rd/\u00e9",
+        "totp": "123456",
+        "dob": "18/10/1988"
+      },
+      "broker": {
+        "POST /rest/login/v7/authdirectapi": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "AuthToken": "mo-auth-token-777",
+            "isAuthTokenVerified": "TRUE"
+          }
+        },
+        "POST /rest/login/v1/getaccesstoken": {
+          "body": {
+            "status": "SUCCESS",
+            "message": "Success",
+            "errorcode": "",
+            "accesstoken": "mo-access-token-888"
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "success"
+        }
+      },
+      "stored": {
+        "auth_token": "mo-auth-token-777:::mo-access-token-888",
+        "feed_token": null
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v7/authdirectapi",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret"
+          },
+          "json": {
+            "userid": "AB1234",
+            "password": "6b1fdc8886efd4180d55a519af666b1ba3c6120d09713ecb8a5696aad2420786",
+            "2FA": "18/10/1988",
+            "totp": "123456"
+          }
+        },
+        {
+          "method": "POST",
+          "host": "openapi.motilaloswal.com",
+          "path": "/rest/login/v1/getaccesstoken",
+          "query": [],
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "apikey": "motilal-api-key",
+            "sourceid": "WEB",
+            "vendorinfo": "AB1234",
+            "apisecretkey": "motilal-api-secret",
+            "authorization": "mo-auth-token-777"
+          }
+        }
+      ],
+      "ignore": []
+    }
+  ]
+}

@@ -122,3 +122,31 @@ public sealed class MotilalContractTests(MotilalHost host, ITestOutputHelper out
     [MemberData(nameof(Names))]
     public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
 }
+
+public sealed class LoginMotilalHost() : MotilalFileHost("login_motilal.fixtures.json");
+
+/// <summary>Motilal sign-in (tools/contract-fixtures/login_motilal.fixtures.json).</summary>
+public sealed class LoginMotilalContractTests(LoginMotilalHost host, ITestOutputHelper output) : IClassFixture<LoginMotilalHost>
+{
+    private const string RO = "OpenAlgo tells a trader whose login still waits for an SMS or email code that OTP is not yet supported by OpenAlgo; EP Trade bot names itself and says what to turn on.";
+    private const string RH = "OpenAlgo puts the HTTP status of a refused or unreadable sign-in in the message, or crashes on an answer that is not an object; EP Trade bot says what to do without the status.";
+
+    public static readonly Dictionary<string, Deviation> Deviations = new()
+    {
+        ["login_without_the_authenticator_code"] = new("OpenAlgo asks Motilal to send a code by SMS or email when no authenticator code is typed, then refuses the token it gets back; EP Trade bot asks for the authenticator code before it calls Motilal.", null, 400),
+        ["login_flag_n_is_refused"] = new(RO, f => Expect(f, 400, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal wants a code sent to you by SMS or email, which is not available here. Turn on an authenticator app with Motilal Oswal and sign in with its code."}""")!.AsObject())),
+        ["login_http_error"] = new(RH, f => Expect(f, 400, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal did not accept the sign-in. Check your details, then try again."}""")!.AsObject())),
+        ["login_flag_zero_is_refused"] = new(RO, f => Expect(f, 400, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal wants a code sent to you by SMS or email, which is not available here. Turn on an authenticator app with Motilal Oswal and sign in with its code."}""")!.AsObject())),
+        ["login_flag_no_is_refused"] = new(RO, f => Expect(f, 400, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal wants a code sent to you by SMS or email, which is not available here. Turn on an authenticator app with Motilal Oswal and sign in with its code."}""")!.AsObject())),
+        ["login_answer_that_is_not_json"] = new(RH, f => Expect(f, 502, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal sent an answer that could not be read. Try again in a moment."}""")!.AsObject())),
+        ["login_token_waiting_for_its_code_is_refused"] = new(RO, f => Expect(f, 400, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal wants a code sent to you by SMS or email, which is not available here. Turn on an authenticator app with Motilal Oswal and sign in with its code."}""")!.AsObject())),
+        ["login_server_error"] = new(RH, f => Expect(f, 400, JsonNode.Parse("""{"status":"error","message":"Motilal Oswal did not accept the sign-in. Check your details, then try again."}""")!.AsObject())),
+        ["login_without_the_authenticator_code"] = new(RH, f => Expect(f, 400, JsonNode.Parse("""{"status":"error","message":"Enter the one-time code from your authenticator to sign in to Motilal Oswal. Signing in with a code sent by SMS or email is not available here."}""")!.AsObject())),
+    };
+
+    public static IEnumerable<object[]> Names() => ContractRunner.Names("login_motilal.fixtures.json");
+
+    [PostgresTheory]
+    [MemberData(nameof(Names))]
+    public Task Matches_the_python_implementation(string name) => RunAsync(host, name, Deviations, output);
+}
