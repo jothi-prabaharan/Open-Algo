@@ -174,7 +174,7 @@ def text_field(field, value):
     return nested(field, value.encode())
 
 
-def price(ltp=805.45, ts=1793700000123.0, o=801.0, h=809.5, low=799.0, c=800.0, volume=1234567.0, value=9.9e8):
+def price(ltp=805.45, ts=1793699999000.0, o=801.0, h=809.5, low=799.0, c=800.0, volume=1234567.0, value=9.9e8):
     parts = b""
     for field, v in ((1, ts), (2, o), (3, h), (4, low), (5, c), (6, volume), (7, value), (13, ltp)):
         if v is not None:
@@ -186,7 +186,11 @@ def level(p, q, orders=1):
     return varint(1 << 3) + varint(orders) + nested(2, f64(1, p) + f64(2, q))
 
 
-def book(buy=None, sell=None, ts=1793700000200.0):
+def level_orders_last(p, q, orders=1):
+    return nested(2, f64(1, p) + f64(2, q)) + varint(1 << 3) + varint(orders)
+
+
+def book(buy=None, sell=None, ts=1793699999500.0):
     buy = buy if buy is not None else [(805.4 - 0.05 * i, 100.0 * (i + 1), i + 1) for i in range(5)]
     sell = sell if sell is not None else [(805.5 + 0.05 * i, 110.0 * (i + 1), i + 2) for i in range(5)]
     body = f64(1, ts)
@@ -197,7 +201,7 @@ def book(buy=None, sell=None, ts=1793700000200.0):
     return nested(5, body)
 
 
-def index(value=24100.25, ts=1793700000300.0):
+def index(value=24100.25, ts=1793699999700.0):
     return nested(6, f64(1, ts) + f64(2, value))
 
 
@@ -288,6 +292,7 @@ SCENARIOS = [
     scenario("depth_tick_is_not_given_to_a_price_subscriber", S(sub("SBIN", "NSE", 3), sub("SBIN", "NSE", 1)), F(msg(bk(), 1, book()))),
     scenario("depth_levels_with_nothing_are_left_out", S(sub("SBIN", "NSE", 3)), F(msg(bk(), 1, book(buy=[(805.4, 100.0, 1), (0.0, 0.0, 0)], sell=[(0.0, 0.0, 0), (805.6, 50.0, 2)])))),
     scenario("a_book_of_seven_levels_keeps_five", S(sub("SBIN", "NSE", 3)), F(msg(bk(), 1, book(buy=[(805.0 - i, 10.0, 1) for i in range(7)], sell=[(806.0 + i, 10.0, 1) for i in range(7)])))),
+    scenario("a_level_whose_order_count_comes_after_its_price_and_quantity", S(sub("SBIN", "NSE", 3)), F(msg(bk(), 1, nested(5, f64(1, 1793699999500.0) + nested(2, level_orders_last(805.4, 100.0, 300)) + nested(3, level_orders_last(805.5, 110.0, 7)))))),
     scenario("a_book_with_no_levels", S(sub("SBIN", "NSE", 3)), F(msg(bk(), 1, book(buy=[], sell=[])))),
     scenario("a_book_with_one_side_only", S(sub("SBIN", "NSE", 3)), F(msg(bk(), 1, book(sell=[])))),
     scenario("an_index_tick", S(sub("NIFTY", "NSE_INDEX", 1)), F(msg(px("NIFTY"), 1, index()))),

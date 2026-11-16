@@ -237,7 +237,7 @@ public sealed class GrowwFeedCodec : IFeedCodec
             {
                 OnInfo(text);
             }
-            else if (text.IndexOf("MSG", StringComparison.Ordinal) is >= 0 and < 50)
+            else if (text.IndexOf("MSG", StringComparison.Ordinal) is >= 0 and <= 47)
             {
                 OnMessage(data, text, nowMs, published);
             }
@@ -598,7 +598,8 @@ public static class GrowwProtobuf
             }
             else if (field == 2)
             {
-                var subEnd = r.Position + (int)Math.Min(r.Varint(), int.MaxValue / 2);
+                var subLength = (int)Math.Min(r.Varint(), int.MaxValue / 2);
+                var subEnd = r.Position + subLength;
                 while (r.Position < subEnd)
                 {
                     var (sub, subWire) = r.Tag();
