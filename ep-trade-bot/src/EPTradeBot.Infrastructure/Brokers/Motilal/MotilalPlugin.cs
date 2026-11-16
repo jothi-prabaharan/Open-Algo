@@ -20,7 +20,7 @@ public sealed partial class MotilalPlugin(IHttpClientFactory http, BrokerSession
 
     public string Name => "motilal";
     public string DisplayName => "Motilal Oswal";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Streaming;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey"];
 
     private static IMotilalSockets? defaultSockets;

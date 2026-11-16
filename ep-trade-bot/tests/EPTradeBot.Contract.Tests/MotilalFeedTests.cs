@@ -119,3 +119,13 @@ public sealed class MotilalSnapshotContractTests
         }
     }
 }
+
+/// <summary>Motilal's stream against the Python adapter (tools/contract-fixtures/feed_motilal.fixtures.json).</summary>
+public sealed class MotilalFeedContractTests
+{
+    public static IEnumerable<object[]> Names() => FeedRunner.Names("feed_motilal.fixtures.json");
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Matches_the_python_adapter(string name) => FeedRunner.Run("feed_motilal.fixtures.json", name, () => new MotilalFeedCodec());
+}
