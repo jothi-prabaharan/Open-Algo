@@ -82,6 +82,7 @@ internal static class CredentialEndpoints
             if (request.Totp is not null) input["totp"] = request.Totp;
             if (request.MobileNumber is not null) input["mobilenumber"] = request.MobileNumber;
             if (request.Mpin is not null) input["mpin"] = request.Mpin;
+            if (request.DateOfBirth is not null) input["dob"] = request.DateOfBirth;
             if (request.TwoFaType is not null) input["twofatype"] = request.TwoFaType;
             if (request.Otp is not null) input["otp"] = request.Otp;
             if (request.OtpToken is not null) input["otp_token"] = request.OtpToken;

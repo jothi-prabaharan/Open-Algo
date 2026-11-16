@@ -99,6 +99,9 @@ public sealed class BrokerLoginCompleteRequest
 
     /// <summary>The trading MPIN of a broker that asks for one (Kotak Neo).</summary>
     [StringLength(64)] [JsonPropertyName("mpin")] public string? Mpin { get; set; }
+
+    /// <summary>The second factor of a broker that asks for the date of birth (Motilal Oswal, as DD/MM/YYYY).</summary>
+    [StringLength(16)] [JsonPropertyName("dob")] public string? DateOfBirth { get; set; }
 }
 
 /// <summary>PUT /api/v1/accounts/{id}/apikeys/{keyId}/order-mode: <c>auto</c> sends this key's orders, <c>semi_auto</c> holds them in the Action Center.</summary>

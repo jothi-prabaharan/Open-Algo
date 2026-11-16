@@ -105,7 +105,7 @@ def _handler(request: httpx.Request) -> httpx.Response:
             "headers": {
                 k: v
                 for k, v in request.headers.items()
-                if k.lower() in ("authorization", "x-kite-version", "content-type", "accept", "access-token", "client-id", "x-privatekey", "x-clientcode", "api-key", "x-jwt-token", "sid", "auth", "neo-fin-key", "x-api-key", "x-device-id", "x-temp-token", "x-api-version")
+                if k.lower() in ("authorization", "x-kite-version", "content-type", "accept", "access-token", "client-id", "x-privatekey", "x-clientcode", "api-key", "x-jwt-token", "sid", "auth", "neo-fin-key", "x-api-key", "x-device-id", "x-temp-token", "x-api-version", "apikey", "apisecretkey", "accesstoken", "vendorinfo", "sourceid")
             },
             **parsed_body,
         }
