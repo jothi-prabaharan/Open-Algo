@@ -40,7 +40,7 @@ The other brokers in the task list are not started (Shoonya, Zebu and Flattrade 
 - Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
 - **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
 - **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **The 2 brokers not started** (groww, motilal), and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **The 1 broker not started** (motilal), and Groww's mutation triage (122 survivors still unread), and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
 
 ## Upstox sign-in
 
@@ -486,6 +486,18 @@ The other brokers in the task list are not started (Shoonya, Zebu and Flattrade 
 - Not modelled: OpenAlgo's half-second window for gathering subscribes (a subscribe followed by an unsubscribe inside it sends nothing; here a call to subscribe sends what it was given); the socket's text answers (an "Invalid Token" closes OpenAlgo's socket, here the read waits out its time and falls back to REST); the feed's own reconnect after the daily token change is the host's; the greeks, 20-level depth and options channels the adapter never uses; no live-broker run.
 - Mutation sets: `tg7-nubra-feed.json` (236 changes to the quote, depth, several-quotes, codec and frame code: 30 do not compile, 206 killed, none survive), `tg7-nubra.json` (258 changes to the orders, books, margin, sign-in and history code: 21 do not compile, 237 killed, none survive) and `tg7-nubra-sockets.json` (16 changes to the real connection: 1 does not compile, 14 killed, 1 hangs the test until its time limit, which is a detection).
 
+## Groww (api.groww.in): orders, books, funds, margin, quotes, depth, history, sign-in and feed
+
+- `GrowwPlugin`, held to `broker/groww` by recorded cases for orders, books, positions and funds (`groww`), margin (`margin_groww`), sign-in with the key and secret (`login_groww`), quotes, depth and several quotes (`data_groww`), history (`history_groww`) and the feed (`feed_groww`, 58 cases), plus `GrowwUnitTests` (16), `GrowwDeepTests` (44, scripted answers for the paths the recorded cases do not reach) and `GrowwNkeysVectorTests` (7 Ed25519 keys and signatures taken from the Python client). 410 Groww-named tests pass in all.
+- Orders go by the master's broker symbol, exchange NSE or BSE, segment CASH or FNO, with a generated reference id; calls are paced by category and a 429 is tried again up to three more times after `Retry-After` or 1, 2 and 4 seconds. A cancel goes to the segment the order book names, or to both when it cannot tell.
+- History: intraday from the candles call, daily and weekly from the range call, and 30 minute, 1 hour and 4 hour candles are rebuilt from 15 minute ones aligned to 09:15. Margin is the basket call. Sign-in is the key and secret exchange, refused when the token expires now.
+- Feed: NATS over wss, signed by an Ed25519 key made fresh for each connection (`GrowwNkeys`, written from RFC 8032 with no library; the C# signatures equal the Python client's on seven seeds). The socket token is fetched in `AuthorizeAsync` and handed to the codec; the codec holds its subscriptions until the server has accepted the connection.
+- Found and fixed by a direct test: the end of a nested depth message was measured before its length byte was read, so a depth level whose order count came after its price and quantity was misread (the order count came out as 0).
+- Recorded differences from OpenAlgo, each of which hides a failure there: a failed read is an error and not an empty book; a position book with only one half readable is never shown as the whole; an F&O answer refused with a 4xx is skipped, one that failed with a 5xx or could not be read is an error; an answer that is not an object on a place, modify or cancel says the order may have been sent; cancel-all treats a cancellation already requested as open; the feed waits for the server's acceptance (a PONG, or `+OK`) before it subscribes, where Python waits two seconds and sends at once; several messages in one frame are all read, where Python reads the first; an authorize failure stops the feed (the host's behaviour).
+- Not modelled: the bond series "sharing" check; an instrument of type INDEX with exchange NSE; the smart order for an NFO symbol whose F&O book was refused (4xx) is not refused per symbol; no live-broker run.
+- Mutation sets rerun after the direct tests: `tg7-groww.json` (188 changes to orders, books, margin, sign-in and history: 14 do not compile, 137 killed, 37 survive), `tg7-groww-data.json` (129 changes to quotes, depth and several quotes: 11 do not compile, 81 killed, 37 survive), `tg7-groww-feed.json` (225 changes to the codec and keys: 14 do not compile, 148 killed, 63 survive) and `tg7-groww-nkeys.json` (the 77 key changes of the feed set, rerun with the vectors: 3 do not compile, 59 killed, 15 survive; those 15 were read and none can change a result: bit-loop bounds, a size guard the callers never exceed, and constants of a decode path the client does not use).
+- **Open:** the other 122 survivors (37 + 37 + 48 in the codec) are not yet read one by one, so Groww is complete in function and tests but its mutation triage is not closed.
+
 ## Decisions taken with the owner
 
 - **Live-broker runs are not part of what this work can close.** A live run needs the owner's own broker accounts, keys and registered static IPs. Gate 7 closes on the recorded OpenAlgo evidence in this file; each broker's live run is listed below as a task for the owner, and no row here claims one.
@@ -521,7 +533,7 @@ Lines of Python in each broker's `api/` and `mapping/` (the REST side) and `stre
 | indmoney | 4577 | 1661 | Done (see its section) |
 | pocketful | 4919 | 911 | Done (see its section) |
 | nubra | 4995 | 1267 | Done (see its section) |
-| groww | 5233 | 3800 | Own REST API |
+| groww | 5233 | 3800 | Done, mutation triage open (see its section) |
 | motilal | 5617 | 1161 | Own REST API |
 
 Also open: Dhan 20-level depth (a second socket, an unconfirmed unsubscribe code, and a depth-level field the subscribe request does not have), Delta fractional (spot) quantities (a decision on decimal quantities end to end), and a live-broker run of every feed.
