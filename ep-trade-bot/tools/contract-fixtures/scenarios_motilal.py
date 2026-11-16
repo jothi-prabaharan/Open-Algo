@@ -54,6 +54,17 @@ def place(name, request, reply=None):
     return req(name, "/api/v1/placeorder", request, {PLACE_URL: reply or OK_ORDER})
 
 
+LTP = "POST /rest/report/v3/getltpdata"
+
+
+def quote_data(ltp, **extra):
+    return ok(data={"ltp": ltp, "open": ltp - 100, "high": ltp + 200, "low": ltp - 300, "close": ltp - 50, "bid": ltp - 5, "ask": ltp + 5, "volume": 123456, **extra})
+
+
+def market(name, request, reply):
+    return req(name, "/api/v1/placeorder", request, {PLACE_URL: OK_ORDER, LTP: reply})
+
+
 def order(oid, symbol, token, side, qty, otype="Limit", product="VALUEPLUS", exchange="NSE", status="Confirm", price=0, trigger=0, average=0, **extra):
     o = {"uniqueorderid": oid, "symbol": symbol, "symboltoken": token, "exchange": exchange, "buyorsell": side, "ordertype": otype, "producttype": product, "orderstatus": status, "orderqty": qty, "price": price,
          "triggerprice": trigger, "averageprice": average, "qtytradedtoday": 0, "lastmodifiedtime": "03-Nov-2026 10:15:31", "entrydatetime": "03-Nov-2026 10:15:30", "recordinserttime": "03-Nov-2026 10:15:30"}
@@ -162,6 +173,16 @@ SCENARIOS = [
     place("placeorder_stop_market_option_uses_option_slab", {**PLACE, "symbol": "NIFTY25NOV2624000CE", "exchange": "NFO", "quantity": "75", "pricetype": "SL-M", "price": "0", "trigger_price": "8.0"}),
     place("placeorder_stop_market_with_no_trigger", {**PLACE, "pricetype": "SL-M", "price": "0", "trigger_price": "0"}),
     place("placeorder_market_goes_as_market_when_no_price_is_known", {**PLACE, "pricetype": "MARKET", "price": "0"}),
+    market("placeorder_market_is_protected_buy", {**PLACE, "pricetype": "MARKET", "price": "0"}, quote_data(80525)),
+    market("placeorder_market_is_protected_sell", {**PLACE, "action": "SELL", "pricetype": "MARKET", "price": "0"}, quote_data(80525)),
+    market("placeorder_market_cheap_share_uses_the_wider_slab", {**PLACE, "pricetype": "MARKET", "price": "0"}, quote_data(5025)),
+    market("placeorder_market_mid_priced_share", {**PLACE, "pricetype": "MARKET", "price": "0"}, quote_data(25025)),
+    market("placeorder_market_option_uses_the_option_slab", {**PLACE, "symbol": "NIFTY25NOV2624000CE", "exchange": "NFO", "quantity": "75", "pricetype": "MARKET", "price": "0"}, quote_data(15050)),
+    market("placeorder_market_on_a_future", {**PLACE, "symbol": "NIFTY25NOV26FUT", "exchange": "NFO", "quantity": "75", "product": "NRML", "pricetype": "MARKET", "price": "0"}, quote_data(2401050)),
+    market("placeorder_market_with_no_price_goes_as_market", {**PLACE, "pricetype": "MARKET", "price": "0"}, quote_data(0, open=0, high=0, low=0, close=0, bid=0, ask=0)),
+    market("placeorder_market_quote_refused_goes_as_market", {**PLACE, "pricetype": "MARKET", "price": "0"}, fail(200, "Token expired", "MO8002")),
+    market("placeorder_market_quote_empty_goes_as_market", {**PLACE, "pricetype": "MARKET", "price": "0"}, ok(data={})),
+    market("placeorder_market_on_bse", {**PLACE, "symbol": "TATAMOTORS", "exchange": "BSE", "product": "CNC", "pricetype": "MARKET", "price": "0"}, quote_data(49810)),
     place("placeorder_sell", {**PLACE, "action": "SELL"}),
     place("placeorder_disclosed_quantity", {**PLACE, "disclosed_quantity": "3"}),
     place("placeorder_price_is_not_rounded", {**PLACE, "price": "800.555"}),

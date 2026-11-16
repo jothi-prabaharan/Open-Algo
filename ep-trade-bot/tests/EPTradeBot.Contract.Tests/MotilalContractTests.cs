@@ -21,7 +21,6 @@ public abstract class MotilalFileHost(string file) : BrokerContractHost
         ["POST /rest/book/v4/getposition"] = """{"status":"SUCCESS","data":[]}""",
         ["POST /rest/report/v3/getltpdata"] = """{"status":"SUCCESS","data":{}}""",
     };
-    public override IReadOnlySet<string> IgnoredReads { get; } = new HashSet<string> { "/rest/report/v3/getltpdata" };
 }
 
 public sealed class MotilalHost() : MotilalFileHost("motilal.fixtures.json");

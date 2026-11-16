@@ -12,7 +12,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Motilal;
 /// "AuthToken:::accesstoken" (the access token only when the server has an API secret). Motilal answers with status SUCCESS or FAILURE, and a quantity goes out in lots.
 /// </summary>
 [BrokerPlugin]
-public sealed partial class MotilalPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerLogin
+public sealed partial class MotilalPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerLogin, IBrokerQuotes, IBrokerHistory
 {
     private const string DefaultBaseUrl = "https://openapi.motilaloswal.com";
     private const string Display = "Motilal Oswal";
@@ -20,7 +20,7 @@ public sealed partial class MotilalPlugin(IHttpClientFactory http, BrokerSession
 
     public string Name => "motilal";
     public string DisplayName => "Motilal Oswal";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey"];
 
     private HttpClient Client() => http.CreateClient(Name);
@@ -38,6 +38,8 @@ public sealed partial class MotilalPlugin(IHttpClientFactory http, BrokerSession
         ["getposition"] = "/rest/book/v4/getposition",
         ["getdpholding"] = "/rest/report/v3/getdpholding",
         ["getreportmargindetail"] = "/rest/report/v3/getreportmargindetail",
+        ["getltpdata"] = "/rest/report/v3/getltpdata",
+        ["getindexltpdata"] = "/rest/report/v3/getindexltpdata",
     };
 
     /// <summary>The stored session split into the AuthToken and the optional access token.</summary>
