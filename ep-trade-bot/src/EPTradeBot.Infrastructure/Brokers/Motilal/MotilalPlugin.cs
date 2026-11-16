@@ -12,7 +12,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Motilal;
 /// "AuthToken:::accesstoken" (the access token only when the server has an API secret). Motilal answers with status SUCCESS or FAILURE, and a quantity goes out in lots.
 /// </summary>
 [BrokerPlugin]
-public sealed partial class MotilalPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerLogin, IBrokerQuotes, IBrokerHistory
+public sealed partial class MotilalPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, TimeProvider clock, IMotilalSockets? sockets = null) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerLogin, IBrokerMultiQuotes, IBrokerHistory
 {
     private const string DefaultBaseUrl = "https://openapi.motilaloswal.com";
     private const string Display = "Motilal Oswal";
@@ -20,8 +20,12 @@ public sealed partial class MotilalPlugin(IHttpClientFactory http, BrokerSession
 
     public string Name => "motilal";
     public string DisplayName => "Motilal Oswal";
-    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.History;
+    public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History;
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiKey"];
+
+    private static IMotilalSockets? defaultSockets;
+
+    private IMotilalSockets Sockets => sockets ?? (defaultSockets ??= new MotilalSnapshotSocket());
 
     private HttpClient Client() => http.CreateClient(Name);
 

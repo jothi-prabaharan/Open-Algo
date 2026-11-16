@@ -99,9 +99,6 @@ public sealed partial class MotilalPlugin
     private async Task<double> LastPriceAsync(BrokerSession session, SymbolRecord info, CancellationToken cancellationToken) =>
         Float((await GetQuoteAsync(session, info.Symbol, info.Exchange, cancellationToken))["ltp"]);
 
-    public Task<JsonObject> GetDepthAsync(BrokerSession session, string symbol, string exchange, CancellationToken cancellationToken) =>
-        throw new BrokerException($"{Display} market depth is not available yet.", 501);
-
     // ---- history ---------------------------------------------------------------------------------------------
 
     private static readonly HashSet<string> DailyIntervals = ["D", "1D", "DAY", "DAILY"];
