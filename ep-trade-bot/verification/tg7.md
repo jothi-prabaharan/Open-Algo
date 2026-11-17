@@ -534,6 +534,7 @@ Closed since the last version of this list: Dhan 20-level depth (its own section
 
 ## Decisions taken with the owner
 
+- **Mutation survivors that no input can tell apart are accepted as documented.** After every killable change was killed, 30 Motilal and 21 Groww feed-codec mutants remain. Each has an argument in `verification/tg7-equivalent-mutants.md`, and the numeric and structural premises are run in `EquivalentMutantTests`. The guards that produce them were kept, because most are copied from the Python original and removing them would change behaviour on unusual broker data.
 - **Live-broker runs are not part of what this work can close.** A live run needs the owner's own broker accounts, keys and registered static IPs. Gate 7 closes on the recorded OpenAlgo evidence in this file; each broker's live run is listed below as a task for the owner, and no row here claims one.
 - **Delta Exchange fractional (spot) quantities are out of scope for TG7.** Delta keeps whole-number quantities; spot decimals are a known limit.
 - **Dhan stays at 5 depth levels.** 20-level depth (a second socket and a depth-level field the subscribe request does not have) is a known limit, not a gap in the recorded behaviour.
