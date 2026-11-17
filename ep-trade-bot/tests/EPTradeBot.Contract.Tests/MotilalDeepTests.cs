@@ -804,4 +804,113 @@ public sealed class MotilalDeepTests
         Assert.Equal(111.0, quoteOnly[0]!["data"]!["ltp"]!.GetValue<double>());
         Assert.Single(await Ask());
     }
+
+    // ---- statuses, constants and reads that the first two reruns could not tell apart ---------------------------------
+
+    private sealed class TokenSpy : ISymbolMaster
+    {
+        public int ByToken { get; private set; }
+
+        public Task<SymbolRecord?> FindAsync(string broker, string symbol, string exchange, CancellationToken cancellationToken) => Task.FromResult<SymbolRecord?>(Row(symbol, "3045", exchange));
+
+        public Task<SymbolRecord?> FindByBrokerSymbolAsync(string broker, string brokerSymbol, string exchange, CancellationToken cancellationToken) => Task.FromResult<SymbolRecord?>(null);
+
+        public Task<SymbolRecord?> FindByTokenAsync(string broker, string token, string exchange, CancellationToken cancellationToken)
+        {
+            ByToken++;
+            return Task.FromResult<SymbolRecord?>(Row("SBIN", token, exchange));
+        }
+    }
+
+    [Theory]
+    [InlineData(400, 400)]
+    [InlineData(404, 404)]
+    [InlineData(599, 599)]
+    [InlineData(600, 502)]
+    [InlineData(399, 502)]
+    public async Task A_report_that_failed_keeps_a_client_or_server_status_and_nothing_else(int status, int expected)
+    {
+        var http = new Script(_ => (status, """{"status":"FAILURE","message":"x"}"""));
+        var failure = await Assert.ThrowsAsync<BrokerException>(() => Plugin(http).GetQuoteAsync(Session(), "SBIN", "NSE", CancellationToken.None));
+        Assert.Equal(expected, failure.HttpStatus);
+    }
+
+    [Fact]
+    public async Task A_book_that_failed_keeps_a_status_of_400_and_gives_500_below_it()
+    {
+        var refused = await Assert.ThrowsAsync<BrokerException>(() => Plugin(new Script(_ => (400, """{"status":"FAILURE","message":"x"}"""))).GetOrderBookAsync(Session(), CancellationToken.None));
+        Assert.Equal(400, refused.HttpStatus);
+        var other = await Assert.ThrowsAsync<BrokerException>(() => Plugin(new Script(_ => (200, """{"status":"FAILURE","message":"x"}"""))).GetOrderBookAsync(Session(), CancellationToken.None));
+        Assert.Equal(500, other.HttpStatus);
+    }
+
+    [Fact]
+    public async Task An_instrument_the_master_contract_does_not_know_is_refused_with_400_by_every_write_and_a_token_that_is_not_a_number_with_400()
+    {
+        var plugin = Plugin(new Script(r => r.Path.Contains("orderdetail") ? (200, """{"status":"SUCCESS","data":[{"uniqueorderid":"OID1","lastmodifiedtime":"t"}]}""") : (200, Placed)), (_, _) => null);
+        Assert.Equal(400, (await plugin.PlaceAsync(Session(), Order(), CancellationToken.None)).HttpStatus);
+        Assert.Equal(400, (await plugin.ModifyAsync(Session(), Change(), CancellationToken.None)).HttpStatus);
+        var odd = Plugin(new Script(_ => (200, "{}")), (s, e) => Row(s, "abc", e));
+        Assert.Equal(400, (await Assert.ThrowsAsync<BrokerException>(() => odd.GetQuoteAsync(Session(), "SBIN", "NSE", CancellationToken.None))).HttpStatus);
+        var many = await Assert.ThrowsAsync<BrokerException>(() => Plugin(new Script(_ => (200, "{}")), (s, e) => Row(s, "abc", e), new Capture()).GetMultiQuotesAsync(Session(), [Row("SBIN", "abc")], CancellationToken.None));
+        Assert.Equal(400, many.HttpStatus);
+    }
+
+    [Fact]
+    public async Task An_index_that_sent_no_value_is_a_502_and_keeps_the_socket_waiting_for_the_next_frame()
+    {
+        var sockets = new Capture();
+        var failure = await Assert.ThrowsAsync<BrokerException>(() => Plugin(new Script(_ => (200, "{}")), (s, e) => Row(s, "5", e), sockets).GetDepthAsync(Session(), "NIFTY", "NSE_INDEX", CancellationToken.None));
+        Assert.Equal(502, failure.HttpStatus);
+        Assert.False(sockets.OnFrame!(Packet('N', 5, 'H', Floats(25000f, 0, 0, 0, 0))));
+    }
+
+    [Fact]
+    public async Task Several_quotes_stop_reading_once_each_instrument_has_its_price_and_its_top_of_book()
+    {
+        var sockets = new Capture();
+        var plugin = Plugin(new Script(_ => (200, "{}")), (s, e) => Row(s, "5", e), sockets);
+        await plugin.GetMultiQuotesAsync(Session(), [Row("SBIN", "5")], CancellationToken.None);
+        byte[] Level(float bid, float ask) => BitConverter.GetBytes(bid).Concat(BitConverter.GetBytes(100)).Concat(new byte[2]).Concat(BitConverter.GetBytes(ask)).Concat(BitConverter.GetBytes(110)).Concat(new byte[2]).ToArray();
+        var frame = Packet('N', 5, 'A', Floats(5f, 0, 0, 0, 0)).Concat(Packet('N', 5, 'G', Floats(1f, 2f, 1f, 1f).Concat(new byte[4]).ToArray())).Concat(Packet('N', 5, 'B', Level(5f, 6f))).ToArray();
+        Assert.True(sockets.OnFrame!(frame));
+    }
+
+    [Fact]
+    public async Task A_trade_with_no_token_does_not_ask_the_master_contract_for_it()
+    {
+        var spy = new TokenSpy();
+        var trades = """{"status":"SUCCESS","data":[{"uniqueorderid":"1","symbol":"SBIN","symboltoken":"","exchange":"NSE","buyorsell":"BUY","producttype":"DELIVERY","tradeqty":3,"tradeprice":80012,"tradevalue":240036,"precision":2}]}""";
+        var plugin = new MotilalPlugin(new Script(_ => (200, trades)), new EPTradeBot.Infrastructure.Brokers.BrokerSessionFactory(null!, new Options(new EPTradeBot.Core.Configuration.BrokerOptions())), spy, TimeProvider.System, null);
+        var row = (await plugin.GetTradeBookAsync(Session(), CancellationToken.None))[0]!;
+        Assert.Equal(0, spy.ByToken);
+        Assert.Equal("SBIN", row["symbol"]!.GetValue<string>());
+    }
+
+    [Fact]
+    public void An_exchange_with_no_name_has_no_wire_character_and_a_whole_or_fractional_number_keeps_its_value()
+    {
+        Assert.Equal("", MotilalBook.WireChar(""));
+        Assert.Equal("Z", MotilalBook.WireChar("ZZZ"));
+        var number = typeof(MotilalFeedCodec).GetMethod("Number", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
+        JsonNode Of(double v) => (JsonNode)number.Invoke(null, [v])!;
+        Assert.Equal(2.5, Of(2.5).GetValue<double>());
+        Assert.Equal(-0.75, Of(-0.75).GetValue<double>());
+        Assert.True(Of(5).AsValue().TryGetValue<long>(out var whole) && whole == 5);
+        Assert.False(Of(1e15).AsValue().TryGetValue<long>(out _));
+        Assert.True(Of(999999999999999).AsValue().TryGetValue<long>(out _));
+        Assert.False(Of(-1e15).AsValue().TryGetValue<long>(out _));
+    }
+
+    [Fact]
+    public void A_snapshot_of_the_whole_book_needs_every_bid_and_every_ask()
+    {
+        var book = new MotilalBook();
+        book.Register("NSE", 5);
+        byte[] Level(float bid, float ask) => BitConverter.GetBytes(bid).Concat(BitConverter.GetBytes(100)).Concat(new byte[2]).Concat(BitConverter.GetBytes(ask)).Concat(BitConverter.GetBytes(110)).Concat(new byte[2]).ToArray();
+        book.Feed(Packet('N', 5, 'A', Floats(5f, 0, 0, 0, 0)).Concat(Packet('N', 5, 'G', Floats(1f, 2f, 1f, 1f).Concat(new byte[4]).ToArray())).ToArray());
+        Assert.False(book.HasSnapshot("NSE", 5, false, true));
+        for (var level = 0; level < 5; level++) book.Feed(Packet('N', 5, (char)('B' + level), Level(5f, 6f)));
+        Assert.True(book.HasSnapshot("NSE", 5, false, true));
+    }
 }

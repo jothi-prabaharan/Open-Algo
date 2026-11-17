@@ -1,0 +1,162 @@
+[
+ {
+  "name": "M21 MotilalPlugin.cs:191",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.cs",
+  "old": "        if (info is null || string.IsNullOrEmpty(info.Token)) return BrokerCallResult.Refused(400, $\"{order.Symbol} on {order.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\");",
+  "new": "        if (info is null || string.IsNullOrEmpty(info.Token)) return BrokerCallResult.Refused(401, $\"{order.Symbol} on {order.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\");",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M54 MotilalPlugin.cs:277",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.cs",
+  "old": "        if (info is null || string.IsNullOrEmpty(info.Token)) return BrokerCallResult.Refused(400, $\"{change.Symbol} on {change.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\");",
+  "new": "        if (info is null || string.IsNullOrEmpty(info.Token)) return BrokerCallResult.Refused(401, $\"{change.Symbol} on {change.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.\");",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M78 MotilalPlugin.Books.cs:17",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.Books.cs",
+  "old": "        if (!reply.Ok) throw new BrokerException(reply.Body is null ? $\"{Display} could not send the {what}: {reply.Failure}\" : reply.Failure!, reply.Status >= 400 ? reply.Status : 500);",
+  "new": "        if (!reply.Ok) throw new BrokerException(reply.Body is null ? $\"{Display} could not send the {what}: {reply.Failure}\" : reply.Failure!, reply.Status > 400 ? reply.Status : 500);",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M79 MotilalPlugin.Books.cs:17",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.Books.cs",
+  "old": "        if (!reply.Ok) throw new BrokerException(reply.Body is null ? $\"{Display} could not send the {what}: {reply.Failure}\" : reply.Failure!, reply.Status >= 400 ? reply.Status : 500);",
+  "new": "        if (!reply.Ok) throw new BrokerException(reply.Body is null ? $\"{Display} could not send the {what}: {reply.Failure}\" : reply.Failure!, reply.Status >= 401 ? reply.Status : 500);",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M81 MotilalPlugin.Books.cs:22",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.Books.cs",
+  "old": "        token.Length > 0 ? (await symbols.FindByTokenAsync(Name, token, exchange, cancellationToken))?.Symbol : null;",
+  "new": "        token.Length >= 0 ? (await symbols.FindByTokenAsync(Name, token, exchange, cancellationToken))?.Symbol : null;",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M135 MotilalPlugin.Books.cs:226",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.Books.cs",
+  "old": "            used = matched > 0 ? sum : 0.0;",
+  "new": "            used = matched >= 0 ? sum : 0.0;",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M159 MotilalPlugin.Data.cs:52",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.Data.cs",
+  "old": "        new($\"{Display} did not give {what}: {reply.Failure ?? \"no reason was given.\"} Try again in a moment.\", reply.Status is >= 400 and < 600 ? reply.Status : 502);",
+  "new": "        new($\"{Display} did not give {what}: {reply.Failure ?? \"no reason was given.\"} Try again in a moment.\", reply.Status is >= 400 and <= 600 ? reply.Status : 502);",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M160 MotilalPlugin.Data.cs:52",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.Data.cs",
+  "old": "        new($\"{Display} did not give {what}: {reply.Failure ?? \"no reason was given.\"} Try again in a moment.\", reply.Status is >= 400 and < 600 ? reply.Status : 502);",
+  "new": "        new($\"{Display} did not give {what}: {reply.Failure ?? \"no reason was given.\"} Try again in a moment.\", reply.Status is > 400 and < 600 ? reply.Status : 502);",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M161 MotilalPlugin.Data.cs:52",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.Data.cs",
+  "old": "        new($\"{Display} did not give {what}: {reply.Failure ?? \"no reason was given.\"} Try again in a moment.\", reply.Status is >= 400 and < 600 ? reply.Status : 502);",
+  "new": "        new($\"{Display} did not give {what}: {reply.Failure ?? \"no reason was given.\"} Try again in a moment.\", reply.Status is >= 401 and < 600 ? reply.Status : 502);",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M162 MotilalPlugin.Data.cs:52",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.Data.cs",
+  "old": "        new($\"{Display} did not give {what}: {reply.Failure ?? \"no reason was given.\"} Try again in a moment.\", reply.Status is >= 400 and < 600 ? reply.Status : 502);",
+  "new": "        new($\"{Display} did not give {what}: {reply.Failure ?? \"no reason was given.\"} Try again in a moment.\", reply.Status is >= 400 and < 601 ? reply.Status : 502);",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M164 MotilalPlugin.Data.cs:58",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.Data.cs",
+  "old": "        var token = long.TryParse(info.Token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var code) ? code : throw new BrokerException($\"{symbol} on {exchange} has no token in the {Display} master contract. Download the master contract again.\", 400);",
+  "new": "        var token = long.TryParse(info.Token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var code) ? code : throw new BrokerException($\"{symbol} on {exchange} has no token in the {Display} master contract. Download the master contract again.\", 401);",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M2 MotilalPackets.cs:36",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/MotilalPackets.cs",
+  "old": "        return upper switch { \"NSE\" => \"N\", \"BSE\" => \"B\", \"MCX\" => \"M\", \"NSECD\" => \"C\", \"NCDEX\" => \"D\", \"BSEFO\" => \"G\", \"NSEFO\" => \"N\", _ => upper.Length > 0 ? upper[..1] : \"\" };",
+  "new": "        return upper switch { \"NSE\" => \"N\", \"BSE\" => \"B\", \"MCX\" => \"M\", \"NSECD\" => \"C\", \"NCDEX\" => \"D\", \"BSEFO\" => \"G\", \"NSEFO\" => \"N\", _ => upper.Length >= 0 ? upper[..1] : \"\" };",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M52 MotilalPackets.cs:252",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/MotilalPackets.cs",
+  "old": "            var full = d.Bids.All(b => b is not null) && d.Asks.All(a => a is not null);",
+  "new": "            var full = d.Bids.All(b => b is not null) || d.Asks.All(a => a is not null);",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M83 MotilalFeedCodec.cs:175",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/MotilalFeedCodec.cs",
+  "old": "    private static JsonNode Number(double value) => value == Math.Floor(value) && Math.Abs(value) < 1e15 ? JsonValue.Create((long)value) : JsonValue.Create(value);",
+  "new": "    private static JsonNode Number(double value) => value == Math.Floor(value) && Math.Abs(value) <= 1e15 ? JsonValue.Create((long)value) : JsonValue.Create(value);",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M84 MotilalFeedCodec.cs:175",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/MotilalFeedCodec.cs",
+  "old": "    private static JsonNode Number(double value) => value == Math.Floor(value) && Math.Abs(value) < 1e15 ? JsonValue.Create((long)value) : JsonValue.Create(value);",
+  "new": "    private static JsonNode Number(double value) => value != Math.Floor(value) && Math.Abs(value) < 1e15 ? JsonValue.Create((long)value) : JsonValue.Create(value);",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M85 MotilalFeedCodec.cs:175",
+  "file": "src/EPTradeBot.Core/Streaming/Feeds/MotilalFeedCodec.cs",
+  "old": "    private static JsonNode Number(double value) => value == Math.Floor(value) && Math.Abs(value) < 1e15 ? JsonValue.Create((long)value) : JsonValue.Create(value);",
+  "new": "    private static JsonNode Number(double value) => value == Math.Floor(value) || Math.Abs(value) < 1e15 ? JsonValue.Create((long)value) : JsonValue.Create(value);",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M92 MotilalPlugin.Snapshot.cs:23",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.Snapshot.cs",
+  "old": "    private static int ScripCode(string token) => int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var code) ? code : throw new BrokerException($\"The token {token} is not a number.\", 400);",
+  "new": "    private static int ScripCode(string token) => int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var code) ? code : throw new BrokerException($\"The token {token} is not a number.\", 401);",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M105 MotilalPlugin.Snapshot.cs:79",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.Snapshot.cs",
+  "old": "            return false;",
+  "new": "            return true;",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M107 MotilalPlugin.Snapshot.cs:84",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.Snapshot.cs",
+  "old": "        if (ltp == 0) throw new BrokerException($\"{Display} sent no value for {symbol} yet. Try again in a moment.\", 502);",
+  "new": "        if (ltp == 0) throw new BrokerException($\"{Display} sent no value for {symbol} yet. Try again in a moment.\", 503);",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M119 MotilalPlugin.Snapshot.cs:160",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Motilal/MotilalPlugin.Snapshot.cs",
+  "old": "            return indexes.Count == 0 && registered.All(s => book.HasSnapshot(s.Exchange, s.Code, s.Segment == \"DERIVATIVES\", false));",
+  "new": "            return indexes.Count == 0 && registered.All(s => book.HasSnapshot(s.Exchange, s.Code, s.Segment == \"DERIVATIVES\", true));",
+  "filter": "FullyQualifiedName~Motilal",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]
