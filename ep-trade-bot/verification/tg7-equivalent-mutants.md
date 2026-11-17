@@ -8,7 +8,7 @@ The snapshot delay between batches and the socket's connect wait, read buffer an
 |---|---|
 | Shadow price subscription stored with mode 2 | `OnData` filters `!Shadow` before it reads `Mode`, and unsubscribe compares exchange, segment and token only. A shadow's mode is never read. |
 | Key prefix `depth` and `ltp` swapped | The key only names an entry of the codec's own dictionaries. The swap is a one-to-one rename, and no code tests the prefix. |
-| `Wire` numeric mode written as 4, 2 or swapped | `NumericMode` is never read (the only references are its declaration and the two writes). |
+| `Wire` numeric mode written as 4, 2 or swapped | The field was never read; it is removed, so there is nothing left to change. |
 | `start >= 0` as `> 0`, `end > start` as `>= start` | An INFO frame starts with the text `INFO`, so the opening brace is never at 0; the line end is after the brace, so the two are never equal. |
 | `headerEnd < 0` as `<= 0`; `end < 0` as `<= 0` | A header end or line end found after the text `MSG` is at index 3 or later. |
 | Frame scan `i + 2 < len` as `<=` or `i + 3 <` | The scan stops at the first `MSG`, which `DecodeBinary` has already found within the first 47 characters; it never reaches the end. |

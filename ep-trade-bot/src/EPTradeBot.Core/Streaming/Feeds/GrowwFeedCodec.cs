@@ -31,7 +31,7 @@ public sealed class GrowwFeedCodec : IFeedCodec
 {
     private sealed record Adapted(string Symbol, string Exchange, string GrowwExchange, string Segment, string Token, int Mode, bool Shadow);
 
-    private sealed record Wire(string Symbol, string Exchange, string GrowwExchange, string Segment, string Token, string Mode, int NumericMode);
+    private sealed record Wire(string Symbol, string Exchange, string GrowwExchange, string Segment, string Token, string Mode);
 
     private sealed record Spec(string CorrelationId, string Type, string GrowwExchange, string Segment, string Token, string Symbol, string Exchange, string? KeyOverride);
 
@@ -112,7 +112,7 @@ public sealed class GrowwFeedCodec : IFeedCodec
             foreach (var spec in queue)
             {
                 var key = spec.KeyOverride ?? $"{(spec.Type == "depth" ? "depth" : "ltp")}_{spec.GrowwExchange}_{spec.Segment}_{spec.Token}";
-                wire[key] = new Wire(spec.Symbol, spec.Exchange, spec.GrowwExchange, spec.Segment, spec.Token, spec.Type, spec.Type == "depth" ? 3 : 1);
+                wire[key] = new Wire(spec.Symbol, spec.Exchange, spec.GrowwExchange, spec.Segment, spec.Token, spec.Type);
                 keys[spec.CorrelationId] = key;
                 created.Add(key);
             }
