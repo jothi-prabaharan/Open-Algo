@@ -787,4 +787,21 @@ public sealed class MotilalDeepTests
         var other = await Plugin(new Script(_ => (200, "{}")), (s, e) => Row(s, "5", e), quoteOnly).GetDepthAsync(Session(), "NIFTY", "NSE_INDEX", CancellationToken.None);
         Assert.Equal(111.0, other["ltp"]!.GetValue<double>());
     }
+
+    [Fact]
+    public async Task Several_quotes_give_an_index_its_rate_else_its_quote_price_and_still_answers_when_it_sent_nothing()
+    {
+        async Task<JsonArray> Ask(params byte[][] frames)
+        {
+            var sockets = new Capture();
+            foreach (var f in frames) sockets.Frames.Add(f);
+            return await Plugin(new Script(_ => (200, "{}")), (s, e) => Row(s, "5", e), sockets).GetMultiQuotesAsync(Session(), [Row("NIFTY", "5", "NSE_INDEX")], CancellationToken.None);
+        }
+
+        var both = await Ask(Packet('N', 5, 'H', Floats(25000f, 0, 0, 0, 0)), Packet('N', 5, 'A', Floats(111f, 0, 0, 0, 0)));
+        Assert.Equal(25000.0, both[0]!["data"]!["ltp"]!.GetValue<double>());
+        var quoteOnly = await Ask(Packet('N', 5, 'A', Floats(111f, 0, 0, 0, 0)));
+        Assert.Equal(111.0, quoteOnly[0]!["data"]!["ltp"]!.GetValue<double>());
+        Assert.Single(await Ask());
+    }
 }
