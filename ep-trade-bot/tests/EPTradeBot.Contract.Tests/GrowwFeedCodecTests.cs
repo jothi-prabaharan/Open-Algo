@@ -212,4 +212,38 @@ public class GrowwFeedCodecTests
         Assert.Single(published);
         Assert.Single(published[0].Data["depth"]!["buy"]!.AsArray());
     }
+
+    [Fact]
+    public void What_is_held_for_an_instrument_is_forgotten_even_while_another_instrument_of_the_same_market_is_subscribed()
+    {
+        var codec = Codec(true);
+        codec.Subscribe([Ask("NSE", "INFY", "1594", StreamMode.Ltp)], 0);
+        codec.Subscribe([Ask("NSE", "SBIN", "3045", StreamMode.Depth)], 0);
+        codec.DecodeBinary(Message("/ld/eq/nse/book.3045", 2, Inside(5, Field(1, 1, Double(1)), Level(10, 1))), 0);
+        codec.Unsubscribe(new FeedTarget("NSE", "SBIN", "3045", "NSE"), null, 0);
+        codec.Subscribe([Ask("NSE", "SBIN", "3045", StreamMode.Depth)], 0);
+        var published = codec.DecodeBinary(Message("/ld/eq/nse/price.3045", 5, Inside(4, Field(13, 1, Double(800)))), 0);
+        Assert.Empty(Assert.Single(published).Data["depth"]!["buy"]!.AsArray());
+    }
+
+    [Fact]
+    public void A_message_is_found_after_earlier_text_that_holds_an_M_and_a_message_with_no_payload_is_read()
+    {
+        var codec = Codec(true);
+        codec.Subscribe([Ask("NSE", "SBIN", "3045", StreamMode.Ltp)], 0);
+        var payload = Inside(4, Field(13, 1, Double(800)));
+        byte[] frame = [.. System.Text.Encoding.UTF8.GetBytes("M\r\n"), .. Message("/ld/eq/nse/price.3045", 1, payload)];
+        Assert.Equal(800.0, Assert.Single(codec.DecodeBinary(frame, 0)).Data["ltp"]!.GetValue<double>());
+        var empty = Codec(true);
+        empty.Subscribe([Ask("NSE", "SBIN", "3045", StreamMode.Ltp)], 0);
+        Assert.Single(empty.DecodeBinary(System.Text.Encoding.UTF8.GetBytes("MSG /ld/eq/nse/price.3045 1 0\r\n"), 0));
+    }
+
+    [Fact]
+    public void A_depth_tick_on_a_price_subject_gives_a_price_subscription_nothing()
+    {
+        var codec = Codec(true);
+        codec.Subscribe([Ask("NSE", "SBIN", "3045", StreamMode.Ltp)], 0);
+        Assert.Empty(codec.DecodeBinary(Message("/ld/eq/nse/price.3045", 1, Inside(5, Field(1, 1, Double(1)), Level(10, 1))), 0));
+    }
 }
