@@ -96,4 +96,120 @@ public class GrowwFeedCodecTests
             Assert.Empty(codec.Subscribe([Ask("NSE", "SBIN", "3045", StreamMode.Ltp)], 0));
         }
     }
+
+    // ---- frames the server sends ---------------------------------------------------------------------------------
+
+    private static byte[] Double(double value) => BitConverter.GetBytes(value);
+
+    private static byte[] Field(int number, int wire, params byte[] body) => [.. Varint((ulong)((number << 3) | wire)), .. body];
+
+    private static byte[] Varint(ulong value)
+    {
+        var bytes = new List<byte>();
+        do
+        {
+            var b = (byte)(value & 0x7f);
+            value >>= 7;
+            if (value != 0) b |= 0x80;
+            bytes.Add(b);
+        }
+        while (value != 0);
+        return [.. bytes];
+    }
+
+    private static byte[] Inside(int number, params byte[][] parts)
+    {
+        var body = parts.SelectMany(p => p).ToArray();
+        return [.. Field(number, 2), .. Varint((ulong)body.Length), .. body];
+    }
+
+    private static byte[] Message(string subject, int sid, byte[] payload, bool trailer = true) =>
+        [.. System.Text.Encoding.UTF8.GetBytes($"MSG {subject} {sid} {payload.Length}\r\n"), .. payload, .. (trailer ? System.Text.Encoding.UTF8.GetBytes("\r\n") : [])];
+
+    private static byte[] Level(double price, long quantity, int side = 2) => Inside(side, Field(1, 0, 1), Inside(2, Field(1, 1, Double(price)), Field(2, 1, Double(quantity))));
+
+    [Fact]
+    public void A_price_tick_is_published_with_its_fields_and_unknown_fields_of_every_kind_are_stepped_over()
+    {
+        var codec = Codec(true);
+        codec.Subscribe([Ask("NSE", "SBIN", "3045", StreamMode.Quote)], 0);
+        byte[] payload =
+            [
+                .. Field(1, 0, 5),
+                .. Field(2, 0, 1),
+                .. Inside(4, Field(1, 1, Double(1700000000)), Field(9, 5, 1, 2, 3, 4), Field(8, 1, Double(7)), Field(12, 2, 2, 9, 9), Field(13, 1, Double(812.5)), Field(3, 1, Double(815)), Field(7, 1, Double(999))),
+            ];
+        var published = codec.DecodeBinary(Message("/ld/eq/nse/price.3045", 1, payload), 5);
+        var tick = Assert.Single(published);
+        Assert.Equal("NSE_SBIN_QUOTE", tick.Topic);
+        Assert.Equal(812.5, tick.Data["ltp"]!.GetValue<double>());
+        Assert.Equal(815.0, tick.Data["high"]!.GetValue<double>());
+        Assert.Equal(1700000000.0, tick.Data["ltt"]!.GetValue<double>());
+        Assert.Equal(2, tick.Data["mode"]!.GetValue<int>());
+        Assert.Equal(0.0, tick.Data["open"]!.GetValue<double>());
+    }
+
+    [Fact]
+    public void A_message_with_no_closing_line_end_is_still_read()
+    {
+        var codec = Codec(true);
+        codec.Subscribe([Ask("NSE", "SBIN", "3045", StreamMode.Ltp)], 0);
+        var payload = Inside(4, Field(13, 1, Double(800)));
+        Assert.Single(codec.DecodeBinary(Message("/ld/eq/nse/price.3045", 1, payload, trailer: false), 0));
+    }
+
+    [Fact]
+    public void An_index_asked_for_depth_is_published_as_a_price()
+    {
+        var codec = Codec(true);
+        codec.Subscribe([Ask("NSE_INDEX", "NIFTY", "26000", StreamMode.Depth)], 0);
+        var payload = Inside(6, Field(1, 1, Double(1)), Field(2, 1, Double(25000)));
+        var published = codec.DecodeBinary(Message("/ld/eq/nse/price.NIFTY", 1, payload), 0);
+        var tick = Assert.Single(published);
+        Assert.Equal("NSE_INDEX_NIFTY_LTP", tick.Topic);
+        Assert.Equal(1, tick.Data["mode"]!.GetValue<int>());
+    }
+
+    [Fact]
+    public void A_depth_tick_reads_five_levels_and_drops_the_ones_with_neither_a_price_nor_a_quantity()
+    {
+        var codec = Codec(true);
+        codec.Subscribe([Ask("NSE", "SBIN", "3045", StreamMode.Depth)], 0);
+        var depth = Inside(5, Field(1, 1, Double(1)), Level(10, 1), Level(0, 7), Level(12, 0), Level(0, 0), Level(9, 2), Level(8, 3), Level(7, 4), Level(11, 5, 3));
+        var published = codec.DecodeBinary(Message("/ld/eq/nse/book.3045", 1, depth), 0);
+        var tick = Assert.Single(published);
+        Assert.Equal(4, tick.Data["depth"]!["buy"]!.AsArray().Count);
+        Assert.Single(tick.Data["depth"]!["sell"]!.AsArray());
+        Assert.Equal(10.0, tick.Data["bid"]!.GetValue<double>());
+        Assert.Equal(11.0, tick.Data["ask"]!.GetValue<double>());
+    }
+
+    [Fact]
+    public void What_was_held_for_an_instrument_is_forgotten_when_its_last_subscription_ends()
+    {
+        var codec = Codec(true);
+        var who = new FeedTarget("NSE", "SBIN", "3045", "NSE");
+        codec.Subscribe([Ask("NSE", "SBIN", "3045", StreamMode.Depth)], 0);
+        codec.DecodeBinary(Message("/ld/eq/nse/book.3045", 1, Inside(5, Field(1, 1, Double(1)), Level(10, 1))), 0);
+        codec.Unsubscribe(who, null, 0);
+        codec.Subscribe([Ask("NSE", "SBIN", "3045", StreamMode.Depth)], 0);
+        var published = codec.DecodeBinary(Message("/ld/eq/nse/price.3045", 3, Inside(4, Field(13, 1, Double(800)))), 0);
+        var tick = Assert.Single(published);
+        Assert.Empty(tick.Data["depth"]!["buy"]!.AsArray());
+    }
+
+    [Fact]
+    public void An_unsubscribe_without_a_mode_ends_each_mode_asked_for_and_one_still_held_keeps_the_instrument()
+    {
+        var codec = Codec(true);
+        var who = new FeedTarget("NSE", "SBIN", "3045", "NSE");
+        codec.Subscribe([Ask("NSE", "SBIN", "3045", StreamMode.Ltp), Ask("NSE", "SBIN", "3045", StreamMode.Depth)], 0);
+        Assert.Equal(3, codec.Unsubscribe(who, null, 0).Count);
+        codec.Subscribe([Ask("NSE", "SBIN", "3045", StreamMode.Ltp), Ask("NSE", "SBIN", "3045", StreamMode.Depth)], 0);
+        codec.DecodeBinary(Message("/ld/eq/nse/book.3045", 7, Inside(5, Field(1, 1, Double(1)), Level(10, 1))), 0);
+        codec.Unsubscribe(who, StreamMode.Ltp, 0);
+        var published = codec.DecodeBinary(Message("/ld/eq/nse/price.3045", 8, Inside(4, Field(13, 1, Double(800)))), 0);
+        Assert.Single(published);
+        Assert.Single(published[0].Data["depth"]!["buy"]!.AsArray());
+    }
 }

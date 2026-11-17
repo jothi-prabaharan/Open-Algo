@@ -248,7 +248,12 @@ public sealed class GrowwDeepTests
     {
         var http = new Script(r => r.Query.Contains("FNO") ? (status, Failure("No F&O")) : (200, Positions(("SBIN", "NSE", 10, 800))));
         var read = Plugin(http).GetPositionsAsync(Session, CancellationToken.None);
-        if (throws) Assert.Contains("F&O positions could not be read", (await Assert.ThrowsAsync<BrokerException>(() => read)).Message);
+        if (throws)
+        {
+            var refused = await Assert.ThrowsAsync<BrokerException>(() => read);
+            Assert.Contains("F&O positions could not be read", refused.Message);
+            Assert.Equal(502, refused.HttpStatus);
+        }
         else Assert.Single(await read);
     }
 

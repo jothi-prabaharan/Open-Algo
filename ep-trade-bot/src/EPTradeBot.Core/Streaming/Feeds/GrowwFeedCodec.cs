@@ -511,7 +511,11 @@ public static class GrowwProtobuf
             {
                 case 0: Varint(); break;
                 case 1: Position += 8; break;
-                case 2: Position += (int)Math.Min(Varint(), int.MaxValue / 2); break;
+                case 2:
+                    // The length is read first: in "Position += Varint()" the old position is taken before the length moves it.
+                    var length = (int)Math.Min(Varint(), int.MaxValue / 2);
+                    Position += length;
+                    break;
                 case 5: Position += 4; break;
             }
         }

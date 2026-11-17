@@ -718,4 +718,73 @@ public sealed class MotilalDeepTests
         Assert.Equal(1, seen);
         Assert.False(await sockets.RunAsync(new Uri("ws://127.0.0.1:1/"), MotilalBook.LoginPacket("MO100"), [], [], _ => true, TimeSpan.FromSeconds(1), CancellationToken.None));
     }
+
+    // ---- paths the first rerun left open --------------------------------------------------------------------------
+
+    [Fact]
+    public async Task A_dealer_who_is_already_known_is_not_asked_again_when_a_report_fails_again()
+    {
+        MotilalPlugin.ForgetLearned();
+        try
+        {
+            var calls = 0;
+            var http = new Script(r =>
+            {
+                calls++;
+                return (200, """{"status":"FAILURE","message":"x","errorcode":"MO1062"}""");
+            });
+            var plugin = Plugin(http);
+            await Assert.ThrowsAsync<BrokerException>(() => plugin.GetQuoteAsync(Session(), "SBIN", "NSE", CancellationToken.None));
+            Assert.Equal(2, calls);
+            calls = 0;
+            await Assert.ThrowsAsync<BrokerException>(() => plugin.GetQuoteAsync(Session(), "SBIN", "NSE", CancellationToken.None));
+            Assert.Equal(1, calls);
+        }
+        finally
+        {
+            MotilalPlugin.ForgetLearned();
+        }
+    }
+
+    [Fact]
+    public async Task A_trade_whose_precision_is_null_is_scaled_by_the_default_of_two_places()
+    {
+        var trades = """{"status":"SUCCESS","data":[{"uniqueorderid":"1","symboltoken":3045,"exchange":"NSE","buyorsell":"BUY","producttype":"DELIVERY","tradeqty":3,"tradeprice":80012,"tradevalue":240036,"precision":null}]}""";
+        var row = (await Plugin(new Script(_ => (200, trades))).GetTradeBookAsync(Session(), CancellationToken.None))[0]!;
+        Assert.Equal(800.12, row["average_price"]!.GetValue<double>());
+        Assert.Equal(2400.36, row["trade_value"]!.GetValue<double>());
+    }
+
+    [Fact]
+    public async Task A_secret_that_is_empty_asks_for_no_access_token()
+    {
+        var http = new Script(r => r.Path.Contains("authdirectapi") ? (200, """{"status":"SUCCESS","AuthToken":"A"}""") : (200, """{"status":"SUCCESS","accesstoken":"X"}"""));
+        var input = new Dictionary<string, string> { ["clientcode"] = "C", ["password"] = "p", ["dob"] = "01/01/1990", ["totp"] = "123456" };
+        var result = await Plugin(http).LoginAsync(new Dictionary<string, string> { ["ApiKey"] = "key", ["ApiSecret"] = "" }, input, CancellationToken.None);
+        Assert.Equal("A", result.AuthToken);
+        Assert.Single(http.Requests);
+    }
+
+    [Fact]
+    public async Task A_change_that_got_no_reply_may_have_been_made_and_says_so_in_full()
+    {
+        var http = new Script(r => r.Path.Contains("modifyorder") ? throw new HttpRequestException("gone") : (200, """{"status":"SUCCESS","data":[{"uniqueorderid":"OID1","lastmodifiedtime":"t"}]}"""));
+        var result = await Plugin(http).ModifyAsync(Session(), Change(), CancellationToken.None);
+        Assert.Equal((false, 502, true), (result.Ok, result.HttpStatus, result.MayHaveBeenSent));
+        Assert.Contains("no reply came back", result.Message);
+    }
+
+    [Fact]
+    public async Task An_index_depth_gives_the_index_rate_when_there_is_one_and_the_quote_price_otherwise()
+    {
+        var withRate = new Capture();
+        withRate.Frames.Add(Packet('N', 5, 'H', Floats(25000f, 0, 0, 0, 0)));
+        withRate.Frames.Add(Packet('N', 5, 'A', Floats(111f, 0, 0, 0, 0)));
+        var depth = await Plugin(new Script(_ => (200, "{}")), (s, e) => Row(s, "5", e), withRate).GetDepthAsync(Session(), "NIFTY", "NSE_INDEX", CancellationToken.None);
+        Assert.Equal(25000.0, depth["ltp"]!.GetValue<double>());
+        var quoteOnly = new Capture();
+        quoteOnly.Frames.Add(Packet('N', 5, 'A', Floats(111f, 0, 0, 0, 0)));
+        var other = await Plugin(new Script(_ => (200, "{}")), (s, e) => Row(s, "5", e), quoteOnly).GetDepthAsync(Session(), "NIFTY", "NSE_INDEX", CancellationToken.None);
+        Assert.Equal(111.0, other["ltp"]!.GetValue<double>());
+    }
 }
