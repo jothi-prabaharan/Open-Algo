@@ -413,4 +413,177 @@ public sealed class GrowwDeepTests
             Assert.Equal(refused, !result.Ok);
         }
     }
+
+    // ---- history, quotes and the limits the mutation check found open -----------------------------------------
+
+    private static string Query(Seen r) => r.Query;
+
+    [Theory]
+    [InlineData("1m", 30)]
+    [InlineData("2m", 30)]
+    [InlineData("3m", 30)]
+    [InlineData("5m", 30)]
+    [InlineData("10m", 90)]
+    [InlineData("15m", 90)]
+    [InlineData("30m", 90)]
+    [InlineData("1h", 90)]
+    [InlineData("4h", 90)]
+    [InlineData("D", 1080)]
+    [InlineData("W", 3650)]
+    public async Task History_is_asked_for_in_stretches_of_the_most_days_Groww_allows(string interval, int days)
+    {
+        var http = new Script(_ => (200, """{"status":"SUCCESS","payload":{"candles":[]}}"""));
+        var plugin = Plugin(http);
+        var start = new DateOnly(2020, 1, 1);
+        await plugin.GetHistoryAsync(Session, Master.Row("SBIN", "NSE"), interval, start, start.AddDays(days - 1), CancellationToken.None);
+        Assert.Single(http.Requests);
+        http.Requests.Clear();
+        await plugin.GetHistoryAsync(Session, Master.Row("SBIN", "NSE"), interval, start, start.AddDays(days), CancellationToken.None);
+        Assert.Equal(2, http.Requests.Count);
+        Assert.Contains($"start_time=2020-01-01 00:00:00", Query(http.Requests[0]));
+        Assert.Contains($"end_time={start.AddDays(days - 1):yyyy-MM-dd} 23:59:59", Query(http.Requests[0]));
+        Assert.Contains($"start_time={start.AddDays(days):yyyy-MM-dd} 00:00:00", Query(http.Requests[1]));
+    }
+
+    [Theory]
+    [InlineData("1m", 1)]
+    [InlineData("2m", 2)]
+    [InlineData("3m", 3)]
+    [InlineData("5m", 5)]
+    [InlineData("10m", 10)]
+    [InlineData("15m", 15)]
+    public async Task A_candle_that_ends_by_the_open_is_left_out_and_one_that_ends_after_it_is_kept(string interval, int minutes)
+    {
+        string Body(DateTime at) => """{"status":"SUCCESS","payload":{"candles":[["AT",100,101,99,100.5,10]]}}""".Replace("AT", at.ToString("yyyy-MM-ddTHH:mm:ss"));
+        var day = new DateTime(2026, 11, 2, 9, 15, 0);
+        var ends = await Plugin(new Script(_ => (200, Body(day.AddMinutes(-minutes))))).GetHistoryAsync(Session, Master.Row("SBIN", "NSE"), interval, new DateOnly(2026, 11, 2), new DateOnly(2026, 11, 2), CancellationToken.None);
+        Assert.Empty(ends);
+        var runs = await Plugin(new Script(_ => (200, Body(day.AddMinutes(1 - minutes))))).GetHistoryAsync(Session, Master.Row("SBIN", "NSE"), interval, new DateOnly(2026, 11, 2), new DateOnly(2026, 11, 2), CancellationToken.None);
+        Assert.Single(runs);
+    }
+
+    [Theory]
+    [InlineData("30m", 2)]
+    [InlineData("1h", 2)]
+    [InlineData("4h", 2)]
+    public async Task Fifteen_minute_candles_are_combined_into_buckets_from_the_open(string interval, int buckets)
+    {
+        // 09:15 to 14:45 in 15 minute candles; 30 minutes, an hour and four hours each cut it in two at their own boundary.
+        var rows = Enumerable.Range(0, 23).Select(i => new DateTime(2026, 11, 2, 9, 15, 0).AddMinutes(15 * i)).ToList();
+        var candles = string.Join(",", rows.Select(t => $"[\"{t:yyyy-MM-ddTHH:mm:ss}\",100,101,99,100.5,10]"));
+        var body = """{"status":"SUCCESS","payload":{"candles":[CANDLES]}}""".Replace("CANDLES", candles);
+        var result = await Plugin(new Script(_ => (200, body))).GetHistoryAsync(Session, Master.Row("SBIN", "NSE"), interval, new DateOnly(2026, 11, 2), new DateOnly(2026, 11, 2), CancellationToken.None);
+        var expected = interval switch { "30m" => 12, "1h" => 6, _ => 2 };
+        Assert.Equal(expected, result.Count);
+        _ = buckets;
+    }
+
+    [Theory]
+    [InlineData(4102444800L, 2100)]
+    [InlineData(4102444801L, 1970)]
+    public async Task A_daily_candle_time_is_in_seconds_unless_it_is_too_large_to_be_and_then_it_is_milliseconds(long stamp, int year)
+    {
+        var body = """{"status":"SUCCESS","payload":{"candles":[[STAMP,100,101,99,100.5,10]]}}""".Replace("STAMP", stamp.ToString());
+        var result = await Plugin(new Script(_ => (200, body))).GetHistoryAsync(Session, Master.Row("SBIN", "NSE"), "D", new DateOnly(2026, 11, 2), new DateOnly(2026, 11, 2), CancellationToken.None);
+        Assert.Equal(year, DateTimeOffset.FromUnixTimeSeconds(result[0]!["timestamp"]!.GetValue<long>()).Year);
+    }
+
+    [Fact]
+    public async Task History_that_cannot_be_read_says_what_failed_with_its_status()
+    {
+        var bad = await Assert.ThrowsAsync<BrokerException>(() => Plugin(new Script(_ => (200, """{"status":"SUCCESS","payload":{"candles":[["not a time",1,2,3,4,5]]}}"""))).GetHistoryAsync(Session, Master.Row("SBIN", "NSE"), "5m", new DateOnly(2026, 11, 2), new DateOnly(2026, 11, 2), CancellationToken.None));
+        Assert.Equal(502, bad.HttpStatus);
+        var format = await Assert.ThrowsAsync<BrokerException>(() => Plugin(new Script(_ => (200, "{}"))).GetHistoryAsync(Session, Master.Row("WEIRD", "NFO", "25-NOV-26", "FUT"), "5m", new DateOnly(2026, 11, 2), new DateOnly(2026, 11, 2), CancellationToken.None));
+        Assert.Equal(500, format.HttpStatus);
+        var unknown = await Assert.ThrowsAsync<BrokerException>(() => Plugin(new Script(_ => (200, "{}"))).GetHistoryAsync(Session, Master.Row("SBIN", "NSE"), "7m", new DateOnly(2026, 11, 2), new DateOnly(2026, 11, 2), CancellationToken.None));
+        Assert.Equal(500, unknown.HttpStatus);
+    }
+
+    private static SymbolRecord Fno(string symbol, string exchange = "NFO") => new(symbol, symbol, exchange, exchange == "NFO" ? "NSE" : "BSE", "1", symbol, "25-NOV-26", -1, 75, "FUT", 0.05);
+
+    [Fact]
+    public async Task Several_quotes_that_cannot_reach_Groww_come_back_as_errors_beside_the_symbols()
+    {
+        var result = await Plugin(new Down()).GetMultiQuotesAsync(Session, [Master.Row("SBIN", "NSE"), Master.Row("INFY", "NSE")], CancellationToken.None);
+        Assert.Equal(2, result.Count);
+        Assert.All(result, r => Assert.NotNull(r!["error"]));
+    }
+
+    [Fact]
+    public async Task Fifty_quotes_are_one_batch_and_fifty_one_are_two()
+    {
+        var http = new Script(r => (200, r.Path == "/v1/live-data/ohlc" ? """{"status":"SUCCESS","payload":{}}""" : """{"status":"SUCCESS","payload":{}}"""));
+        await Plugin(http).GetMultiQuotesAsync(Session, Enumerable.Range(1, 50).Select(i => Master.Row("S" + i, "NSE")).ToList(), CancellationToken.None);
+        Assert.Single(http.To("/v1/live-data/ohlc"));
+        http.Requests.Clear();
+        await Plugin(http).GetMultiQuotesAsync(Session, Enumerable.Range(1, 51).Select(i => Master.Row("S" + i, "NSE")).ToList(), CancellationToken.None);
+        Assert.Equal(2, http.To("/v1/live-data/ohlc").Count());
+    }
+
+    [Fact]
+    public async Task A_cash_symbol_Groww_names_as_invalid_is_left_out_and_the_rest_asked_again_up_to_five_times()
+    {
+        var http = new Script(r =>
+        {
+            if (r.Path != "/v1/live-data/ohlc") return (200, """{"status":"SUCCESS","payload":{}}""");
+            var first = r.Query.Split("exchange_symbols=")[1].Split(',')[0].Split('_')[1];
+            return (400, $"Invalid trading symbol: {first}");
+        });
+        var result = await Plugin(http).GetMultiQuotesAsync(Session, Enumerable.Range(1, 8).Select(i => Master.Row("S" + i, "NSE")).ToList(), CancellationToken.None);
+        Assert.Equal(6, http.To("/v1/live-data/ohlc").Count());
+        Assert.Equal(8, result.Count);
+    }
+
+    [Fact]
+    public async Task A_symbol_Groww_names_as_invalid_that_is_none_of_the_symbols_asked_is_not_asked_again()
+    {
+        var http = new Script(r => r.Path == "/v1/live-data/ohlc" ? (400, "Invalid trading symbol: ZZZZ") : (200, """{"status":"SUCCESS","payload":{}}"""));
+        var result = await Plugin(http).GetMultiQuotesAsync(Session, Enumerable.Range(1, 3).Select(i => Master.Row("S" + i, "NSE")).ToList(), CancellationToken.None);
+        Assert.Single(http.To("/v1/live-data/ohlc"));
+        Assert.Equal(3, result.Count);
+    }
+
+    [Fact]
+    public async Task The_extra_quotes_of_futures_stop_after_four_throttles_in_a_row_and_a_refusal_in_between_starts_the_count_again()
+    {
+        var quotes = 0;
+        var http = new Script(r =>
+        {
+            if (r.Path == "/v1/live-data/quote")
+            {
+                quotes++;
+                return (429, "{}");
+            }
+
+            return (200, """{"status":"SUCCESS","payload":{}}""");
+        });
+        await Plugin(http).GetMultiQuotesAsync(Session, Enumerable.Range(1, 8).Select(i => Fno("F" + i)).ToList(), CancellationToken.None);
+        // Four futures are tried, each with its first call and the three tries again.
+        Assert.Equal(16, quotes);
+        quotes = 0;
+        var seen = 0;
+        var mixed = new Script(r =>
+        {
+            if (r.Path == "/v1/live-data/quote")
+            {
+                seen++;
+                return seen is > 12 and <= 13 ? (400, """{"status":"FAILURE","error":{"message":"No"}}""") : (429, "{}");
+            }
+
+            return (200, """{"status":"SUCCESS","payload":{}}""");
+        });
+        await Plugin(mixed).GetMultiQuotesAsync(Session, Enumerable.Range(1, 8).Select(i => Fno("F" + i)).ToList(), CancellationToken.None);
+        Assert.True(seen > 16);
+    }
+
+    [Fact]
+    public async Task An_ohlc_written_as_text_is_read_when_its_values_follow_the_colon_at_once()
+    {
+        var http = new Script(r => r.Path == "/v1/live-data/ohlc"
+            ? (200, """{"status":"SUCCESS","payload":{"NSE_SBIN":"{open:1,high:2,low:0.5,close:1.5}"}}""")
+            : (200, """{"status":"SUCCESS","payload":{"NSE_SBIN":1.25}}"""));
+        var result = await Plugin(http).GetMultiQuotesAsync(Session, [Master.Row("SBIN", "NSE")], CancellationToken.None);
+        Assert.Equal(1.0, result[0]!["data"]!["open"]!.GetValue<double>());
+        Assert.Equal(2.0, result[0]!["data"]!["high"]!.GetValue<double>());
+    }
 }
