@@ -128,7 +128,7 @@ public sealed partial class RupeezyPlugin(IHttpClientFactory http, BrokerSession
         var instrument = await symbols.FindAsync(Name, order.Symbol, order.Exchange, cancellationToken);
         if (instrument is null) return BrokerCallResult.Refused(400, $"Symbol {order.Symbol} not found on {order.Exchange}. Download the master contract.");
         var lot = instrument.LotSize > 0 ? instrument.LotSize : 1;
-        if (WholeLots(order.Quantity, instrument.BrokerExchange, lot, out var quantity) is { } refusal) return BrokerCallResult.Refused(400, refusal);
+        if (WholeLots(OrderQuantity.Whole(order.Quantity), instrument.BrokerExchange, lot, out var quantity) is { } refusal) return BrokerCallResult.Refused(400, refusal);
         if (WholeLots(order.DisclosedQuantity, instrument.BrokerExchange, lot, out var disclosed) is { } disclosedRefusal) return BrokerCallResult.Refused(400, disclosedRefusal);
 
         var variety = Variety(order.PriceType);
@@ -166,7 +166,7 @@ public sealed partial class RupeezyPlugin(IHttpClientFactory http, BrokerSession
         if (Str(history["status"]) != "success") return BrokerCallResult.Refused(502, Str(history["message"]) ?? $"Could not read the order from {DisplayName}.");
         var state = ((history["orders"] ?? history["data"]) as JsonArray)?.OfType<JsonObject>().FirstOrDefault();
         if (state is null) return BrokerCallResult.Refused(404, $"Order {change.OrderId} was not found.");
-        if (WholeLots(change.Quantity, instrument.BrokerExchange, lot, out var quantity) is { } refusal) return BrokerCallResult.Refused(400, refusal);
+        if (WholeLots(OrderQuantity.Whole(change.Quantity), instrument.BrokerExchange, lot, out var quantity) is { } refusal) return BrokerCallResult.Refused(400, refusal);
         if (WholeLots(change.DisclosedQuantity, instrument.BrokerExchange, lot, out var disclosed) is { } disclosedRefusal) return BrokerCallResult.Refused(400, disclosedRefusal);
 
         var variety = Variety(change.PriceType);

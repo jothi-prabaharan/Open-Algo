@@ -107,7 +107,7 @@ public sealed partial class TradejiniPlugin(IHttpClientFactory http, BrokerSessi
         var type = OrderType(order.PriceType);
         var form = new List<KeyValuePair<string, string>>
         {
-            new("symId", info.BrokerSymbol), new("qty", Whole(order.Quantity)), new("side", order.Action.Equals("BUY", StringComparison.Ordinal) ? "buy" : "sell"), new("type", type), new("product", Product(order.Product)),
+            new("symId", info.BrokerSymbol), new("qty", Whole(OrderQuantity.Whole(order.Quantity))), new("side", order.Action.Equals("BUY", StringComparison.Ordinal) ? "buy" : "sell"), new("type", type), new("product", Product(order.Product)),
             new("limitPrice", PyFloat(order.Price)), new("trigPrice", PyFloat(order.TriggerPrice)), new("validity", "day"),
         };
         if (order.DisclosedQuantity != 0) form.Add(new("discQty", Whole(order.DisclosedQuantity)));
@@ -137,7 +137,7 @@ public sealed partial class TradejiniPlugin(IHttpClientFactory http, BrokerSessi
         if (info is null) return BrokerCallResult.Refused(400, $"{change.Symbol} on {change.Exchange} is not in the {Display} master contract. Check the symbol, or download the master contract again.");
         var form = new List<KeyValuePair<string, string>>
         {
-            new("symId", info.BrokerSymbol), new("orderId", change.OrderId), new("qty", Whole(change.Quantity)), new("type", OrderType(change.PriceType)), new("validity", "day"), new("side", change.Action.ToLowerInvariant()),
+            new("symId", info.BrokerSymbol), new("orderId", change.OrderId), new("qty", Whole(OrderQuantity.Whole(change.Quantity))), new("type", OrderType(change.PriceType)), new("validity", "day"), new("side", change.Action.ToLowerInvariant()),
         };
         if (change.PriceType is "LIMIT" or "SL") form.Add(new("limitPrice", PyFloat(change.Price)));
         if (change.PriceType is "SL" or "SL-M") form.Add(new("trigPrice", PyFloat(change.TriggerPrice)));

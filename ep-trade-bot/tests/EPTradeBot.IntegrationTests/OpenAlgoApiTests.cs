@@ -243,6 +243,20 @@ public sealed class OpenAlgoApiTests
     }
 
     [PostgresFact]
+    public async Task A_fractional_quantity_is_refused_on_a_live_broker_that_takes_whole_quantities_only()
+    {
+        var (host, broker, _, key) = await LiveHostAsync("Production", maxQty: 10);
+        await using var _h = host;
+
+        var (status, answer) = await PostAsync(host, "/api/v1/placeorder", new { apikey = key, strategy = "tv", symbol = "BTCUSD", exchange = "CRYPTO", action = "BUY", quantity = "0.5", pricetype = "MARKET", product = "NRML" });
+
+        Assert.Equal(400, status);
+        Assert.StartsWith("Fractional quantities (0.5)", answer["message"]!.GetValue<string>());
+        Assert.Contains("whole quantities only", answer["message"]!.GetValue<string>());
+        Assert.DoesNotContain(broker.Sent, s => s.Method == "POST");
+    }
+
+    [PostgresFact]
     public async Task Each_order_of_a_basket_and_each_part_of_a_split_passes_the_risk_check_on_its_own()
     {
         var (host, broker, _, key) = await LiveHostAsync("Production", maxQty: 10);

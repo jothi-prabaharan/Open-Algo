@@ -17,7 +17,7 @@ public sealed record OrderIntent
     /// <summary>BUY or SELL.</summary>
     public required string Action { get; init; }
 
-    public required int Quantity { get; init; }
+    public required decimal Quantity { get; init; }
 
     /// <summary>MIS, NRML or CNC.</summary>
     public string Product { get; init; } = "MIS";

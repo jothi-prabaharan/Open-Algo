@@ -60,7 +60,7 @@ public sealed partial class ZerodhaPlugin(
         int quantity, disclosed;
         try
         {
-            quantity = KiteQuantity(order.Quantity, instrument, "Quantity");
+            quantity = KiteQuantity(OrderQuantity.Whole(order.Quantity), instrument, "Quantity");
             disclosed = KiteQuantity(order.DisclosedQuantity, instrument, "Disclosed quantity");
         }
         catch (McxQuantityException ex)
@@ -118,7 +118,7 @@ public sealed partial class ZerodhaPlugin(
         int quantity, disclosed;
         try
         {
-            quantity = instrument is null ? change.Quantity : KiteQuantity(change.Quantity, instrument, "Quantity");
+            quantity = instrument is null ? OrderQuantity.Whole(change.Quantity) : KiteQuantity(OrderQuantity.Whole(change.Quantity), instrument, "Quantity");
             disclosed = instrument is null ? change.DisclosedQuantity : KiteQuantity(change.DisclosedQuantity, instrument, "Disclosed quantity");
         }
         catch (McxQuantityException ex)

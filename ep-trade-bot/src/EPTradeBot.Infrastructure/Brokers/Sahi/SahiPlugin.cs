@@ -208,7 +208,7 @@ public sealed partial class SahiPlugin(IHttpClientFactory http, BrokerSessionFac
 
     public async Task<BrokerCallResult> PlaceAsync(BrokerSession session, BrokerOrder order, CancellationToken cancellationToken)
     {
-        var (payload, refusal) = await OrderPayloadAsync(order.Exchange, order.Symbol, order.Action, order.Quantity, order.PriceType, order.Product, order.Price, order.TriggerPrice, order.DisclosedQuantity, cancellationToken);
+        var (payload, refusal) = await OrderPayloadAsync(order.Exchange, order.Symbol, order.Action, OrderQuantity.Whole(order.Quantity), order.PriceType, order.Product, order.Price, order.TriggerPrice, order.DisclosedQuantity, cancellationToken);
         if (payload is null) return BrokerCallResult.Refused(400, refusal!);
 
         (int Status, JsonObject Body) reply;

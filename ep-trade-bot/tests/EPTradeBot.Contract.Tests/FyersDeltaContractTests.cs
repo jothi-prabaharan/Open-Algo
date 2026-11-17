@@ -117,8 +117,20 @@ public sealed class DeltaContractTests(DeltaHost host, ITestOutputHelper output)
         ["json"] = new JsonObject { ["id"] = id, ["product_id"] = productId },
     };
 
+    private const string Fraction = "OpenAlgo raises an error for a fraction of a contract and answers it as an internal error (500); EP Trade bot refuses it with the same sentence and a 400, because the request is what is wrong.";
+
     public static readonly Dictionary<string, Deviation> Deviations = new()
     {
+        ["placeorder_contract_fractional_is_refused"] = new(Fraction, f =>
+        {
+            f["expected"]!["status"] = 400;
+            f["expected"]!["body"]!["message"] = "Fractional quantity (0.5) not allowed for derivative contracts. Use whole numbers for BTCUSD.";
+        }),
+        ["modifyorder_contract_fractional_is_refused"] = new(Fraction, f =>
+        {
+            f["expected"]!["status"] = 400;
+            f["expected"]!["body"]!["message"] = "Fractional quantity (1.5) not allowed for derivative contracts. Use whole numbers for BTCUSD.";
+        }),
         ["placeorder_unknown_symbol"] = new("Same refusal and status; EP Trade bot words it for a trader.",
             f => f["expected"]!["body"]!["message"] = "NOPEUSD on CRYPTO is not in the Delta Exchange master contract. Check the symbol, or download the master contract again."),
         ["cancelallorder"] = new("OpenAlgo cancels with Delta's bulk call and reports the result as one order, \"all\". EP Trade bot cancels each open order and names each one cancelled or refused.",

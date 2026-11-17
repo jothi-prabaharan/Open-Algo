@@ -51,12 +51,18 @@ public sealed partial class OpenAlgoApiService(
     // ---- orders ----------------------------------------------------------------------------------------------
 
     /// <summary>
-    /// Orders carry whole quantities in this build. A fractional crypto quantity is refused
-    /// plainly rather than truncated, which would send a different order from the one asked for.
+    /// A fractional quantity goes only to a broker that takes one (Delta Exchange spot) on a crypto exchange, on a live account. The sandbox, like OpenAlgo's, keeps whole quantities, and every other
+    /// broker takes whole ones: either is refused plainly rather than truncated, which would send a different order from the one asked for.
     /// </summary>
-    private static V1Result? Fractional(BrokerAccount account, decimal quantity) =>
-        quantity == decimal.Truncate(quantity) ? null
-        : Mark(account, V1Result.Error(400, $"Fractional quantities ({quantity}) are not supported in EP Trade bot yet. Use a whole quantity, or place this order on {account.Broker} directly."));
+    private V1Result? Fractional(BrokerAccount account, string? exchange, decimal quantity, bool whole = false)
+    {
+        if (quantity == decimal.Truncate(quantity)) return null;
+        if (!whole && account.AccountType == AccountType.LIVE && exchange is not null && ApiPatterns.CryptoExchanges.Contains(exchange) && registry.Find(account.Broker) is IBrokerFractionalQuantity) return null;
+        var why = whole ? "A smart order works in whole quantities."
+            : account.AccountType != AccountType.LIVE ? "The sandbox takes whole quantities only."
+            : $"{registry.Find(account.Broker)?.DisplayName ?? account.Broker} takes whole quantities only on this exchange.";
+        return Mark(account, V1Result.Error(400, $"Fractional quantities ({quantity}) are not accepted here. {why} Use a whole quantity."));
+    }
 
     /// <summary>
     /// For a LIVE account, a symbol the broker's master contract does not have is refused by
@@ -72,7 +78,7 @@ public sealed partial class OpenAlgoApiService(
     public async Task<V1Result> PlaceOrderAsync(BrokerAccount account, PlaceOrderRequest r, CancellationToken ct)
     {
         if (await QueueIfSemiAutoAsync(account, "placeorder", r, ct) is { } queued) return queued;
-        if (Fractional(account, r.Quantity) is { } fractional) return fractional;
+        if (Fractional(account, r.Exchange, r.Quantity) is { } fractional) return fractional;
         if (await UnknownSymbolAsync(account, r.Symbol, r.Exchange, ct) is { } unknown) return unknown;
         var result = await dispatcher.DispatchAsync(Intent(account, r.Strategy, r.Symbol, r.Exchange, r.Action, r.Quantity, r.PriceType, r.Product, r.Price, r.TriggerPrice, r.DisclosedQuantity), ct);
         return OrderAnswer(account, result);
@@ -81,7 +87,7 @@ public sealed partial class OpenAlgoApiService(
     public async Task<V1Result> PlaceSmartOrderAsync(BrokerAccount account, PlaceSmartOrderRequest r, CancellationToken ct)
     {
         if (await QueueIfSemiAutoAsync(account, "placesmartorder", r, ct) is { } queued) return queued;
-        if ((Fractional(account, r.Quantity) ?? Fractional(account, r.PositionSize ?? 0)) is { } fractional) return fractional;
+        if ((Fractional(account, r.Exchange, r.Quantity, whole: true) ?? Fractional(account, r.Exchange, r.PositionSize ?? 0, whole: true)) is { } fractional) return fractional;
         if (await UnknownSymbolAsync(account, r.Symbol, r.Exchange, ct) is { } unknown) return unknown;
         // One smart order per instrument at a time, so each one reads the position the previous one left.
         using var _ = await instrumentLocks.AcquireAsync($"{account.Id:N}|{r.Exchange}|{r.Symbol}|{r.Product}", ct);
@@ -119,14 +125,14 @@ public sealed partial class OpenAlgoApiService(
     public async Task<V1Result> ModifyOrderAsync(BrokerAccount account, ModifyOrderRequest r, CancellationToken ct)
     {
         if (SemiAutoBlocked("Modify order", "modify orders") is { } blocked) return blocked;
-        if (Fractional(account, r.Quantity ?? 0) is { } fractional) return fractional;
+        if (Fractional(account, r.Exchange, r.Quantity ?? 0) is { } fractional) return fractional;
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
         if (account.KillSwitchEngaged) return Refusal(account, new Refusal("kill_switch_engaged", $"The kill switch is on for {account.DisplayName}, so orders cannot be changed. Release it first."));
         if (account.AccountType == AccountType.PAPER)
             return Mark(account, V1Result.Error(400, "Changing a sandbox order is not supported yet. Cancel it and place a new one."));
         if (!Broker<IBrokerOrders>(account, out var orders, out var session, out var missing)) return missing!;
 
-        var change = new BrokerOrderChange(r.OrderId, r.Symbol, r.Exchange, r.Action.ToUpperInvariant(), (int)(r.Quantity ?? 0), r.PriceType, r.Product,
+        var change = new BrokerOrderChange(r.OrderId, r.Symbol, r.Exchange, r.Action.ToUpperInvariant(), r.Quantity ?? 0, r.PriceType, r.Product,
             r.Price ?? 0, r.TriggerPrice ?? 0, r.DisclosedQuantity ?? 0);
         return await Guarded(async () =>
         {
@@ -488,7 +494,7 @@ public sealed partial class OpenAlgoApiService(
         string priceType, string product, decimal price, decimal trigger, int disclosed) => new()
     {
         AccountId = account.Id, Source = ApiCallContext.Get().ApprovedBy is null ? OrderSource.Api : OrderSource.ActionCenter, Symbol = symbol, Exchange = exchange, Action = action.ToUpperInvariant(),
-        Quantity = (int)quantity, PriceType = priceType, Product = product, Price = price, TriggerPrice = trigger,
+        Quantity = decimal.Truncate(quantity) == quantity ? decimal.Truncate(quantity) : quantity, PriceType = priceType, Product = product, Price = price, TriggerPrice = trigger,
         DisclosedQuantity = disclosed, Strategy = strategy, Actor = ApiCallContext.Get().ApprovedBy ?? "api",
     };
 

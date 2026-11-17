@@ -30,7 +30,7 @@ public sealed partial class DeltaExchangePlugin(
     ISymbolMaster symbols,
     TimeProvider clock,
     IDbContextFactory<EpTradeDbContext> contexts,
-    ILogger<DeltaExchangePlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerQuotes, IBrokerHistory, IBrokerMargin, IBrokerLogin
+    ILogger<DeltaExchangePlugin> logger) : IBrokerOrders, IBrokerPortfolio, IBrokerFunds, IBrokerQuotes, IBrokerHistory, IBrokerMargin, IBrokerLogin, IBrokerFractionalQuantity
 {
     private const string BaseUrl = "https://api.india.delta.exchange";
     private const string Crypto = "CRYPTO";
@@ -38,6 +38,12 @@ public sealed partial class DeltaExchangePlugin(
     public string Name => "deltaexchange";
     public string DisplayName => "Delta Exchange";
     public BrokerCapability Capabilities => BrokerCapability.Orders | BrokerCapability.Portfolio | BrokerCapability.Funds | BrokerCapability.Quotes | BrokerCapability.Depth | BrokerCapability.History | BrokerCapability.Margin | BrokerCapability.Streaming;
+
+    /// <summary>The order size Delta takes: a spot instrument any decimal, a contract a whole number of them (a fraction of a contract is refused, as OpenAlgo does).</summary>
+    private static (JsonNode? Size, string? Refusal) OrderSize(decimal quantity, SymbolRecord? instrument, string symbol) =>
+        string.Equals(instrument?.InstrumentType, "SPOT", StringComparison.Ordinal) ? (quantity, null)
+        : quantity != decimal.Truncate(quantity) ? (null, $"Fractional quantity ({quantity.ToString(CultureInfo.InvariantCulture)}) not allowed for derivative contracts. Use whole numbers for {symbol}.")
+        : ((long)quantity, null);
 
     /// <summary>The session token is the Delta API key (as OpenAlgo stores it); ApiSecret signs every request.</summary>
     public IReadOnlyList<string> RequiredKeys { get; } = ["ApiSecret"];
@@ -58,10 +64,12 @@ public sealed partial class DeltaExchangePlugin(
         if (instrument is null) return BrokerCallResult.Refused(400, $"{order.Symbol} is not in the Delta Exchange master contract. Check the symbol, or download the master contract again.");
         if (await SetLeverageAsync(session, instrument.Token, cancellationToken) is { } refused) return refused;
         var type = OrderType(order.PriceType);
+        var (size, refusal) = OrderSize(order.Quantity, instrument, order.Symbol);
+        if (refusal is not null) return BrokerCallResult.Refused(400, refusal);
         var body = new JsonObject
         {
             ["product_id"] = long.Parse(instrument.Token, CultureInfo.InvariantCulture), ["product_symbol"] = instrument.BrokerSymbol,
-            ["size"] = order.Quantity, ["side"] = order.Action.ToLowerInvariant(), ["order_type"] = type, ["time_in_force"] = "gtc",
+            ["size"] = size, ["side"] = order.Action.ToLowerInvariant(), ["order_type"] = type, ["time_in_force"] = "gtc",
         };
         if (type == "limit_order") body["limit_price"] = order.Price != 0 ? Text(order.Price) : "0";
         if (order.PriceType is "SL" or "SL-M")
@@ -124,9 +132,11 @@ public sealed partial class DeltaExchangePlugin(
     public async Task<BrokerCallResult> ModifyAsync(BrokerSession session, BrokerOrderChange change, CancellationToken cancellationToken)
     {
         var (productId, orderId) = await SplitAsync(change.OrderId, change.Symbol, change.Exchange, cancellationToken);
+        var (size, refusal) = OrderSize(change.Quantity, await symbols.FindAsync(Name, change.Symbol, change.Exchange, cancellationToken), change.Symbol);
+        if (refusal is not null) return BrokerCallResult.Refused(400, refusal);
         var body = new JsonObject
         {
-            ["id"] = orderId, ["product_id"] = productId, ["size"] = change.Quantity,
+            ["id"] = orderId, ["product_id"] = productId, ["size"] = size,
             ["limit_price"] = change.PriceType == "SL-M" ? "0" : Text(change.Price),
         };
         if (change.PriceType is "SL" or "SL-M") body["stop_price"] = change.TriggerPrice != 0 ? Text(change.TriggerPrice) : "0";

@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using EPTradeBot.Core.Brokers;
 using EPTradeBot.Core.Configuration;
 using EPTradeBot.Core.Entities.Legacy.Core;
 using EPTradeBot.Core.Entities.Legacy.Sandbox;
@@ -53,7 +54,7 @@ public sealed partial class SandboxEngine(
                 p => p.UserId == userId && p.Symbol == intent.Symbol && p.Exchange == intent.Exchange && p.Product == intent.Product, cancellationToken);
             var net = position?.Quantity ?? 0;
             var quote = quotes.Get(intent.Exchange, intent.Symbol);
-            var opening = SandboxRules.OpeningQuantity(net, intent.Sign, intent.Quantity);
+            var opening = SandboxRules.OpeningQuantity(net, intent.Sign, OrderQuantity.Whole(intent.Quantity));
 
             decimal margin = 0;
             if (opening > 0)
@@ -82,14 +83,14 @@ public sealed partial class SandboxEngine(
                 Symbol = intent.Symbol,
                 Exchange = intent.Exchange,
                 Action = intent.IsBuy ? "BUY" : "SELL",
-                Quantity = intent.Quantity,
+                Quantity = OrderQuantity.Whole(intent.Quantity),
                 Price = intent.Price,
                 TriggerPrice = intent.TriggerPrice,
                 PriceType = intent.PriceType,
                 Product = intent.Product,
                 OrderStatus = "open",
                 FilledQuantity = 0,
-                PendingQuantity = intent.Quantity,
+                PendingQuantity = OrderQuantity.Whole(intent.Quantity),
                 MarginBlocked = margin,
                 OrderTimestamp = now,
                 UpdateTimestamp = now,

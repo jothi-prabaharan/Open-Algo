@@ -3,7 +3,7 @@
   "api_key": "fixture-api-key-0000000000000000000000000000000000000000000000",
   "auth_token": "delta-api-key",
   "client_id": null,
-  "recorded_at": "2026-11-03T15:43:23+00:00",
+  "recorded_at": "2026-11-17T06:28:05+00:00",
   "read_posts": [],
   "symbols": [
     {
@@ -339,6 +339,348 @@
       "ignore": []
     },
     {
+      "name": "placeorder_spot_fractional",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SOL_INR",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "0.05",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 1001,
+            "product_symbol": "SOL_INR",
+            "size": 0.05,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_spot_fractional_limit",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SOL_INR",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "12.375",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "150.25",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 1001,
+            "product_symbol": "SOL_INR",
+            "size": 12.375,
+            "side": "buy",
+            "order_type": "limit_order",
+            "time_in_force": "gtc",
+            "limit_price": "150.25"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_spot_whole",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SOL_INR",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "3",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 1001,
+            "product_symbol": "SOL_INR",
+            "size": 3.0,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_spot_whole_written_with_a_decimal_point",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SOL_INR",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "3.0",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 1001,
+            "product_symbol": "SOL_INR",
+            "size": 3.0,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_contract_fractional_is_refused",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "0.5",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to place order due to internal error",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "placeorder_contract_whole_written_with_a_decimal_point",
+      "method": "POST",
+      "path": "/api/v1/placeorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "action": "BUY",
+        "quantity": "2.0",
+        "pricetype": "MARKET",
+        "product": "NRML",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "POST /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001,
+              "product_id": 27,
+              "product_symbol": "BTCUSD",
+              "size": 1,
+              "side": "buy",
+              "state": "open"
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "27:9001",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "POST",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "product_id": 27,
+            "product_symbol": "BTCUSD",
+            "size": 2,
+            "side": "buy",
+            "order_type": "market_order",
+            "time_in_force": "gtc"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
       "name": "placeorder_broker_refuses",
       "method": "POST",
       "path": "/api/v1/placeorder",
@@ -432,6 +774,102 @@
         "status": 400,
         "body": {
           "message": "[DeltaExchange] Symbol 'NOPEUSD' not found in master contract DB for exchange 'CRYPTO'. Run master contract sync first.",
+          "status": "error"
+        }
+      },
+      "sent": [],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_spot_fractional",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "SOL_INR",
+        "exchange": "CRYPTO",
+        "orderid": "1001:9002",
+        "action": "BUY",
+        "quantity": "0.25",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "150",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9002
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "orderid": "1001:9002",
+          "status": "success"
+        }
+      },
+      "sent": [
+        {
+          "method": "PUT",
+          "host": "api.india.delta.exchange",
+          "path": "/v2/orders",
+          "query": [],
+          "headers": {
+            "api-key": "delta-api-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "json": {
+            "id": 9002,
+            "product_id": 1001,
+            "size": 0.25,
+            "limit_price": "150.0"
+          }
+        }
+      ],
+      "ignore": []
+    },
+    {
+      "name": "modifyorder_contract_fractional_is_refused",
+      "method": "POST",
+      "path": "/api/v1/modifyorder",
+      "auth": "body",
+      "request": {
+        "strategy": "t",
+        "symbol": "BTCUSD",
+        "exchange": "CRYPTO",
+        "orderid": "27:9001",
+        "action": "BUY",
+        "quantity": "1.5",
+        "pricetype": "LIMIT",
+        "product": "NRML",
+        "price": "66100",
+        "disclosed_quantity": "0",
+        "trigger_price": "0",
+        "apikey": "fixture-api-key-0000000000000000000000000000000000000000000000"
+      },
+      "broker": {
+        "PUT /v2/orders": {
+          "body": {
+            "success": true,
+            "result": {
+              "id": 9001
+            }
+          }
+        }
+      },
+      "expected": {
+        "status": 500,
+        "body": {
+          "message": "Failed to modify order due to internal error",
           "status": "error"
         }
       },
@@ -680,7 +1118,7 @@
                 "limit_price": "66000.0",
                 "stop_price": null,
                 "reduce_only": false,
-                "created_at": "2026-11-03T15:13:23.000000Z",
+                "created_at": "2026-11-17T05:58:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null
@@ -697,7 +1135,7 @@
                 "limit_price": "3400.0",
                 "stop_price": "3410.0",
                 "reduce_only": false,
-                "created_at": "2026-11-03T15:23:23.000000Z",
+                "created_at": "2026-11-17T06:08:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null,
@@ -722,7 +1160,7 @@
                 "limit_price": null,
                 "stop_price": null,
                 "reduce_only": false,
-                "created_at": "2026-11-03T15:18:23.000000Z",
+                "created_at": "2026-11-17T06:03:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null
@@ -739,7 +1177,7 @@
                 "limit_price": null,
                 "stop_price": "3300.0",
                 "reduce_only": false,
-                "created_at": "2026-11-03T15:28:23.000000Z",
+                "created_at": "2026-11-17T06:13:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null,
@@ -757,7 +1195,7 @@
                 "limit_price": "60000.0",
                 "stop_price": null,
                 "reduce_only": false,
-                "created_at": "2026-11-01T15:43:23.000000Z",
+                "created_at": "2026-11-15T06:28:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null
@@ -1248,7 +1686,7 @@
                 "limit_price": "66000.0",
                 "stop_price": null,
                 "reduce_only": false,
-                "created_at": "2026-11-03T15:13:23.000000Z",
+                "created_at": "2026-11-17T05:58:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null
@@ -1265,7 +1703,7 @@
                 "limit_price": "3400.0",
                 "stop_price": "3410.0",
                 "reduce_only": false,
-                "created_at": "2026-11-03T15:23:23.000000Z",
+                "created_at": "2026-11-17T06:08:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null,
@@ -1290,7 +1728,7 @@
                 "limit_price": null,
                 "stop_price": null,
                 "reduce_only": false,
-                "created_at": "2026-11-03T15:18:23.000000Z",
+                "created_at": "2026-11-17T06:03:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null
@@ -1307,7 +1745,7 @@
                 "limit_price": null,
                 "stop_price": "3300.0",
                 "reduce_only": false,
-                "created_at": "2026-11-03T15:28:23.000000Z",
+                "created_at": "2026-11-17T06:13:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null,
@@ -1325,7 +1763,7 @@
                 "limit_price": "60000.0",
                 "stop_price": null,
                 "reduce_only": false,
-                "created_at": "2026-11-01T15:43:23.000000Z",
+                "created_at": "2026-11-15T06:28:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null
@@ -1349,7 +1787,7 @@
                 "product": "NRML",
                 "quantity": 2,
                 "symbol": "BTCUSD",
-                "timestamp": "2026-11-03T15:13:23.000000Z",
+                "timestamp": "2026-11-17T05:58:05.000000Z",
                 "trigger_price": 0.0
               },
               {
@@ -1362,7 +1800,7 @@
                 "product": "NRML",
                 "quantity": 5,
                 "symbol": "ETHUSD",
-                "timestamp": "2026-11-03T15:23:23.000000Z",
+                "timestamp": "2026-11-17T06:08:05.000000Z",
                 "trigger_price": 3410.0
               },
               {
@@ -1375,7 +1813,7 @@
                 "product": "NRML",
                 "quantity": 1,
                 "symbol": "BTCUSD",
-                "timestamp": "2026-11-03T15:18:23.000000Z",
+                "timestamp": "2026-11-17T06:03:05.000000Z",
                 "trigger_price": 0.0
               },
               {
@@ -1388,7 +1826,7 @@
                 "product": "NRML",
                 "quantity": 1,
                 "symbol": "ETHUSD",
-                "timestamp": "2026-11-03T15:28:23.000000Z",
+                "timestamp": "2026-11-17T06:13:05.000000Z",
                 "trigger_price": 3300.0
               }
             ],
@@ -1455,7 +1893,7 @@
                 "size": 1,
                 "price": "67012.5",
                 "order_id": 9002,
-                "created_at": "2026-11-03T15:18:23.000000Z"
+                "created_at": "2026-11-17T06:03:05.000000Z"
               },
               {
                 "id": 2,
@@ -1465,7 +1903,7 @@
                 "size": "0.5",
                 "price": "15000.25",
                 "order_id": 9100,
-                "created_at": "2026-11-03T15:33:23.000000Z"
+                "created_at": "2026-11-17T06:18:05.000000Z"
               },
               {
                 "id": 0,
@@ -1475,7 +1913,7 @@
                 "size": 1,
                 "price": "60000.0",
                 "order_id": 8999,
-                "created_at": "2026-11-01T15:43:23.000000Z"
+                "created_at": "2026-11-15T06:28:05.000000Z"
               }
             ]
           }
@@ -1493,7 +1931,7 @@
               "product": "NRML",
               "quantity": 1,
               "symbol": "BTCUSD",
-              "timestamp": "2026-11-03T15:18:23.000000Z",
+              "timestamp": "2026-11-17T06:03:05.000000Z",
               "trade_value": 67012.5
             },
             {
@@ -1504,7 +1942,7 @@
               "product": "NRML",
               "quantity": 0.5,
               "symbol": "SOL_INR",
-              "timestamp": "2026-11-03T15:33:23.000000Z",
+              "timestamp": "2026-11-17T06:18:05.000000Z",
               "trade_value": 7500.12
             }
           ],
@@ -1846,7 +2284,7 @@
                 "limit_price": "66000.0",
                 "stop_price": null,
                 "reduce_only": false,
-                "created_at": "2026-11-03T15:13:23.000000Z",
+                "created_at": "2026-11-17T05:58:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null
@@ -1863,7 +2301,7 @@
                 "limit_price": "3400.0",
                 "stop_price": "3410.0",
                 "reduce_only": false,
-                "created_at": "2026-11-03T15:23:23.000000Z",
+                "created_at": "2026-11-17T06:08:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null,
@@ -1888,7 +2326,7 @@
                 "limit_price": null,
                 "stop_price": null,
                 "reduce_only": false,
-                "created_at": "2026-11-03T15:18:23.000000Z",
+                "created_at": "2026-11-17T06:03:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null
@@ -1905,7 +2343,7 @@
                 "limit_price": null,
                 "stop_price": "3300.0",
                 "reduce_only": false,
-                "created_at": "2026-11-03T15:28:23.000000Z",
+                "created_at": "2026-11-17T06:13:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null,
@@ -1923,7 +2361,7 @@
                 "limit_price": "60000.0",
                 "stop_price": null,
                 "reduce_only": false,
-                "created_at": "2026-11-01T15:43:23.000000Z",
+                "created_at": "2026-11-15T06:28:05.000000Z",
                 "user_id": 1,
                 "time_in_force": "gtc",
                 "average_fill_price": null
@@ -1943,7 +2381,7 @@
                 "size": 1,
                 "price": "67012.5",
                 "order_id": 9002,
-                "created_at": "2026-11-03T15:18:23.000000Z"
+                "created_at": "2026-11-17T06:03:05.000000Z"
               },
               {
                 "id": 2,
@@ -1953,7 +2391,7 @@
                 "size": "0.5",
                 "price": "15000.25",
                 "order_id": 9100,
-                "created_at": "2026-11-03T15:33:23.000000Z"
+                "created_at": "2026-11-17T06:18:05.000000Z"
               },
               {
                 "id": 0,
@@ -1963,7 +2401,7 @@
                 "size": 1,
                 "price": "60000.0",
                 "order_id": 8999,
-                "created_at": "2026-11-01T15:43:23.000000Z"
+                "created_at": "2026-11-15T06:28:05.000000Z"
               }
             ]
           }
@@ -1983,7 +2421,7 @@
             "product": "NRML",
             "quantity": 1,
             "symbol": "BTCUSD",
-            "timestamp": "2026-11-03T15:18:23.000000Z",
+            "timestamp": "2026-11-17T06:03:05.000000Z",
             "trigger_price": 0.0
           },
           "status": "success"

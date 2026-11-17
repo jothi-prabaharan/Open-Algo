@@ -36,12 +36,28 @@ public sealed record BrokerSession(
     public string? Key(string name) => Keys.TryGetValue(name, out var v) ? v : null;
 }
 
+/// <summary>
+/// A quantity as a whole number, for a broker that takes none other. The platform refuses a fractional quantity before it reaches such a plugin, so this is a second line:
+/// a quantity that is not whole is an error a trader can read, never a truncated order.
+/// </summary>
+public static class OrderQuantity
+{
+    public static int Whole(decimal quantity) =>
+        quantity == decimal.Truncate(quantity) && Math.Abs(quantity) <= int.MaxValue ? (int)quantity
+        : throw new BrokerException($"This broker takes whole quantities only, and {quantity} is not one. Use a whole quantity.", 400);
+}
+
+/// <summary>A broker that takes a fractional quantity on a crypto exchange (Delta Exchange spot). Every other broker takes whole quantities only.</summary>
+public interface IBrokerFractionalQuantity : IBrokerPlugin
+{
+}
+
 /// <summary>An order in OpenAlgo's vocabulary, as it reaches a plugin.</summary>
 public sealed record BrokerOrder(
     string Symbol,
     string Exchange,
     string Action,
-    int Quantity,
+    decimal Quantity,
     string PriceType,
     string Product,
     decimal Price,
@@ -55,7 +71,7 @@ public sealed record BrokerOrderChange(
     string Symbol,
     string Exchange,
     string Action,
-    int Quantity,
+    decimal Quantity,
     string PriceType,
     string Product,
     decimal Price,

@@ -14,7 +14,7 @@ public sealed record OrderUpdate(
     string Symbol,
     string Exchange,
     string Action,
-    int Quantity,
+    decimal Quantity,
     string PriceType,
     string Product,
     string Status,

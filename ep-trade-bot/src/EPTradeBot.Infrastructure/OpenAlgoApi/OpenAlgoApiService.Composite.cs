@@ -39,7 +39,7 @@ public sealed partial class OpenAlgoApiService
     public async Task<V1Result> BasketOrderAsync(BrokerAccount account, BasketOrderRequest r, CancellationToken ct)
     {
         if (await QueueIfSemiAutoAsync(account, "basketorder", r, ct) is { } queued) return queued;
-        if (r.Orders.FirstOrDefault(o => Fractional(account, o.Quantity) is not null) is { } fractionalItem) return Fractional(account, fractionalItem.Quantity)!;
+        if (r.Orders.FirstOrDefault(o => Fractional(account, o.Exchange, o.Quantity) is not null) is { } fractionalItem) return Fractional(account, fractionalItem.Exchange, fractionalItem.Quantity)!;
         if (guard.Check(account) is { } refused) return Refusal(account, refused);
 
         // BUY orders first, then SELL, as OpenAlgo sends them (margin from the hedge first).
@@ -81,7 +81,7 @@ public sealed partial class OpenAlgoApiService
     public async Task<V1Result> SplitOrderAsync(BrokerAccount account, SplitOrderRequest r, CancellationToken ct)
     {
         if (await QueueIfSemiAutoAsync(account, "splitorder", r, ct) is { } queued) return queued;
-        if (Fractional(account, r.Quantity) is { } fractional) return fractional;
+        if (Fractional(account, r.Exchange, r.Quantity) is { } fractional) return fractional;
         var total = (int)r.Quantity;
         var size = r.SplitSize;
         if (size <= 0) return Mark(account, V1Result.Error(400, "Split size must be greater than 0"));
