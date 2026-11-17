@@ -26,7 +26,7 @@ public interface IMotilalSockets
 /// The real connection (broker/motilal api/motilal_websocket.py). OpenAlgo keeps one such socket for the session and waits ten seconds for it to be signed in; here each read opens its own, which is closed on every path. The certificate is checked, where
 /// OpenAlgo switches the check off.
 /// </summary>
-internal sealed class MotilalSnapshotSocket : IMotilalSockets
+public sealed class MotilalSnapshotSocket : IMotilalSockets
 {
     private static readonly TimeSpan Connect = TimeSpan.FromSeconds(10);
 
