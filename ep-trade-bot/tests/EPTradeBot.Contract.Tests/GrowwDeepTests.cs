@@ -534,6 +534,73 @@ public sealed class GrowwDeepTests
         Assert.Equal(8, result.Count);
     }
 
+    private static GrowwPlugin PluginWithOwnWaits(TimeProvider clock) =>
+        new(new Down(), new EPTradeBot.Infrastructure.Brokers.BrokerSessionFactory(null!, new Options(new EPTradeBot.Core.Configuration.BrokerOptions())), new Master(), clock);
+
+    [Fact]
+    public void Calls_are_spaced_by_the_limit_of_each_kind_Groww_publishes()
+    {
+        var table = (Dictionary<string, double>)typeof(GrowwPlugin).GetField("Interval", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.GetValue(null)!;
+        Assert.Equal(5, table.Count);
+        Assert.Equal(60.0 / 250, table["order"], 9);
+        Assert.Equal(60.0 / 300, table["live"], 9);
+        Assert.Equal(60.0 / 500, table["non_trading"], 9);
+        Assert.Equal(60.0 / 30, table["auth"], 9);
+        Assert.Equal(1.0, table["history"], 9);
+    }
+
+    [Fact]
+    public void A_throttled_call_waits_what_Groww_asked_else_one_two_and_four_seconds()
+    {
+        var at = new DateTimeOffset(2026, 11, 17, 4, 0, 0, TimeSpan.Zero);
+        var plugin = PluginWithOwnWaits(new Clock(at));
+        var method = typeof(GrowwPlugin).GetMethod("RetryDelay", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        TimeSpan Delay(string? header, int attempt)
+        {
+            using var response = new HttpResponseMessage((System.Net.HttpStatusCode)429);
+            if (header is not null) response.Headers.TryAddWithoutValidation("Retry-After", header);
+            return (TimeSpan)method.Invoke(plugin, [response, attempt])!;
+        }
+
+        Assert.Equal(TimeSpan.FromSeconds(1), Delay(null, 0));
+        Assert.Equal(TimeSpan.FromSeconds(2), Delay(null, 1));
+        Assert.Equal(TimeSpan.FromSeconds(4), Delay(null, 2));
+        Assert.Equal(TimeSpan.FromSeconds(7), Delay("7", 0));
+        Assert.Equal(TimeSpan.FromSeconds(0.05), Delay("0", 2));
+        Assert.Equal(TimeSpan.FromSeconds(30), Delay(at.AddSeconds(30).ToString("R"), 0));
+        Assert.Equal(TimeSpan.FromSeconds(0.05), Delay(at.AddSeconds(-30).ToString("R"), 0));
+        Assert.Equal(TimeSpan.FromSeconds(4), Delay("when it suits", 2));
+    }
+
+    private static string HoldingsOf(int count) =>
+        "{\"status\":\"SUCCESS\",\"payload\":{\"holdings\":[" + string.Join(",", Enumerable.Range(1, count).Select(i => $"{{\"trading_symbol\":\"H{i}\",\"quantity\":3,\"average_price\":1}}")) + "]}}";
+
+    [Fact]
+    public async Task Fifty_holdings_are_priced_in_one_request_and_fifty_one_in_two()
+    {
+        var http = new Script(r => r.Path == "/v1/holdings/user" ? (200, HoldingsOf(50)) : (200, """{"status":"SUCCESS","payload":{}}"""));
+        await Plugin(http).GetHoldingsAsync(Session, CancellationToken.None);
+        Assert.Single(http.To("/v1/live-data/ltp"));
+        http = new Script(r => r.Path == "/v1/holdings/user" ? (200, HoldingsOf(51)) : (200, """{"status":"SUCCESS","payload":{}}"""));
+        await Plugin(http).GetHoldingsAsync(Session, CancellationToken.None);
+        Assert.Equal(2, http.To("/v1/live-data/ltp").Count());
+    }
+
+    [Fact]
+    public async Task The_totals_of_the_holdings_are_rounded_to_two_decimals_and_a_holding_with_no_price_counts_at_its_average()
+    {
+        var http = new Script(r => r.Path switch
+        {
+            "/v1/holdings/user" => (200, HoldingsOf(2)),
+            "/v1/live-data/ltp" => (200, """{"status":"SUCCESS","payload":{"NSE_H1":1.2345}}"""),
+            _ => (200, """{"status":"SUCCESS","payload":{}}"""),
+        });
+        var book = await Plugin(http).GetHoldingsAsync(Session, CancellationToken.None);
+        // H1: 3 x 1.2345 = 3.7035; H2 has no price and counts at 3 x 1 = 3.
+        Assert.Equal(6.7, book.Statistics["totalholdingvalue"]!.GetValue<double>());
+        Assert.Equal(6.0, book.Statistics["totalinvvalue"]!.GetValue<double>());
+    }
+
     [Fact]
     public async Task A_symbol_Groww_names_as_invalid_that_is_none_of_the_symbols_asked_is_not_asked_again()
     {
