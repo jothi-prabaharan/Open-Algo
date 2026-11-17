@@ -33,14 +33,16 @@ This file records, per broker, what is ported and how it was checked. It is the 
 | Definedge | yes | yes | yes | yes | yes | n/a | yes | yes |
 | AliceBlue | yes | yes | yes (socket) | yes | n/a (no calculator) | n/a | yes | yes |
 
-The other brokers in the task list are not started (Shoonya, Zebu and Flattrade are partly done). All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
+Every broker in the task list is ported; the sections below say what each does and does not model. All seven XTS brokers share the XTS base class written for Wisdom, each with its own address, order mapping and sign-in differences.
 
 ## Not done, and why Gate 7 is open
 
-- Dhan's 20-level depth connection is not ported (a depth request is the 5-level packet).
-- **Delta Exchange fractional (spot) quantities.** The `/api/v1` request already accepts a fractional quantity on a crypto exchange, but the order intent, the guards, the risk checks, the sandbox and the broker order all carry a whole number, so it needs a decision on how quantity is represented from the request to the broker, not a change in the plugin.
-- **GTT for Delta Exchange** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
-- **Motilal's survivor rerun result** (126 survivors were rerun after new tests), and Groww's mutation triage (122 survivors, none proved harmless), and the feed for Shoonya and Zebu. Each needs the full recipe: orders and books, funds, quotes and depth, history and margin where the broker has them, GTT where it has it, login, feed, with recorded fixtures and mutation checks.
+- **Groww's mutation triage.** 122 survivors of the three Groww sets were not read one by one (see its section). Groww works and is fully tested; this is the proof that every test would catch a change, not a known fault.
+- **Motilal's survivor rerun.** The 126 survivors of its first run were answered with new tests and run again; the result is written in its section once that run ends.
+- **Delta Exchange GTT** has no OpenAlgo counterpart (its Python plugin has no GTT module), so there is nothing to port.
+- **Live-broker runs** of every sign-in, order path and feed. They need real accounts and are the owner's to do.
+
+Closed since the last version of this list: Dhan 20-level depth (its own section below), Delta Exchange fractional quantities (its own section below), Motilal (ported), and the feeds of Shoonya, Zebu and Flattrade (their sections exist).
 
 ## Upstox sign-in
 
@@ -509,6 +511,21 @@ The other brokers in the task list are not started (Shoonya, Zebu and Flattrade 
 - Recorded differences from OpenAlgo, each of which hides a failure there: a refused order, change or cancel is an error that says why (OpenAlgo answers a success with no order id, or counts a refused cancel as done); a book, funds or quote read that failed or could not be read is an error (OpenAlgo shows an empty book or empty funds, or a Python error); an unreadable answer to a write says the write may have been made; the sign-in refuses a missing authenticator code before calling Motilal and a token that still waits for an SMS or email code, in EP Trade bot's words; the feed publishes the subscriptions of the scrips a frame touched as it arrives, where OpenAlgo republishes every subscription from the store twice a second.
 - Not modelled: the SMS and email code sign-in; a generic `INDEX` exchange; `BROKER_VENDOR_CODE` for the vendor header; OpenAlgo's retry of a depth read up to three times (here a read that cannot sign in is one error); a hundred-quote batch is read on its own connection each (checked by a direct test, not by a recording); the feed's own repeat of its list on a reconnect (one copy is the same state); no live-broker run.
 - Mutation sets: `tg7-motilal.json` (196 changes to orders, books, quotes and sign-in: 11 do not compile, 110 killed, 75 survived the first run) and `tg7-motilal-feed.json` (142 changes to the packets, codec, snapshot reads and socket: 11 do not compile, 80 killed, 51 survived the first run). The 126 survivors were read, the real gaps (messages and statuses of the write refusals, the session split, each funds row number, the dealer login, the packet store boundaries, the waits, the socket) got `MotilalDeepTests`, and they were run again as `tg7-motilal-2.json`; the result of that rerun is not yet written here.
+
+## Dhan 20-level depth
+
+- `DhanDepth20FeedCodec` (Core), held to `broker/dhan/streaming` by 24 recorded scenarios (`feed_dhan20.fixtures.json`, from the real adapter and its real 20-level client with a fake socket) and `DhanDepth20FeedUnitTests` (3). A subscriber asks for it by adding `:20` to the symbol, in depth mode, on NSE and NFO. Requests are code 23 (code 24 to stop), fifty instruments to a request; every message has a 12-byte header and the bid side (code 41) and ask side (code 51) each carry twenty levels of 16 bytes; a tick is published to the topic of the symbol with its `:20` once both sides of a security have arrived.
+- A broker with a second socket implements `IBrokerFeedDepth20`; the feed host keeps one connection per account and kind (`FeedHost`, an integration test with two fake sockets: SBIN:20 goes to the 20-level socket and only that one is opened, a tick of both sides reaches the client under `SBIN:20`, a BSE symbol with `:20` is served by the ordinary socket with the topic keeping the suffix, and letting go stops the instrument on the socket that holds it). The second socket takes 50 instruments.
+- Recorded differences from OpenAlgo: its adapter cannot stop a 20-level subscription (it asks for the token of the symbol with its `:20`, which does not exist), so the stop request here is the one its client would send, code 24, which OpenAlgo's own comments mark as not confirmed on the wire; a message with a length shorter than its header ends the frame (OpenAlgo would loop on it).
+- Not modelled: the fall back to the 5-level book after thirty seconds without data (a timer thread in OpenAlgo; the codec has no clock of its own); a live run.
+- Mutation set `tg7-dhan20.json`: 40 changes to the codec, 3 do not compile, 27 killed and 10 survived; three were real gaps (the fifty-per-request limit, the stop request and its depth-only rule), now covered by `DhanDepth20FeedUnitTests` and killed on a rerun (`tg7-dhan20-2.json`); the other seven are changes that cannot show (reading a few more bytes of a field than it has, an end-of-frame comparison that breaks one step later). The feed host's change is held by its integration test and has no mutation set.
+
+## Delta Exchange fractional (spot) quantities
+
+- A quantity is a decimal from the `/api/v1` request through the order intent, the guards, the order events and the broker order. A fraction is sent only to a broker that says it takes one (`IBrokerFractionalQuantity`, which Delta Exchange alone does), on a crypto exchange, on a live account. Delta takes any decimal for a spot instrument and a whole number of contracts for everything else, as OpenAlgo does: a fraction of a contract is refused with OpenAlgo's sentence.
+- The sandbox keeps whole quantities, because OpenAlgo's sandbox columns are integers; a fraction there is refused plainly, as is a fraction sent to any other broker, and a smart order (which works in positions) takes whole quantities only. A plugin that needs a whole number takes it through `OrderQuantity.Whole`, which raises a readable error instead of truncating.
+- Held to `broker/deltaexchange` by six new recorded cases (spot fractional, spot fractional limit, spot whole, spot whole written with a decimal point, a contract written with a decimal point, and a modify of a spot order; 130 Delta cases in all), two cases that OpenAlgo answers as an internal error (500) and EP Trade bot refuses with the same sentence and a 400, and two integration tests (the sandbox refusal, and a fractional order on a live broker that takes whole quantities only reaching nothing at the broker).
+- Mutation set `tg7-delta-fraction.json`: 11 changes to the size rule, the refusal rule and the whole-number check; the result is written below when the run ends.
 
 ## Decisions taken with the owner
 
