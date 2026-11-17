@@ -1,6 +1,6 @@
 # TG7: mutants that no input can tell apart
 
-Every mutant listed here survived a full run of the Motilal or Groww tests after the tests were extended for it. Each has an argument for why no input changes the result, taken from the code named, not from the run. A mutant that a test could kill has one (see `tg7.md`); these have none that is not a restatement of the original.
+The snapshot delay between batches and the socket's connect wait, read buffer and close were in this list until the delay was routed through the plugin's clock and the constants were exposed; they are now killed by tests (`tg7-motilal-7.json`). Every mutant listed here survived a full run of the Motilal or Groww tests after the tests were extended for it. Each has an argument for why no input changes the result, taken from the code named, not from the run. A mutant that a test could kill has one (see `tg7.md`); these have none that is not a restatement of the original.
 
 ## Groww feed codec (`GrowwFeedCodec.cs`, set `tg7-groww-feed-3.json`)
 
@@ -39,5 +39,7 @@ Every mutant listed here survived a full run of the Motilal or Groww tests after
 | Codec key `mode == 3` as `!=`, or `3` as `4` | The key names an entry of the codec's own dictionary; both are one-to-one renames. |
 | Codec quote `Count > 0` as `>= 0` (modes 1, 2 and the snapshot read) | `Quote(key)` creates a dictionary and the caller assigns into it in the same call, so a stored quote is never empty. |
 | Codec depth `Bids.Count == 0 && Asks.Count == 0` and its two changes | `Bids` and `Asks` are arrays of five, so a count of 0 never happens; every variant is false. |
-| Snapshot delay between batches (`<` as `<=`, 100 ms as 101 ms) | A pause of 1 to 100 ms between batches of a call that already waits seconds; there is no clock in the test to see it. |
-| Socket connect wait 10 s as 11 s, read buffer 16 KB as 17 KB, close test inverted | A constant of the connection (the first two) and the close frame sent or not at the end of the connection, which the server cannot observe. |
+
+## Run evidence for the premises
+
+`EquivalentMutantTests` runs the facts these arguments depend on, over the whole domain where it is small: the refusal status edge over -10 to 1000, the varint shifts over 0 to 140 in steps of seven, fixed-width reads over 500 random buffers, every buy and sell up to 60 for the short-position branch, the protected price with a tick of 0 against none, five bids and asks in a depth, a stored quote never empty for the packet kinds that make one, a wire byte of 128 or more never reaching a registered instrument, and a level packet filling its bid and ask together. A premise that failed would fail those tests; the remaining arguments (an unread field, a one-to-one rename of an internal key, a guard written before the line) are read from the code and are the part that is not run.

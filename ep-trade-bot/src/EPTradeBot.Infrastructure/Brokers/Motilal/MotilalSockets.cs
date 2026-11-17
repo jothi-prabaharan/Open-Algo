@@ -28,7 +28,11 @@ public interface IMotilalSockets
 /// </summary>
 public sealed class MotilalSnapshotSocket : IMotilalSockets
 {
-    private static readonly TimeSpan Connect = TimeSpan.FromSeconds(10);
+    /// <summary>How long a new connection may take to be signed in: OpenAlgo's ten seconds.</summary>
+    public static readonly TimeSpan Connect = TimeSpan.FromSeconds(10);
+
+    /// <summary>The size of one read from the socket; a frame longer than this is read in parts and joined.</summary>
+    public const int ReadBufferBytes = 16 * 1024;
 
     public async Task<bool> RunAsync(Uri address, byte[] login, IReadOnlyList<MotilalMessage> subscribes, IReadOnlyList<MotilalMessage> unsubscribes, Func<byte[], bool> onFrame, TimeSpan wait, CancellationToken cancellationToken)
     {
@@ -97,7 +101,7 @@ public sealed class MotilalSnapshotSocket : IMotilalSockets
     /// <summary>The next binary frame, or null when the server closed. A text frame (an error notice) is passed over.</summary>
     private static async Task<byte[]?> ReceiveAsync(ClientWebSocket socket, CancellationToken cancellationToken)
     {
-        var buffer = new byte[16 * 1024];
+        var buffer = new byte[ReadBufferBytes];
         while (true)
         {
             using var message = new MemoryStream();

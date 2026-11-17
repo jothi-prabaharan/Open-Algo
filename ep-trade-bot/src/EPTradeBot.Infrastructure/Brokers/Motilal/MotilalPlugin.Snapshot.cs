@@ -95,7 +95,7 @@ public sealed partial class MotilalPlugin
         for (var at = 0; at < instruments.Count; at += BatchSize)
         {
             foreach (var item in await BatchAsync(session, instruments.Skip(at).Take(BatchSize).ToList(), cancellationToken)) all.Add(item);
-            if (at + BatchSize < instruments.Count) await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
+            if (at + BatchSize < instruments.Count) await Task.Delay(TimeSpan.FromMilliseconds(100), clock, cancellationToken);
         }
 
         return all;

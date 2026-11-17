@@ -686,6 +686,7 @@ public sealed class MotilalDeepTests
         Assert.Equal("sub:" + Convert.ToHexString(MotilalBook.RegisterPacket("NSE", "CASH", 1, true)) + ":Binary", received[1]);
         Assert.Equal("text:hello:Text", received[2]);
         Assert.Equal("unsub:" + Convert.ToHexString(MotilalBook.RegisterPacket("NSE", "CASH", 1, false)), received[3]);
+        Assert.Equal("closed:Close", received[4]);
     }
 
     [Fact]
@@ -912,5 +913,36 @@ public sealed class MotilalDeepTests
         Assert.False(book.HasSnapshot("NSE", 5, false, true));
         for (var level = 0; level < 5; level++) book.Feed(Packet('N', 5, (char)('B' + level), Level(5f, 6f)));
         Assert.True(book.HasSnapshot("NSE", 5, false, true));
+    }
+
+    private sealed class PauseClock : TimeProvider
+    {
+        public List<TimeSpan> Pauses { get; } = [];
+
+        public override ITimer CreateTimer(TimerCallback callback, object? state, TimeSpan dueTime, TimeSpan period)
+        {
+            if (dueTime != Timeout.InfiniteTimeSpan) Pauses.Add(dueTime);
+            return base.CreateTimer(callback, state, dueTime == Timeout.InfiniteTimeSpan ? dueTime : TimeSpan.Zero, period);
+        }
+    }
+
+    [Theory]
+    [InlineData(100, 0)]
+    [InlineData(101, 1)]
+    [InlineData(200, 1)]
+    [InlineData(201, 2)]
+    public async Task Batches_of_a_hundred_quotes_are_a_tenth_of_a_second_apart_and_never_after_the_last(int count, int pauses)
+    {
+        var clock = new PauseClock();
+        var plugin = Plugin(new Script(_ => (200, "{}")), (s, e) => Row(s, "5", e), new Capture(), clock);
+        await plugin.GetMultiQuotesAsync(Session(), Enumerable.Range(1, count).Select(i => Row("S" + i, i.ToString())).ToList(), CancellationToken.None);
+        Assert.Equal(Enumerable.Repeat(TimeSpan.FromMilliseconds(100), pauses), clock.Pauses);
+    }
+
+    [Fact]
+    public void The_connection_waits_ten_seconds_to_be_signed_in_and_reads_in_parts_of_sixteen_kilobytes()
+    {
+        Assert.Equal(TimeSpan.FromSeconds(10), MotilalSnapshotSocket.Connect);
+        Assert.Equal(16384, MotilalSnapshotSocket.ReadBufferBytes);
     }
 }
