@@ -1,0 +1,90 @@
+[
+ {
+  "name": "M1 DeltaExchangePlugin.cs:45",
+  "file": "src/EPTradeBot.Infrastructure/Brokers/Delta/DeltaExchangePlugin.cs",
+  "old": "        : quantity != decimal.Truncate(quantity) ? (null, $\"Fractional quantity ({quantity.ToString(CultureInfo.InvariantCulture)}) not allowed for derivative contracts. Use whole numbers for {symbol}.\")",
+  "new": "        : quantity == decimal.Truncate(quantity) ? (null, $\"Fractional quantity ({quantity.ToString(CultureInfo.InvariantCulture)}) not allowed for derivative contracts. Use whole numbers for {symbol}.\")",
+  "filter": "FullyQualifiedName~Delta",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M2 OpenAlgoApiService.cs:57",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "    private V1Result? Fractional(BrokerAccount account, string? exchange, decimal quantity, bool whole = false)",
+  "new": "    private V1Result? Fractional(BrokerAccount account, string? exchange, decimal quantity, bool whole = true)",
+  "filter": "FullyQualifiedName~ractional",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M3 OpenAlgoApiService.cs:59",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "        if (quantity == decimal.Truncate(quantity)) return null;",
+  "new": "        if (quantity != decimal.Truncate(quantity)) return null;",
+  "filter": "FullyQualifiedName~ractional",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M4 OpenAlgoApiService.cs:60",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "        if (!whole && account.AccountType == AccountType.LIVE && exchange is not null && ApiPatterns.CryptoExchanges.Contains(exchange) && registry.Find(account.Broker) is IBrokerFractionalQuantity) return null;",
+  "new": "        if (!whole && account.AccountType != AccountType.LIVE && exchange is not null && ApiPatterns.CryptoExchanges.Contains(exchange) && registry.Find(account.Broker) is IBrokerFractionalQuantity) return null;",
+  "filter": "FullyQualifiedName~ractional",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M5 OpenAlgoApiService.cs:60",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "        if (!whole && account.AccountType == AccountType.LIVE && exchange is not null && ApiPatterns.CryptoExchanges.Contains(exchange) && registry.Find(account.Broker) is IBrokerFractionalQuantity) return null;",
+  "new": "        if (!whole || account.AccountType == AccountType.LIVE && exchange is not null && ApiPatterns.CryptoExchanges.Contains(exchange) && registry.Find(account.Broker) is IBrokerFractionalQuantity) return null;",
+  "filter": "FullyQualifiedName~ractional",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M6 OpenAlgoApiService.cs:62",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "            : account.AccountType != AccountType.LIVE ? \"The sandbox takes whole quantities only.\"",
+  "new": "            : account.AccountType == AccountType.LIVE ? \"The sandbox takes whole quantities only.\"",
+  "filter": "FullyQualifiedName~ractional",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M7 OpenAlgoApiService.cs:64",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "        return Mark(account, V1Result.Error(400, $\"Fractional quantities ({quantity}) are not accepted here. {why} Use a whole quantity.\"));",
+  "new": "        return Mark(account, V1Result.Error(401, $\"Fractional quantities ({quantity}) are not accepted here. {why} Use a whole quantity.\"));",
+  "filter": "FullyQualifiedName~ractional",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M8 BrokerContracts.cs:46",
+  "file": "src/EPTradeBot.Core/Brokers/BrokerContracts.cs",
+  "old": "        quantity == decimal.Truncate(quantity) && Math.Abs(quantity) <= int.MaxValue ? (int)quantity",
+  "new": "        quantity == decimal.Truncate(quantity) && Math.Abs(quantity) < int.MaxValue ? (int)quantity",
+  "filter": "FullyQualifiedName~Delta",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M9 BrokerContracts.cs:46",
+  "file": "src/EPTradeBot.Core/Brokers/BrokerContracts.cs",
+  "old": "        quantity == decimal.Truncate(quantity) && Math.Abs(quantity) <= int.MaxValue ? (int)quantity",
+  "new": "        quantity != decimal.Truncate(quantity) && Math.Abs(quantity) <= int.MaxValue ? (int)quantity",
+  "filter": "FullyQualifiedName~Delta",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M10 BrokerContracts.cs:46",
+  "file": "src/EPTradeBot.Core/Brokers/BrokerContracts.cs",
+  "old": "        quantity == decimal.Truncate(quantity) && Math.Abs(quantity) <= int.MaxValue ? (int)quantity",
+  "new": "        quantity == decimal.Truncate(quantity) || Math.Abs(quantity) <= int.MaxValue ? (int)quantity",
+  "filter": "FullyQualifiedName~Delta",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M11 BrokerContracts.cs:47",
+  "file": "src/EPTradeBot.Core/Brokers/BrokerContracts.cs",
+  "old": "        : throw new BrokerException($\"This broker takes whole quantities only, and {quantity} is not one. Use a whole quantity.\", 400);",
+  "new": "        : throw new BrokerException($\"This broker takes whole quantities only, and {quantity} is not one. Use a whole quantity.\", 401);",
+  "filter": "FullyQualifiedName~Delta",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]

@@ -1,0 +1,50 @@
+[
+ {
+  "name": "M4 OpenAlgoApiService.cs:60",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "        if (!whole && account.AccountType == AccountType.LIVE && exchange is not null && ApiPatterns.CryptoExchanges.Contains(exchange) && registry.Find(account.Broker) is IBrokerFractionalQuantity) return null;",
+  "new": "        if (!whole && account.AccountType != AccountType.LIVE && exchange is not null && ApiPatterns.CryptoExchanges.Contains(exchange) && registry.Find(account.Broker) is IBrokerFractionalQuantity) return null;",
+  "filter": "FullyQualifiedName~fractional",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M6 OpenAlgoApiService.cs:62",
+  "file": "src/EPTradeBot.Infrastructure/OpenAlgoApi/OpenAlgoApiService.cs",
+  "old": "            : account.AccountType != AccountType.LIVE ? \"The sandbox takes whole quantities only.\"",
+  "new": "            : account.AccountType == AccountType.LIVE ? \"The sandbox takes whole quantities only.\"",
+  "filter": "FullyQualifiedName~fractional",
+  "project": "EPTradeBot.IntegrationTests"
+ },
+ {
+  "name": "M8 BrokerContracts.cs:46",
+  "file": "src/EPTradeBot.Core/Brokers/BrokerContracts.cs",
+  "old": "        quantity == decimal.Truncate(quantity) && Math.Abs(quantity) <= int.MaxValue ? (int)quantity",
+  "new": "        quantity == decimal.Truncate(quantity) && Math.Abs(quantity) < int.MaxValue ? (int)quantity",
+  "filter": "FullyQualifiedName~OrderQuantity",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M9 BrokerContracts.cs:46",
+  "file": "src/EPTradeBot.Core/Brokers/BrokerContracts.cs",
+  "old": "        quantity == decimal.Truncate(quantity) && Math.Abs(quantity) <= int.MaxValue ? (int)quantity",
+  "new": "        quantity != decimal.Truncate(quantity) && Math.Abs(quantity) <= int.MaxValue ? (int)quantity",
+  "filter": "FullyQualifiedName~OrderQuantity",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M10 BrokerContracts.cs:46",
+  "file": "src/EPTradeBot.Core/Brokers/BrokerContracts.cs",
+  "old": "        quantity == decimal.Truncate(quantity) && Math.Abs(quantity) <= int.MaxValue ? (int)quantity",
+  "new": "        quantity == decimal.Truncate(quantity) || Math.Abs(quantity) <= int.MaxValue ? (int)quantity",
+  "filter": "FullyQualifiedName~OrderQuantity",
+  "project": "EPTradeBot.Contract.Tests"
+ },
+ {
+  "name": "M11 BrokerContracts.cs:47",
+  "file": "src/EPTradeBot.Core/Brokers/BrokerContracts.cs",
+  "old": "        : throw new BrokerException($\"This broker takes whole quantities only, and {quantity} is not one. Use a whole quantity.\", 400);",
+  "new": "        : throw new BrokerException($\"This broker takes whole quantities only, and {quantity} is not one. Use a whole quantity.\", 401);",
+  "filter": "FullyQualifiedName~OrderQuantity",
+  "project": "EPTradeBot.Contract.Tests"
+ }
+]
