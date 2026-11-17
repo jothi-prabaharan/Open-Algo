@@ -209,19 +209,19 @@ public sealed class FeedHostTests
         var table = (System.Collections.IDictionary)typeof(FeedHost).GetField("connections", flags)!.GetValue(feed)!;
 
         Assert.True((await feed.SubscribeAsync(s.Account, "zerodha", "NSE", "SBIN", StreamMode.Ltp, default)).Ok);
-        var old = table[s.Account]!;
+        var old = table[(s.Account, false)]!;
         await feed.UnsubscribeAsync(s.Account, "NSE", "SBIN", StreamMode.Ltp, default); // the first client lets go: closed and removed
         Assert.Equal(0, feed.Connections);
         Assert.True((await feed.SubscribeAsync(s.Account, "zerodha", "NSE", "INFY", StreamMode.Ltp, default)).Ok);
-        var newer = table[s.Account]!;
+        var newer = table[(s.Account, false)]!;
         Assert.NotSame(old, newer);
 
         // The second client's release arrives now, on the connection it looked up before.
-        var letGo = (Task)typeof(FeedHost).GetMethod("LetGoAsync", flags)!.Invoke(feed, [s.Account, old, "NSE", "SBIN", StreamMode.Ltp])!;
+        var letGo = (Task)typeof(FeedHost).GetMethod("LetGoAsync", flags)!.Invoke(feed, [s.Account, false, old, "NSE", "SBIN", StreamMode.Ltp])!;
         await letGo;
 
         Assert.Equal(1, feed.Connections);
-        Assert.Same(newer, table[s.Account]);
+        Assert.Same(newer, table[(s.Account, false)]);
 
         // And asking a closed connection to stop again is harmless, however many times and from wherever.
         var stop = old.GetType().GetMethod("StopAsync")!;
@@ -452,5 +452,86 @@ public sealed class FeedHostTests
         // Letting go of the instrument is a PUT, and the connection goes with its last instrument.
         await proxy.SendAsync(new { action = "unsubscribe", symbols = new[] { new { symbol = "RELIANCE", exchange = "NSE" } }, mode = "Quote" });
         Assert.True(await FakeFeedServer.UntilAsync(() => http.Sent.Any(r => r.Method == "PUT")));
+    }
+
+    private static byte[] DhanDepth(byte code, uint security, byte segment, double basePrice)
+    {
+        var payload = new byte[320];
+        for (var i = 0; i < 20; i++)
+        {
+            BitConverter.GetBytes(basePrice + i).CopyTo(payload, i * 16);
+            BinaryPrimitives.WriteUInt32LittleEndian(payload.AsSpan(i * 16 + 8), (uint)(100 * (i + 1)));
+            BinaryPrimitives.WriteUInt32LittleEndian(payload.AsSpan(i * 16 + 12), (uint)(i + 1));
+        }
+
+        var frame = new byte[12 + payload.Length];
+        BinaryPrimitives.WriteUInt16LittleEndian(frame, (ushort)frame.Length);
+        frame[2] = code;
+        frame[3] = segment;
+        BinaryPrimitives.WriteUInt32LittleEndian(frame.AsSpan(4), security);
+        payload.CopyTo(frame, 12);
+        return frame;
+    }
+
+    [PostgresFact]
+    public async Task Dhan_20_level_depth_has_a_socket_of_its_own_and_only_for_the_exchanges_that_have_it()
+    {
+        await using var five = new FakeFeedServer();
+        await using var twenty = new FakeFeedServer();
+        await using var host = new TestHost("Production", b =>
+        {
+            b.UseSetting("Brokers:Enabled:0", "dhan");
+            b.UseSetting("Brokers:Keys:dhan:ApiKey", "CL100:::app-key");
+            b.UseSetting("Brokers:Keys:dhan:ApiSecret", "app-secret");
+            b.UseSetting("Brokers:FeedUrls:dhan", five.Address);
+            b.UseSetting("Brokers:FeedUrls:dhan20", twenty.Address);
+            b.UseSetting("Streaming:FeedReconnectBaseMs", "20");
+        });
+        var account = await host.CreateAccountAsync(AccountType.LIVE, "dhan", broker: "dhan", clientId: "CL100");
+        (await host.Admin.PutAsJsonAsync($"/api/v1/accounts/{account}/broker-session", new { auth_token = "dhan-token" })).EnsureSuccessStatusCode();
+        var key = (await host.Admin.PostAsJsonAsync($"/api/v1/accounts/{account}/apikeys", new { label = "feed" })).Content.ReadFromJsonAsync<JsonObject>().Result!["apikey"]!.GetValue<string>();
+        await using (var db = host.NewDb())
+        {
+            db.Set<SymToken>().Add(new SymToken { Broker = "dhan", Symbol = "SBIN", Brsymbol = "SBIN", Exchange = "NSE", Brexchange = "NSE", Token = "3045", Lotsize = 1 });
+            db.Set<SymToken>().Add(new SymToken { Broker = "dhan", Symbol = "TATAMOTORS", Brsymbol = "TATAMOTORS", Exchange = "BSE", Brexchange = "BSE", Token = "500570", Lotsize = 1 });
+            await db.SaveChangesAsync();
+        }
+
+        var s = new Setup(host, twenty, account, key);
+        await using var proxy = await ConnectAsync(s);
+
+        // SBIN:20 goes to the 20-level socket, which is asked with code 23; the ordinary socket is not even opened.
+        await proxy.SendAsync(new { action = "subscribe", symbols = new[] { new { symbol = "SBIN:20", exchange = "NSE" } }, mode = "Depth" });
+        Assert.Equal("success", (await proxy.ReceiveTypeAsync("subscribe", TimeSpan.FromSeconds(5)))!["subscriptions"]![0]!["status"]!.GetValue<string>());
+        Assert.True(await FakeFeedServer.UntilAsync(() => twenty.Received.Count >= 1));
+        Assert.Equal(23, JsonNode.Parse(twenty.Received[0])!["RequestCode"]!.GetValue<int>());
+        Assert.Contains("token=dhan-token", twenty.Requests.Single().Query);
+        Assert.Contains("clientId=CL100", twenty.Requests.Single().Query);
+        Assert.Equal(0, five.Connections);
+
+        // Both sides of the book make one tick, for the symbol as it was asked for.
+        var until = DateTime.UtcNow.AddSeconds(15);
+        JsonObject? tick = null;
+        while (DateTime.UtcNow < until && tick is null)
+        {
+            await twenty.SendBinaryAsync(DhanDepth(41, 3045, 1, 805.0));
+            await twenty.SendBinaryAsync(DhanDepth(51, 3045, 1, 806.0));
+            var m = await proxy.ReceiveTypeAsync("market_data", TimeSpan.FromMilliseconds(300));
+            if (m?["symbol"]?.GetValue<string>() == "SBIN:20") tick = m;
+        }
+
+        Assert.NotNull(tick);
+        Assert.Equal(20, tick!["data"]!["depth"]!["buy"]!.AsArray().Count);
+        Assert.Equal(20, tick["data"]!["depth_level"]!.GetValue<int>());
+
+        // BSE has five levels only: the ordinary socket serves it, as if the suffix were not there, and the topic keeps it.
+        await proxy.SendAsync(new { action = "subscribe", symbols = new[] { new { symbol = "TATAMOTORS:20", exchange = "BSE" } }, mode = "Depth" });
+        Assert.Equal("success", (await proxy.ReceiveTypeAsync("subscribe", TimeSpan.FromSeconds(5)))!["subscriptions"]![0]!["status"]!.GetValue<string>());
+        Assert.True(await FakeFeedServer.UntilAsync(() => five.Received.Count >= 1));
+        Assert.Equal(21, JsonNode.Parse(five.Received[0])!["RequestCode"]!.GetValue<int>());
+
+        // Letting go stops it on the socket that holds it.
+        await proxy.SendAsync(new { action = "unsubscribe", symbols = new[] { new { symbol = "SBIN:20", exchange = "NSE" } }, mode = "Depth" });
+        Assert.True(await FakeFeedServer.UntilAsync(() => twenty.Received.Any(r => r.Contains("\"RequestCode\":24", StringComparison.Ordinal))));
     }
 }

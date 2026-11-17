@@ -42,7 +42,7 @@ public sealed class FeedHost(
     private readonly ILogger<FeedHost> logger = logger;
 
     private readonly object gate = new();
-    private readonly Dictionary<Guid, IFeedConnection> connections = [];
+    private readonly Dictionary<(Guid Account, bool Deep), IFeedConnection> connections = [];
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -85,19 +85,28 @@ public sealed class FeedHost(
         if (plugin is null && mqttPlugin is null)
             return FeedAnswer.Refused($"Live prices from {broker} are not available yet. The subscription is kept, but no ticks will arrive.");
         IBrokerPlugin named = (IBrokerPlugin?)plugin ?? mqttPlugin!;
-        if (await symbols.FindAsync(named.Name, symbol, exchange, cancellationToken) is not { } instrument)
+        // A subscriber asks for the deeper book by adding :20 to the symbol; the instrument is found without it and the topic keeps it.
+        var deep = false;
+        var lookup = symbol;
+        if (plugin is IBrokerFeedDepth20 depth20 && mode == StreamMode.Depth && symbol.EndsWith(IBrokerFeedDepth20.Suffix, StringComparison.Ordinal))
+        {
+            lookup = symbol[..^IBrokerFeedDepth20.Suffix.Length];
+            deep = depth20.SupportsDepth20(exchange);
+        }
+
+        if (await symbols.FindAsync(named.Name, lookup, exchange, cancellationToken) is not { } instrument)
             return FeedAnswer.Refused($"{symbol} on {exchange} is not in the {named.DisplayName} master contract. Check the symbol, or download the master contract again.");
 
         // A feed that could never start is refused here, where the client can be told, not later in a log.
         bool known;
-        lock (gate) known = connections.ContainsKey(accountId);
+        lock (gate) known = connections.ContainsKey((accountId, deep));
         if (!known)
         {
             await using var db = await contexts.CreateDbContextAsync(cancellationToken);
             var account = await db.BrokerAccounts.AsNoTracking().SingleOrDefaultAsync(a => a.Id == accountId, cancellationToken);
             var session = account is null ? null : sessions.Create(account);
             if (session is null) return FeedAnswer.Refused($"{named.DisplayName} is not signed in, so there are no live prices. Sign in to {named.DisplayName}, then subscribe again.");
-            var usable = plugin is not null ? plugin.FeedEndpoint(session, null) is not null : mqttPlugin!.MqttEndpoint(session) is not null;
+            var usable = deep ? ((IBrokerFeedDepth20)plugin!).Depth20Endpoint(session, null) is not null : plugin is not null ? plugin.FeedEndpoint(session, null) is not null : mqttPlugin!.MqttEndpoint(session) is not null;
             if (!usable)
                 return FeedAnswer.Refused($"{named.DisplayName} did not give this account a live price feed. Sign in to {named.DisplayName} again, then subscribe again.");
         }
@@ -108,17 +117,18 @@ public sealed class FeedHost(
             IFeedConnection connection;
             lock (gate)
             {
-                if (!connections.TryGetValue(accountId, out connection!))
+                if (!connections.TryGetValue((accountId, deep), out connection!))
                 {
-                    connection = plugin is not null ? new Connection(this, accountId, plugin) : new MqttConnection(this, accountId, mqttPlugin!);
-                    connections[accountId] = connection;
+                    connection = deep ? new Connection(this, accountId, new Depth20View((IBrokerFeedDepth20)plugin!), ((IBrokerFeedDepth20)plugin!).Depth20MaxInstruments)
+                        : plugin is not null ? new Connection(this, accountId, plugin) : new MqttConnection(this, accountId, mqttPlugin!);
+                    connections[(accountId, deep)] = connection;
                 }
             }
 
             var refusal = connection.Hold(new FeedRequest(exchange, symbol, instrument.Token, instrument.BrokerExchange, mode, instrument.BrokerSymbol, instrument.Name));
             if (refusal is not null) return FeedAnswer.Refused(refusal);
             bool current;
-            lock (gate) current = connections.TryGetValue(accountId, out var now) && ReferenceEquals(now, connection);
+            lock (gate) current = connections.TryGetValue((accountId, deep), out var now) && ReferenceEquals(now, connection);
             if (!current) continue;
             connection.Start();
             return FeedAnswer.Taken;
@@ -129,20 +139,26 @@ public sealed class FeedHost(
 
     public async Task UnsubscribeAsync(Guid accountId, string exchange, string symbol, StreamMode mode, CancellationToken cancellationToken)
     {
-        IFeedConnection? connection;
-        lock (gate) connections.TryGetValue(accountId, out connection);
-        if (connection is null) return;
-        await LetGoAsync(accountId, connection, exchange, symbol, mode);
+        // A symbol with :20 is held on the second socket when the broker gave it one, otherwise on the ordinary one.
+        var suffixed = mode == StreamMode.Depth && symbol.EndsWith(IBrokerFeedDepth20.Suffix, StringComparison.Ordinal);
+        foreach (var deep in suffixed ? new[] { true, false } : [false])
+        {
+            IFeedConnection? connection;
+            lock (gate) connections.TryGetValue((accountId, deep), out connection);
+            if (connection is null || !connection.Holds(exchange, symbol, mode)) continue;
+            await LetGoAsync(accountId, deep, connection, exchange, symbol, mode);
+            return;
+        }
     }
 
     /// <summary>Gives up one hold on the connection the caller looked up, and closes that connection if it is now empty.</summary>
-    private async Task LetGoAsync(Guid accountId, IFeedConnection connection, string exchange, string symbol, StreamMode mode)
+    private async Task LetGoAsync(Guid accountId, bool deep, IFeedConnection connection, string exchange, string symbol, StreamMode mode)
     {
         if (connection.Release(exchange, symbol, mode) != 0) return;
         // Removed only if it is still this connection: two clients letting go together both reach zero, and the second must not take out a newer
         // connection that a subscription opened in between (it would be left running with nothing able to stop it).
         bool removed;
-        lock (gate) removed = ((ICollection<KeyValuePair<Guid, IFeedConnection>>)connections).Remove(new KeyValuePair<Guid, IFeedConnection>(accountId, connection));
+        lock (gate) removed = ((ICollection<KeyValuePair<(Guid Account, bool Deep), IFeedConnection>>)connections).Remove(new KeyValuePair<(Guid Account, bool Deep), IFeedConnection>((accountId, deep), connection));
         if (removed) await connection.StopAsync();
     }
 
@@ -154,12 +170,34 @@ public sealed class FeedHost(
 
         int Release(string exchange, string symbol, StreamMode mode);
 
+        bool Holds(string exchange, string symbol, StreamMode mode);
+
         void Start();
 
         Task StopAsync();
     }
 
-    private sealed class Connection(FeedHost host, Guid accountId, IBrokerFeed plugin) : IFeedConnection
+    /// <summary>A broker's second socket seen as a feed of its own, so the one connection class serves both.</summary>
+    private sealed class Depth20View(IBrokerFeedDepth20 owner) : IBrokerFeed
+    {
+        public string Name => owner.Name + "20";
+
+        public string DisplayName => owner.DisplayName;
+
+        public BrokerCapability Capabilities => owner.Capabilities;
+
+        public IReadOnlyList<string> RequiredKeys => owner.RequiredKeys;
+
+        public IFeedCodec CreateFeedCodec() => owner.CreateDepth20Codec();
+
+        public FeedEndpoint? FeedEndpoint(BrokerSession session, string? overrideUrl) => owner.Depth20Endpoint(session, overrideUrl);
+
+        public string? FeedKeepAliveText => owner.FeedKeepAliveText;
+
+        public TimeSpan FeedKeepAliveEvery => owner.FeedKeepAliveEvery;
+    }
+
+    private sealed class Connection(FeedHost host, Guid accountId, IBrokerFeed plugin, int? maxInstruments = null) : IFeedConnection
     {
         private readonly IFeedCodec codec = plugin.CreateFeedCodec();
         private readonly object sync = new();
@@ -188,8 +226,9 @@ public sealed class FeedHost(
                     return null;
                 }
 
-                if (held.Count >= host.options.Value.FeedMaxInstruments)
-                    return $"{plugin.DisplayName} allows {host.options.Value.FeedMaxInstruments} instruments on one live feed. Unsubscribe some before adding more.";
+                var limit = maxInstruments ?? host.options.Value.FeedMaxInstruments;
+                if (held.Count >= limit)
+                    return $"{plugin.DisplayName} allows {limit} instruments on one live feed. Unsubscribe some before adding more.";
                 held[key] = (request, 1);
                 messages = codec.Subscribe([request], Now);
                 if (connected) foreach (var m in messages) outbox.Writer.TryWrite(m);
@@ -197,6 +236,11 @@ public sealed class FeedHost(
 
             PumpHttp();
             return null;
+        }
+
+        public bool Holds(string exchange, string symbol, StreamMode mode)
+        {
+            lock (sync) return held.ContainsKey((exchange, symbol, mode));
         }
 
         /// <summary>Gives up one hold. The number of instruments still held on the connection.</summary>
@@ -566,6 +610,11 @@ public sealed class FeedHost(
 
             if (IsConnected) _ = SendAsync(commands);
             return null;
+        }
+
+        public bool Holds(string exchange, string symbol, StreamMode mode)
+        {
+            lock (sync) return held.ContainsKey((exchange, symbol, mode));
         }
 
         public int Release(string exchange, string symbol, StreamMode mode)

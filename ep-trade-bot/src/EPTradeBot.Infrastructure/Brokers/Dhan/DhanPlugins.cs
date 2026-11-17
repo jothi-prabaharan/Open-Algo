@@ -16,7 +16,7 @@ namespace EPTradeBot.Infrastructure.Brokers.Dhan;
 /// <summary>Dhan v2 (broker/dhan). Request and response mapping held to tools/contract-fixtures/dhan.fixtures.json.</summary>
 [BrokerPlugin]
 public sealed class DhanPlugin(IHttpClientFactory http, BrokerSessionFactory sessions, ISymbolMaster symbols, IMarketSessions calendar, TimeProvider clock, ILogger<DhanPlugin> logger)
-    : DhanPluginBase(http, sessions, symbols, calendar, clock, logger), IBrokerLoginStart, IBrokerGtt, IBrokerFeed
+    : DhanPluginBase(http, sessions, symbols, calendar, clock, logger), IBrokerLoginStart, IBrokerGtt, IBrokerFeedDepth20
 {
     public override BrokerCapability Capabilities => base.Capabilities | BrokerCapability.Gtt | BrokerCapability.Streaming;
 
@@ -29,6 +29,21 @@ public sealed class DhanPlugin(IHttpClientFactory http, BrokerSessionFactory ses
         if (string.IsNullOrWhiteSpace(session.AuthToken) || string.IsNullOrWhiteSpace(clientId)) return null;
         var root = overrideUrl ?? "wss://api-feed.dhan.co";
         return new FeedEndpoint(new Uri($"{root}?version=2&token={Uri.EscapeDataString(session.AuthToken)}&clientId={Uri.EscapeDataString(clientId)}&authType=2"), new Dictionary<string, string>());
+    }
+
+    public bool SupportsDepth20(string exchange) => exchange is "NSE" or "NFO";
+
+    public int Depth20MaxInstruments => 50;
+
+    public IFeedCodec CreateDepth20Codec() => new DhanDepth20FeedCodec();
+
+    /// <summary>The 20-level socket: the same token and client id, on its own address.</summary>
+    public FeedEndpoint? Depth20Endpoint(BrokerSession session, string? overrideUrl)
+    {
+        var clientId = session.Key("ApiKey") is { } key && key.Contains(":::", StringComparison.Ordinal) ? key.Split(":::", 2)[0] : session.ClientId;
+        if (string.IsNullOrWhiteSpace(session.AuthToken) || string.IsNullOrWhiteSpace(clientId)) return null;
+        var root = overrideUrl ?? "wss://depth-api-feed.dhan.co/twentydepth";
+        return new FeedEndpoint(new Uri($"{root}?token={Uri.EscapeDataString(session.AuthToken)}&clientId={Uri.EscapeDataString(clientId)}&authType=2"), new Dictionary<string, string>());
     }
 
     // The server pings and the socket answers.

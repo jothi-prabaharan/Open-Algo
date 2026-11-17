@@ -49,6 +49,26 @@ public interface IBrokerLoginStart : IBrokerLogin
 /// <summary>Where and how to connect to a broker's market-data stream.</summary>
 public sealed record FeedEndpoint(Uri Url, IReadOnlyDictionary<string, string> Headers, string? SubProtocol = null);
 
+/// <summary>
+/// A broker whose deeper book comes over a second socket (Dhan's 20-level depth). A subscriber asks for it by adding <see cref="Suffix"/> to the symbol; the topic keeps the suffix. An exchange the broker cannot give the deeper book on is served by the ordinary
+/// stream, as if the suffix were not there.
+/// </summary>
+public interface IBrokerFeedDepth20 : IBrokerFeed
+{
+    const string Suffix = ":20";
+
+    /// <summary>Whether the deeper book is available on this exchange.</summary>
+    bool SupportsDepth20(string exchange);
+
+    /// <summary>How many instruments the second socket takes.</summary>
+    int Depth20MaxInstruments { get; }
+
+    EPTradeBot.Core.Streaming.Feeds.IFeedCodec CreateDepth20Codec();
+
+    /// <summary>The address of the second socket for this session, or null when the session cannot connect.</summary>
+    FeedEndpoint? Depth20Endpoint(BrokerSession session, string? overrideUrl);
+}
+
 /// <summary>A broker's market-data stream: where to connect, what to say to keep it alive, and the codec that speaks its protocol.</summary>
 public interface IBrokerFeed : IBrokerPlugin
 {
